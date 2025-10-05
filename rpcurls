@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Switch BSC RPC</title>
+</head>
+<body>
+  <button id="switchPublicNode">Switch to BSC (PublicNode)</button>
+  <button id="switchBlockrazor">Switch to BSC (Blockrazor)</button>
+  <button id="switchBLXR">Switch to BSC (BLXR)</button>
+
+  <script>
+    async function switchToBSC(rpcUrl) {
+      if (typeof window.ethereum === 'undefined') {
+        alert('MetaMask is not installed. Please install it first.');
+        return;
+      }
+
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: '0x38', // 56 in hexadecimal
+              chainName: 'Binance Smart Chain',
+              nativeCurrency: {
+                name: 'Binance Coin',
+                symbol: 'BNB',
+                decimals: 18,
+              },
+              rpcUrls: [rpcUrl],
+              blockExplorerUrls: ['https://bscscan.com/'],
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Error switching network:', error);
+        alert('Failed to switch network. Check the console for details.');
+      }
+    }
+
+    document
+      .getElementById('switchPublicNode')
+      .addEventListener('click', () =>
+        switchToBSC('https://bsc-rpc.publicnode.com/')
+      );
+
+    document
+      .getElementById('switchBlockrazor')
+      .addEventListener('click', () =>
+        switchToBSC('https://bsc.blockrazor.xyz/')
+      );
+
+    document
+      .getElementById('switchBLXR')
+      .addEventListener('click', () =>
+        switchToBSC('https://bsc.rpc.blxrbdn.com/')
+      );
+  </script>
+</body>
+</html>
