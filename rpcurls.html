@@ -1,62 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Switch BSC RPC</title>
-</head>
-<body>
-  <button id="switchPublicNode">Switch to BSC (PublicNode)</button>
-  <button id="switchBlockrazor">Switch to BSC (Blockrazor)</button>
-  <button id="switchBLXR">Switch to BSC (BLXR)</button>
-
-  <script>
-    async function switchToBSC(rpcUrl) {
-      if (typeof window.ethereum === 'undefined') {
-        alert('MetaMask is not installed. Please install it first.');
-        return;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Switch to BSC Network</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        line-height: 1.6;
+        text-align: center;
       }
+      h1 {
+        color: #333;
+      }
+      button {
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        margin: 0.5rem;
+      }
+      button:hover {
+        background: #218838;
+      }
+      ol {
+        text-align: left;
+        display: inline-block;
+        margin-top: 1rem;
+      }
+      a {
+        display: inline-block;
+        margin-top: 2rem;
+        text-decoration: none;
+        color: #007bff;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
 
-      try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: '0x38', // 56 in hexadecimal
-              chainName: 'Binance Smart Chain',
-              nativeCurrency: {
-                name: 'Binance Coin',
-                symbol: 'BNB',
-                decimals: 18,
+  <body>
+    <h1>Switch to Binance Smart Chain (BSC)</h1>
+    <p>
+      This page lets you quickly update MetaMask on the
+      <strong>Binance Smart Chain</strong> network to use different public RPC endpoints.
+    </p>
+    <p>
+      Use this if your MetaMask is showing only your BNB balance, a zero balance, or isn't allowing you to make transactions.
+    </p>
+
+    <ol>
+      <li>Make sure the <strong>MetaMask</strong> extension or app is installed.</li>
+      <li>If prompted, approve MetaMask’s request to add or switch to BSC.</li>
+      <li>You can try different RPC endpoints if one seems slow or unresponsive.</li>
+    </ol>
+
+    <p>Select your preferred RPC provider:</p>
+
+    <button id="switchPublicNode">Switch to PublicNode</button>
+    <button id="switchBlockrazor">Switch to Blockrazor</button>
+    <button id="switchBLXR">Switch to BLXR</button>
+
+    <script>
+      async function switchToBSC(rpcUrl) {
+        if (typeof window.ethereum === 'undefined') {
+          alert('MetaMask is not installed. Please install it first.');
+          return;
+        }
+
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0x38', // 56 in hexadecimal
+                chainName: 'Binance Smart Chain',
+                nativeCurrency: {
+                  name: 'Binance Coin',
+                  symbol: 'BNB',
+                  decimals: 18,
+                },
+                rpcUrls: [rpcUrl],
+                blockExplorerUrls: ['https://bscscan.com/'],
               },
-              rpcUrls: [rpcUrl],
-              blockExplorerUrls: ['https://bscscan.com/'],
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Error switching network:', error);
-        alert('Failed to switch network. Check the console for details.');
+            ],
+          });
+        } catch (error) {
+          console.error('Error switching network:', error);
+          alert('Failed to switch network. Check the console for details.');
+        }
       }
-    }
 
-    document
-      .getElementById('switchPublicNode')
-      .addEventListener('click', () =>
-        switchToBSC('https://bsc-rpc.publicnode.com/')
-      );
+      document
+        .getElementById('switchPublicNode')
+        .addEventListener('click', () =>
+          switchToBSC('https://bsc-rpc.publicnode.com/')
+        );
 
-    document
-      .getElementById('switchBlockrazor')
-      .addEventListener('click', () =>
-        switchToBSC('https://bsc.blockrazor.xyz/')
-      );
+      document
+        .getElementById('switchBlockrazor')
+        .addEventListener('click', () =>
+          switchToBSC('https://bsc.blockrazor.xyz/')
+        );
 
-    document
-      .getElementById('switchBLXR')
-      .addEventListener('click', () =>
-        switchToBSC('https://bsc.rpc.blxrbdn.com/')
-      );
-  </script>
-</body>
+      document
+        .getElementById('switchBLXR')
+        .addEventListener('click', () =>
+          switchToBSC('https://bsc.rpc.blxrbdn.com/')
+        );
+    </script>
+
+    <a href="../index.html">← Back to main buttons page</a>
+  </body>
 </html>
