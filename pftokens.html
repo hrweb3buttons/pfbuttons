@@ -1,9 +1,54 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>Add Tokens to MetaMask</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        line-height: 1.6;
+        text-align: center;
+      }
+      h1 {
+        color: #333;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      ol {
+        text-align: left;
+        display: inline-block;
+        margin-top: 1rem;
+      }
+    </style>
   </head>
   <body>
+    <h1>Add All Tokens to MetaMask</h1>
+    <p>
+      This page helps you easily add several custom tokens to your MetaMask wallet in just a few clicks.
+      Please follow these steps:
+    </p>
+
+    <ol>
+      <li>Make sure the <strong>MetaMask extension</strong> or mobile app is installed.</li>
+      <li>Confirm that you are connected to the correct network (for example, <strong>Binance Smart Chain</strong>).</li>
+      <li>Click the button below to start adding tokens.</li>
+      <li>MetaMask will show a prompt for each token. Approve each one to add it to your wallet.</li>
+    </ol>
+
     <button id="addTokens">Add All Tokens to MetaMask</button>
 
     <script>
@@ -49,7 +94,6 @@
       document.getElementById("addTokens").addEventListener("click", async () => {
         if (window.ethereum) {
           try {
-            // First suggest USDT
             const usdt = tokens[0];
             const usdtAdded = await window.ethereum.request({
               method: "wallet_watchAsset",
@@ -70,7 +114,6 @@
               console.log("User rejected adding USDT.");
             }
 
-            // Suggest the rest in parallel
             const otherTokens = tokens.slice(1);
             const requests = otherTokens.map(token =>
               window.ethereum.request({
@@ -98,7 +141,6 @@
             );
 
             await Promise.allSettled(requests);
-
             alert("Finished suggesting all tokens to MetaMask!");
           } catch (error) {
             console.error("Unexpected error:", error);
