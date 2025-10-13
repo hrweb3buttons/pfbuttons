@@ -276,7 +276,6 @@ Welcome! Use the buttons below to help streamline wallet operation.
         );
     </script>
 
-    <a href="../pfbuttons">← Back to main buttons page</a>
   </body>
 </html>
 
