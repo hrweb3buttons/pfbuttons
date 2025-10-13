@@ -5,40 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pool Funding Web3 Tools</title>
   <style>
+    /* --- Base Styles --- */
+    :root {
+      --primary: #007bff;
+      --primary-hover: #0056b3;
+      --success: #28a745;
+      --background: #f4f6f8;
+      --text: #333;
+      --card-bg: #fff;
+      --border: #e1e4e8;
+      --radius: 12px;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 650px;
-      margin: 2rem auto;
-      padding: 1rem;
-      line-height: 1.6;
-      text-align: center;
-      background-color: #fafafa;
-      color: #333;
+      font-family: "Inter", system-ui, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    main {
+      width: 100%;
+      max-width: 720px;
+      margin: 2rem;
     }
 
     h1, h2 {
-      color: #222;
-      margin-top: 1.5rem;
+      color: #111;
+      margin-bottom: 0.75rem;
     }
 
     p {
       margin-bottom: 1rem;
     }
 
+    /* --- Card Layout --- */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+
+    /* --- Buttons --- */
     button {
-      background-color: #007bff;
+      background-color: var(--primary);
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
       font-size: 1rem;
       cursor: pointer;
-      margin: 0.5rem;
       transition: background-color 0.25s, transform 0.1s;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: var(--primary-hover);
       transform: translateY(-1px);
     }
 
@@ -46,29 +82,22 @@
       transform: translateY(1px);
     }
 
-    ol {
-      text-align: left;
-      display: inline-block;
-      margin-top: 1rem;
-    }
-
-    a {
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
+    /* --- RPC Button Layout --- */
     .rpc-buttons {
       display: flex;
       flex-wrap: wrap;
+      gap: 0.75rem;
       justify-content: center;
-      gap: 10px;
       margin-top: 1rem;
     }
 
+    ol {
+      text-align: left;
+      margin: 1rem auto;
+      display: inline-block;
+    }
+
+    /* --- Donation Buttons --- */
     #donation-buttons {
       position: fixed;
       top: 10px;
@@ -80,12 +109,13 @@
     }
 
     #donation-buttons button {
-      padding: 6px 10px;
-      border: none;
+      padding: 8px 12px;
+      font-size: 0.9rem;
       border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+      border: none;
+      font-weight: 600;
       color: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
     #donateBNB { background-color: #f3ba2f; color: #000; }
@@ -93,52 +123,71 @@
     #donatePML { background-color: #008cff; }
 
     footer {
-      margin-top: 3rem;
+      text-align: center;
+      color: #777;
       font-size: 0.9rem;
-      color: #666;
+      margin-top: 2rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 600px) {
+      main { margin: 1rem; }
+      .rpc-buttons { flex-direction: column; }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>Pool Funding Web3 Utility</h1>
-    <p>
-      Welcome! Use the buttons below to help streamline wallet operation.<br />
-      This page is maintained by <strong>Hunter Rodriguez</strong> to assist Pool Funding users.<br />
-      Donations using the buttons above are always appreciated.
-    </p>
-  </header>
+  <main>
+    <header class="card">
+      <h1>Pool Funding Web3 Tools</h1>
+      <p>
+        Welcome! Use the tools below to streamline wallet setup and operation for Pool Funding tokens.
+        This page is maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
+      </p>
+      <p>Donations using the buttons above are always appreciated.</p>
+    </header>
 
-  <section id="tokens">
-    <h2>Add Pool Funding Tokens to MetaMask</h2>
-    <p>Follow these steps to easily add all custom tokens to your MetaMask wallet:</p>
-    <ol>
-      <li>Ensure the <strong>MetaMask</strong> extension or mobile app is installed.</li>
-      <li>Confirm that you are connected to the <strong>Binance Smart Chain</strong>.</li>
-      <li>Click the button below to start adding tokens.</li>
-      <li>Approve each prompt to add tokens to your wallet.</li>
-    </ol>
-    <button id="addTokens">Add All Tokens to MetaMask</button>
-  </section>
+    <section class="card" id="tokens">
+      <h2>Add Tokens to MetaMask</h2>
+      <p>This button lets you add all Pool Funding tokens to your MetaMask wallet in a few clicks.</p>
+      <ol>
+        <li>Ensure you have MetaMask installed.</li>
+        <li>Connect to <strong>Binance Smart Chain</strong>.</li>
+        <li>Click below and approve each prompt to add tokens.</li>
+      </ol>
+      <button id="addTokens">Add All Tokens to MetaMask</button>
+    </section>
 
-  <section id="rpc">
-    <h2>Switch to a Different BSC RPC</h2>
-    <p>
-      If MetaMask shows incorrect balances or fails to send transactions, switch to a different public RPC endpoint:
-    </p>
-    <div class="rpc-buttons">
-      <button id="switchLlamarpc">Switch to Llamarpc</button>
-      <button id="switchPublicNode">Switch to PublicNode</button>
-      <button id="switchBlockrazor">Switch to Blockrazor</button>
-      <button id="switchBLXR">Switch to BLXR</button>
-    </div>
-  </section>
+    <section class="card" id="rpc">
+      <h2>Switch Binance Smart Chain RPC</h2>
+      <p>
+        If MetaMask shows the wrong balance or fails to send transactions, switch to a different public RPC endpoint.
+      </p>
+      <div class="rpc-buttons">
+        <button id="switchLlamarpc">Switch to Llamarpc</button>
+        <button id="switchPublicNode">Switch to PublicNode</button>
+        <button id="switchBlockrazor">Switch to Blockrazor</button>
+        <button id="switchBLXR">Switch to BLXR</button>
+      </div>
+    </section>
 
-  <footer>
-    <p>&copy; 2025 Hunter Rodriguez. Not affiliated with MetaMask or Binance Smart Chain.</p>
-  </footer>
+    <footer>
+      &copy; 2025 Hunter Rodriguez. Not affiliated with MetaMask or Binance Smart Chain.<br />
+      <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a>
+    </footer>
+  </main>
 
+  <!-- Donation Buttons -->
   <div id="donation-buttons">
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
@@ -157,10 +206,7 @@
     ];
 
     document.getElementById("addTokens").addEventListener("click", async () => {
-      if (!window.ethereum) {
-        alert("MetaMask not detected.");
-        return;
-      }
+      if (!window.ethereum) return alert("MetaMask not detected.");
       try {
         for (const token of tokens) {
           await window.ethereum.request({
@@ -177,10 +223,7 @@
 
     // ---------- RPC Switcher ----------
     async function switchToBSC(rpcUrl) {
-      if (!window.ethereum) {
-        alert("MetaMask is not installed.");
-        return;
-      }
+      if (!window.ethereum) return alert("MetaMask is not installed.");
       try {
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
@@ -201,41 +244,4 @@
     document.getElementById("switchLlamarpc").onclick = () => switchToBSC("https://binance.llamarpc.com");
     document.getElementById("switchPublicNode").onclick = () => switchToBSC("https://bsc-rpc.publicnode.com/");
     document.getElementById("switchBlockrazor").onclick = () => switchToBSC("https://bsc.blockrazor.xyz/");
-    document.getElementById("switchBLXR").onclick = () => switchToBSC("https://bsc.rpc.blxrbdn.com/");
-
-    // ---------- Donations ----------
-    const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
-    const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
-    const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
-
-    async function donateBNB() {
-      if (!window.ethereum) return alert("MetaMask not detected.");
-      const amount = prompt("Enter BNB amount to donate:");
-      if (!amount || isNaN(amount) || amount <= 0) return;
-      const valueHex = "0x" + BigInt(Math.floor(amount * 1e18)).toString(16);
-      const from = (await ethereum.request({ method: "eth_requestAccounts" }))[0];
-      await ethereum.request({
-        method: "eth_sendTransaction",
-        params: [{ from, to: walletAddress, value: valueHex }],
-      });
-    }
-
-    async function donateToken(contractAddress, decimals, symbol) {
-      if (!window.ethereum) return alert("MetaMask not detected.");
-      const amount = prompt(`Enter ${symbol} amount to donate:`);
-      if (!amount || isNaN(amount) || amount <= 0) return;
-      const from = (await ethereum.request({ method: "eth_requestAccounts" }))[0];
-      const amountHex = BigInt(Math.floor(amount * 10 ** decimals)).toString(16).padStart(64, "0");
-      const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + amountHex;
-      await ethereum.request({
-        method: "eth_sendTransaction",
-        params: [{ from, to: contractAddress, data }],
-      });
-    }
-
-    document.getElementById("donateBNB").onclick = donateBNB;
-    document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, 18, "USDT");
-    document.getElementById("donatePML").onclick = () => donateToken(pmlContract, 18, "PML");
-  </script>
-</body>
-</html>
+    document.getEle
