@@ -7,32 +7,157 @@ This section is for switching the Network URL/RPC URL on your MetaMask. Go here 
 [Token Adding](https://hrweb3buttons.github.io/pfbuttons/pftokens.html)
 This section is for adding all our custom tokens. Go here if you're a new Pool Funding/Pool Micro Lending user, you've had to reinstall your wallet, or you think you're missing a token or two.
 
-<body>
-<h1>Add All Tokens to MetaMask</h1>
-<p>
-      This page helps you easily add several custom tokens to your MetaMask wallet in just a few clicks.
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Add Tokens to MetaMask</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        line-height: 1.6;
+        text-align: center;
+      }
+      h1 {
+        color: #333;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      ol {
+        text-align: left;
+        display: inline-block;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Add All Tokens to MetaMask</h1>
+    <p>
       This page helps you easily add the Pool Funding custom tokens to your MetaMask wallet in just a few clicks.
-Please follow these steps:
-</p>
+      Please follow these steps:
+    </p>
 
-<ol>
-<li>Make sure the <strong>MetaMask extension</strong> or mobile app is installed.</li>
-<li>Confirm that you are connected to the correct network (for example, <strong>Binance Smart Chain</strong>).</li>
-<li>Click the button below to start adding tokens.</li>
-<li>MetaMask will show a prompt for each token. Approve each one to add it to your wallet.</li>
-</ol>
+    <ol>
+      <li>Make sure the <strong>MetaMask extension</strong> or mobile app is installed.</li>
+      <li>Confirm that you are connected to the correct network (for example, <strong>Binance Smart Chain</strong>).</li>
+      <li>Click the button below to start adding tokens.</li>
+      <li>MetaMask will show a prompt for each token. Approve each one to add it to your wallet.</li>
+    </ol>
 
-<button id="addTokens">Add All Tokens to MetaMask</button>
+    <button id="addTokens">Add All Tokens to MetaMask</button>
 
-<script>
-const tokens = [
-{
-address: "0x55d398326f99059fF775485246999027B3197955", // USDT on BSC
-symbol: "USDT",
-decimals: 18,
-image: "https://cryptologos.cc/logos/tether-usdt-logo.png"
-},
-{
-address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
-symbol: "PFB",
-decimals: 18,
+    <script>
+      const tokens = [
+        {
+          address: "0x55d398326f99059fF775485246999027B3197955", // USDT on BSC
+          symbol: "USDT",
+          decimals: 18,
+          image: "https://cryptologos.cc/logos/tether-usdt-logo.png"
+        },
+        {
+          address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
+          symbol: "PFB",
+          decimals: 18,
+          image: "https://yourdomain.com/pfb-logo.png"
+        },
+        {
+          address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
+          symbol: "PFI",
+          decimals: 18,
+          image: "https://yourdomain.com/pfi-logo.png"
+        },
+        {
+          address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
+          symbol: "PFS",
+          decimals: 18,
+          image: "https://yourdomain.com/pfs-logo.png"
+        },
+        {
+          address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
+          symbol: "PFG",
+          decimals: 18,
+          image: "https://yourdomain.com/pfg-logo.png"
+        },
+        {
+          address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+          symbol: "PML",
+          decimals: 18,
+          image: "https://yourdomain.com/pml-logo.png"
+        }
+      ];
+
+      document.getElementById("addTokens").addEventListener("click", async () => {
+        if (window.ethereum) {
+          try {
+            const usdt = tokens[0];
+            const usdtAdded = await window.ethereum.request({
+              method: "wallet_watchAsset",
+              params: {
+                type: "ERC20",
+                options: {
+                  address: usdt.address,
+                  symbol: usdt.symbol,
+                  decimals: usdt.decimals,
+                  image: usdt.image,
+                },
+              },
+            });
+
+            if (usdtAdded) {
+              console.log("USDT added!");
+            } else {
+              console.log("User rejected adding USDT.");
+            }
+
+            const otherTokens = tokens.slice(1);
+            const requests = otherTokens.map(token =>
+              window.ethereum.request({
+                method: "wallet_watchAsset",
+                params: {
+                  type: "ERC20",
+                  options: {
+                    address: token.address,
+                    symbol: token.symbol,
+                    decimals: token.decimals,
+                    image: token.image,
+                  },
+                },
+              })
+                .then(wasAdded => {
+                  if (wasAdded) {
+                    console.log(`${token.symbol} added!`);
+                  } else {
+                    console.log(`User rejected adding ${token.symbol}.`);
+                  }
+                })
+                .catch(error => {
+                  console.error(`Error adding ${token.symbol}:`, error);
+                })
+            );
+
+            await Promise.allSettled(requests);
+            alert("Finished suggesting all tokens to MetaMask!");
+          } catch (error) {
+            console.error("Unexpected error:", error);
+          }
+        } else {
+          alert("MetaMask is not installed!");
+        }
+      });
+    </script>
+  </body>
+</html>
