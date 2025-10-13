@@ -1,4 +1,6 @@
 Welcome! Use the buttons below to help streamline wallet operation.
+This page is operated by me, Hunter Rodriguez. I've made this space to help Pool Funding users.
+Donations using the above buttons are greatly appreciated!
 
 
 <!doctype html>
