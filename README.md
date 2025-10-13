@@ -217,66 +217,74 @@ Donations using the above buttons are greatly appreciated!
       Use this if your MetaMask is showing only your BNB balance, a zero balance, or isn't allowing you to make transactions.
     </p>
 
-    <ol>
-      <li>Make sure the <strong>MetaMask</strong> extension or app is installed.</li>
-      <li>If prompted, approve MetaMask’s request to add or switch to BSC.</li>
-      <li>You can try different RPC endpoints if one seems slow or unresponsive.</li>
-    </ol>
+   <ol>
+  <li>Make sure the <strong>MetaMask</strong> extension or app is installed.</li>
+  <li>If prompted, approve MetaMask’s request to add or switch to BSC.</li>
+  <li>You can try different RPC endpoints if one seems slow or unresponsive.</li>
+</ol>
 
-    <p>Select your preferred RPC provider:</p>
+<p>Select your preferred RPC provider:</p>
 
-    <button id="switchPublicNode">Switch to PublicNode</button>
-    <button id="switchBlockrazor">Switch to Blockrazor</button>
-    <button id="switchBLXR">Switch to BLXR</button>
+<button id="switchLlamarpc">Switch to Llamarpc</button>
+<button id="switchPublicNode">Switch to PublicNode</button>
+<button id="switchBlockrazor">Switch to Blockrazor</button>
+<button id="switchBLXR">Switch to BLXR</button>
 
-    <script>
-      async function switchToBSC(rpcUrl) {
-        if (typeof window.ethereum === 'undefined') {
-          alert('MetaMask is not installed. Please install it first.');
-          return;
-        }
+<script>
+  async function switchToBSC(rpcUrl) {
+    if (typeof window.ethereum === 'undefined') {
+      alert('MetaMask is not installed. Please install it first.');
+      return;
+    }
 
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0x38', // 56 in hexadecimal
-                chainName: 'Binance Smart Chain',
-                nativeCurrency: {
-                  name: 'Binance Coin',
-                  symbol: 'BNB',
-                  decimals: 18,
-                },
-                rpcUrls: [rpcUrl],
-                blockExplorerUrls: ['https://bscscan.com/'],
-              },
-            ],
-          });
-        } catch (error) {
-          console.error('Error switching network:', error);
-          alert('Failed to switch network. Check the console for details.');
-        }
-      }
+    try {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: '0x38', // 56 in hexadecimal
+            chainName: 'Binance Smart Chain',
+            nativeCurrency: {
+              name: 'Binance Coin',
+              symbol: 'BNB',
+              decimals: 18,
+            },
+            rpcUrls: [rpcUrl],
+            blockExplorerUrls: ['https://bscscan.com/'],
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('Error switching network:', error);
+      alert('Failed to switch network. Check the console for details.');
+    }
+  }
 
-      document
-        .getElementById('switchPublicNode')
-        .addEventListener('click', () =>
-          switchToBSC('https://bsc-rpc.publicnode.com/')
-        );
+  document
+    .getElementById('switchLlamarpc')
+    .addEventListener('click', () =>
+      switchToBSC('https://binance.llamarpc.com')
+    );
 
-      document
-        .getElementById('switchBlockrazor')
-        .addEventListener('click', () =>
-          switchToBSC('https://bsc.blockrazor.xyz/')
-        );
+  document
+    .getElementById('switchPublicNode')
+    .addEventListener('click', () =>
+      switchToBSC('https://bsc-rpc.publicnode.com/')
+    );
 
-      document
-        .getElementById('switchBLXR')
-        .addEventListener('click', () =>
-          switchToBSC('https://bsc.rpc.blxrbdn.com/')
-        );
-    </script>
+  document
+    .getElementById('switchBlockrazor')
+    .addEventListener('click', () =>
+      switchToBSC('https://bsc.blockrazor.xyz/')
+    );
+
+  document
+    .getElementById('switchBLXR')
+    .addEventListener('click', () =>
+      switchToBSC('https://bsc.rpc.blxrbdn.com/')
+    );
+</script>
+
 
   </body>
 </html>
