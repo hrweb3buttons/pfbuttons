@@ -279,3 +279,55 @@ Welcome! Use the buttons below to help streamline wallet operation.
     <a href="../pfbuttons">← Back to main buttons page</a>
   </body>
 </html>
+
+<!-- Donation Buttons (Top Right Corner) -->
+<div id="donation-buttons" style="position:fixed; top:10px; right:10px; z-index:9999; display:flex; flex-direction:column; gap:6px; font-family:sans-serif;">
+  <button onclick="donateBNB()" style="padding:6px 10px; background-color:#f3ba2f; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Donate BNB</button>
+  <button onclick="donateUSDT()" style="padding:6px 10px; background-color:#26a17b; border:none; border-radius:8px; cursor:pointer; font-weight:bold; color:white;">Donate USDT</button>
+  <button onclick="donatePML()" style="padding:6px 10px; background-color:#008cff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; color:white;">Donate PML</button>
+</div>
+
+<script type="text/javascript">
+  const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
+  const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
+  const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
+
+  async function donateBNB() {
+    if (!window.ethereum) return alert("MetaMask not detected.");
+    const amount = prompt("Enter BNB amount to donate:");
+    if (!amount || isNaN(amount) || amount <= 0) return;
+    const value = (BigInt(Math.floor(amount * 1e18))).toString(16);
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{
+        from: (await ethereum.request({ method: "eth_requestAccounts" }))[0],
+        to: walletAddress,
+        value: "0x" + value,
+      }],
+    });
+  }
+
+  async function donateToken(contractAddress, decimals, symbol) {
+    if (!window.ethereum) return alert("MetaMask not detected.");
+    const amount = prompt(`Enter ${symbol} amount to donate:`);
+    if (!amount || isNaN(amount) || amount <= 0) return;
+    const amountHex = "0x" + BigInt(Math.floor(amount * 10 ** decimals)).toString(16);
+    const from = (await ethereum.request({ method: "eth_requestAccounts" }))[0];
+
+    const data = "0xa9059cbb" + 
+      walletAddress.replace("0x", "").padStart(64, "0") +
+      BigInt(Math.floor(amount * 10 ** decimals)).toString(16).padStart(64, "0");
+
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{
+        from: from,
+        to: contractAddress,
+        data: data,
+      }],
+    });
+  }
+
+  function donateUSDT() { donateToken(usdtContract, 18, "USDT"); }
+  function donatePML() { donateToken(pmlContract, 18, "PML"); }
+</script>
