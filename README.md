@@ -217,7 +217,7 @@ Donations using the above buttons are greatly appreciated!
       Use this if your MetaMask is showing only your BNB balance, a zero balance, or isn't allowing you to make transactions.
     </p>
 
-   <ol>
+  <ol>
   <li>Make sure the <strong>MetaMask</strong> extension or app is installed.</li>
   <li>If prompted, approve MetaMask’s request to add or switch to BSC.</li>
   <li>You can try different RPC endpoints if one seems slow or unresponsive.</li>
@@ -225,10 +225,52 @@ Donations using the above buttons are greatly appreciated!
 
 <p>Select your preferred RPC provider:</p>
 
-<button id="switchLlamarpc">Switch to Llamarpc</button>
-<button id="switchPublicNode">Switch to PublicNode</button>
-<button id="switchBlockrazor">Switch to Blockrazor</button>
-<button id="switchBLXR">Switch to BLXR</button>
+<div class="rpc-buttons">
+  <button id="switchLlamarpc">Switch to Llamarpc</button>
+  <button id="switchPublicNode">Switch to PublicNode</button>
+  <button id="switchBlockrazor">Switch to Blockrazor</button>
+  <button id="switchBLXR">Switch to BLXR</button>
+</div>
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    padding: 20px;
+    background-color: #fafafa;
+    color: #333;
+  }
+
+  ol {
+    margin-bottom: 1em;
+  }
+
+  .rpc-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .rpc-buttons button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.25s, transform 0.1s;
+  }
+
+  .rpc-buttons button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+  }
+
+  .rpc-buttons button:active {
+    transform: translateY(1px);
+  }
+</style>
 
 <script>
   async function switchToBSC(rpcUrl) {
@@ -285,9 +327,6 @@ Donations using the above buttons are greatly appreciated!
     );
 </script>
 
-
-  </body>
-</html>
 
 <!-- Donation Buttons (Top Right Corner) -->
 <div id="donation-buttons" style="position:fixed; top:10px; right:10px; z-index:9999; display:flex; flex-direction:column; gap:6px; font-family:sans-serif;">
