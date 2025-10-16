@@ -149,7 +149,7 @@
 <body>
   <main>
     <header class="card">
-      <h1>Pool Funding Web3 Tools</h1>
+      <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>
         Welcome! Use the tools below to streamline wallet setup and operation for Pool Funding tokens.
         This page is maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
