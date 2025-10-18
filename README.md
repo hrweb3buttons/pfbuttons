@@ -122,6 +122,31 @@
     #donateUSDT { background-color: #26a17b; }
     #donatePML { background-color: #008cff; }
 
+    /* --- Wallet Connect Button --- */
+    #wallet-connect {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+    }
+
+    #wallet-connect button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.25s;
+    }
+
+    #wallet-connect button:hover {
+      background-color: var(--primary-hover);
+    }
+
     footer {
       text-align: center;
       color: #777;
@@ -147,6 +172,11 @@
 </head>
 
 <body>
+  <!-- Connect Wallet Button -->
+  <div id="wallet-connect">
+    <button id="connectWallet">Connect Wallet</button>
+  </div>
+
   <main>
     <header class="card">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
@@ -196,107 +226,116 @@
   </div>
 
   <script>
-    // ---------- Token Addition ----------
-  const tokens = [
-    {
-      address: "0x55d398326f99059fF775485246999027B3197955", // USDT on BSC
-      symbol: "USDT",
-      decimals: 18,
-      image: "https://cryptologos.cc/logos/tether-usdt-logo.png"
-    },
-    {
-      address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
-      symbol: "PFB",
-      decimals: 18,
-      image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png"
-    },
-    {
-      address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
-      symbol: "PFI",
-      decimals: 18,
-      image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png"
-    },
-    {
-      address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
-      symbol: "PFS",
-      decimals: 18,
-      image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png"
-    },
-    {
-      address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
-      symbol: "PFG",
-      decimals: 18,
-      image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png"
-    },
-    {
-      address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
-      symbol: "PML",
-      decimals: 18,
-      image: "https://pmlcoin.app/assets/logo-D04mbZJF.png"
-    }
-  ];
-
-  document.getElementById("addTokens").addEventListener("click", async () => {
-    if (!window.ethereum) {
-      alert("MetaMask is not installed!");
-      return;
-    }
-
-    try {
-      // Step 1: Suggest USDT first
-      const usdt = tokens[0];
-      const usdtAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: usdt.address,
-            symbol: usdt.symbol,
-            decimals: usdt.decimals,
-            image: usdt.image,
-          },
-        },
-      });
-
-      if (usdtAdded) {
-        console.log("USDT added!");
-      } else {
-        console.log("User rejected adding USDT.");
+    // ---------- MetaMask Connect ----------
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("MetaMask not detected. Please install it first.");
+        return;
       }
 
-      // Step 2: Suggest all remaining tokens together
-      const otherTokens = tokens.slice(1);
-      const requests = otherTokens.map(token =>
-        window.ethereum.request({
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        updateWalletButton(accounts[0]);
+      } catch (err) {
+        console.error("User rejected connection or error occurred:", err);
+      }
+    }
+
+    function updateWalletButton(account) {
+      const btn = document.getElementById("connectWallet");
+      const shortAccount = `${account.slice(0, 6)}...${account.slice(-4)}`;
+      btn.textContent = shortAccount;
+      btn.disabled = true;
+      btn.style.opacity = "0.8";
+    }
+
+    async function checkConnection() {
+      if (!window.ethereum) return;
+      const accounts = await window.ethereum.request({ method: "eth_accounts" });
+      if (accounts.length > 0) {
+        updateWalletButton(accounts[0]);
+      }
+    }
+
+    window.addEventListener("load", checkConnection);
+    document.getElementById("connectWallet").onclick = connectWallet;
+
+
+    // ---------- Token Addition ----------
+    const tokens = [
+      {
+        address: "0x55d398326f99059fF775485246999027B3197955", // USDT on BSC
+        symbol: "USDT",
+        decimals: 18,
+        image: "https://cryptologos.cc/logos/tether-usdt-logo.png"
+      },
+      {
+        address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
+        symbol: "PFB",
+        decimals: 18,
+        image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png"
+      },
+      {
+        address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
+        symbol: "PFI",
+        decimals: 18,
+        image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png"
+      },
+      {
+        address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
+        symbol: "PFS",
+        decimals: 18,
+        image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png"
+      },
+      {
+        address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
+        symbol: "PFG",
+        decimals: 18,
+        image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png"
+      },
+      {
+        address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+        symbol: "PML",
+        decimals: 18,
+        image: "https://pmlcoin.app/assets/logo-D04mbZJF.png"
+      }
+    ];
+
+    document.getElementById("addTokens").addEventListener("click", async () => {
+      if (!window.ethereum) {
+        alert("MetaMask is not installed!");
+        return;
+      }
+
+      try {
+        // Step 1: Suggest USDT first
+        const usdt = tokens[0];
+        await window.ethereum.request({
           method: "wallet_watchAsset",
           params: {
             type: "ERC20",
-            options: {
-              address: token.address,
-              symbol: token.symbol,
-              decimals: token.decimals,
-              image: token.image,
-            },
+            options: usdt,
           },
-        }).then(wasAdded => {
-          if (wasAdded) {
-            console.log(`${token.symbol} added!`);
-          } else {
-            console.log(`User rejected adding ${token.symbol}.`);
-          }
-        }).catch(error => {
-          console.error(`Error adding ${token.symbol}:`, error);
-        })
-      );
+        });
 
-      await Promise.allSettled(requests);
+        // Step 2: Suggest remaining tokens
+        const otherTokens = tokens.slice(1);
+        const requests = otherTokens.map(token =>
+          window.ethereum.request({
+            method: "wallet_watchAsset",
+            params: {
+              type: "ERC20",
+              options: token,
+            },
+          }).catch(console.error)
+        );
 
-      alert("Finished suggesting all tokens to MetaMask!");
-    } catch (error) {
-      console.error("Unexpected error:", error);
-    }
-  });
-</script>
+        await Promise.allSettled(requests);
+        alert("Finished suggesting all tokens to MetaMask!");
+      } catch (error) {
+        console.error("Unexpected error:", error);
+      }
+    });
 
 
     // ---------- RPC Switcher ----------
@@ -324,6 +363,7 @@
     document.getElementById("switchBlockrazor").onclick = () => switchToBSC("https://bsc.blockrazor.xyz/");
     document.getElementById("switchBLXR").onclick = () => switchToBSC("https://bsc.rpc.blxrbdn.com/");
     document.getElementById("switchInfura").onclick = () => switchToBSC("https://bsc-mainnet.infura.io/v3/");
+
 
     // ---------- Donations ----------
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
