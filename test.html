@@ -194,6 +194,8 @@
       <h2>Switch Binance Smart Chain RPC</h2>
       <p>
         If MetaMask shows the wrong balance or fails to send transactions, switch to a different public RPC endpoint.
+        The final option, <strong>Chainstack</strong>, connects to a private node provided for the community’s use.
+        If you rely on that endpoint and find it helpful, please consider donating to help keep it running.
       </p>
       <div class="rpc-buttons">
         <button id="switchLlamarpc">Switch to Llamarpc</button>
@@ -300,10 +302,7 @@
         const usdt = tokens[0];
         await window.ethereum.request({
           method: "wallet_watchAsset",
-          params: {
-            type: "ERC20",
-            options: usdt,
-          },
+          params: { type: "ERC20", options: usdt },
         });
 
         const otherTokens = tokens.slice(1);
