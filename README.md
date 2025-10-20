@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <style>
-    /* --- Base Styles --- */
     :root {
       --primary: #007bff;
       --primary-hover: #0056b3;
@@ -44,7 +43,6 @@
       margin-bottom: 1rem;
     }
 
-    /* --- Card Layout --- */
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--border);
@@ -61,7 +59,6 @@
       padding-bottom: 0.5rem;
     }
 
-    /* --- Buttons --- */
     button {
       background-color: var(--primary);
       color: white;
@@ -82,7 +79,6 @@
       transform: translateY(1px);
     }
 
-    /* --- RPC Button Layout --- */
     .rpc-buttons {
       display: flex;
       flex-wrap: wrap;
@@ -97,7 +93,6 @@
       display: inline-block;
     }
 
-    /* --- Donation Buttons --- */
     #donation-buttons {
       position: fixed;
       top: 10px;
@@ -122,7 +117,6 @@
     #donateUSDT { background-color: #26a17b; }
     #donatePML { background-color: #008cff; }
 
-    /* --- Wallet Connect Button --- */
     #wallet-connect {
       position: fixed;
       top: 10px;
@@ -163,7 +157,6 @@
       text-decoration: underline;
     }
 
-    /* --- Responsive --- */
     @media (max-width: 600px) {
       main { margin: 1rem; }
       .rpc-buttons { flex-direction: column; }
@@ -172,7 +165,6 @@
 </head>
 
 <body>
-  <!-- Connect Wallet Button -->
   <div id="wallet-connect">
     <button id="connectWallet">Connect Wallet</button>
   </div>
@@ -202,6 +194,8 @@
       <h2>Switch Binance Smart Chain RPC</h2>
       <p>
         If MetaMask shows the wrong balance or fails to send transactions, switch to a different public RPC endpoint.
+        The final option, <strong>Chainstack</strong>, connects to a private node provided for the community’s use.
+        If you rely on that endpoint and find it helpful, please consider donating to help keep it running.
       </p>
       <div class="rpc-buttons">
         <button id="switchLlamarpc">Switch to Llamarpc</button>
@@ -209,6 +203,7 @@
         <button id="switchBlockrazor">Switch to Blockrazor</button>
         <button id="switchBLXR">Switch to BLXR</button>
         <button id="switchInfura">Switch to Infura (MetaMask Default)</button>
+        <button id="switchChainstack">Switch to Chainstack</button>
       </div>
     </section>
 
@@ -218,7 +213,6 @@
     </footer>
   </main>
 
-  <!-- Donation Buttons -->
   <div id="donation-buttons">
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
@@ -226,7 +220,6 @@
   </div>
 
   <script>
-    // ---------- MetaMask Connect ----------
     async function connectWallet() {
       if (!window.ethereum) {
         alert("MetaMask not detected. Please install it first.");
@@ -260,11 +253,9 @@
     window.addEventListener("load", checkConnection);
     document.getElementById("connectWallet").onclick = connectWallet;
 
-
-    // ---------- Token Addition ----------
     const tokens = [
       {
-        address: "0x55d398326f99059fF775485246999027B3197955", // USDT on BSC
+        address: "0x55d398326f99059fF775485246999027B3197955",
         symbol: "USDT",
         decimals: 18,
         image: "https://cryptologos.cc/logos/tether-usdt-logo.png"
@@ -308,25 +299,17 @@
       }
 
       try {
-        // Step 1: Suggest USDT first
         const usdt = tokens[0];
         await window.ethereum.request({
           method: "wallet_watchAsset",
-          params: {
-            type: "ERC20",
-            options: usdt,
-          },
+          params: { type: "ERC20", options: usdt },
         });
 
-        // Step 2: Suggest remaining tokens
         const otherTokens = tokens.slice(1);
         const requests = otherTokens.map(token =>
           window.ethereum.request({
             method: "wallet_watchAsset",
-            params: {
-              type: "ERC20",
-              options: token,
-            },
+            params: { type: "ERC20", options: token },
           }).catch(console.error)
         );
 
@@ -337,8 +320,6 @@
       }
     });
 
-
-    // ---------- RPC Switcher ----------
     async function switchToBSC(rpcUrl) {
       if (!window.ethereum) return alert("MetaMask is not installed.");
       try {
@@ -363,9 +344,8 @@
     document.getElementById("switchBlockrazor").onclick = () => switchToBSC("https://bsc.blockrazor.xyz/");
     document.getElementById("switchBLXR").onclick = () => switchToBSC("https://bsc.rpc.blxrbdn.com/");
     document.getElementById("switchInfura").onclick = () => switchToBSC("https://bsc-mainnet.infura.io/v3/");
+    document.getElementById("switchChainstack").onclick = () => switchToBSC("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71");
 
-
-    // ---------- Donations ----------
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
     const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
     const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
