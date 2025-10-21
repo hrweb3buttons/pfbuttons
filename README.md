@@ -4,11 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
+  <meta name="description" content="Community-built Web3 tools to streamline Pool Funding wallet setup and management.">
+  <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
   <style>
     :root {
       --primary: #007bff;
       --primary-hover: #0056b3;
-      --success: #28a745;
       --background: #f4f6f8;
       --text: #333;
       --card-bg: #fff;
@@ -16,7 +17,6 @@
       --radius: 12px;
       --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
-
     body {
       font-family: "Inter", system-ui, Arial, sans-serif;
       background-color: var(--background);
@@ -27,22 +27,9 @@
       justify-content: center;
       min-height: 100vh;
     }
-
-    main {
-      width: 100%;
-      max-width: 720px;
-      margin: 2rem;
-    }
-
-    h1, h2 {
-      color: #111;
-      margin-bottom: 0.75rem;
-    }
-
-    p {
-      margin-bottom: 1rem;
-    }
-
+    main { width: 100%; max-width: 720px; margin: 2rem; }
+    h1, h2 { color: #111; margin-bottom: 0.75rem; }
+    p { margin-bottom: 1rem; }
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--border);
@@ -51,14 +38,6 @@
       margin-bottom: 1.5rem;
       box-shadow: var(--shadow);
     }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 1.25rem;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 0.5rem;
-    }
-
     button {
       background-color: var(--primary);
       color: white;
@@ -69,164 +48,100 @@
       cursor: pointer;
       transition: background-color 0.25s, transform 0.1s;
     }
-
-    button:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(1px);
-    }
-
+    button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
     .rpc-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-top: 1rem;
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      justify-content: center; margin-top: 1rem;
     }
-
-    ol {
-      text-align: left;
-      margin: 1rem auto;
-      display: inline-block;
-    }
-
+    ol { text-align: left; margin: 1rem auto; display: inline-block; }
     #donation-buttons {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      position: fixed; top: 10px; right: 10px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 6px;
     }
-
     #donation-buttons button {
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      color: white;
+      padding: 8px 12px; font-size: 0.9rem; border-radius: 8px;
+      border: none; font-weight: 600; color: white;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
-
     #donateBNB { background-color: #f3ba2f; color: #000; }
     #donateUSDT { background-color: #26a17b; }
     #donatePML { background-color: #008cff; }
-
     #wallet-connect {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 9999;
+      position: fixed; top: 10px; left: 10px; z-index: 9999;
     }
-
     #wallet-connect button {
       background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      color: white; border: none; border-radius: 8px;
+      padding: 8px 12px; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
       transition: background-color 0.25s;
     }
-
-    #wallet-connect button:hover {
-      background-color: var(--primary-hover);
-    }
-
+    #wallet-connect button:hover { background-color: var(--primary-hover); }
     footer {
-      text-align: center;
-      color: #777;
-      font-size: 0.9rem;
+      text-align: center; color: #777; font-size: 0.9rem;
       margin-top: 2rem;
     }
-
-    footer a {
-      color: var(--primary);
-      text-decoration: none;
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .notify {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg); border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 0.75rem 1.25rem; border-radius: var(--radius);
+      font-size: 0.95rem; z-index: 99999;
+      animation: fadein 0.3s ease, fadeout 0.3s ease 3.5s;
     }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
-      main { margin: 1rem; }
-      .rpc-buttons { flex-direction: column; }
-    }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
   </style>
 </head>
-
 <body>
   <div id="wallet-connect">
     <button id="connectWallet">Connect Wallet</button>
   </div>
 
   <main>
-   <header class="card">
-  <h1>Unofficial Pool Funding Web3 Tools</h1>
-  <p>
-    Welcome! Use the tools below to streamline wallet setup and operation for Pool Funding tokens.
-    This page is maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
-  </p>
-  <p>
-    This page and the supporting documents are the result of many hours of independent effort.
-    If you believe in the value of community-built tools, consider supporting their upkeep through a small donation.
-  </p>
-</header>
+    <header class="card">
+      <h1>Unofficial Pool Funding Web3 Tools</h1>
+      <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
+      <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
+      <p>If you find this useful, consider a small donation below.</p>
+    </header>
 
-
-    <section class="card" id="tokens">
+    <section class="card">
       <h2>Add Tokens to MetaMask</h2>
-      <p>This button lets you add all Pool Funding tokens to your MetaMask wallet in a few clicks.</p>
       <ol>
-        <li>Ensure you have MetaMask installed.</li>
+        <li>Ensure MetaMask is installed.</li>
         <li>Connect to <strong>Binance Smart Chain</strong>.</li>
-        <li>Click below and approve each prompt to add tokens.</li>
+        <li>Click below to add all Pool Funding tokens.</li>
       </ol>
-      <button id="addTokens">Add All Tokens to MetaMask</button>
+      <button id="addTokens">Add All Tokens</button>
     </section>
 
-    <section class="card" id="rpc">
+    <section class="card">
       <h2>Switch Binance Smart Chain RPC</h2>
-      <p>
-        If MetaMask shows the wrong balance or fails to send transactions, switch to a different public RPC endpoint.
-        The final option, <strong>Chainstack</strong>, connects to a private node provided for the community’s use.
-        If you rely on that endpoint and find it helpful, please consider donating to help keep it running.
-      </p>
       <div class="rpc-buttons">
-        <button id="switchLlamarpc">Switch to Llamarpc</button>
-        <button id="switchPublicNode">Switch to PublicNode</button>
-        <button id="switchBlockrazor">Switch to Blockrazor</button>
-        <button id="switchBLXR">Switch to BLXR</button>
-        <button id="switchInfura">Switch to Infura (MetaMask Default)</button>
-        <button id="switchChainstack">Switch to Chainstack</button>
+        <button id="rpcLlamarpc">Llamarpc</button>
+        <button id="rpcPublicNode">PublicNode</button>
+        <button id="rpcBlockrazor">Blockrazor</button>
+        <button id="rpcBLXR">BLXR</button>
+        <button id="rpcInfura">Infura (Default)</button>
+        <button id="rpcChainstack">Chainstack</button>
       </div>
     </section>
 
-    <section class="card" id="community-docs">
+    <section class="card">
       <h2>Community Documents</h2>
-      <p>
-        Access shared PDFs, guides, and other helpful resources created to support the Pool Funding community.
-        These documents are updated regularly and cover wallet usage, project overviews, and more.
-      </p>
-      <div style="text-align: center; margin-top: 1rem;">
-        <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty', '_blank')">
-          📁 Open Shared Google Drive Folder
-        </button>
-      </div>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
+        📁 Open Shared Google Drive Folder
+      </button>
     </section>
 
     <footer>
-      &copy; 2025 Hunter Rodriguez. Not affiliated with MetaMask or Binance Smart Chain.<br />
-      <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a>
+      &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.1
     </footer>
   </main>
 
@@ -237,164 +152,115 @@
   </div>
 
   <script>
-    async function connectWallet() {
-      if (!window.ethereum) {
-        alert("MetaMask not detected. Please install it first.");
-        return;
-      }
+  document.addEventListener("DOMContentLoaded", () => {
+    const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
+    const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
+    const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
+    const tokens = [
+      { address: usdtContract, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
+      { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
+      { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
+      { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
+      { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
+      { address: pmlContract, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
+    ];
+
+    const notify = msg => {
+      const div = document.createElement("div");
+      div.className = "notify";
+      div.textContent = msg;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 4000);
+    };
+
+    async function connectWallet() {
+      if (!window.ethereum) return notify("MetaMask not detected.");
       try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
         updateWalletButton(accounts[0]);
-      } catch (err) {
-        console.error("User rejected connection or error occurred:", err);
+      } catch {
+        notify("Wallet connection rejected.");
       }
     }
 
     function updateWalletButton(account) {
       const btn = document.getElementById("connectWallet");
-      const shortAccount = `${account.slice(0, 6)}...${account.slice(-4)}`;
-      btn.textContent = shortAccount;
+      const short = `${account.slice(0, 6)}...${account.slice(-4)}`;
+      btn.textContent = short;
       btn.disabled = true;
-      btn.style.opacity = "0.8";
     }
 
     async function checkConnection() {
       if (!window.ethereum) return;
-      const accounts = await window.ethereum.request({ method: "eth_accounts" });
-      if (accounts.length > 0) {
-        updateWalletButton(accounts[0]);
-      }
+      const accounts = await ethereum.request({ method: "eth_accounts" });
+      if (accounts.length) updateWalletButton(accounts[0]);
     }
 
-    window.addEventListener("load", checkConnection);
-    document.getElementById("connectWallet").onclick = connectWallet;
-
-    const tokens = [
-      {
-        address: "0x55d398326f99059fF775485246999027B3197955",
-        symbol: "USDT",
-        decimals: 18,
-        image: "https://cryptologos.cc/logos/tether-usdt-logo.png"
-      },
-      {
-        address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
-        symbol: "PFB",
-        decimals: 18,
-        image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png"
-      },
-      {
-        address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
-        symbol: "PFI",
-        decimals: 18,
-        image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png"
-      },
-      {
-        address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
-        symbol: "PFS",
-        decimals: 18,
-        image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png"
-      },
-      {
-        address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
-        symbol: "PFG",
-        decimals: 18,
-        image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png"
-      },
-      {
-        address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
-        symbol: "PML",
-        decimals: 18,
-        image: "https://pmlcoin.app/assets/logo-D04mbZJF.png"
-      }
-    ];
-
-    document.getElementById("addTokens").addEventListener("click", async () => {
-      if (!window.ethereum) {
-        alert("MetaMask is not installed!");
-        return;
-      }
-
+    async function addAllTokens() {
+      if (!window.ethereum) return notify("MetaMask not installed.");
       try {
         const usdt = tokens[0];
-        await window.ethereum.request({
-          method: "wallet_watchAsset",
-          params: { type: "ERC20", options: usdt },
-        });
-
-        const otherTokens = tokens.slice(1);
-        const requests = otherTokens.map(token =>
-          window.ethereum.request({
-            method: "wallet_watchAsset",
-            params: { type: "ERC20", options: token },
-          }).catch(console.error)
-        );
-
-        await Promise.allSettled(requests);
-        alert("Finished suggesting all tokens to MetaMask!");
-      } catch (error) {
-        console.error("Unexpected error:", error);
-      }
-    });
-
-    async function switchToBSC(rpcUrl) {
-      if (!window.ethereum) return alert("MetaMask is not installed.");
-      try {
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [{
-            chainId: "0x38",
-            chainName: "Binance Smart Chain",
-            nativeCurrency: { name: "Binance Coin", symbol: "BNB", decimals: 18 },
-            rpcUrls: [rpcUrl],
-            blockExplorerUrls: ["https://bscscan.com/"],
-          }],
-        });
-      } catch (error) {
-        console.error("Error switching network:", error);
-        alert("Failed to switch RPC. Check console for details.");
+        await ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: usdt } });
+        const other = tokens.slice(1);
+        await Promise.allSettled(other.map(t =>
+          ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: t } })
+        ));
+        notify("All tokens suggested to MetaMask.");
+      } catch {
+        notify("Error adding tokens.");
       }
     }
 
-    document.getElementById("switchLlamarpc").onclick = () => switchToBSC("https://binance.llamarpc.com");
-    document.getElementById("switchPublicNode").onclick = () => switchToBSC("https://bsc-rpc.publicnode.com/");
-    document.getElementById("switchBlockrazor").onclick = () => switchToBSC("https://bsc.blockrazor.xyz/");
-    document.getElementById("switchBLXR").onclick = () => switchToBSC("https://bsc.rpc.blxrbdn.com/");
-    document.getElementById("switchInfura").onclick = () => switchToBSC("https://bsc-mainnet.infura.io/v3/");
-    document.getElementById("switchChainstack").onclick = () => switchToBSC("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71");
-
-    const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
-    const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
-    const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
+    async function switchRPC(url) {
+      if (!window.ethereum) return notify("MetaMask not installed.");
+      await ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: "0x38",
+          chainName: "Binance Smart Chain",
+          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+          rpcUrls: [url],
+          blockExplorerUrls: ["https://bscscan.com/"]
+        }]
+      });
+      notify("RPC switched successfully.");
+    }
 
     async function donateBNB() {
-      if (!window.ethereum) return alert("MetaMask not detected.");
-      const amount = prompt("Enter BNB amount to donate:");
-      if (!amount || isNaN(amount) || amount <= 0) return;
+      const amount = parseFloat(prompt("Enter BNB amount to donate:"));
+      if (!amount || amount <= 0) return;
+      const [from] = await ethereum.request({ method: "eth_requestAccounts" });
       const valueHex = "0x" + BigInt(Math.floor(amount * 1e18)).toString(16);
-      const from = (await ethereum.request({ method: "eth_requestAccounts" }))[0];
-      await ethereum.request({
-        method: "eth_sendTransaction",
-        params: [{ from, to: walletAddress, value: valueHex }],
-      });
+      await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: walletAddress, value: valueHex }] });
+      notify("BNB donation sent.");
     }
 
-    async function donateToken(contractAddress, decimals, symbol) {
-      if (!window.ethereum) return alert("MetaMask not detected.");
-      const amount = prompt(`Enter ${symbol} amount to donate:`);
-      if (!amount || isNaN(amount) || amount <= 0) return;
-      const from = (await ethereum.request({ method: "eth_requestAccounts" }))[0];
-      const amountHex = BigInt(Math.floor(amount * 10 ** decimals)).toString(16).padStart(64, "0");
-      const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + amountHex;
-      await ethereum.request({
-        method: "eth_sendTransaction",
-        params: [{ from, to: contractAddress, data }],
-      });
+    async function donateToken(contract, symbol) {
+      const amount = parseFloat(prompt(`Enter ${symbol} amount:`));
+      if (!amount || amount <= 0) return;
+      const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+      const valueHex = BigInt(Math.floor(amount * 1e18)).toString(16).padStart(64, "0");
+      const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + valueHex;
+      await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
+      notify(`${symbol} donation sent.`);
     }
 
+    // Bind buttons
+    document.getElementById("connectWallet").onclick = connectWallet;
+    document.getElementById("addTokens").onclick = addAllTokens;
+    document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
+    document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com/");
+    document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz/");
+    document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com/");
+    document.getElementById("rpcInfura").onclick = () => switchRPC("https://bsc-mainnet.infura.io/");
+    document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71");
     document.getElementById("donateBNB").onclick = donateBNB;
-    document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, 18, "USDT");
-    document.getElementById("donatePML").onclick = () => donateToken(pmlContract, 18, "PML");
+    document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
+    document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
+
+    checkConnection();
+  });
   </script>
 </body>
 </html>
