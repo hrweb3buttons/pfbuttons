@@ -170,14 +170,18 @@
   </div>
 
   <main>
-    <header class="card">
-      <h1>Unofficial Pool Funding Web3 Tools</h1>
-      <p>
-        Welcome! Use the tools below to streamline wallet setup and operation for Pool Funding tokens.
-        This page is maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
-      </p>
-      <p>Donations using the buttons above are always appreciated.</p>
-    </header>
+   <header class="card">
+  <h1>Unofficial Pool Funding Web3 Tools</h1>
+  <p>
+    Welcome! Use the tools below to streamline wallet setup and operation for Pool Funding tokens.
+    This page is maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
+  </p>
+  <p>
+    This page and the supporting documents are the result of many hours of independent effort.
+    If you believe in the value of community-built tools, consider supporting their upkeep through a small donation.
+  </p>
+</header>
+
 
     <section class="card" id="tokens">
       <h2>Add Tokens to MetaMask</h2>
@@ -204,6 +208,19 @@
         <button id="switchBLXR">Switch to BLXR</button>
         <button id="switchInfura">Switch to Infura (MetaMask Default)</button>
         <button id="switchChainstack">Switch to Chainstack</button>
+      </div>
+    </section>
+
+    <section class="card" id="community-docs">
+      <h2>Community Documents</h2>
+      <p>
+        Access shared PDFs, guides, and other helpful resources created to support the Pool Funding community.
+        These documents are updated regularly and cover wallet usage, project overviews, and more.
+      </p>
+      <div style="text-align: center; margin-top: 1rem;">
+        <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty', '_blank')">
+          📁 Open Shared Google Drive Folder
+        </button>
       </div>
     </section>
 
