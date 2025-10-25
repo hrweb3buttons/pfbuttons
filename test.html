@@ -69,6 +69,7 @@
     #donatePML { background-color: #008cff; }
     #wallet-connect {
       position: fixed; top: 10px; left: 10px; z-index: 9999;
+      display: flex; align-items: center; gap: 10px;
     }
     #wallet-connect button {
       background-color: var(--primary);
@@ -100,6 +101,7 @@
 <body>
   <div id="wallet-connect">
     <button id="connectWallet">Connect Wallet</button>
+    <span id="tokenPrices" style="font-size: 0.9rem; color: #444;">Loading prices...</span>
   </div>
 
   <main>
@@ -141,7 +143,7 @@
 
     <footer>
       &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.1
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.2
     </footer>
   </main>
 
@@ -246,6 +248,27 @@
       notify(`${symbol} donation sent.`);
     }
 
+    // === Static Token Price Fetch on Page Load ===
+    async function loadTokenPrices() {
+      const priceSpan = document.getElementById("tokenPrices");
+      try {
+        const response = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin,pool-funding&vs_currencies=usd"
+        );
+        const data = await response.json();
+        const bnb = data.binancecoin?.usd;
+        const pml = data["pool-funding"]?.usd;
+        if (bnb && pml) {
+          priceSpan.textContent = `BNB: $${bnb.toFixed(2)} | PML: $${pml.toFixed(4)}`;
+        } else {
+          priceSpan.textContent = "Prices unavailable";
+        }
+      } catch (err) {
+        console.error("Error fetching prices:", err);
+        priceSpan.textContent = "Error loading prices";
+      }
+    }
+
     // Bind buttons
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
@@ -260,6 +283,7 @@
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
 
     checkConnection();
+    loadTokenPrices();
   });
   </script>
 </body>
