@@ -294,6 +294,7 @@ async function fetchPrices() {
 
     const pmlData = await pmlRes.json();
     console.log("GeckoTerminal payload:", pmlData);
+console.log("Keys under data:", Object.keys(pmlData.data || {}));
 
     const prices = pmlData?.data?.attributes?.token_prices;
     if (!prices) {
