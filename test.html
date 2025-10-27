@@ -251,119 +251,92 @@
       await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
       notify(`${symbol} donation sent.`);
 async function fetchPrices() {
-  // keep placeholders even on failure
   const bnbEl = document.getElementById("bnbPrice");
   const pmlEl = document.getElementById("pmlPrice");
 
-  // helper notify that does not hide placeholders
-  const quickNotify = msg => {
-    // keep small and unobtrusive
-    console.log("Price debug:", msg);
-  };
+  const quickNotify = msg => console.log("Price debug:", msg);
 
   try {
-    // CoinGecko for BNB
+    // --- BNB from CoinGecko ---
     const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
     const bnbRes = await fetch(cgUrl);
     if (!bnbRes.ok) {
       quickNotify(`CoinGecko returned status ${bnbRes.status}`);
-      console.warn("CoinGecko response status text", await bnbRes.text());
+      console.warn("CoinGecko response text:", await bnbRes.text());
       bnbEl.textContent = "N/A";
     } else {
       const bnbData = await bnbRes.json();
-      if (bnbData && bnbData.binancecoin && typeof bnbData.binancecoin.usd === "number") {
+      if (bnbData?.binancecoin?.usd) {
         bnbEl.textContent = bnbData.binancecoin.usd.toFixed(2);
       } else {
         quickNotify("CoinGecko response missing expected fields");
-        console.log("CoinGecko full payload", bnbData);
+        console.log("CoinGecko full payload:", bnbData);
         bnbEl.textContent = "N/A";
       }
     }
   } catch (err) {
-    quickNotify("Error fetching CoinGecko BNB price, see console");
-    console.error("CoinGecko fetch error", err);
+    quickNotify("Error fetching CoinGecko BNB price");
+    console.error("CoinGecko fetch error:", err);
     bnbEl.textContent = "N/A";
   }
 
   try {
-    // GeckoTerminal for PML pool
+    // --- PML from GeckoTerminal ---
     const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
     const pmlRes = await fetch(gtUrl);
     if (!pmlRes.ok) {
       quickNotify(`GeckoTerminal returned status ${pmlRes.status}`);
-      console.warn("GeckoTerminal response text", await pmlRes.text());
+      console.warn("GeckoTerminal response text:", await pmlRes.text());
       pmlEl.textContent = "N/A";
-      console.log("If this is a CORS error, check browser console for blocked request details");
       return;
     }
 
     const pmlData = await pmlRes.json();
-    console.log("GeckoTerminal payload", pmlData);
+    console.log("GeckoTerminal payload:", pmlData);
 
-    // defensive pathing
-    let prices = null;
-    if (pmlData && pmlData.data && pmlData.data.attributes) {
-      prices = pmlData.data.attributes.token_prices || pmlData.data.attributes.token_prices_usd || pmlData.data.attributes.prices || null;
-    }
-
+    const prices = pmlData?.data?.attributes?.token_prices;
     if (!prices) {
-      quickNotify("GeckoTerminal payload does not contain token_prices in expected location");
-      console.log("Available attributes object", pmlData.data && pmlData.data.attributes);
+      quickNotify("Missing token_prices in GeckoTerminal data");
       pmlEl.textContent = "N/A";
       return;
     }
 
-    // PML contract variants to try
     const pmlCandidates = [
-      "0x69dd5e051abb0109a609ee0b78187c3ee0326fbd", // lowercase as used previously
-      "69dd5e051abb0109a609ee0b78187c3ee0326fbd", // without 0x
-      "0x69D D5e051AbB0109A609eE0B78187c3EE0326FbD".replace(/\s+/g, "").toLowerCase() // improbable but safe
+      "0x69dd5e051abb0109a609ee0b78187c3ee0326fbd",
+      "69dd5e051abb0109a609ee0b78187c3ee0326fbd"
     ];
 
     let found = null;
     for (const cand of pmlCandidates) {
-      if (Object.prototype.hasOwnProperty.call(prices, cand)) {
+      if (prices[cand]) {
         found = prices[cand];
-        console.log("Found PML price under key", cand, found);
+        console.log("Found PML price under key:", cand, found);
         break;
       }
     }
 
-    // as last resort, search any key that endsWith the last 8 characters of the contract
-    if (found === null) {
-      const tail = "0326fbd".toLowerCase(); // last part of pml address
-      for (const key of Object.keys(prices)) {
-        if (key.toLowerCase().includes(tail)) {
-          found = prices[key];
-          console.log("Found PML price under fuzzy key", key, found);
-          break;
-        }
-      }
-    }
-
-    if (found === null) {
+    if (!found) {
       quickNotify("Could not find PML price key in GeckoTerminal response");
-      console.log("token_prices keys", Object.keys(prices).slice(0, 20));
+      console.log("Available price keys:", Object.keys(prices));
       pmlEl.textContent = "N/A";
       return;
     }
 
-    // parse to number and display
     const numeric = parseFloat(found);
     if (Number.isFinite(numeric)) {
-      // show up to 6 decimals, but trim trailing zeros
       pmlEl.textContent = numeric.toFixed(6).replace(/\.?0+$/, "");
     } else {
       quickNotify("PML price parsed to NaN");
-      console.log("Raw found value", found);
+      console.log("Raw found value:", found);
       pmlEl.textContent = "N/A";
     }
   } catch (err) {
-    quickNotify("Error fetching GeckoTerminal PML price, see console");
-    console.error("GeckoTerminal fetch error", err);
+    quickNotify("Error fetching GeckoTerminal PML price");
+    console.error("GeckoTerminal fetch error:", err);
     pmlEl.textContent = "N/A";
   }
 }
+
 
 
     // Bind buttons
