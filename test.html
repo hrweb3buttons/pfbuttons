@@ -301,7 +301,7 @@ async function fetchPrices() {
       pmlEl.textContent = "N/A";
       return;
     }
-
+console.log("Available token price keys:", Object.keys(prices));
     const pmlCandidates = [
       "0x69dd5e051abb0109a609ee0b78187c3ee0326fbd",
       "69dd5e051abb0109a609ee0b78187c3ee0326fbd"
