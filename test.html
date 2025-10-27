@@ -250,6 +250,7 @@
       const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + valueHex;
       await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
       notify(`${symbol} donation sent.`);
+      }  
 async function fetchPrices() {
   const bnbEl = document.getElementById("bnbPrice");
   const pmlEl = document.getElementById("pmlPrice");
