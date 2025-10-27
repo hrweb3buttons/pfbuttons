@@ -250,98 +250,52 @@
       const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + valueHex;
       await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
       notify(`${symbol} donation sent.`);
-      }  
-async function fetchPrices() {
-  const bnbEl = document.getElementById("bnbPrice");
-  const pmlEl = document.getElementById("pmlPrice");
+    }
 
-  const quickNotify = msg => console.log("Price debug:", msg);
+    async function fetchPrices() {
+      const bnbEl = document.getElementById("bnbPrice");
+      const pmlEl = document.getElementById("pmlPrice");
+      const quickNotify = msg => console.log("Price debug:", msg);
 
-  try {
-    // --- BNB from CoinGecko ---
-    const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
-    const bnbRes = await fetch(cgUrl);
-    if (!bnbRes.ok) {
-      quickNotify(`CoinGecko returned status ${bnbRes.status}`);
-      console.warn("CoinGecko response text:", await bnbRes.text());
-      bnbEl.textContent = "N/A";
-    } else {
-      const bnbData = await bnbRes.json();
-      if (bnbData?.binancecoin?.usd) {
-        bnbEl.textContent = bnbData.binancecoin.usd.toFixed(2);
-      } else {
-        quickNotify("CoinGecko response missing expected fields");
-        console.log("CoinGecko full payload:", bnbData);
+      try {
+        const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
+        const bnbRes = await fetch(cgUrl);
+        if (!bnbRes.ok) {
+          bnbEl.textContent = "N/A";
+        } else {
+          const bnbData = await bnbRes.json();
+          bnbEl.textContent = bnbData?.binancecoin?.usd ? bnbData.binancecoin.usd.toFixed(2) : "N/A";
+        }
+      } catch {
         bnbEl.textContent = "N/A";
       }
-    }
-  } catch (err) {
-    quickNotify("Error fetching CoinGecko BNB price");
-    console.error("CoinGecko fetch error:", err);
-    bnbEl.textContent = "N/A";
-  }
 
-  try {
-    // --- PML from GeckoTerminal ---
-    const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
-    const pmlRes = await fetch(gtUrl);
-    if (!pmlRes.ok) {
-      quickNotify(`GeckoTerminal returned status ${pmlRes.status}`);
-      console.warn("GeckoTerminal response text:", await pmlRes.text());
-      pmlEl.textContent = "N/A";
-      return;
-    }
+      try {
+        const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+        const pmlRes = await fetch(gtUrl);
+        if (!pmlRes.ok) {
+          pmlEl.textContent = "N/A";
+          return;
+        }
 
-    const pmlData = await pmlRes.json();
-    console.log("GeckoTerminal payload:", pmlData);
-console.log("Keys under data:", Object.keys(pmlData.data || {}));
+        const pmlData = await pmlRes.json();
+        const attrs = pmlData?.data?.attributes;
+        if (!attrs || !attrs.base_token_price_usd) {
+          pmlEl.textContent = "N/A";
+          return;
+        }
 
-    const prices = pmlData?.data?.attributes?.token_prices;
-    if (!prices) {
-      quickNotify("Missing token_prices in GeckoTerminal data");
-      pmlEl.textContent = "N/A";
-      return;
-    }
-console.log("Available token price keys:", Object.keys(prices));
-    const pmlCandidates = [
-      "0x69dd5e051abb0109a609ee0b78187c3ee0326fbd",
-      "69dd5e051abb0109a609ee0b78187c3ee0326fbd"
-    ];
-
-    let found = null;
-    for (const cand of pmlCandidates) {
-      if (prices[cand]) {
-        found = prices[cand];
-        console.log("Found PML price under key:", cand, found);
-        break;
+        const numeric = parseFloat(attrs.base_token_price_usd);
+        if (Number.isFinite(numeric)) {
+          pmlEl.textContent = numeric.toFixed(6).replace(/\.?0+$/, "");
+        } else {
+          pmlEl.textContent = "N/A";
+        }
+      } catch {
+        pmlEl.textContent = "N/A";
       }
     }
 
-    if (!found) {
-      quickNotify("Could not find PML price key in GeckoTerminal response");
-      console.log("Available price keys:", Object.keys(prices));
-      pmlEl.textContent = "N/A";
-      return;
-    }
-
-    const numeric = parseFloat(found);
-    if (Number.isFinite(numeric)) {
-      pmlEl.textContent = numeric.toFixed(6).replace(/\.?0+$/, "");
-    } else {
-      quickNotify("PML price parsed to NaN");
-      console.log("Raw found value:", found);
-      pmlEl.textContent = "N/A";
-    }
-  } catch (err) {
-    quickNotify("Error fetching GeckoTerminal PML price");
-    console.error("GeckoTerminal fetch error:", err);
-    pmlEl.textContent = "N/A";
-  }
-}
-
-
-
-    // Bind buttons
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
