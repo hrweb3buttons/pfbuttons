@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -68,6 +69,7 @@
     #donatePML { background-color: #008cff; }
     #wallet-connect {
       position: fixed; top: 10px; left: 10px; z-index: 9999;
+      display: flex; align-items: center; gap: 12px;
     }
     #wallet-connect button {
       background-color: var(--primary);
@@ -77,6 +79,7 @@
       transition: background-color 0.25s;
     }
     #wallet-connect button:hover { background-color: var(--primary-hover); }
+    #priceDisplay { font-size: 0.85rem; color: #555; }
     footer {
       text-align: center; color: #777; font-size: 0.9rem;
       margin-top: 2rem;
@@ -99,6 +102,10 @@
 <body>
   <div id="wallet-connect">
     <button id="connectWallet">Connect Wallet</button>
+    <div id="priceDisplay">
+      <span><strong>BNB:</strong> <span id="bnbPrice">--</span> USD</span> |
+      <span><strong>PML:</strong> <span id="pmlPrice">--</span> USD</span>
+    </div>
   </div>
 
   <main>
@@ -140,7 +147,7 @@
 
     <footer>
       &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.1
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.2
     </footer>
   </main>
 
@@ -245,7 +252,50 @@
       notify(`${symbol} donation sent.`);
     }
 
-    // Bind buttons
+    async function fetchPrices() {
+      const bnbEl = document.getElementById("bnbPrice");
+      const pmlEl = document.getElementById("pmlPrice");
+      const quickNotify = msg => console.log("Price debug:", msg);
+
+      try {
+        const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
+        const bnbRes = await fetch(cgUrl);
+        if (!bnbRes.ok) {
+          bnbEl.textContent = "N/A";
+        } else {
+          const bnbData = await bnbRes.json();
+          bnbEl.textContent = bnbData?.binancecoin?.usd ? bnbData.binancecoin.usd.toFixed(2) : "N/A";
+        }
+      } catch {
+        bnbEl.textContent = "N/A";
+      }
+
+      try {
+        const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+        const pmlRes = await fetch(gtUrl);
+        if (!pmlRes.ok) {
+          pmlEl.textContent = "N/A";
+          return;
+        }
+
+        const pmlData = await pmlRes.json();
+        const attrs = pmlData?.data?.attributes;
+        if (!attrs || !attrs.base_token_price_usd) {
+          pmlEl.textContent = "N/A";
+          return;
+        }
+
+        const numeric = parseFloat(attrs.base_token_price_usd);
+        if (Number.isFinite(numeric)) {
+          pmlEl.textContent = numeric.toFixed(6).replace(/\.?0+$/, "");
+        } else {
+          pmlEl.textContent = "N/A";
+        }
+      } catch {
+        pmlEl.textContent = "N/A";
+      }
+    }
+
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
@@ -258,6 +308,7 @@
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
 
+    fetchPrices();
     checkConnection();
   });
   </script>
