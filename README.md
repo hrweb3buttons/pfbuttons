@@ -251,50 +251,6 @@
       notify(`${symbol} donation sent.`);
     }
 
-    async function fetchPrices() {
-      const bnbEl = document.getElementById("bnbPrice");
-      const pmlEl = document.getElementById("pmlPrice");
-      const quickNotify = msg => console.log("Price debug:", msg);
-
-      try {
-        const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
-        const bnbRes = await fetch(cgUrl);
-        if (!bnbRes.ok) {
-          bnbEl.textContent = "N/A";
-        } else {
-          const bnbData = await bnbRes.json();
-          bnbEl.textContent = bnbData?.binancecoin?.usd ? bnbData.binancecoin.usd.toFixed(2) : "N/A";
-        }
-      } catch {
-        bnbEl.textContent = "N/A";
-      }
-
-      try {
-        const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
-        const pmlRes = await fetch(gtUrl);
-        if (!pmlRes.ok) {
-          pmlEl.textContent = "N/A";
-          return;
-        }
-
-        const pmlData = await pmlRes.json();
-        const attrs = pmlData?.data?.attributes;
-        if (!attrs || !attrs.base_token_price_usd) {
-          pmlEl.textContent = "N/A";
-          return;
-        }
-
-        const numeric = parseFloat(attrs.base_token_price_usd);
-        if (Number.isFinite(numeric)) {
-          pmlEl.textContent = numeric.toFixed(6).replace(/\.?0+$/, "");
-        } else {
-          pmlEl.textContent = "N/A";
-        }
-      } catch {
-        pmlEl.textContent = "N/A";
-      }
-    }
-
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
@@ -307,9 +263,68 @@
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
 
-    fetchPrices();
     checkConnection();
   });
+  </script>
+
+  <!-- New on-chain price fetcher -->
+  <script type="module">
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.min.js";
+
+  async function fetchPrices() {
+    const bnbEl = document.getElementById("bnbPrice");
+    const pmlEl = document.getElementById("pmlPrice");
+
+    // --- 1. Get BNB price from CoinGecko ---
+    try {
+      const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
+      const bnbRes = await fetch(cgUrl);
+      if (bnbRes.ok) {
+        const bnbData = await bnbRes.json();
+        const price = bnbData?.binancecoin?.usd;
+        bnbEl.textContent = price ? price.toFixed(2) : "N/A";
+      } else {
+        bnbEl.textContent = "N/A";
+      }
+    } catch {
+      bnbEl.textContent = "N/A";
+    }
+
+    // --- 2. Get PML price directly from PancakeSwap V3 (on-chain) ---
+    try {
+      if (!window.ethereum) {
+        pmlEl.textContent = "N/A";
+        return;
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const poolAddress = "0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+
+      const poolABI = [
+        "function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
+        "function token0() view returns (address)",
+        "function token1() view returns (address)"
+      ];
+
+      const pool = new ethers.Contract(poolAddress, poolABI, provider);
+      const slot0 = await pool.slot0();
+      const sqrtPriceX96 = slot0[0];
+      const priceRatio = (Number(sqrtPriceX96) / 2 ** 96) ** 2;
+      const priceUSD = 1 / priceRatio;
+
+      if (Number.isFinite(priceUSD)) {
+        pmlEl.textContent = priceUSD.toFixed(6).replace(/\.?0+$/, "");
+      } else {
+        pmlEl.textContent = "N/A";
+      }
+    } catch (err) {
+      console.error("Error fetching on-chain PML price:", err);
+      pmlEl.textContent = "N/A";
+    }
+  }
+
+  fetchPrices();
+  setInterval(fetchPrices, 60000);
   </script>
 </body>
 </html>
