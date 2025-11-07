@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -5,6 +6,7 @@
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community-built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     :root {
       --primary: #007bff;
@@ -146,7 +148,7 @@
 
     <footer>
       &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.2
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.4
     </footer>
   </main>
 
@@ -179,6 +181,64 @@
       setTimeout(() => div.remove(), 4000);
     };
 
+    async function fetchPrices() {
+      const bnbEl = document.getElementById("bnbPrice");
+      const pmlEl = document.getElementById("pmlPrice");
+
+      // BNB Price
+      try {
+        const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
+        const bnbRes = await fetch(cgUrl);
+        const bnbData = await bnbRes.json();
+        const price = bnbData?.binancecoin?.usd;
+        bnbEl.textContent = price ? price.toFixed(2) : "N/A";
+      } catch {
+        bnbEl.textContent = "N/A";
+      }
+
+      // PML Price
+      let fetched = false;
+      try {
+        if (window.ethereum) {
+          console.log("Attempting PancakeSwap V3 on-chain read");
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const poolAddress = "0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+          const poolABI = ["function slot0() view returns (uint160 sqrtPriceX96,int24 tick,int16,int16,int16,uint8,bool)"];
+          const pool = new ethers.Contract(poolAddress, poolABI, provider);
+          const slot0 = await pool.slot0();
+          const sqrt = Number(slot0.sqrtPriceX96);
+          const priceRatio = (sqrt / 2 ** 96) ** 2;
+          const pmlPrice = 1 / priceRatio;
+          if (Number.isFinite(pmlPrice)) {
+            pmlEl.textContent = pmlPrice.toFixed(2);
+            fetched = true;
+            console.log("On-chain PML price:", pmlPrice.toFixed(2));
+          }
+        }
+      } catch (err) {
+        console.warn("On-chain fetch failed, fallback to GeckoTerminal:", err);
+      }
+
+      if (!fetched) {
+        try {
+          const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+          const res = await fetch(gtUrl);
+          const data = await res.json();
+          const price = parseFloat(data?.data?.attributes?.base_token_price_usd);
+          if (Number.isFinite(price)) {
+            pmlEl.textContent = price.toFixed(2);
+            console.log("GeckoTerminal PML price:", price.toFixed(2));
+          } else {
+            pmlEl.textContent = "N/A";
+          }
+        } catch (e) {
+          console.error("Fallback PML price fetch error", e);
+          pmlEl.textContent = "N/A";
+        }
+      }
+    }
+
+    // --- Wallet + Token Functions ---
     async function connectWallet() {
       if (!window.ethereum) return notify("MetaMask not detected.");
       try {
@@ -196,21 +256,12 @@
       btn.disabled = true;
     }
 
-    async function checkConnection() {
-      if (!window.ethereum) return;
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-      if (accounts.length) updateWalletButton(accounts[0]);
-    }
-
     async function addAllTokens() {
       if (!window.ethereum) return notify("MetaMask not installed.");
       try {
-        const usdt = tokens[0];
-        await ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: usdt } });
-        const other = tokens.slice(1);
-        await Promise.allSettled(other.map(t =>
-          ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: t } })
-        ));
+        for (const t of tokens) {
+          await ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: t } });
+        }
         notify("All tokens suggested to MetaMask.");
       } catch {
         notify("Error adding tokens.");
@@ -232,6 +283,7 @@
       notify("RPC switched successfully.");
     }
 
+    // --- Donate functions ---
     async function donateBNB() {
       const amount = parseFloat(prompt("Enter BNB amount to donate:"));
       if (!amount || amount <= 0) return;
@@ -251,6 +303,7 @@
       notify(`${symbol} donation sent.`);
     }
 
+    // --- Event bindings ---
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
@@ -263,68 +316,8 @@
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
 
-    checkConnection();
+    fetchPrices();
   });
-  </script>
-
-  <!-- New on-chain price fetcher -->
-  <script type="module">
-  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.min.js";
-
-  async function fetchPrices() {
-    const bnbEl = document.getElementById("bnbPrice");
-    const pmlEl = document.getElementById("pmlPrice");
-
-    // --- 1. Get BNB price from CoinGecko ---
-    try {
-      const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
-      const bnbRes = await fetch(cgUrl);
-      if (bnbRes.ok) {
-        const bnbData = await bnbRes.json();
-        const price = bnbData?.binancecoin?.usd;
-        bnbEl.textContent = price ? price.toFixed(2) : "N/A";
-      } else {
-        bnbEl.textContent = "N/A";
-      }
-    } catch {
-      bnbEl.textContent = "N/A";
-    }
-
-    // --- 2. Get PML price directly from PancakeSwap V3 (on-chain) ---
-    try {
-      if (!window.ethereum) {
-        pmlEl.textContent = "N/A";
-        return;
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const poolAddress = "0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
-
-      const poolABI = [
-        "function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
-        "function token0() view returns (address)",
-        "function token1() view returns (address)"
-      ];
-
-      const pool = new ethers.Contract(poolAddress, poolABI, provider);
-      const slot0 = await pool.slot0();
-      const sqrtPriceX96 = slot0[0];
-      const priceRatio = (Number(sqrtPriceX96) / 2 ** 96) ** 2;
-      const priceUSD = 1 / priceRatio;
-
-      if (Number.isFinite(priceUSD)) {
-        pmlEl.textContent = priceUSD.toFixed(6).replace(/\.?0+$/, "");
-      } else {
-        pmlEl.textContent = "N/A";
-      }
-    } catch (err) {
-      console.error("Error fetching on-chain PML price:", err);
-      pmlEl.textContent = "N/A";
-    }
-  }
-
-  fetchPrices();
-  setInterval(fetchPrices, 60000);
   </script>
 </body>
 </html>
