@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -113,7 +114,10 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>If you find this useful, consider a small donation below.</p>
+      <p>
+    This page and the supporting documents are the result of many hours of independent effort.
+    If you believe in the value of community-built tools, consider supporting their upkeep through a small donation.
+  </p>
     </header>
 
     <section class="card">
