@@ -16,11 +16,11 @@
       --card-bg: #fff;
       --border: #e1e4e8;
       --radius: 12px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
     body {
       font-family: "Inter", system-ui, Arial, sans-serif;
-      background: var(--background);
+      background-color: var(--background);
       color: var(--text);
       margin: 0;
       padding: 0;
@@ -29,67 +29,75 @@
       min-height: 100vh;
     }
     main { width: 100%; max-width: 720px; margin: 2rem; }
+    h1, h2 { color: #111; margin-bottom: 0.75rem; }
+    p { margin-bottom: 1rem; }
     .card {
-      background: var(--card-bg);
+      background-color: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
       padding: 1.5rem;
       margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
     }
     button {
-      background: var(--primary);
-      color: #fff;
+      background-color: var(--primary);
+      color: white;
       border: none;
       border-radius: var(--radius);
       padding: 0.75rem 1.25rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.25s, transform 0.1s;
-      font-size: 1rem;
     }
-    button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
     button:active { transform: translateY(1px); }
     .rpc-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-top: 1rem;
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      justify-content: center; margin-top: 1rem;
     }
+    ol { text-align: left; margin: 1rem auto; display: inline-block; }
     #donation-buttons {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      z-index: 9999;
+      position: fixed; top: 10px; right: 10px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 6px;
     }
+    #donation-buttons button {
+      padding: 8px 12px; font-size: 0.9rem; border-radius: 8px;
+      border: none; font-weight: 600; color: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+    #donateBNB { background-color: #f3ba2f; color: #000; }
+    #donateUSDT { background-color: #26a17b; }
+    #donatePML { background-color: #008cff; }
     #wallet-connect {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      z-index: 9999;
+      position: fixed; top: 10px; left: 10px; z-index: 9999;
+      display: flex; align-items: center; gap: 12px;
     }
+    #wallet-connect button {
+      background-color: var(--primary);
+      color: white; border: none; border-radius: 8px;
+      padding: 8px 12px; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.25s;
+    }
+    #wallet-connect button:hover { background-color: var(--primary-hover); }
+    #priceDisplay { font-size: 0.85rem; color: #555; }
+    footer {
+      text-align: center; color: #777; font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
     .notify {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
+      position: fixed; bottom: 20px; left: 50%;
       transform: translateX(-50%);
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.75rem 1.25rem;
+      background: var(--card-bg); border: 1px solid var(--border);
       box-shadow: var(--shadow);
+      padding: 0.75rem 1.25rem; border-radius: var(--radius);
+      font-size: 0.95rem; z-index: 99999;
       animation: fadein 0.3s ease, fadeout 0.3s ease 3.5s;
-      z-index: 99999;
     }
     @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
     @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
-    footer { text-align: center; color: #777; font-size: 0.9rem; margin-top: 2rem; }
   </style>
 </head>
 <body>
@@ -106,6 +114,10 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
+      <p>
+        This page and the supporting documents are the result of many hours of independent effort.
+        If you believe in the value of community-built tools, consider supporting their upkeep through a small donation.
+      </p>
     </header>
 
     <section class="card">
@@ -121,32 +133,39 @@
     <section class="card">
       <h2>Switch Binance Smart Chain RPC</h2>
       <div class="rpc-buttons">
-        <button data-url="https://binance.llamarpc.com">Llamarpc</button>
-        <button data-url="https://bsc-rpc.publicnode.com/">PublicNode</button>
-        <button data-url="https://bsc.blockrazor.xyz/">Blockrazor</button>
-        <button data-url="https://bsc.rpc.blxrbdn.com/">BLXR</button>
-        <button data-url="https://bsc-mainnet.infura.io/">Infura (Default)</button>
-        <button data-url="https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71">Chainstack</button>
+        <button id="rpcLlamarpc">Llamarpc</button>
+        <button id="rpcPublicNode">PublicNode</button>
+        <button id="rpcBlockrazor">Blockrazor</button>
+        <button id="rpcBLXR">BLXR</button>
+        <button id="rpcInfura">Infura (Default)</button>
+        <button id="rpcChainstack">Chainstack</button>
       </div>
+    </section>
+
+    <section class="card">
+      <h2>Community Documents</h2>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
+        📁 Open Shared Google Drive Folder
+      </button>
     </section>
 
     <footer>
       &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.5
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.4
     </footer>
   </main>
 
   <div id="donation-buttons">
-    <button id="donateBNB" style="background:#f3ba2f;color:#000;">Donate BNB</button>
-    <button id="donateUSDT" style="background:#26a17b;">Donate USDT</button>
-    <button id="donatePML" style="background:#008cff;">Donate PML</button>
+    <button id="donateBNB">Donate BNB</button>
+    <button id="donateUSDT">Donate USDT</button>
+    <button id="donatePML">Donate PML</button>
   </div>
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
     const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
-    const pmlContract  = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
+    const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
     const tokens = [
       { address: usdtContract, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
@@ -165,42 +184,102 @@
       setTimeout(() => div.remove(), 4000);
     };
 
+    // -----------------------------
+    // PRICE FETCHING
+    // -----------------------------
     async function fetchPrices() {
       const bnbEl = document.getElementById("bnbPrice");
       const pmlEl = document.getElementById("pmlPrice");
       try {
-        const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd");
-        const j = await r.json();
-        bnbEl.textContent = j?.binancecoin?.usd?.toFixed(2) ?? "N/A";
-      } catch { bnbEl.textContent = "N/A"; }
+        const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
+        const bnbRes = await fetch(cgUrl);
+        const bnbData = await bnbRes.json();
+        const price = bnbData?.binancecoin?.usd;
+        bnbEl.textContent = price ? price.toFixed(2) : "N/A";
+      } catch {
+        bnbEl.textContent = "N/A";
+      }
+      let fetched = false;
       try {
-        const gt = await fetch("https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4");
-        const j = await gt.json();
-        const price = parseFloat(j?.data?.attributes?.base_token_price_usd);
-        pmlEl.textContent = Number.isFinite(price) ? price.toFixed(2) : "N/A";
-      } catch { pmlEl.textContent = "N/A"; }
+        if (window.ethereum) {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const poolAddress = "0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+          const poolABI = ["function slot0() view returns (uint160 sqrtPriceX96,int24 tick,int16,int16,int16,uint8,bool)"];
+          const pool = new ethers.Contract(poolAddress, poolABI, provider);
+          const slot0 = await pool.slot0();
+          const sqrt = Number(slot0.sqrtPriceX96);
+          const priceRatio = (sqrt / 2 ** 96) ** 2;
+          const pmlPrice = 1 / priceRatio;
+          if (Number.isFinite(pmlPrice)) {
+            pmlEl.textContent = pmlPrice.toFixed(2);
+            fetched = true;
+          }
+        }
+      } catch {}
+      if (!fetched) {
+        try {
+          const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+          const res = await fetch(gtUrl);
+          const data = await res.json();
+          const price = parseFloat(data?.data?.attributes?.base_token_price_usd);
+          if (Number.isFinite(price)) {
+            pmlEl.textContent = price.toFixed(2);
+          } else {
+            pmlEl.textContent = "N/A";
+          }
+        } catch {
+          pmlEl.textContent = "N/A";
+        }
+      }
     }
 
+    // -----------------------------
+    // WALLET + TOKEN FUNCTIONS
+    // -----------------------------
     async function connectWallet() {
       if (!window.ethereum) return notify("MetaMask not detected.");
       try {
         const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-        const acct = accounts[0];
-        document.getElementById("connectWallet").textContent = `${acct.slice(0,6)}...${acct.slice(-4)}`;
-      } catch { notify("Wallet connection rejected."); }
+        updateWalletButton(accounts[0]);
+      } catch {
+        notify("Wallet connection rejected.");
+      }
     }
 
+    function updateWalletButton(account) {
+      const btn = document.getElementById("connectWallet");
+      const short = `${account.slice(0, 6)}...${account.slice(-4)}`;
+      btn.textContent = short;
+      btn.disabled = true;
+    }
+
+    // Restored Legacy Parallel Token Suggestion Logic
     async function addAllTokens() {
       if (!window.ethereum) return notify("MetaMask not installed.");
       try {
-        if (!confirm("Add all Pool Funding tokens to MetaMask?")) return;
-        for (const t of tokens) {
-          await ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: t } });
-          await new Promise(r => setTimeout(r, 300)); // short delay
-        }
-        notify("Tokens suggested to MetaMask.");
-      } catch (e) {
-        console.error(e);
+        const usdt = tokens[0];
+        const usdtAdded = await ethereum.request({
+          method: "wallet_watchAsset",
+          params: { type: "ERC20", options: usdt },
+        });
+
+        if (usdtAdded) console.log("USDT added or suggested.");
+
+        // Suggest remaining tokens in parallel
+        const otherTokens = tokens.slice(1);
+        const requests = otherTokens.map(t =>
+          ethereum.request({
+            method: "wallet_watchAsset",
+            params: { type: "ERC20", options: t },
+          })
+          .then(wasAdded => console.log(`${t.symbol}: ${wasAdded ? "added" : "rejected"}`))
+          .catch(err => console.error(`Error adding ${t.symbol}:`, err))
+        );
+
+        await Promise.allSettled(requests);
+        notify("Finished suggesting all tokens to MetaMask.");
+      } catch (err) {
+        console.error(err);
         notify("Error adding tokens.");
       }
     }
@@ -239,11 +318,17 @@
       notify(`${symbol} donation sent.`);
     }
 
+    // -----------------------------
+    // EVENT BINDINGS
+    // -----------------------------
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
-    document.querySelectorAll(".rpc-buttons button").forEach(btn => {
-      btn.onclick = () => switchRPC(btn.dataset.url);
-    });
+    document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
+    document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com/");
+    document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz/");
+    document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com/");
+    document.getElementById("rpcInfura").onclick = () => switchRPC("https://bsc-mainnet.infura.io/");
+    document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71");
     document.getElementById("donateBNB").onclick = donateBNB;
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
