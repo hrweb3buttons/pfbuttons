@@ -114,10 +114,7 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>
-    This page and the supporting documents are the result of many hours of independent effort.
-    If you believe in the value of community-built tools, consider supporting their upkeep through a small donation.
-  </p>
+      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community-built tools, consider supporting upkeep through a small donation.</p>
     </header>
 
     <section class="card">
@@ -142,16 +139,9 @@
       </div>
     </section>
 
-    <section class="card">
-      <h2>Community Documents</h2>
-      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
-        📁 Open Shared Google Drive Folder
-      </button>
-    </section>
-
     <footer>
       &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.4
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.6
     </footer>
   </main>
 
@@ -187,8 +177,6 @@
     async function fetchPrices() {
       const bnbEl = document.getElementById("bnbPrice");
       const pmlEl = document.getElementById("pmlPrice");
-
-      // BNB Price
       try {
         const cgUrl = "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd";
         const bnbRes = await fetch(cgUrl);
@@ -198,95 +186,112 @@
       } catch {
         bnbEl.textContent = "N/A";
       }
-
-      // PML Price
-      let fetched = false;
       try {
-        if (window.ethereum) {
-          console.log("Attempting PancakeSwap V3 on-chain read");
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const poolAddress = "0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
-          const poolABI = ["function slot0() view returns (uint160 sqrtPriceX96,int24 tick,int16,int16,int16,uint8,bool)"];
-          const pool = new ethers.Contract(poolAddress, poolABI, provider);
-          const slot0 = await pool.slot0();
-          const sqrt = Number(slot0.sqrtPriceX96);
-          const priceRatio = (sqrt / 2 ** 96) ** 2;
-          const pmlPrice = 1 / priceRatio;
-          if (Number.isFinite(pmlPrice)) {
-            pmlEl.textContent = pmlPrice.toFixed(2);
-            fetched = true;
-            console.log("On-chain PML price:", pmlPrice.toFixed(2));
-          }
-        }
-      } catch (err) {
-        console.warn("On-chain fetch failed, fallback to GeckoTerminal:", err);
-      }
-
-      if (!fetched) {
-        try {
-          const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
-          const res = await fetch(gtUrl);
-          const data = await res.json();
-          const price = parseFloat(data?.data?.attributes?.base_token_price_usd);
-          if (Number.isFinite(price)) {
-            pmlEl.textContent = price.toFixed(2);
-            console.log("GeckoTerminal PML price:", price.toFixed(2));
-          } else {
-            pmlEl.textContent = "N/A";
-          }
-        } catch (e) {
-          console.error("Fallback PML price fetch error", e);
-          pmlEl.textContent = "N/A";
-        }
-      }
-    }
-
-    // --- Wallet + Token Functions ---
-    async function connectWallet() {
-      if (!window.ethereum) return notify("MetaMask not detected.");
-      try {
-        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-        updateWalletButton(accounts[0]);
+        const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+        const res = await fetch(gtUrl);
+        const data = await res.json();
+        const price = parseFloat(data?.data?.attributes?.base_token_price_usd);
+        pmlEl.textContent = Number.isFinite(price) ? price.toFixed(2) : "N/A";
       } catch {
-        notify("Wallet connection rejected.");
+        pmlEl.textContent = "N/A";
       }
     }
 
     function updateWalletButton(account) {
       const btn = document.getElementById("connectWallet");
-      const short = `${account.slice(0, 6)}...${account.slice(-4)}`;
+      const short = `${account.slice(0,6)}...${account.slice(-4)}`;
       btn.textContent = short;
       btn.disabled = true;
     }
 
-    async function addAllTokens() {
-      if (!window.ethereum) return notify("MetaMask not installed.");
+    async function connectWallet() {
+      if (!window.ethereum) {
+        notify("MetaMask not detected.");
+        return;
+      }
       try {
-        for (const t of tokens) {
-          await ethereum.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: t } });
-        }
-        notify("All tokens suggested to MetaMask.");
+        const accs = await ethereum.request({ method: "eth_requestAccounts" });
+        updateWalletButton(accs[0]);
       } catch {
-        notify("Error adding tokens.");
+        notify("Wallet connection rejected.");
+      }
+    }
+
+    // New attempt, start first request without awaiting, then fire others in parallel
+    async function addAllTokens() {
+      if (!window.ethereum) {
+        notify("MetaMask not installed.");
+        return;
+      }
+
+      if (!confirm("Add all Pool Funding tokens to MetaMask? Click Add Token when MetaMask pops up.")) return;
+
+      try {
+        console.log("Starting token suggestions", new Date().toISOString());
+
+        // Start USDT request but do not await it yet
+        const usdt = tokens[0];
+        const usdtPromise = ethereum.request({
+          method: "wallet_watchAsset",
+          params: { type: "ERC20", options: usdt },
+        }).then(res => {
+          console.log("USDT result", res, new Date().toISOString());
+          return res;
+        }).catch(err => {
+          console.error("USDT error", err, new Date().toISOString());
+          throw err;
+        });
+
+        // Immediately start other token requests in parallel
+        const otherTokens = tokens.slice(1);
+        const otherPromises = otherTokens.map(t => {
+          console.log("Sending request for", t.symbol, new Date().toISOString());
+          return ethereum.request({
+            method: "wallet_watchAsset",
+            params: { type: "ERC20", options: t }
+          }).then(res => {
+            console.log(t.symbol, "result", res, new Date().toISOString());
+            return { symbol: t.symbol, result: res };
+          }).catch(err => {
+            console.error(t.symbol, "error", err, new Date().toISOString());
+            return { symbol: t.symbol, error: true };
+          });
+        });
+
+        // Wait for all, including the USDT promise
+        const all = [usdtPromise, ...otherPromises];
+        const settled = await Promise.allSettled(all);
+        console.log("All settled", settled, new Date().toISOString());
+        notify("Finished suggesting tokens to MetaMask. Check console for timing details.");
+      } catch (err) {
+        console.error("addAllTokens error", err);
+        notify("Error suggesting tokens. Check console for details.");
       }
     }
 
     async function switchRPC(url) {
-      if (!window.ethereum) return notify("MetaMask not installed.");
-      await ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [{
-          chainId: "0x38",
-          chainName: "Binance Smart Chain",
-          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-          rpcUrls: [url],
-          blockExplorerUrls: ["https://bscscan.com/"]
-        }]
-      });
-      notify("RPC switched successfully.");
+      if (!window.ethereum) {
+        notify("MetaMask not installed.");
+        return;
+      }
+      try {
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+            chainId: "0x38",
+            chainName: "Binance Smart Chain",
+            nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+            rpcUrls: [url],
+            blockExplorerUrls: ["https://bscscan.com/"]
+          }]
+        });
+        notify("RPC switched successfully.");
+      } catch (err) {
+        console.error("switchRPC error", err);
+        notify("RPC change failed.");
+      }
     }
 
-    // --- Donate functions ---
     async function donateBNB() {
       const amount = parseFloat(prompt("Enter BNB amount to donate:"));
       if (!amount || amount <= 0) return;
@@ -306,7 +311,6 @@
       notify(`${symbol} donation sent.`);
     }
 
-    // --- Event bindings ---
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
