@@ -139,6 +139,15 @@
       </div>
     </section>
 
+    <!-- ✅ Community Documents Card -->
+    <section class="card">
+      <h2>Community Documents</h2>
+      <p>Access shared guides, documentation, and community materials below.</p>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
+        📁 Open Shared Google Drive Folder
+      </button>
+    </section>
+
     <footer>
       &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
       <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.6
@@ -183,18 +192,14 @@
         const bnbData = await bnbRes.json();
         const price = bnbData?.binancecoin?.usd;
         bnbEl.textContent = price ? price.toFixed(2) : "N/A";
-      } catch {
-        bnbEl.textContent = "N/A";
-      }
+      } catch { bnbEl.textContent = "N/A"; }
       try {
         const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
         const res = await fetch(gtUrl);
         const data = await res.json();
         const price = parseFloat(data?.data?.attributes?.base_token_price_usd);
         pmlEl.textContent = Number.isFinite(price) ? price.toFixed(2) : "N/A";
-      } catch {
-        pmlEl.textContent = "N/A";
-      }
+      } catch { pmlEl.textContent = "N/A"; }
     }
 
     function updateWalletButton(account) {
@@ -205,64 +210,34 @@
     }
 
     async function connectWallet() {
-      if (!window.ethereum) {
-        notify("MetaMask not detected.");
-        return;
-      }
+      if (!window.ethereum) return notify("MetaMask not detected.");
       try {
         const accs = await ethereum.request({ method: "eth_requestAccounts" });
         updateWalletButton(accs[0]);
-      } catch {
-        notify("Wallet connection rejected.");
-      }
+      } catch { notify("Wallet connection rejected."); }
     }
 
-    // New attempt, start first request without awaiting, then fire others in parallel
     async function addAllTokens() {
-      if (!window.ethereum) {
-        notify("MetaMask not installed.");
-        return;
-      }
-
+      if (!window.ethereum) return notify("MetaMask not installed.");
       if (!confirm("Add all Pool Funding tokens to MetaMask? Click Add Token when MetaMask pops up.")) return;
 
       try {
-        console.log("Starting token suggestions", new Date().toISOString());
-
-        // Start USDT request but do not await it yet
         const usdt = tokens[0];
         const usdtPromise = ethereum.request({
           method: "wallet_watchAsset",
           params: { type: "ERC20", options: usdt },
-        }).then(res => {
-          console.log("USDT result", res, new Date().toISOString());
-          return res;
-        }).catch(err => {
-          console.error("USDT error", err, new Date().toISOString());
-          throw err;
         });
 
-        // Immediately start other token requests in parallel
         const otherTokens = tokens.slice(1);
-        const otherPromises = otherTokens.map(t => {
-          console.log("Sending request for", t.symbol, new Date().toISOString());
-          return ethereum.request({
+        const otherPromises = otherTokens.map(t =>
+          ethereum.request({
             method: "wallet_watchAsset",
             params: { type: "ERC20", options: t }
-          }).then(res => {
-            console.log(t.symbol, "result", res, new Date().toISOString());
-            return { symbol: t.symbol, result: res };
-          }).catch(err => {
-            console.error(t.symbol, "error", err, new Date().toISOString());
-            return { symbol: t.symbol, error: true };
-          });
-        });
+          }).catch(err => console.error("Error adding", t.symbol, err))
+        );
 
-        // Wait for all, including the USDT promise
-        const all = [usdtPromise, ...otherPromises];
-        const settled = await Promise.allSettled(all);
-        console.log("All settled", settled, new Date().toISOString());
-        notify("Finished suggesting tokens to MetaMask. Check console for timing details.");
+        await Promise.allSettled([usdtPromise, ...otherPromises]);
+        notify("Finished suggesting tokens to MetaMask.");
       } catch (err) {
         console.error("addAllTokens error", err);
         notify("Error suggesting tokens. Check console for details.");
@@ -270,10 +245,7 @@
     }
 
     async function switchRPC(url) {
-      if (!window.ethereum) {
-        notify("MetaMask not installed.");
-        return;
-      }
+      if (!window.ethereum) return notify("MetaMask not installed.");
       try {
         await ethereum.request({
           method: "wallet_addEthereumChain",
@@ -286,10 +258,7 @@
           }]
         });
         notify("RPC switched successfully.");
-      } catch (err) {
-        console.error("switchRPC error", err);
-        notify("RPC change failed.");
-      }
+      } catch { notify("RPC change failed."); }
     }
 
     async function donateBNB() {
