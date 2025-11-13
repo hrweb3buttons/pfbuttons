@@ -322,6 +322,15 @@
     document.getElementById("donateBNB").onclick = donateBNB;
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
+<section class="card" style="margin-top: 2rem; text-align: center;">
+  <h2>Community Documents</h2>
+  <button 
+    onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')"
+    style="padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 12px; border: none; background-color: #4CAF50; color: white;"
+  >
+    📁 Open Shared Google Drive Folder
+  </button>
+</section>
 
     fetchPrices();
   });
