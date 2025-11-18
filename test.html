@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
-  <meta name="description" content="Community-built Web3 tools to streamline Pool Funding wallet setup and management.">
+  <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
@@ -114,7 +114,7 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community-built tools, consider supporting upkeep through a small donation.</p>
+      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </header>
 
     <section class="card">
@@ -129,19 +129,23 @@
 
     <section class="card">
       <h2>Switch Binance Smart Chain RPC</h2>
+
+      <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
+
+      <h3>Standard RPC Options</h3>
       <div class="rpc-buttons">
-              <p>Use this only when you are having issues making payments. 
-                When clicking or tapping one of the below buttons, MetaMask should prompt you to Update BNB Chain. PublicNode and Blockrazor are most commonly selected by users.</p>
         <button id="rpcLlamarpc">Llamarpc</button>
         <button id="rpcPublicNode">PublicNode</button>
         <button id="rpcBlockrazor">Blockrazor</button>
+      </div>
+
+      <h3>Cloudflare Free RPC Options</h3>
+      <div class="rpc-buttons">
         <button id="rpcBLXR">BLXR</button>
-        <button id="rpcInfura">Infura (Default)</button>
         <button id="rpcChainstack">Chainstack</button>
       </div>
     </section>
 
-    <!-- ✅ Community Documents Card -->
     <section class="card">
       <h2>Community Documents</h2>
       <p>Access shared guides, documentation, and community materials below.</p>
@@ -151,8 +155,8 @@
     </section>
 
     <footer>
-      &copy; 2025 Hunter Rodriguez — Not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.6
+      &copy; 2025 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.7
     </footer>
   </main>
 
@@ -221,7 +225,7 @@
 
     async function addAllTokens() {
       if (!window.ethereum) return notify("MetaMask not installed.");
-      if (!confirm("Add all Pool Funding tokens to MetaMask? Click Add Token when MetaMask pops up.")) return;
+      if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
 
       try {
         const usdt = tokens[0];
@@ -242,7 +246,7 @@
         notify("Finished suggesting tokens to MetaMask.");
       } catch (err) {
         console.error("addAllTokens error", err);
-        notify("Error suggesting tokens. Check console for details.");
+        notify("Error suggesting tokens. Check console.");
       }
     }
 
@@ -259,7 +263,7 @@
             blockExplorerUrls: ["https://bscscan.com/"]
           }]
         });
-        notify("RPC switched successfully.");
+        notify("RPC switched.");
       } catch { notify("RPC change failed."); }
     }
 
@@ -284,12 +288,13 @@
 
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
+
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
     document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com/");
     document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz/");
     document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com/");
-    document.getElementById("rpcInfura").onclick = () => switchRPC("https://bsc-mainnet.infura.io/");
     document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71");
+
     document.getElementById("donateBNB").onclick = donateBNB;
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
