@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
@@ -27,7 +28,7 @@
       justify-content: center;
       min-height: 100vh;
     }
-    main { width: 100%; max-width: 720px; margin: 2rem; }
+    main { width: 100 percent; max-width: 720px; margin: 2rem; }
     h1, h2 { color: #111; margin-bottom: 0.75rem; }
     p { margin-bottom: 1rem; }
     .card {
@@ -87,8 +88,8 @@
     footer a { color: var(--primary); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
     .notify {
-      position: fixed; bottom: 20px; left: 50%;
-      transform: translateX(-50%);
+      position: fixed; bottom: 20px; left: 50 percent;
+      transform: translateX(-50 percent);
       background: var(--card-bg); border: 1px solid var(--border);
       box-shadow: var(--shadow);
       padding: 0.75rem 1.25rem; border-radius: var(--radius);
@@ -141,6 +142,7 @@
       <h3>Cloudflare Free RPC Options</h3>
       <div class="rpc-buttons">
         <button id="rpcBLXR">BLXR</button>
+        <button id="rpcDRPC">dRPC</button>
         <button id="rpcChainstack">Chainstack</button>
       </div>
     </section>
@@ -292,6 +294,7 @@
     document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com/");
     document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz/");
     document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com/");
+    document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
     document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71");
 
     document.getElementById("donateBNB").onclick = donateBNB;
@@ -303,3 +306,4 @@
   </script>
 </body>
 </html>
+```
