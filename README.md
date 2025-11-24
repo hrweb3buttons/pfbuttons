@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -54,19 +55,26 @@
       display: flex; flex-wrap: wrap; gap: 0.75rem;
       justify-content: center; margin-top: 1rem;
     }
-    ol { text-align: left; margin: 1rem auto; display: inline-block; }
-    #donation-buttons {
-      position: fixed; top: 10px; right: 10px; z-index: 9999;
-      display: flex; flex-direction: column; gap: 6px;
+    .donate-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 1rem;
     }
-    #donation-buttons button {
-      padding: 8px 12px; font-size: 0.9rem; border-radius: 8px;
-      border: none; font-weight: 600; color: white;
+    .donate-group button {
+      padding: 10px 14px;
+      font-size: 1rem;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
     }
     #donateBNB { background-color: #f3ba2f; color: #000; }
     #donateUSDT { background-color: #26a17b; }
     #donatePML { background-color: #008cff; }
+    #donateCharity { background-color: #c0392b; }
     #wallet-connect {
       position: fixed; top: 10px; left: 10px; z-index: 9999;
       display: flex; align-items: center; gap: 12px;
@@ -147,6 +155,20 @@
     </section>
 
     <section class="card">
+      <h2>Support Community Development</h2>
+      <p>If you find these tools useful, you can help sustain continued work by sending a small contribution.</p>
+
+      <p>A seasonal outreach campaign for Christmas Toys for Batang Pinoy is now open. This drive accepts USDT only. If you would like to donate to the Christmas Toy Drive, please use the forth button</p>
+
+      <div class="donate-group">
+        <button id="donateBNB">Donate BNB</button>
+        <button id="donateUSDT">Donate USDT</button>
+        <button id="donatePML">Donate PML</button>
+        <button id="donateCharity">🎄 Donate USDT to Batang Pinoy</button>
+      </div>
+    </section>
+
+    <section class="card">
       <h2>Community Documents</h2>
       <p>Access shared guides, documentation, and community materials below.</p>
       <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
@@ -156,19 +178,14 @@
 
     <footer>
       &copy; 2025 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.7
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.8
     </footer>
   </main>
-
-  <div id="donation-buttons">
-    <button id="donateBNB">Donate BNB</button>
-    <button id="donateUSDT">Donate USDT</button>
-    <button id="donatePML">Donate PML</button>
-  </div>
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
+    const charityAddress = "0x0c88c80fc64495bceDd7682F1C21646C13814bE4";
     const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
     const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
@@ -286,6 +303,16 @@
       notify(`${symbol} donation sent.`);
     }
 
+    async function donateCharity() {
+      const amount = parseFloat(prompt("Enter USDT amount for Batang Pinoy:"));
+      if (!amount || amount <= 0) return;
+      const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+      const valueHex = BigInt(Math.floor(amount * 1e18)).toString(16).padStart(64, "0");
+      const data = "0xa9059cbb" + charityAddress.replace("0x", "").padStart(64, "0") + valueHex;
+      await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: usdtContract, data }] });
+      notify("Charity donation sent.");
+    }
+
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
 
@@ -299,10 +326,10 @@
     document.getElementById("donateBNB").onclick = donateBNB;
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
+    document.getElementById("donateCharity").onclick = donateCharity;
 
     fetchPrices();
   });
   </script>
 </body>
 </html>
-```
