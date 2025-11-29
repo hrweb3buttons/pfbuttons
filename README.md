@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -27,7 +28,7 @@
       justify-content: center;
       min-height: 100vh;
     }
-    main { width: 100 percent; max-width: 720px; margin: 2rem; }
+    main { width: 100%; max-width: 720px; margin: 2rem; }
     h1, h2 { color: #111; margin-bottom: 0.75rem; }
     p { margin-bottom: 1rem; }
     .card {
@@ -94,8 +95,8 @@
     footer a { color: var(--primary); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
     .notify {
-      position: fixed; bottom: 20px; left: 50 percent;
-      transform: translateX(-50 percent);
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
       background: var(--card-bg); border: 1px solid var(--border);
       box-shadow: var(--shadow);
       padding: 0.75rem 1.25rem; border-radius: var(--radius);
@@ -104,6 +105,12 @@
     }
     @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
     @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
+    .doc-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -157,7 +164,7 @@
       <h2>Support Community Development</h2>
       <p>If you find these tools useful, you can help sustain continued work by sending a small contribution.</p>
 
-      <p>A seasonal outreach campaign for Christmas Toys for Batang Pinoy is now open. This drive accepts USDT only. If you would like to donate to the Christmas Toy Drive, please use the forth button</p>
+      <p>A seasonal outreach campaign for Christmas Toys for Batang Pinoy is now open. This drive accepts USDT only.</p>
 
       <div class="donate-group">
         <button id="donateBNB">Donate BNB</button>
@@ -173,11 +180,17 @@
       <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
         📁 Open Shared Google Drive Folder
       </button>
+
+      <div class="doc-buttons">
+        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view?usp=drive_link','_blank')">Common Problems Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view?usp=drive_link','_blank')">$777 Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view?usp=drive_link','_blank')">General Newbies Guide</button>
+      </div>
     </section>
 
     <footer>
       &copy; 2025 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
-      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.0.8
+      <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.1
     </footer>
   </main>
 
@@ -214,14 +227,18 @@
         const bnbData = await bnbRes.json();
         const price = bnbData?.binancecoin?.usd;
         bnbEl.textContent = price ? price.toFixed(2) : "N/A";
-      } catch { bnbEl.textContent = "N/A"; }
+      } catch {
+        bnbEl.textContent = "N/A";
+      }
       try {
         const gtUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
         const res = await fetch(gtUrl);
         const data = await res.json();
         const price = parseFloat(data?.data?.attributes?.base_token_price_usd);
         pmlEl.textContent = Number.isFinite(price) ? price.toFixed(2) : "N/A";
-      } catch { pmlEl.textContent = "N/A"; }
+      } catch {
+        pmlEl.textContent = "N/A";
+      }
     }
 
     function updateWalletButton(account) {
@@ -236,7 +253,9 @@
       try {
         const accs = await ethereum.request({ method: "eth_requestAccounts" });
         updateWalletButton(accs[0]);
-      } catch { notify("Wallet connection rejected."); }
+      } catch {
+        notify("Wallet connection rejected.");
+      }
     }
 
     async function addAllTokens() {
@@ -280,7 +299,9 @@
           }]
         });
         notify("RPC switched.");
-      } catch { notify("RPC change failed."); }
+      } catch {
+        notify("RPC change failed.");
+      }
     }
 
     async function donateBNB() {
