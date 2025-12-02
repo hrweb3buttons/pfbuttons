@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lite Web3 Tools</title>
+</head>
+
+<body>
+
+<h2>Lite Web3 Tools</h2>
+
+<button id="walletbtn">Connect Wallet</button>
+
+<br><br>
+
+<button id="addtokens">Add Tokens</button>
+
+<br><br>
+
+<h3>RPC</h3>
+
+<button id="rpcone">Llamarpc</button>
+<button id="rpctwo">PublicNode</button>
+<button id="rpcthree">Blockrazor</button>
+
+<br><br>
+
+<button id="rpcfour">BLXR</button>
+<button id="rpcfive">dRPC</button>
+<button id="rpcsix">Chainstack</button>
+
+<br><br>
+
+<h3>Donate</h3>
+
+<button id="donbnb">BNB</button>
+<button id="donusdt">USDT</button>
+<button id="donpml">PML</button>
+<button id="doncharity">USDT Charity</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+const waddr = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795"
+const caddr = "0x0c88c80fc64495bceDd7682F1C21646C13814bE4"
+const usdt = "0x55d398326f99059fF775485246999027B3197955"
+const pml = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD"
+
+const toks = [
+  { address: usdt, symbol: "USDT", decimals: 18 },
+  { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18 },
+  { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18 },
+  { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18 },
+  { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18 },
+  { address: pml, symbol: "PML", decimals: 18 }
+]
+
+function msg(t){ alert(t) }
+
+async function conn(){
+  if(!window.ethereum) return msg("No MetaMask")
+  try{
+    const a = await ethereum.request({ method:"eth_requestAccounts" })
+    document.getElementById("walletbtn").textContent = a[0].slice(0,6) + "..." + a[0].slice(-4)
+  }catch{}
+}
+
+async function addt(){
+  if(!window.ethereum) return msg("No MetaMask")
+  for(const t of toks){
+    try{
+      await ethereum.request({
+        method:"wallet_watchAsset",
+        params:{ type:"ERC20", options:t }
+      })
+    }catch{}
+  }
+  msg("Done")
+}
+
+async function rpc(u){
+  if(!window.ethereum) return msg("No MetaMask")
+  try{
+    await ethereum.request({
+      method:"wallet_addEthereumChain",
+      params:[{
+        chainId:"0x38",
+        chainName:"BSC",
+        nativeCurrency:{ name:"BNB", symbol:"BNB", decimals:18 },
+        rpcUrls:[u],
+        blockExplorerUrls:["https://bscscan.com/"]
+      }]
+    })
+    msg("RPC updated")
+  }catch{}
+}
+
+async function sendbnb(){
+  const n = parseFloat(prompt("Amount"))
+  if(!n) return
+  const [f] = await ethereum.request({ method:"eth_requestAccounts" })
+  const v = "0x" + BigInt(Math.floor(n * 1e18)).toString(16)
+  await ethereum.request({ method:"eth_sendTransaction", params:[{ from:f, to:waddr, value:v }] })
+  msg("Sent")
+}
+
+async function sendtok(c,to){
+  const n = parseFloat(prompt("Amount"))
+  if(!n) return
+  const [f] = await ethereum.request({ method:"eth_requestAccounts" })
+  const h = BigInt(Math.floor(n * 1e18)).toString(16).padStart(64,"0")
+  const d = "0xa9059cbb" + to.replace("0x","").padStart(64,"0") + h
+  await ethereum.request({ method:"eth_sendTransaction", params:[{ from:f, to:c, data:d }] })
+  msg("Sent")
+}
+
+document.getElementById("walletbtn").onclick = conn
+document.getElementById("addtokens").onclick = addt
+
+document.getElementById("rpcone").onclick = ()=>rpc("https://binance.llamarpc.com")
+document.getElementById("rpctwo").onclick = ()=>rpc("https://bsc-rpc.publicnode.com/")
+document.getElementById("rpcthree").onclick = ()=>rpc("https://bsc.blockrazor.xyz/")
+document.getElementById("rpcfour").onclick = ()=>rpc("https://bsc.rpc.blxrbdn.com/")
+document.getElementById("rpcfive").onclick = ()=>rpc("https://bsc.drpc.org")
+document.getElementById("rpcsix").onclick = ()=>rpc("https://bsc-mainnet.core.chainstack.com/7b0fed13ab4793278b463794527c0a71")
+
+document.getElementById("donbnb").onclick = sendbnb
+document.getElementById("donusdt").onclick = ()=>sendtok(usdt,waddr)
+document.getElementById("donpml").onclick = ()=>sendtok(pml,waddr)
+document.getElementById("doncharity").onclick = ()=>sendtok(usdt,caddr)
+
+})
+</script>
+
+</body>
+</html>
