@@ -73,7 +73,6 @@
     #donateBNB { background-color: #f3ba2f; color: #000; }
     #donateUSDT { background-color: #26a17b; }
     #donatePML { background-color: #008cff; }
-    #donateCharity { background-color: #c0392b; }
     #wallet-connect {
       position: fixed; top: 10px; left: 10px; z-index: 9999;
       display: flex; align-items: center; gap: 12px;
@@ -195,7 +194,6 @@
   <script>
   document.addEventListener("DOMContentLoaded", () => {
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
-    const charityAddress = "0x0c88c80fc64495bceDd7682F1C21646C13814bE4";
     const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
     const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
@@ -321,15 +319,6 @@
       notify(`${symbol} donation sent.`);
     }
 
-    async function donateCharity() {
-      const amount = parseFloat(prompt("Enter USDT amount for Batang Pinoy:"));
-      if (!amount || amount <= 0) return;
-      const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-      const valueHex = BigInt(Math.floor(amount * 1e18)).toString(16).padStart(64, "0");
-      const data = "0xa9059cbb" + charityAddress.replace("0x", "").padStart(64, "0") + valueHex;
-      await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: usdtContract, data }] });
-      notify("Charity donation sent.");
-    }
 
     document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
@@ -344,8 +333,6 @@
     document.getElementById("donateBNB").onclick = donateBNB;
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract, "USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract, "PML");
-    document.getElementById("donateCharity").onclick = donateCharity;
-
     fetchPrices();
   });
   </script>
