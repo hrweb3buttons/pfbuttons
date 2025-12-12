@@ -169,7 +169,6 @@
         <button id="donateBNB">Donate BNB</button>
         <button id="donateUSDT">Donate USDT</button>
         <button id="donatePML">Donate PML</button>
-        <button id="donateCharity">🎄 Donate USDT to Batang Pinoy</button>
       </div>
     </section>
 
