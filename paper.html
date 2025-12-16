@@ -37,8 +37,6 @@
 <button id="donbnb">BNB</button>
 <button id="donusdt">USDT</button>
 <button id="donpml">PML</button>
-<button id="doncharity">USDT Charity</button>
-
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -128,8 +126,6 @@ document.getElementById("rpcsix").onclick = ()=>rpc("https://bsc-mainnet.core.ch
 document.getElementById("donbnb").onclick = sendbnb
 document.getElementById("donusdt").onclick = ()=>sendtok(usdt,waddr)
 document.getElementById("donpml").onclick = ()=>sendtok(pml,waddr)
-document.getElementById("doncharity").onclick = ()=>sendtok(usdt,caddr)
-
 })
 </script>
 
