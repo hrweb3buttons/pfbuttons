@@ -42,7 +42,6 @@
     }
 
     main { width: 100%; max-width: 720px; margin: 2rem; }
-
     h1, h2 { color: #111; margin-bottom: 0.75rem; }
     :root.dark h1,
     :root.dark h2 { color: #fff; }
@@ -174,32 +173,20 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
+      <p>This page and the supporting documents are the result of many hours of independent effort.</p>
     </header>
 
     <section class="card">
       <h2>Add Tokens to MetaMask</h2>
-      <ol>
-        <li>Ensure MetaMask is installed.</li>
-        <li>Connect to <strong>Binance Smart Chain</strong>.</li>
-        <li>Click below to add all Pool Funding tokens.</li>
-      </ol>
       <button id="addTokens">Add All Tokens</button>
     </section>
 
     <section class="card">
       <h2>Switch Binance Smart Chain RPC</h2>
-      <p>Use this only when you are having issues making payments.</p>
-
-      <h3>Standard RPC Options</h3>
       <div class="rpc-buttons">
         <button id="rpcLlamarpc">Llamarpc</button>
         <button id="rpcPublicNode">PublicNode</button>
         <button id="rpcBlockrazor">Blockrazor</button>
-      </div>
-
-      <h3>Cloudflare Free RPC Options</h3>
-      <div class="rpc-buttons">
         <button id="rpcBLXR">BLXR</button>
         <button id="rpcDRPC">dRPC</button>
         <button id="rpcChainstack">Chainstack</button>
@@ -217,9 +204,12 @@
 
     <section class="card">
       <h2>Community Documents</h2>
-      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
-        📁 Open Shared Google Drive Folder
-      </button>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">📁 Open Shared Google Drive Folder</button>
+      <div class="doc-buttons">
+        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank')">Common Problems Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank')">$777 Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank')">General Newbies Guide</button>
+      </div>
     </section>
 
     <footer>
@@ -237,9 +227,6 @@
     if (savedTheme === "dark") {
       root.classList.add("dark");
       themeToggle.textContent = "Light mode";
-    } else if (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      root.classList.add("dark");
-      themeToggle.textContent = "Light mode";
     }
 
     themeToggle.onclick = () => {
@@ -249,11 +236,60 @@
       themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
     };
 
+    /* ORIGINAL STABLE JS BELOW UNCHANGED */
+
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
     const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
     const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
-    /* rest of original JS unchanged */
+    const tokens = [
+      { address: usdtContract, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
+      { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
+      { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
+      { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
+      { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
+      { address: pmlContract, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
+    ];
+
+    const notify = msg => {
+      const div = document.createElement("div");
+      div.className = "notify";
+      div.textContent = msg;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 4000);
+    };
+
+    async function addAllTokens() {
+      for (const t of tokens) {
+        await ethereum.request({
+          method: "wallet_watchAsset",
+          params: { type: "ERC20", options: t }
+        });
+      }
+      notify("Finished suggesting tokens");
+    }
+
+    async function switchRPC(url) {
+      await ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: "0x38",
+          chainName: "Binance Smart Chain",
+          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+          rpcUrls: [url],
+          blockExplorerUrls: ["https://bscscan.com"]
+        }]
+      });
+      notify("RPC switched");
+    }
+
+    document.getElementById("addTokens").onclick = addAllTokens;
+    document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
+    document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com");
+    document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz");
+    document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com");
+    document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
+    document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com");
 
   });
   </script>
