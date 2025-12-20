@@ -31,22 +31,19 @@
     }
 
     body {
-      font-family: "Inter", system-ui, Arial, sans-serif;
+      font-family: Inter, system-ui, Arial, sans-serif;
       background-color: var(--background);
       color: var(--text);
       margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       min-height: 100vh;
     }
 
     main { width: 100%; max-width: 720px; margin: 2rem; }
-    h1, h2 { color: #111; margin-bottom: 0.75rem; }
+    h1, h2 { color: #111; }
     :root.dark h1,
     :root.dark h2 { color: #fff; }
-
-    p { margin-bottom: 1rem; }
 
     .card {
       background-color: var(--card-bg);
@@ -63,19 +60,15 @@
       border: none;
       border-radius: var(--radius);
       padding: 0.75rem 1.25rem;
-      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.25s, transform 0.1s;
     }
 
-    button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-    button:active { transform: translateY(1px); }
+    button:hover { background-color: var(--primary-hover); }
 
     .rpc-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
-      justify-content: center;
       margin-top: 1rem;
     }
 
@@ -83,16 +76,6 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 1rem;
-    }
-
-    .donate-group button {
-      padding: 10px 14px;
-      font-size: 1rem;
-      color: white;
-      border-radius: 8px;
-      font-weight: 600;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
     #donateBNB { background-color: #f3ba2f; color: #000; }
@@ -103,33 +86,14 @@
       position: fixed;
       top: 10px;
       left: 10px;
-      z-index: 9999;
       display: flex;
-      align-items: center;
       gap: 12px;
+      z-index: 9999;
       flex-wrap: wrap;
-    }
-
-    #wallet-connect button {
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
     #priceDisplay { font-size: 0.85rem; color: #555; }
     :root.dark #priceDisplay { color: #aaa; }
-
-    footer {
-      text-align: center;
-      color: #777;
-      font-size: 0.9rem;
-      margin-top: 2rem;
-    }
-
-    footer a { color: var(--primary); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
 
     .notify {
       position: fixed;
@@ -138,16 +102,11 @@
       transform: translateX(-50%);
       background: var(--card-bg);
       border: 1px solid var(--border);
-      box-shadow: var(--shadow);
       padding: 0.75rem 1.25rem;
       border-radius: var(--radius);
-      font-size: 0.95rem;
+      box-shadow: var(--shadow);
       z-index: 99999;
-      animation: fadein 0.3s ease, fadeout 0.3s ease 3.5s;
     }
-
-    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
 
     .doc-buttons {
       display: flex;
@@ -163,18 +122,15 @@
     <button id="connectWallet">Connect Wallet</button>
     <button id="themeToggle">Dark mode</button>
     <div id="priceDisplay">
-      <span><strong>BNB:</strong> <span id="bnbPrice">--</span> USD</span> |
-      <span><strong>PML:</strong> <span id="pmlPrice">--</span> USD</span>
+      <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
+      <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
   </div>
 
   <main>
-    <header class="card">
+    <section class="card">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
-      <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
-      <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>This page and the supporting documents are the result of many hours of independent effort.</p>
-    </header>
+    </section>
 
     <section class="card">
       <h2>Add Tokens to MetaMask</h2>
@@ -183,10 +139,16 @@
 
     <section class="card">
       <h2>Switch Binance Smart Chain RPC</h2>
+
+      <h3>Standard RPC Options</h3>
       <div class="rpc-buttons">
         <button id="rpcLlamarpc">Llamarpc</button>
         <button id="rpcPublicNode">PublicNode</button>
         <button id="rpcBlockrazor">Blockrazor</button>
+      </div>
+
+      <h3>Cloudflare Free RPC Options</h3>
+      <div class="rpc-buttons">
         <button id="rpcBLXR">BLXR</button>
         <button id="rpcDRPC">dRPC</button>
         <button id="rpcChainstack">Chainstack</button>
@@ -204,39 +166,32 @@
 
     <section class="card">
       <h2>Community Documents</h2>
-      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">📁 Open Shared Google Drive Folder</button>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
       <div class="doc-buttons">
         <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank')">Common Problems Guide</button>
         <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank')">$777 Newbies Guide</button>
         <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank')">General Newbies Guide</button>
       </div>
     </section>
-
-    <footer>
-      &copy; 2025 Hunter Rodriguez
-    </footer>
   </main>
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
 
-    const themeToggle = document.getElementById("themeToggle");
     const root = document.documentElement;
-    const savedTheme = localStorage.getItem("theme");
+    const themeToggle = document.getElementById("themeToggle");
 
-    if (savedTheme === "dark") {
+    if (localStorage.getItem("theme") === "dark") {
       root.classList.add("dark");
       themeToggle.textContent = "Light mode";
     }
 
     themeToggle.onclick = () => {
       root.classList.toggle("dark");
-      const isDark = root.classList.contains("dark");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-      themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+      const dark = root.classList.contains("dark");
+      localStorage.setItem("theme", dark ? "dark" : "light");
+      themeToggle.textContent = dark ? "Light mode" : "Dark mode";
     };
-
-    /* ORIGINAL STABLE JS BELOW UNCHANGED */
 
     const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
     const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
@@ -252,20 +207,32 @@
     ];
 
     const notify = msg => {
-      const div = document.createElement("div");
-      div.className = "notify";
-      div.textContent = msg;
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 4000);
+      const n = document.createElement("div");
+      n.className = "notify";
+      n.textContent = msg;
+      document.body.appendChild(n);
+      setTimeout(() => n.remove(), 4000);
     };
 
+    async function connectWallet() {
+      if (!window.ethereum) return notify("MetaMask not detected");
+      const accs = await ethereum.request({ method: "eth_requestAccounts" });
+      const btn = document.getElementById("connectWallet");
+      btn.textContent = accs[0].slice(0,6) + "..." + accs[0].slice(-4);
+      btn.disabled = true;
+    }
+
     async function addAllTokens() {
-      for (const t of tokens) {
-        await ethereum.request({
+      if (!confirm("Add all Pool Funding tokens to MetaMask?")) return;
+
+      const requests = tokens.map(t =>
+        ethereum.request({
           method: "wallet_watchAsset",
           params: { type: "ERC20", options: t }
-        });
-      }
+        }).catch(() => null)
+      );
+
+      await Promise.allSettled(requests);
       notify("Finished suggesting tokens");
     }
 
@@ -283,7 +250,41 @@
       notify("RPC switched");
     }
 
+    async function donateBNB() {
+      const amt = parseFloat(prompt("Enter BNB amount"));
+      if (!amt) return;
+      const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+      const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
+      await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: walletAddress, value }] });
+      notify("BNB donation sent");
+    }
+
+    async function donateToken(contract, symbol) {
+      const amt = parseFloat(prompt(`Enter ${symbol} amount`));
+      if (!amt) return;
+      const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+      const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64,"0");
+      const data = "0xa9059cbb" + walletAddress.replace("0x","").padStart(64,"0") + value;
+      await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
+      notify(symbol + " donation sent");
+    }
+
+    async function fetchPrices() {
+      try {
+        const bnb = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd").then(r => r.json());
+        document.getElementById("bnbPrice").textContent = bnb.binancecoin.usd.toFixed(2);
+      } catch {}
+
+      try {
+        const pml = await fetch("https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4").then(r => r.json());
+        document.getElementById("pmlPrice").textContent =
+          parseFloat(pml.data.attributes.base_token_price_usd).toFixed(2);
+      } catch {}
+    }
+
+    document.getElementById("connectWallet").onclick = connectWallet;
     document.getElementById("addTokens").onclick = addAllTokens;
+
     document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
     document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com");
     document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz");
@@ -291,6 +292,11 @@
     document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
     document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com");
 
+    document.getElementById("donateBNB").onclick = donateBNB;
+    document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
+    document.getElementById("donatePML").onclick = () => donateToken(pmlContract,"PML");
+
+    fetchPrices();
   });
   </script>
 </body>
