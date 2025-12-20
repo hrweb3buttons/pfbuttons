@@ -7,6 +7,7 @@
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+
   <style>
     :root {
       --primary: #007bff;
@@ -41,6 +42,7 @@
     }
 
     main { width: 100%; max-width: 720px; margin: 2rem; }
+
     h1, h2 { color: #111; margin-bottom: 0.75rem; }
     :root.dark h1,
     :root.dark h2 { color: #fff; }
@@ -168,4 +170,92 @@
   </div>
 
   <main>
-    <!-- main content unchanged -->
+    <header class="card">
+      <h1>Unofficial Pool Funding Web3 Tools</h1>
+      <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
+      <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
+      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
+    </header>
+
+    <section class="card">
+      <h2>Add Tokens to MetaMask</h2>
+      <ol>
+        <li>Ensure MetaMask is installed.</li>
+        <li>Connect to <strong>Binance Smart Chain</strong>.</li>
+        <li>Click below to add all Pool Funding tokens.</li>
+      </ol>
+      <button id="addTokens">Add All Tokens</button>
+    </section>
+
+    <section class="card">
+      <h2>Switch Binance Smart Chain RPC</h2>
+      <p>Use this only when you are having issues making payments.</p>
+
+      <h3>Standard RPC Options</h3>
+      <div class="rpc-buttons">
+        <button id="rpcLlamarpc">Llamarpc</button>
+        <button id="rpcPublicNode">PublicNode</button>
+        <button id="rpcBlockrazor">Blockrazor</button>
+      </div>
+
+      <h3>Cloudflare Free RPC Options</h3>
+      <div class="rpc-buttons">
+        <button id="rpcBLXR">BLXR</button>
+        <button id="rpcDRPC">dRPC</button>
+        <button id="rpcChainstack">Chainstack</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Support Community Development</h2>
+      <div class="donate-group">
+        <button id="donateBNB">Donate BNB</button>
+        <button id="donateUSDT">Donate USDT</button>
+        <button id="donatePML">Donate PML</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Community Documents</h2>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">
+        📁 Open Shared Google Drive Folder
+      </button>
+    </section>
+
+    <footer>
+      &copy; 2025 Hunter Rodriguez
+    </footer>
+  </main>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "dark") {
+      root.classList.add("dark");
+      themeToggle.textContent = "Light mode";
+    } else if (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      themeToggle.textContent = "Light mode";
+    }
+
+    themeToggle.onclick = () => {
+      root.classList.toggle("dark");
+      const isDark = root.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+    };
+
+    const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
+    const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
+    const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
+
+    /* rest of original JS unchanged */
+
+  });
+  </script>
+</body>
+</html>
