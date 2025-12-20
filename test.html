@@ -7,7 +7,6 @@
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-
   <style>
     :root {
       --primary: #007bff;
@@ -41,25 +40,12 @@
       min-height: 100vh;
     }
 
-    main {
-      width: 100%;
-      max-width: 720px;
-      margin: 2rem;
-    }
-
-    h1, h2 {
-      color: #111;
-      margin-bottom: 0.75rem;
-    }
-
+    main { width: 100%; max-width: 720px; margin: 2rem; }
+    h1, h2 { color: #111; margin-bottom: 0.75rem; }
     :root.dark h1,
-    :root.dark h2 {
-      color: #fff;
-    }
+    :root.dark h2 { color: #fff; }
 
-    p {
-      margin-bottom: 1rem;
-    }
+    p { margin-bottom: 1rem; }
 
     .card {
       background-color: var(--card-bg);
@@ -81,14 +67,8 @@
       transition: background-color 0.25s, transform 0.1s;
     }
 
-    button:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(1px);
-    }
+    button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
 
     .rpc-buttons {
       display: flex;
@@ -125,7 +105,7 @@
       z-index: 9999;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
@@ -137,14 +117,8 @@
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
-    #priceDisplay {
-      font-size: 0.85rem;
-      color: #555;
-    }
-
-    :root.dark #priceDisplay {
-      color: #aaa;
-    }
+    #priceDisplay { font-size: 0.85rem; color: #555; }
+    :root.dark #priceDisplay { color: #aaa; }
 
     footer {
       text-align: center;
@@ -153,14 +127,8 @@
       margin-top: 2rem;
     }
 
-    footer a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     .notify {
       position: fixed;
@@ -177,15 +145,8 @@
       animation: fadein 0.3s ease, fadeout 0.3s ease 3.5s;
     }
 
-    @keyframes fadein {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes fadeout {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
 
     .doc-buttons {
       display: flex;
@@ -201,39 +162,10 @@
     <button id="connectWallet">Connect Wallet</button>
     <button id="themeToggle">Dark mode</button>
     <div id="priceDisplay">
-      <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
-      <strong>PML:</strong> <span id="pmlPrice">--</span> USD
+      <span><strong>BNB:</strong> <span id="bnbPrice">--</span> USD</span> |
+      <span><strong>PML:</strong> <span id="pmlPrice">--</span> USD</span>
     </div>
   </div>
 
   <main>
-    <!-- content unchanged -->
-  </main>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-      const themeToggle = document.getElementById("themeToggle");
-      const root = document.documentElement;
-      const savedTheme = localStorage.getItem("theme");
-
-      if (savedTheme === "dark") {
-        root.classList.add("dark");
-        themeToggle.textContent = "Light mode";
-      } else if (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        root.classList.add("dark");
-        themeToggle.textContent = "Light mode";
-      }
-
-      themeToggle.onclick = () => {
-        root.classList.toggle("dark");
-        const isDark = root.classList.contains("dark");
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-        themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
-      };
-
-      /* existing JS remains unchanged below */
-    });
-  </script>
-</body>
-</html>
+    <!-- main content unchanged -->
