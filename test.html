@@ -130,6 +130,10 @@
   <main>
     <section class="card">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
+      <h1>Unofficial Pool Funding Web3 Tools</h1>
+      <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
+      <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
+      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
     <section class="card">
@@ -139,6 +143,8 @@
 
     <section class="card">
       <h2>Switch Binance Smart Chain RPC</h2>
+            <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
+
 
       <h3>Standard RPC Options</h3>
       <div class="rpc-buttons">
@@ -231,7 +237,7 @@
     }
 
     async function addAllTokens() {
-      if (!confirm("Add all Pool Funding tokens to MetaMask?")) return;
+      if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
 
       const requests = tokens.map(t =>
         ethereum.request({
