@@ -142,7 +142,8 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
+      <p>In loving memory of Luna, my trusted dog. 2014 - 2025</p>
+      <p>Gone, but never forgotten.</p>
     </section>
 
     <section class="card">
