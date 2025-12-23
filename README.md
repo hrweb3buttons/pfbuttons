@@ -142,7 +142,7 @@
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
-      <p>In loving memory of Luna, my trusted dog. 2014 - 2025</p>
+      <p>In loving memory of Luna, my trusted dog.</p>
       <p> <strong> 2014 - 2025 </strong> </p>
       <p>Gone, but never forgotten.</p>
     </section>
