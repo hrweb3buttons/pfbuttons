@@ -167,7 +167,6 @@
       <div class="rpc-buttons">
         <button id="rpcBLXR">BLXR</button>
         <button id="rpcDRPC">dRPC</button>
-        <button id="rpcChainstack">Chainstack</button>
       </div>
     </section>
 
@@ -317,8 +316,6 @@
     document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz");
     document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com");
     document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
-    document.getElementById("rpcChainstack").onclick = () => switchRPC("https://bsc-mainnet.core.chainstack.com");
-
     document.getElementById("donateBNB").onclick = donateBNB;
     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
     document.getElementById("donatePML").onclick = () => donateToken(pmlContract,"PML");
