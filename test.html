@@ -41,7 +41,12 @@
       min-height: 100vh;
     }
 
-    main { width: 100%; max-width: 720px; margin: 2rem; }
+    main {
+      width: 100%;
+      max-width: 720px;
+      margin: 2rem;
+    }
+
     h1, h2 { color: #111; }
     :root.dark h1,
     :root.dark h2 { color: #fff; }
@@ -130,13 +135,18 @@
       margin-bottom: 0.5rem;
     }
 
-    :root.dark .sponsored-label {
-      color: #aaa;
-    }
+    :root.dark .sponsored-label { color: #aaa; }
 
     .banner-center {
       display: flex;
       justify-content: center;
+    }
+
+    .banner-center img {
+      max-width: 468px;
+      width: 100%;
+      height: auto;
+      display: block;
     }
   </style>
 </head>
@@ -160,14 +170,13 @@
     </section>
 
     <section class="card">
-  <div class="sponsored-label">Sponsored</div>
-  <div class="banner-center">
-    <a href="https://12dollarsperclick.com/Cerberus1" target="_blank" rel="noopener">
-      <img src="https://12dollarsperclick.com/banners/standard-468x60.jpg" alt="Standard Banner">
-    </a>
-  </div>
-</section>
-
+      <div class="sponsored-label">Sponsored</div>
+      <div class="banner-center">
+        <a href="https://12dollarsperclick.com/Cerberus1" target="_blank" rel="noopener">
+          <img src="https://12dollarsperclick.com/banners/standard-468x60.jpg" alt="Standard Banner" referrerpolicy="no-referrer">
+        </a>
+      </div>
+    </section>
 
     <section class="card">
       <h2>Add Tokens to MetaMask</h2>
@@ -216,9 +225,7 @@
 
   <footer>
     © 2025 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
-    <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
-      View on GitHub
-    </a> | v1.1.4
+    <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">View on GitHub</a> | v1.1.4
   </footer>
 
   <script>
