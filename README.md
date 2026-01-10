@@ -122,16 +122,6 @@
       margin-top: 1rem;
     }
 
-    .sponsored-label {
-      font-size: 0.75rem;
-      color: #777;
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-
-    :root.dark .sponsored-label {
-      color: #aaa;
-    }
 
     .banner-center {
       display: flex;
@@ -158,14 +148,6 @@
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
-    <section class="card">
-      <div class="sponsored-label">Sponsored</div>
-      <div class="banner-center">
-        <a href="https://12dollarsperclick.com/Cerberus1" target="_blank" rel="noopener">
-          <img src="https://12dollarsperclick.com/banners/small-square-125x125.jpg" alt="Button Banner">
-        </a>
-      </div>
-    </section>
 
     <section class="card">
       <h2>Add Tokens to MetaMask</h2>
