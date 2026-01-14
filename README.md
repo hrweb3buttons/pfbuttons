@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -122,7 +123,6 @@
       margin-top: 1rem;
     }
 
-
     .banner-center {
       display: flex;
       justify-content: center;
@@ -147,6 +147,19 @@
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
+
+<section class="card">
+  <h2>Support Community Development</h2>
+  <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
+  <p>They are used daily by many members and continue to grow and improve.</p>
+  <p>If you find them useful, your support helps keep them running, improving, and available to everyone. Your contribution directly supports development and maintenance of the project.</p>
+
+  <div class="donate-group">
+    <button id="donateBNB">Donate BNB</button>
+    <button id="donateUSDT">Donate USDT</button>
+    <button id="donatePML">Donate PML</button>
+  </div>
+</section>
 
 
     <section class="card">
@@ -174,16 +187,6 @@
     </section>
 
     <section class="card">
-      <h2>Support Community Development</h2>
-      <p>If you find these tools useful, you can help sustain continued work by sending a small contribution.</p>
-      <div class="donate-group">
-        <button id="donateBNB">Donate BNB</button>
-        <button id="donateUSDT">Donate USDT</button>
-        <button id="donatePML">Donate PML</button>
-      </div>
-    </section>
-
-    <section class="card">
       <h2>Community Documents</h2>
       <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
       <div class="doc-buttons">
@@ -198,7 +201,6 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-
     </a> | v1.1.6
   </footer>
 
