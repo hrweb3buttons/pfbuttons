@@ -20,6 +20,25 @@
       --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
+    .card.highlight {
+  border: 2px solid var(--primary);
+  box-shadow: 0 6px 24px rgba(0, 123, 255, 0.25);
+  background: linear-gradient(
+    0deg,
+    var(--card-bg),
+    var(--card-bg)
+  ), linear-gradient(
+    180deg,
+    rgba(0, 123, 255, 0.08),
+    rgba(0, 123, 255, 0.02)
+  );
+}
+
+:root.dark .card.highlight {
+  box-shadow: 0 6px 28px rgba(77, 163, 255, 0.35);
+}
+
+
     :root.dark {
       --primary: #4da3ff;
       --primary-hover: #2f7fd6;
@@ -148,7 +167,7 @@
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
-<section class="card">
+<section class="card highlight">
   <h2>Support Community Development</h2>
   <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
   <p>They are used daily by many members and continue to grow and improve.</p>
