@@ -211,6 +211,13 @@
         <button id="rpcPublicNodies">PublicNodies</button>
       </div>
 
+            <h3>Azure Free RPC Options</h3>
+      <div class="rpc-buttons">
+        <button id="rpc1rpc">1rpc</button>
+        <button id="rpcSubQuery">SubQuery</button>
+      </div>
+
+
       
     </section>
 
@@ -347,6 +354,9 @@
       document.getElementById("rpcMerkle").onclick = () => switchRPC("https://bsc.merkle.io");
       document.getElementById("rpcFastNode").onclick = () => switchRPC("https://public-bsc-mainnet.fastnode.io/");
       document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app");
+      document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb");
+      document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public");
+
 
 
       document.getElementById("donateBNB").onclick = donateBNB;
