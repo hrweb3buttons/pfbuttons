@@ -203,6 +203,21 @@
         <button id="rpcBLXR">BLXR</button>
         <button id="rpcDRPC">dRPC</button>
       </div>
+
+      <h3>AWS Free RPC Options</h3>
+      <div class="rpc-buttons">
+        <button id="rpcPublicNodies">PublicNodies</button>
+      </div>
+
+            <h3>Azure Free RPC Options</h3>
+      <div class="rpc-buttons">
+        <button id="rpc1rpc">1rpc</button>
+        <button id="rpcSubQuery">SubQuery</button>
+        <button id="rpcNowNodes">NowNodes</button>
+      </div>
+
+
+      
     </section>
 
     <section class="card">
@@ -335,6 +350,13 @@
       document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz");
       document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com");
       document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
+      document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app");
+      document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb");
+      document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public");
+      document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io");
+
+
+
 
       document.getElementById("donateBNB").onclick = donateBNB;
       document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
