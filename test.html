@@ -296,19 +296,43 @@
         notify("Finished suggesting tokens");
       }
 
-      async function switchRPC(url) {
-        await ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [{
-            chainId: "0x38",
-            chainName: "Binance Smart Chain",
-            nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-            rpcUrls: [url],
-            blockExplorerUrls: ["https://bscscan.com"]
-          }]
-        });
-        notify("RPC switched");
-      }
+async function switchRPC(url, name) {
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  const chainId = "0x38";
+
+  try {
+    // First try to switch in case BSC already exists
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId }]
+    });
+  } catch (e) {
+    // If it does not exist, add it
+    await ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: chainId,
+        chainName: "BSC " + name,
+        nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+        rpcUrls: [url],
+        blockExplorerUrls: ["https://bscscan.com"]
+      }]
+    });
+  }
+
+  // Force switch again to make sure MetaMask actually uses it
+  await ethereum.request({
+    method: "wallet_switchEthereumChain",
+    params: [{ chainId }]
+  });
+
+  notify("RPC switched to " + name);
+}
+
 
       async function donateBNB() {
         const amt = parseFloat(prompt("Enter BNB amount"));
@@ -345,15 +369,15 @@
       document.getElementById("connectWallet").onclick = connectWallet;
       document.getElementById("addTokens").onclick = addAllTokens;
 
-      document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
-      document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com");
-      document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz");
-      document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com");
-      document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
-      document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app");
-      document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb");
-      document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public");
-      document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io");
+document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com", "LlamaRPC");
+document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com", "PublicNode");
+document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz", "Blockrazor");
+document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com", "BLXR");
+document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org", "dRPC");
+document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app", "PublicNodies");
+document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb", "1RPC");
+document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public", "SubQuery");
+document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
 
 
 
