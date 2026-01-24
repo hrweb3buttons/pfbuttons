@@ -286,17 +286,6 @@
 
    
 
-
-
-  // Force switch again to make sure MetaMask actually uses it
-  await ethereum.request({
-    method: "wallet_switchEthereumChain",
-    params: [{ chainId }]
-  });
-
-  notify("RPC switched to " + name);
-}
-
                                  async function addAllTokens() {
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         const requests = tokens.map(t =>
