@@ -284,7 +284,20 @@
         btn.disabled = true;
       }
 
-      async function addAllTokens() {
+   
+
+
+
+  // Force switch again to make sure MetaMask actually uses it
+  await ethereum.request({
+    method: "wallet_switchEthereumChain",
+    params: [{ chainId }]
+  });
+
+  notify("RPC switched to " + name);
+}
+
+                                 async function addAllTokens() {
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         const requests = tokens.map(t =>
           ethereum.request({
@@ -318,16 +331,6 @@ async function switchRPC(url, name) {
   } catch (e) {
     notify("RPC change rejected");
   }
-}
-
-
-  // Force switch again to make sure MetaMask actually uses it
-  await ethereum.request({
-    method: "wallet_switchEthereumChain",
-    params: [{ chainId }]
-  });
-
-  notify("RPC switched to " + name);
 }
 
 
