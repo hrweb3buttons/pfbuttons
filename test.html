@@ -304,11 +304,14 @@ async function switchRPC(url, name) {
     return;
   }
 
+  const chainId = "0x38";
+
   try {
+    // Ask MetaMask to update the existing BSC network with the new RPC
     await ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
-        chainId: "0x38",
+        chainId: chainId,
         chainName: "Binance Smart Chain (" + name + ")",
         nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
         rpcUrls: [url],
@@ -316,11 +319,18 @@ async function switchRPC(url, name) {
       }]
     });
 
+    // Force MetaMask to reselect the chain so the new RPC is actually used
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId }]
+    });
+
     notify("RPC switched to " + name);
   } catch (e) {
     notify("RPC change rejected");
   }
 }
+
 
 
       async function donateBNB() {
