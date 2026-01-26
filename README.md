@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -190,6 +191,14 @@
       <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
       <p>Note: The Chainstack RPC Node is no longer available due to technical problems.</p>
 
+      <div style="margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.95rem;">
+  <strong>Important:</strong><br>
+  Due to MetaMask limitations, this tool cannot automatically activate the new RPC.<br><br>
+  Step 1: Tap one of the buttons below and approve the MetaMask prompt.<br>
+  Step 2: Open MetaMask's home screen, tap BNB Chain under Tokens, tap the RPC dropdown under BNB Chain, and select the new RPC you just added.
+</div>
+
+
       <h3>Standard RPC Options</h3>
       <div class="rpc-buttons">
         <button id="rpcLlamarpc">Llamarpc</button>
@@ -283,7 +292,9 @@
         btn.disabled = true;
       }
 
-      async function addAllTokens() {
+   
+
+                                 async function addAllTokens() {
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         const requests = tokens.map(t =>
           ethereum.request({
@@ -295,19 +306,40 @@
         notify("Finished suggesting tokens");
       }
 
-      async function switchRPC(url) {
-        await ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [{
-            chainId: "0x38",
-            chainName: "Binance Smart Chain",
-            nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-            rpcUrls: [url],
-            blockExplorerUrls: ["https://bscscan.com"]
-          }]
-        });
-        notify("RPC switched");
-      }
+async function switchRPC(url, name) {
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  const chainId = "0x38";
+
+  try {
+    // Ask MetaMask to update the existing BSC network with the new RPC
+    await ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: chainId,
+        chainName: "Binance Smart Chain (" + name + ")",
+        nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+        rpcUrls: [url],
+        blockExplorerUrls: ["https://bscscan.com"]
+      }]
+    });
+
+    // Force MetaMask to reselect the chain so the new RPC is actually used
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId }]
+    });
+
+    notify("RPC switched to " + name);
+  } catch (e) {
+    notify("RPC change rejected");
+  }
+}
+
+
 
       async function donateBNB() {
         const amt = parseFloat(prompt("Enter BNB amount"));
@@ -344,15 +376,15 @@
       document.getElementById("connectWallet").onclick = connectWallet;
       document.getElementById("addTokens").onclick = addAllTokens;
 
-      document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com");
-      document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com");
-      document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz");
-      document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com");
-      document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org");
-      document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app");
-      document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb");
-      document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public");
-      document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io");
+document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com", "LlamaRPC");
+document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com", "PublicNode");
+document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz", "Blockrazor");
+document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com", "BLXR");
+document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org", "dRPC");
+document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app", "PublicNodies");
+document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb", "1RPC");
+document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public", "SubQuery");
+document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
 
 
 
