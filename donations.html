@@ -188,26 +188,27 @@ const evmChains = {
 
 const tokens = {
   eth: {
-    usdt: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    usdc: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    dai: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+    usdt: { address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", decimals: 6 },
+    usdc: { address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", decimals: 6 },
+    dai:  { address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", decimals: 18 }
   },
   bsc: {
-    usdt: "0x55d398326f99059fF775485246999027B3197955",
-    usdc: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-    dai: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3"
+    usdt: { address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
+    usdc: { address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18 },
+    dai:  { address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", decimals: 18 }
   },
   polygon: {
-    usdt: "0xc2132D05D31c914a87C6611C10748AaCbC532bF",
-    usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-    dai: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+    usdt: { address: "0xc2132D05D31c914a87C6611C10748AaCbC532bF", decimals: 6 },
+    usdc: { address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", decimals: 6 },
+    dai:  { address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063", decimals: 18 }
   },
   avax: {
-    usdt: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
-    usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
-    dai: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70"
+    usdt: { address: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", decimals: 6 },
+    usdc: { address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", decimals: 6 },
+    dai:  { address: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70", decimals: 18 }
   }
 };
+
 
 const notify = msg => {
   const n = document.createElement("div");
