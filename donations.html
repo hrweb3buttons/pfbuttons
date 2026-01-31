@@ -250,20 +250,54 @@ async function donateNative(chain) {
   notify("Donation sent");
 }
 
-async function donateToken(chain, contract, symbol) {
-  if (!window.ethereum) return notify("MetaMask not detected");
-  const amt = parseFloat(prompt("Enter " + symbol + " amount"));
-  if (!amt) return;
-  await ensureChain(chain);
-  const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-  const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64,"0");
-  const data = "0xa9059cbb" + evmAddress.replace("0x","").padStart(64,"0") + value;
-  await ethereum.request({
-    method: "eth_sendTransaction",
-    params: [{ from, to: contract, data }]
-  });
-  notify(symbol + " donation sent");
+async function donateToken(chain, token, symbol) {
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  const input = prompt("Enter " + symbol + " amount");
+  if (!input) return;
+
+  const amount = Number(input);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    notify("Invalid amount");
+    return;
+  }
+
+  try {
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chain.chainId }]
+    });
+
+    const [from] = await ethereum.request({
+      method: "eth_requestAccounts"
+    });
+
+    const multiplier = BigInt(10) ** BigInt(token.decimals);
+    const rawAmount = BigInt(Math.round(amount * Number(multiplier)));
+
+    const data =
+      "0xa9059cbb" +
+      evmAddress.replace("0x", "").padStart(64, "0") +
+      rawAmount.toString(16).padStart(64, "0");
+
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{
+        from,
+        to: token.address,
+        data
+      }]
+    });
+
+    notify(symbol + " donation sent");
+  } catch (err) {
+    notify("Transaction cancelled");
+  }
 }
+
 
 function donateTron(symbol) {
   const amt = prompt("Enter " + symbol + " amount");
