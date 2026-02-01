@@ -437,16 +437,8 @@ async function donateSol(symbol) {
       );
     }
 
-    tx.feePayer = sender;
-    tx.recentBlockhash =
-      (await solConnection.getLatestBlockhash()).blockhash;
-
-    const signed = await window.solana.signTransaction(tx);
-    const signature = await solConnection.sendRawTransaction(
-      signed.serialize()
-    );
-
-    await solConnection.confirmTransaction(signature, "confirmed");
+    const { signature } =
+      await window.solana.signAndSendTransaction(tx);
 
     notify(symbol + " donation sent");
   } catch (err) {
@@ -454,6 +446,7 @@ async function donateSol(symbol) {
     notify("Transaction cancelled");
   }
 }
+
 
 
 </script>
