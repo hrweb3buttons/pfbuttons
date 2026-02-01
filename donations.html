@@ -264,16 +264,35 @@ async function donateTron(symbol){
 </script>
 
 <script type="module">
-import {Connection,PublicKey,SystemProgram,Transaction,LAMPORTS_PER_SOL} from "https://esm.sh/@solana/web3.js@1.95.3";
-import {getAssociatedTokenAddress,createAssociatedTokenAccountInstruction,createTransferInstruction} from "https://esm.sh/@solana/spl-token@0.4.8";
+import {
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  LAMPORTS_PER_SOL
+} from "https://esm.sh/@solana/web3.js@1.95.3";
 
-const connection=new Connection("https://rpc.ankr.com/solana","confirmed");
-const recipient=new PublicKey("5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6");
+import {
+  getAssociatedTokenAddress,
+  createTransferInstruction
+} from "https://esm.sh/@solana/spl-token@0.4.8";
 
-const solTokens={
-  USDC:{mint:"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",decimals:6},
-  USDT:{mint:"Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",decimals:6},
-  BAT:{mint:"EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u",decimals:8}
+const recipient = new PublicKey(
+  "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6"
+);
+
+const solTokens = {
+  USDC: {
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    decimals: 6
+  },
+  USDT: {
+    mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    decimals: 6
+  },
+  BAT: {
+    mint: "EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u",
+    decimals: 8
+  }
 };
 
 window.donateSol = async function(symbol) {
@@ -289,20 +308,15 @@ window.donateSol = async function(symbol) {
   await window.solana.connect();
 
   const sender = window.solana.publicKey;
-  const recipient = new solanaWeb3.PublicKey(
-    "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6"
-  );
-
-  const tx = new solanaWeb3.Transaction();
+  const tx = new Transaction();
+  tx.feePayer = sender;
 
   if (symbol === "SOL") {
     tx.add(
-      solanaWeb3.SystemProgram.transfer({
+      SystemProgram.transfer({
         fromPubkey: sender,
         toPubkey: recipient,
-        lamports: Math.round(
-          amount * solanaWeb3.LAMPORTS_PER_SOL
-        )
+        lamports: Math.round(amount * LAMPORTS_PER_SOL)
       })
     );
   } else {
@@ -312,41 +326,35 @@ window.donateSol = async function(symbol) {
       return;
     }
 
-    const mint = new solanaWeb3.PublicKey(token.mint);
+    const mint = new PublicKey(token.mint);
 
-    const senderATA =
-      await splToken.getAssociatedTokenAddress(
-        mint,
-        sender
-      );
+    const senderATA = await getAssociatedTokenAddress(
+      mint,
+      sender
+    );
 
-    const recipientATA =
-      await splToken.getAssociatedTokenAddress(
-        mint,
-        recipient
-      );
+    const recipientATA = await getAssociatedTokenAddress(
+      mint,
+      recipient
+    );
 
     tx.add(
-      splToken.createTransferInstruction(
+      createTransferInstruction(
         senderATA,
         recipientATA,
         sender,
-        BigInt(
-          Math.round(
-            amount * 10 ** token.decimals
-          )
-        )
+        BigInt(Math.round(amount * 10 ** token.decimals))
       )
     );
   }
-
-  tx.feePayer = sender;
 
   const { signature } =
     await window.solana.signAndSendTransaction(tx);
 
   alert(symbol + " donation sent\n" + signature);
 };
+</script>
+
 
 
 </body>
