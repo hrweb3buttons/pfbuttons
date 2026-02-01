@@ -348,21 +348,17 @@ window.donateSol = async function(symbol) {
     );
   }
 
-  const result = await window.solana.request({
-    method: "signAndSendTransaction",
-    params: { transaction: tx }
-  });
+const { signature } = await window.solana.signAndSendTransaction(tx);
 
-  alert(symbol + " donation sent\n" + result.signature);
-  document.querySelectorAll("[data-sol]").forEach(btn => {
+
+};
+document.querySelectorAll("[data-sol]").forEach(btn => {
   btn.addEventListener("click", () => {
-    const symbol = btn.getAttribute("data-sol");
+    const symbol = btn.dataset.sol;
     window.donateSol(symbol);
   });
 });
-
-};
-
+</script>
 
 
 
