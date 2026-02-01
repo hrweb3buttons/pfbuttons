@@ -264,12 +264,7 @@ async function donateTron(symbol){
 </script>
 
 <script type="module">
-const connection = new Connection(
-  "https://api.mainnet-beta.solana.com",
-  "confirmed"
-);
-
-  import {
+import {
   PublicKey,
   SystemProgram,
   Transaction,
@@ -277,11 +272,17 @@ const connection = new Connection(
   Connection
 } from "https://esm.sh/@solana/web3.js@1.95.3";
 
-
 import {
   getAssociatedTokenAddress,
   createTransferInstruction
 } from "https://esm.sh/@solana/spl-token@0.4.8";
+
+  const connection = new Connection(
+  "https://rpc.ankr.com/solana_public",
+  "confirmed"
+);
+
+
 
 const recipient = new PublicKey(
   "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6"
