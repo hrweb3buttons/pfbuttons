@@ -174,6 +174,8 @@
 
 </main>
 
+  <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
 <script>
 const evmAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
 const tronAddress = "TXPYc7Mtdu6ZUjeiowApGLi8bjzUXFwz5F";
@@ -208,6 +210,28 @@ const tokens = {
     dai:  { address: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70", decimals: 18 }
   }
 };
+
+  const solTokens = {
+  SOL: null,
+  USDC: {
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    decimals: 6
+  },
+  USDT: {
+    mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    decimals: 6
+  },
+  BAT: {
+    mint: "EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u",
+    decimals: 8
+  }
+};
+
+const solConnection = new solanaWeb3.Connection(
+  solanaWeb3.clusterApiUrl("mainnet-beta"),
+  "confirmed"
+);
+
 
 
 const notify = msg => {
@@ -357,30 +381,80 @@ async function donateSol(symbol) {
   try {
     await window.solana.connect();
 
+    const sender = window.solana.publicKey;
+    const recipient = new solanaWeb3.PublicKey(solAddress);
+    const tx = new solanaWeb3.Transaction();
+
     if (symbol === "SOL") {
-      const tx = new solanaWeb3.Transaction().add(
+      tx.add(
         solanaWeb3.SystemProgram.transfer({
-          fromPubkey: window.solana.publicKey,
-          toPubkey: new solanaWeb3.PublicKey(solAddress),
+          fromPubkey: sender,
+          toPubkey: recipient,
           lamports: Math.round(amount * solanaWeb3.LAMPORTS_PER_SOL)
         })
       );
-
-      const { signature } = await window.solana.signAndSendTransaction(tx);
-      await solanaWeb3.Connection.prototype.confirmTransaction.call(
-        new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta")),
-        signature
-      );
     } else {
-      notify("SPL token transfers require token account handling");
-      return;
+      const token = solTokens[symbol];
+      const mint = new solanaWeb3.PublicKey(token.mint);
+
+      const senderATA =
+        await splToken.getAssociatedTokenAddress(
+          mint,
+          sender
+        );
+
+      const recipientATA =
+        await splToken.getAssociatedTokenAddress(
+          mint,
+          recipient
+        );
+
+      const recipientInfo =
+        await solConnection.getAccountInfo(recipientATA);
+
+      if (!recipientInfo) {
+        tx.add(
+          splToken.createAssociatedTokenAccountInstruction(
+            sender,
+            recipientATA,
+            recipient,
+            mint
+          )
+        );
+      }
+
+      const rawAmount = BigInt(
+        Math.round(amount * 10 ** token.decimals)
+      );
+
+      tx.add(
+        splToken.createTransferInstruction(
+          senderATA,
+          recipientATA,
+          sender,
+          rawAmount
+        )
+      );
     }
+
+    tx.feePayer = sender;
+    tx.recentBlockhash =
+      (await solConnection.getLatestBlockhash()).blockhash;
+
+    const signed = await window.solana.signTransaction(tx);
+    const signature = await solConnection.sendRawTransaction(
+      signed.serialize()
+    );
+
+    await solConnection.confirmTransaction(signature, "confirmed");
 
     notify(symbol + " donation sent");
   } catch (err) {
+    console.error(err);
     notify("Transaction cancelled");
   }
 }
+
 
 </script>
 
