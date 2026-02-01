@@ -64,27 +64,36 @@
       font-weight:600;
     }
 
-    #topbar {
-      position:fixed;
-      top:10px;
-      left:10px;
-      display:flex;
-      gap:12px;
-      z-index:9999;
-    }
+ #topbar button {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: .45rem .8rem;
+  font-weight: 500;
+  box-shadow: none;
+}
 
-    .notify {
-      position:fixed;
-      bottom:20px;
-      left:50%;
-      transform:translateX(-50%);
-      background:var(--card-bg);
-      border:1px solid var(--border);
-      padding:.75rem 1.25rem;
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      z-index:99999;
-    }
+#topbar button:hover {
+  opacity: .85;
+}
+
+
+ .notify {
+  max-width: 90%;
+  animation: fadein .15s ease-out;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 
     .eth{background:#627eea}
     .bnb{background:#f3ba2f;color:#000}
@@ -218,19 +227,31 @@ document.getElementById("themeToggle").onclick=()=>{
 };
 
 document.getElementById("connectWallet").onclick=async()=>{
-  if(!window.ethereum) return notify("MetaMask not detected");
+  if(!window.ethereum) return notify("MetaMask not detected. Please install it or open this page in a wallet browser.");
   const [acc]=await ethereum.request({method:"eth_requestAccounts"});
   const b=document.getElementById("connectWallet");
   b.textContent=acc.slice(0,6)+"..."+acc.slice(-4);
 };
 
-async function ensureChain(c){
-  await ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:c.chainId}]});
+try {
+  await ensureChain(chain);
+} catch {
+  notify("Could not switch network. Please switch manually in your wallet.");
+  return;
 }
 
+
+
 async function donateNative(chain){
-  const amt=Number(prompt("Enter amount"));
-  if(!amt) return;
+const input = prompt("Enter amount");
+if (input === null) return;
+
+const amt = Number(input.trim());
+if (!Number.isFinite(amt) || amt <= 0) {
+  notify("Please enter a valid amount.");
+  return;
+}
+
   await ensureChain(chain);
   const [from]=await ethereum.request({method:"eth_requestAccounts"});
   const value="0x"+BigInt(Math.floor(amt*1e18)).toString(16);
