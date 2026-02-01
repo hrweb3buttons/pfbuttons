@@ -163,10 +163,10 @@
   <section class="card">
     <h2>Solana</h2>
     <div class="buttons">
-      <button class="sol" onclick="donateSol('SOL')">SOL</button>
-      <button class="usdc" onclick="donateSol('USDC')">USDC</button>
-      <button class="usdt" onclick="donateSol('USDT')">USDT</button>
-      <button class="bat" onclick="donateSol('BAT')">BAT</button>
+<button class="sol" data-sol="SOL">SOL</button>
+<button class="usdc" data-sol="USDC">USDC</button>
+<button class="usdt" data-sol="USDT">USDT</button>
+<button class="bat" data-sol="BAT">BAT</button>
     </div>
   </section>
 </main>
@@ -354,6 +354,13 @@ window.donateSol = async function(symbol) {
   });
 
   alert(symbol + " donation sent\n" + result.signature);
+  document.querySelectorAll("[data-sol]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const symbol = btn.getAttribute("data-sol");
+    window.donateSol(symbol);
+  });
+});
+
 };
 
 
