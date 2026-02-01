@@ -173,13 +173,107 @@
   </section>
 
 </main>
-<script src="https://unpkg.com/buffer@6.0.3/index.min.js"></script>
-<script>
-  window.Buffer = buffer.Buffer;
+<script type="module">
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  LAMPORTS_PER_SOL
+} from "https://esm.sh/@solana/web3.js@1.95.3";
+
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+  createTransferInstruction
+} from "https://esm.sh/@solana/spl-token@0.4.8";
+
+const solConnection = new Connection(
+  "https://api.mainnet-beta.solana.com",
+  "confirmed"
+);
+
+const solAddress = new PublicKey(
+  "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6"
+);
+
+const solTokens = {
+  USDC: { mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", decimals: 6 },
+  USDT: { mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", decimals: 6 },
+  BAT:  { mint: "EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u", decimals: 8 }
+};
+
+window.donateSol = async function(symbol) {
+  if (!window.solana?.isPhantom) {
+    alert("Phantom wallet not detected");
+    return;
+  }
+
+  const input = prompt("Enter " + symbol + " amount");
+  const amount = Number(input);
+  if (!amount || amount <= 0) return;
+
+  await window.solana.connect();
+
+  const sender = window.solana.publicKey;
+  const tx = new Transaction();
+
+  if (symbol === "SOL") {
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: sender,
+        toPubkey: solAddress,
+        lamports: Math.round(amount * LAMPORTS_PER_SOL)
+      })
+    );
+  } else {
+    const token = solTokens[symbol];
+    const mint = new PublicKey(token.mint);
+
+    const senderATA = await getAssociatedTokenAddress(mint, sender);
+    const recipientATA = await getAssociatedTokenAddress(mint, solAddress);
+
+    const recipientInfo =
+      await solConnection.getAccountInfo(recipientATA);
+
+    if (!recipientInfo) {
+      tx.add(
+        createAssociatedTokenAccountInstruction(
+          sender,
+          recipientATA,
+          solAddress,
+          mint
+        )
+      );
+    }
+
+    const rawAmount =
+      BigInt(Math.round(amount * 10 ** token.decimals));
+
+    tx.add(
+      createTransferInstruction(
+        senderATA,
+        recipientATA,
+        sender,
+        rawAmount
+      )
+    );
+  }
+
+  tx.feePayer = sender;
+  tx.recentBlockhash =
+    (await solConnection.getLatestBlockhash()).blockhash;
+
+  const signed = await window.solana.signTransaction(tx);
+  const sig = await solConnection.sendRawTransaction(
+    signed.serialize()
+  );
+
+  await solConnection.confirmTransaction(sig);
+  alert(symbol + " donation sent");
+};
 </script>
-  <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
-<script src="https://unpkg.com/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
-<script>
+
 const evmAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
 const tronAddress = "TXPYc7Mtdu6ZUjeiowApGLi8bjzUXFwz5F";
 const solAddress = "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6";
