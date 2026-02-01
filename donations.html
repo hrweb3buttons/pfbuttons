@@ -348,12 +348,14 @@ window.donateSol = async function(symbol) {
     );
   }
 
-  const { signature } =
-    await window.solana.signAndSendTransaction(tx);
+  const result = await window.solana.request({
+    method: "signAndSendTransaction",
+    params: { transaction: tx }
+  });
 
-  alert(symbol + " donation sent\n" + signature);
+  alert(symbol + " donation sent\n" + result.signature);
 };
-</script>
+
 
 
 
