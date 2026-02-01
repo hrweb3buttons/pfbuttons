@@ -300,19 +300,88 @@ async function donateToken(chain, token, symbol) {
 }
 
 
-function donateTron(symbol) {
-  const amt = prompt("Enter " + symbol + " amount");
-  if (!amt) return;
-  const url = "tron://send?to=" + tronAddress + "&amount=" + amt + "&token=" + symbol;
-  window.location.href = url;
+async function donateTron(symbol) {
+  if (!window.tronWeb || !tronWeb.ready) {
+    notify("TronLink wallet not detected");
+    return;
+  }
+
+  const input = prompt("Enter " + symbol + " amount");
+  if (!input) return;
+
+  const amount = Number(input);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    notify("Invalid amount");
+    return;
+  }
+
+  try {
+    if (symbol === "TRX") {
+      await tronWeb.trx.sendTransaction(
+        tronAddress,
+        tronWeb.toSun(amount)
+      );
+    } else if (symbol === "USDT") {
+      const usdtContract = await tronWeb.contract().at(
+        "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+      );
+
+      await usdtContract.transfer(
+        tronAddress,
+        tronWeb.toSun(amount)
+      ).send();
+    }
+
+    notify(symbol + " donation sent");
+  } catch (err) {
+    notify("Transaction cancelled");
+  }
 }
 
-function donateSol(symbol) {
-  const amt = prompt("Enter " + symbol + " amount");
-  if (!amt) return;
-  const url = "solana:" + solAddress + "?amount=" + amt + "&token=" + symbol;
-  window.location.href = url;
+
+async function donateSol(symbol) {
+  if (!window.solana || !window.solana.isPhantom) {
+    notify("Phantom wallet not detected");
+    return;
+  }
+
+  const input = prompt("Enter " + symbol + " amount");
+  if (!input) return;
+
+  const amount = Number(input);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    notify("Invalid amount");
+    return;
+  }
+
+  try {
+    await window.solana.connect();
+
+    if (symbol === "SOL") {
+      const tx = new solanaWeb3.Transaction().add(
+        solanaWeb3.SystemProgram.transfer({
+          fromPubkey: window.solana.publicKey,
+          toPubkey: new solanaWeb3.PublicKey(solAddress),
+          lamports: Math.round(amount * solanaWeb3.LAMPORTS_PER_SOL)
+        })
+      );
+
+      const { signature } = await window.solana.signAndSendTransaction(tx);
+      await solanaWeb3.Connection.prototype.confirmTransaction.call(
+        new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta")),
+        signature
+      );
+    } else {
+      notify("SPL token transfers require token account handling");
+      return;
+    }
+
+    notify(symbol + " donation sent");
+  } catch (err) {
+    notify("Transaction cancelled");
+  }
 }
+
 </script>
 
 </body>
