@@ -276,43 +276,78 @@ const solTokens={
   BAT:{mint:"EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u",decimals:8}
 };
 
-window.donateSol=async symbol=>{
-  if(!window.solana?.isPhantom) return alert("Phantom not detected");
-  const amt=Number(prompt("Enter "+symbol+" amount"));
-  if(!amt) return;
-  await window.solana.connect();
-  const sender=window.solana.publicKey;
-  const tx=new Transaction();
-
-  if(symbol==="SOL"){
-    tx.add(SystemProgram.transfer({
-      fromPubkey:sender,
-      toPubkey:recipient,
-      lamports:Math.round(amt*LAMPORTS_PER_SOL)
-    }));
-  } else {
-    const t=solTokens[symbol];
-    const mint=new PublicKey(t.mint);
-    const sATA=await getAssociatedTokenAddress(mint,sender);
-    const rATA=await getAssociatedTokenAddress(mint,recipient);
-    if(!await connection.getAccountInfo(rATA)){
-      tx.add(createAssociatedTokenAccountInstruction(sender,rATA,recipient,mint));
-    }
-    tx.add(createTransferInstruction(
-      sATA,
-      rATA,
-      sender,
-      BigInt(Math.round(amt*10**t.decimals))
-    ));
+window.donateSol = async function(symbol) {
+  if (!window.solana?.isPhantom) {
+    alert("Phantom wallet not detected");
+    return;
   }
 
-  tx.feePayer=sender;
-  tx.recentBlockhash=(await connection.getLatestBlockhash()).blockhash;
-  const signed=await window.solana.signTransaction(tx);
-  await connection.sendRawTransaction(signed.serialize());
-  alert(symbol+" donation sent");
+  const input = prompt("Enter " + symbol + " amount");
+  const amount = Number(input);
+  if (!amount || amount <= 0) return;
+
+  await window.solana.connect();
+
+  const sender = window.solana.publicKey;
+  const recipient = new solanaWeb3.PublicKey(
+    "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6"
+  );
+
+  const tx = new solanaWeb3.Transaction();
+
+  if (symbol === "SOL") {
+    tx.add(
+      solanaWeb3.SystemProgram.transfer({
+        fromPubkey: sender,
+        toPubkey: recipient,
+        lamports: Math.round(
+          amount * solanaWeb3.LAMPORTS_PER_SOL
+        )
+      })
+    );
+  } else {
+    const token = solTokens[symbol];
+    if (!token) {
+      alert("Unsupported token");
+      return;
+    }
+
+    const mint = new solanaWeb3.PublicKey(token.mint);
+
+    const senderATA =
+      await splToken.getAssociatedTokenAddress(
+        mint,
+        sender
+      );
+
+    const recipientATA =
+      await splToken.getAssociatedTokenAddress(
+        mint,
+        recipient
+      );
+
+    tx.add(
+      splToken.createTransferInstruction(
+        senderATA,
+        recipientATA,
+        sender,
+        BigInt(
+          Math.round(
+            amount * 10 ** token.decimals
+          )
+        )
+      )
+    );
+  }
+
+  tx.feePayer = sender;
+
+  const { signature } =
+    await window.solana.signAndSendTransaction(tx);
+
+  alert(symbol + " donation sent\n" + signature);
 };
-</script>
+
 
 </body>
 </html>
