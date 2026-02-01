@@ -264,12 +264,19 @@ async function donateTron(symbol){
 </script>
 
 <script type="module">
-import {
+const connection = new Connection(
+  "https://api.mainnet-beta.solana.com",
+  "confirmed"
+);
+
+  import {
   PublicKey,
   SystemProgram,
   Transaction,
-  LAMPORTS_PER_SOL
+  LAMPORTS_PER_SOL,
+  Connection
 } from "https://esm.sh/@solana/web3.js@1.95.3";
+
 
 import {
   getAssociatedTokenAddress,
@@ -347,7 +354,10 @@ window.donateSol = async function(symbol) {
       )
     );
   }
+const { blockhash } = await connection.getLatestBlockhash();
+tx.recentBlockhash = blockhash;
 
+  
 const { signature } = await window.solana.signAndSendTransaction(tx);
 
 
