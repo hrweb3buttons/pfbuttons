@@ -173,15 +173,10 @@
   </section>
 
 </main>
+<script src="https://unpkg.com/buffer@6.0.3/index.min.js"></script>
 <script>
-  window.Buffer = window.Buffer || (() => {
-    const b = document.createElement("script");
-    b.src = "https://unpkg.com/buffer@6.0.3/index.js";
-    document.head.appendChild(b);
-    return window.Buffer;
-  })();
+  window.Buffer = buffer.Buffer;
 </script>
-
   <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
 <script>
@@ -414,13 +409,13 @@ async function donateSol(symbol) {
       const mint = new solanaWeb3.PublicKey(token.mint);
 
       const senderATA =
-        await splTokenWeb3.getAssociatedTokenAddress(
+        await splToken.getAssociatedTokenAddress(
           mint,
           sender
         );
 
       const recipientATA =
-        await splTokenWeb3.getAssociatedTokenAddress(
+        await splToken.getAssociatedTokenAddress(
           mint,
           recipient
         );
@@ -430,7 +425,7 @@ async function donateSol(symbol) {
 
       if (!recipientInfo) {
         tx.add(
-          splTokenWeb3.createAssociatedTokenAccountInstruction(
+          splToken.createAssociatedTokenAccountInstruction(
             sender,
             recipientATA,
             recipient,
@@ -444,7 +439,7 @@ async function donateSol(symbol) {
       );
 
       tx.add(
-        splTokenWeb3.createTransferInstruction(
+        splToken.createTransferInstruction(
           senderATA,
           recipientATA,
           sender,
