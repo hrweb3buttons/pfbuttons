@@ -173,6 +173,14 @@
   </section>
 
 </main>
+<script>
+  window.Buffer = window.Buffer || (() => {
+    const b = document.createElement("script");
+    b.src = "https://unpkg.com/buffer@6.0.3/index.js";
+    document.head.appendChild(b);
+    return window.Buffer;
+  })();
+</script>
 
   <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
 <script src="https://unpkg.com/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
@@ -383,6 +391,7 @@ async function donateSol(symbol) {
 
     const sender = window.solana.publicKey;
     const recipient = new solanaWeb3.PublicKey(solAddress);
+
     const tx = new solanaWeb3.Transaction();
 
     if (symbol === "SOL") {
@@ -390,21 +399,28 @@ async function donateSol(symbol) {
         solanaWeb3.SystemProgram.transfer({
           fromPubkey: sender,
           toPubkey: recipient,
-          lamports: Math.round(amount * solanaWeb3.LAMPORTS_PER_SOL)
+          lamports: Math.round(
+            amount * solanaWeb3.LAMPORTS_PER_SOL
+          )
         })
       );
     } else {
       const token = solTokens[symbol];
+      if (!token) {
+        notify("Unsupported token");
+        return;
+      }
+
       const mint = new solanaWeb3.PublicKey(token.mint);
 
       const senderATA =
-        await splToken.getAssociatedTokenAddress(
+        await splTokenWeb3.getAssociatedTokenAddress(
           mint,
           sender
         );
 
       const recipientATA =
-        await splToken.getAssociatedTokenAddress(
+        await splTokenWeb3.getAssociatedTokenAddress(
           mint,
           recipient
         );
@@ -414,7 +430,7 @@ async function donateSol(symbol) {
 
       if (!recipientInfo) {
         tx.add(
-          splToken.createAssociatedTokenAccountInstruction(
+          splTokenWeb3.createAssociatedTokenAccountInstruction(
             sender,
             recipientATA,
             recipient,
@@ -428,7 +444,7 @@ async function donateSol(symbol) {
       );
 
       tx.add(
-        splToken.createTransferInstruction(
+        splTokenWeb3.createTransferInstruction(
           senderATA,
           recipientATA,
           sender,
@@ -437,8 +453,16 @@ async function donateSol(symbol) {
       );
     }
 
-    const { signature } =
-      await window.solana.signAndSendTransaction(tx);
+    tx.feePayer = sender;
+    tx.recentBlockhash =
+      (await solConnection.getLatestBlockhash()).blockhash;
+
+    const signed = await window.solana.signTransaction(tx);
+    const sig = await solConnection.sendRawTransaction(
+      signed.serialize()
+    );
+
+    await solConnection.confirmTransaction(sig, "confirmed");
 
     notify(symbol + " donation sent");
   } catch (err) {
@@ -446,6 +470,7 @@ async function donateSol(symbol) {
     notify("Transaction cancelled");
   }
 }
+
 
 
 
