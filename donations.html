@@ -4,102 +4,101 @@
   <meta charset="utf8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Support Community Development</title>
-  <meta name="description" content="Multi chain donation page for supporting community development.">
 
   <style>
     :root {
-      --background: #f4f6f8;
-      --text: #333;
-      --card-bg: #fff;
-      --border: #e1e4e8;
-      --radius: 12px;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --background:#f4f6f8;
+      --text:#333;
+      --card-bg:#fff;
+      --border:#e1e4e8;
+      --radius:12px;
+      --shadow:0 2px 8px rgba(0,0,0,.08);
     }
 
     :root.dark {
-      --background: #0f141a;
-      --text: #e6eaf0;
-      --card-bg: #151b23;
-      --border: #273142;
-      --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      --background:#0f141a;
+      --text:#e6eaf0;
+      --card-bg:#151b23;
+      --border:#273142;
+      --shadow:0 4px 16px rgba(0,0,0,.6);
     }
 
     body {
-      font-family: Inter, system-ui, Arial, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--background);
+      color:var(--text);
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-height:100vh;
     }
 
-    main { width: 100%; max-width: 820px; margin: 2rem; }
+    main { width:100%; max-width:820px; margin:2rem; }
 
-    h1, h2 { color: #111; }
-    :root.dark h1,
-    :root.dark h2 { color: #fff; }
+    h1,h2 { color:#111; }
+    :root.dark h1,:root.dark h2 { color:#fff; }
 
     .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow);
+      background:var(--card-bg);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:1.5rem;
+      margin-bottom:1.5rem;
+      box-shadow:var(--shadow);
     }
 
     .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:.75rem;
+      margin-top:1rem;
     }
 
     button {
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.7rem 1.1rem;
-      cursor: pointer;
-      color: #fff;
-      font-weight: 600;
+      border:none;
+      border-radius:var(--radius);
+      padding:.7rem 1.1rem;
+      cursor:pointer;
+      color:#fff;
+      font-weight:600;
     }
 
     #topbar {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      display: flex;
-      gap: 12px;
-      z-index: 9999;
+      position:fixed;
+      top:10px;
+      left:10px;
+      display:flex;
+      gap:12px;
+      z-index:9999;
     }
 
     .notify {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 0.75rem 1.25rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      z-index: 99999;
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      background:var(--card-bg);
+      border:1px solid var(--border);
+      padding:.75rem 1.25rem;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      z-index:99999;
     }
 
-    .eth { background:#627eea; }
-    .bnb { background:#f3ba2f; color:#000; }
-    .matic { background:#8247e5; }
-    .avax { background:#e84142; }
-    .usdt { background:#26a17b; }
-    .usdc { background:#2775ca; }
-    .dai { background:#f5ac37; color:#000; }
-    .trx { background:#ff060a; }
-    .sol { background:#14f195; color:#000; }
-    .bat { background:#ff5000; }
+    .eth{background:#627eea}
+    .bnb{background:#f3ba2f;color:#000}
+    .matic{background:#8247e5}
+    .avax{background:#e84142}
+    .usdt{background:#26a17b}
+    .usdc{background:#2775ca}
+    .dai{background:#f5ac37;color:#000}
+    .trx{background:#ff060a}
+    .sol{background:#14f195;color:#000}
+    .bat{background:#ff5000}
   </style>
 </head>
+
 <body>
 
 <div id="topbar">
@@ -108,49 +107,48 @@
 </div>
 
 <main>
-
   <section class="card">
     <h1>Support Community Development</h1>
-    <p>Thank you for supporting community built tools and resources. Choose a network and token below to make a donation.</p>
+    <p>Choose a network and token below to make a donation.</p>
   </section>
 
   <section class="card">
-    <h2>Ethereum Mainnet</h2>
+    <h2>Ethereum</h2>
     <div class="buttons">
       <button class="eth" onclick="donateNative(evmChains.eth)">ETH</button>
-      <button class="usdt" onclick="donateToken(evmChains.eth, tokens.eth.usdt, 'USDT')">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.eth, tokens.eth.usdc, 'USDC')">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.eth, tokens.eth.dai, 'DAI')">DAI</button>
+      <button class="usdt" onclick="donateToken(evmChains.eth,tokens.eth.usdt,'USDT')">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.eth,tokens.eth.usdc,'USDC')">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.eth,tokens.eth.dai,'DAI')">DAI</button>
     </div>
   </section>
 
   <section class="card">
-    <h2>BNB Smart Chain</h2>
+    <h2>BNB Chain</h2>
     <div class="buttons">
       <button class="bnb" onclick="donateNative(evmChains.bsc)">BNB</button>
-      <button class="usdt" onclick="donateToken(evmChains.bsc, tokens.bsc.usdt, 'USDT')">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.bsc, tokens.bsc.usdc, 'USDC')">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.bsc, tokens.bsc.dai, 'DAI')">DAI</button>
+      <button class="usdt" onclick="donateToken(evmChains.bsc,tokens.bsc.usdt,'USDT')">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.bsc,tokens.bsc.usdc,'USDC')">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.bsc,tokens.bsc.dai,'DAI')">DAI</button>
     </div>
   </section>
 
   <section class="card">
-    <h2>Polygon PoS</h2>
+    <h2>Polygon</h2>
     <div class="buttons">
       <button class="matic" onclick="donateNative(evmChains.polygon)">MATIC</button>
-      <button class="usdt" onclick="donateToken(evmChains.polygon, tokens.polygon.usdt, 'USDT')">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.polygon, tokens.polygon.usdc, 'USDC')">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.polygon, tokens.polygon.dai, 'DAI')">DAI</button>
+      <button class="usdt" onclick="donateToken(evmChains.polygon,tokens.polygon.usdt,'USDT')">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.polygon,tokens.polygon.usdc,'USDC')">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.polygon,tokens.polygon.dai,'DAI')">DAI</button>
     </div>
   </section>
 
   <section class="card">
-    <h2>Avalanche C Chain</h2>
+    <h2>Avalanche</h2>
     <div class="buttons">
       <button class="avax" onclick="donateNative(evmChains.avax)">AVAX</button>
-      <button class="usdt" onclick="donateToken(evmChains.avax, tokens.avax.usdt, 'USDT')">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.avax, tokens.avax.usdc, 'USDC')">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.avax, tokens.avax.dai, 'DAI')">DAI</button>
+      <button class="usdt" onclick="donateToken(evmChains.avax,tokens.avax.usdt,'USDT')">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.avax,tokens.avax.usdc,'USDC')">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.avax,tokens.avax.dai,'DAI')">DAI</button>
     </div>
   </section>
 
@@ -171,398 +169,149 @@
       <button class="bat" onclick="donateSol('BAT')">BAT</button>
     </div>
   </section>
-
 </main>
-<script type="module">
-import {
-  Connection,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  LAMPORTS_PER_SOL
-} from "https://esm.sh/@solana/web3.js@1.95.3";
 
-import {
-  getAssociatedTokenAddress,
-  createAssociatedTokenAccountInstruction,
-  createTransferInstruction
-} from "https://esm.sh/@solana/spl-token@0.4.8";
+<script>
+const evmAddress="0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
+const tronAddress="TXPYc7Mtdu6ZUjeiowApGLi8bjzUXFwz5F";
 
-const solConnection = new Connection(
-  "https://api.mainnet-beta.solana.com",
-  "confirmed"
-);
-
-const solAddress = new PublicKey(
-  "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6"
-);
-
-const solTokens = {
-  USDC: { mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", decimals: 6 },
-  USDT: { mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", decimals: 6 },
-  BAT:  { mint: "EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u", decimals: 8 }
+const evmChains={
+  eth:{chainId:"0x1"},
+  bsc:{chainId:"0x38"},
+  polygon:{chainId:"0x89"},
+  avax:{chainId:"0xa86a"}
 };
 
-window.donateSol = async function(symbol) {
-  if (!window.solana?.isPhantom) {
-    alert("Phantom wallet not detected");
-    return;
-  }
-
-  const input = prompt("Enter " + symbol + " amount");
-  const amount = Number(input);
-  if (!amount || amount <= 0) return;
-
-  await window.solana.connect();
-
-  const sender = window.solana.publicKey;
-  const tx = new Transaction();
-
-  if (symbol === "SOL") {
-    tx.add(
-      SystemProgram.transfer({
-        fromPubkey: sender,
-        toPubkey: solAddress,
-        lamports: Math.round(amount * LAMPORTS_PER_SOL)
-      })
-    );
-  } else {
-    const token = solTokens[symbol];
-    const mint = new PublicKey(token.mint);
-
-    const senderATA = await getAssociatedTokenAddress(mint, sender);
-    const recipientATA = await getAssociatedTokenAddress(mint, solAddress);
-
-    const recipientInfo =
-      await solConnection.getAccountInfo(recipientATA);
-
-    if (!recipientInfo) {
-      tx.add(
-        createAssociatedTokenAccountInstruction(
-          sender,
-          recipientATA,
-          solAddress,
-          mint
-        )
-      );
-    }
-
-    const rawAmount =
-      BigInt(Math.round(amount * 10 ** token.decimals));
-
-    tx.add(
-      createTransferInstruction(
-        senderATA,
-        recipientATA,
-        sender,
-        rawAmount
-      )
-    );
-  }
-
-  tx.feePayer = sender;
-  tx.recentBlockhash =
-    (await solConnection.getLatestBlockhash()).blockhash;
-
-  const signed = await window.solana.signTransaction(tx);
-  const sig = await solConnection.sendRawTransaction(
-    signed.serialize()
-  );
-
-  await solConnection.confirmTransaction(sig);
-  alert(symbol + " donation sent");
-};
-</script>
-
-const evmAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
-const tronAddress = "TXPYc7Mtdu6ZUjeiowApGLi8bjzUXFwz5F";
-const solAddress = "5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6";
-
-const evmChains = {
-  eth: { chainId: "0x1", name: "Ethereum" },
-  bsc: { chainId: "0x38", name: "BNB Chain" },
-  polygon: { chainId: "0x89", name: "Polygon" },
-  avax: { chainId: "0xa86a", name: "Avalanche" }
-};
-
-const tokens = {
-  eth: {
-    usdt: { address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", decimals: 6 },
-    usdc: { address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", decimals: 6 },
-    dai:  { address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", decimals: 18 }
+const tokens={
+  eth:{
+    usdt:{address:"0xdAC17F958D2ee523a2206206994597C13D831ec7",decimals:6},
+    usdc:{address:"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",decimals:6},
+    dai:{address:"0x6B175474E89094C44Da98b954EedeAC495271d0F",decimals:18}
   },
-  bsc: {
-    usdt: { address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
-    usdc: { address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18 },
-    dai:  { address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", decimals: 18 }
+  bsc:{
+    usdt:{address:"0x55d398326f99059fF775485246999027B3197955",decimals:18},
+    usdc:{address:"0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",decimals:18},
+    dai:{address:"0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",decimals:18}
   },
-  polygon: {
-    usdt: { address: "0xc2132D05D31c914a87C6611C10748AaCbC532bF", decimals: 6 },
-    usdc: { address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", decimals: 6 },
-    dai:  { address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063", decimals: 18 }
+  polygon:{
+    usdt:{address:"0xc2132D05D31c914a87C6611C10748AaCbC532bF",decimals:6},
+    usdc:{address:"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",decimals:6},
+    dai:{address:"0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",decimals:18}
   },
-  avax: {
-    usdt: { address: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", decimals: 6 },
-    usdc: { address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", decimals: 6 },
-    dai:  { address: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70", decimals: 18 }
+  avax:{
+    usdt:{address:"0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",decimals:6},
+    usdc:{address:"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",decimals:6},
+    dai:{address:"0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",decimals:18}
   }
 };
 
-  const solTokens = {
-  SOL: null,
-  USDC: {
-    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-    decimals: 6
-  },
-  USDT: {
-    mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-    decimals: 6
-  },
-  BAT: {
-    mint: "EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u",
-    decimals: 8
-  }
-};
-
-const solConnection = new solanaWeb3.Connection(
-  solanaWeb3.clusterApiUrl("mainnet-beta"),
-  "confirmed"
-);
-
-
-
-const notify = msg => {
-  const n = document.createElement("div");
-  n.className = "notify";
-  n.textContent = msg;
+const notify=msg=>{
+  const n=document.createElement("div");
+  n.className="notify";
+  n.textContent=msg;
   document.body.appendChild(n);
-  setTimeout(() => n.remove(), 4000);
+  setTimeout(()=>n.remove(),4000);
 };
 
-document.getElementById("themeToggle").onclick = () => {
+document.getElementById("themeToggle").onclick=()=>{
   document.documentElement.classList.toggle("dark");
 };
 
-document.getElementById("connectWallet").onclick = async () => {
-  if (!window.ethereum) return notify("MetaMask not detected");
-  const accs = await ethereum.request({ method: "eth_requestAccounts" });
-  const btn = document.getElementById("connectWallet");
-  btn.textContent = accs[0].slice(0,6) + "..." + accs[0].slice(-4);
-  btn.disabled = true;
+document.getElementById("connectWallet").onclick=async()=>{
+  if(!window.ethereum) return notify("MetaMask not detected");
+  const [acc]=await ethereum.request({method:"eth_requestAccounts"});
+  const b=document.getElementById("connectWallet");
+  b.textContent=acc.slice(0,6)+"..."+acc.slice(-4);
 };
 
-async function ensureChain(chain) {
-  await ethereum.request({
-    method: "wallet_switchEthereumChain",
-    params: [{ chainId: chain.chainId }]
-  });
+async function ensureChain(c){
+  await ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:c.chainId}]});
 }
 
-async function donateNative(chain) {
-  if (!window.ethereum) return notify("MetaMask not detected");
-  const amt = parseFloat(prompt("Enter amount"));
-  if (!amt) return;
+async function donateNative(chain){
+  const amt=Number(prompt("Enter amount"));
+  if(!amt) return;
   await ensureChain(chain);
-  const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-  const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-  await ethereum.request({
-    method: "eth_sendTransaction",
-    params: [{ from, to: evmAddress, value }]
-  });
+  const [from]=await ethereum.request({method:"eth_requestAccounts"});
+  const value="0x"+BigInt(Math.floor(amt*1e18)).toString(16);
+  await ethereum.request({method:"eth_sendTransaction",params:[{from,to:evmAddress,value}]});
   notify("Donation sent");
 }
 
-async function donateToken(chain, token, symbol) {
-  if (!window.ethereum) {
-    notify("MetaMask not detected");
-    return;
-  }
-
-  const input = prompt("Enter " + symbol + " amount");
-  if (!input) return;
-
-  const amount = Number(input);
-  if (!Number.isFinite(amount) || amount <= 0) {
-    notify("Invalid amount");
-    return;
-  }
-
-  try {
-    await ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: chain.chainId }]
-    });
-
-    const [from] = await ethereum.request({
-      method: "eth_requestAccounts"
-    });
-
-    const multiplier = BigInt(10) ** BigInt(token.decimals);
-    const rawAmount = BigInt(Math.round(amount * Number(multiplier)));
-
-    const data =
-      "0xa9059cbb" +
-      evmAddress.replace("0x", "").padStart(64, "0") +
-      rawAmount.toString(16).padStart(64, "0");
-
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{
-        from,
-        to: token.address,
-        data
-      }]
-    });
-
-    notify(symbol + " donation sent");
-  } catch (err) {
-    notify("Transaction cancelled");
-  }
+async function donateToken(chain,token,symbol){
+  const amt=Number(prompt("Enter "+symbol+" amount"));
+  if(!amt) return;
+  await ensureChain(chain);
+  const [from]=await ethereum.request({method:"eth_requestAccounts"});
+  const raw=BigInt(Math.round(amt*10**token.decimals));
+  const data="0xa9059cbb"+evmAddress.slice(2).padStart(64,"0")+raw.toString(16).padStart(64,"0");
+  await ethereum.request({method:"eth_sendTransaction",params:[{from,to:token.address,data}]});
+  notify(symbol+" donation sent");
 }
 
-
-async function donateTron(symbol) {
-  if (!window.tronWeb || !tronWeb.ready) {
-    notify("TronLink wallet not detected");
-    return;
+async function donateTron(symbol){
+  if(!window.tronWeb?.ready) return notify("TronLink not detected");
+  const amt=Number(prompt("Enter "+symbol+" amount"));
+  if(!amt) return;
+  if(symbol==="TRX"){
+    await tronWeb.trx.sendTransaction(tronAddress,tronWeb.toSun(amt));
+  } else {
+    const c=await tronWeb.contract().at("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t");
+    await c.transfer(tronAddress,tronWeb.toSun(amt)).send();
   }
+  notify(symbol+" donation sent");
+}
+</script>
 
-  const input = prompt("Enter " + symbol + " amount");
-  if (!input) return;
+<script type="module">
+import {Connection,PublicKey,SystemProgram,Transaction,LAMPORTS_PER_SOL} from "https://esm.sh/@solana/web3.js@1.95.3";
+import {getAssociatedTokenAddress,createAssociatedTokenAccountInstruction,createTransferInstruction} from "https://esm.sh/@solana/spl-token@0.4.8";
 
-  const amount = Number(input);
-  if (!Number.isFinite(amount) || amount <= 0) {
-    notify("Invalid amount");
-    return;
-  }
+const connection=new Connection("https://rpc.ankr.com/solana","confirmed");
+const recipient=new PublicKey("5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6");
 
-  try {
-    if (symbol === "TRX") {
-      await tronWeb.trx.sendTransaction(
-        tronAddress,
-        tronWeb.toSun(amount)
-      );
-    } else if (symbol === "USDT") {
-      const usdtContract = await tronWeb.contract().at(
-        "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
-      );
+const solTokens={
+  USDC:{mint:"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",decimals:6},
+  USDT:{mint:"Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",decimals:6},
+  BAT:{mint:"EPeUFDaX9wYd9cH3UX77YPD6PEw24kTx5cHGNy6GZ5u",decimals:8}
+};
 
-      await usdtContract.transfer(
-        tronAddress,
-        tronWeb.toSun(amount)
-      ).send();
+window.donateSol=async symbol=>{
+  if(!window.solana?.isPhantom) return alert("Phantom not detected");
+  const amt=Number(prompt("Enter "+symbol+" amount"));
+  if(!amt) return;
+  await window.solana.connect();
+  const sender=window.solana.publicKey;
+  const tx=new Transaction();
+
+  if(symbol==="SOL"){
+    tx.add(SystemProgram.transfer({
+      fromPubkey:sender,
+      toPubkey:recipient,
+      lamports:Math.round(amt*LAMPORTS_PER_SOL)
+    }));
+  } else {
+    const t=solTokens[symbol];
+    const mint=new PublicKey(t.mint);
+    const sATA=await getAssociatedTokenAddress(mint,sender);
+    const rATA=await getAssociatedTokenAddress(mint,recipient);
+    if(!await connection.getAccountInfo(rATA)){
+      tx.add(createAssociatedTokenAccountInstruction(sender,rATA,recipient,mint));
     }
-
-    notify(symbol + " donation sent");
-  } catch (err) {
-    notify("Transaction cancelled");
-  }
-}
-
-
-async function donateSol(symbol) {
-  if (!window.solana || !window.solana.isPhantom) {
-    notify("Phantom wallet not detected");
-    return;
+    tx.add(createTransferInstruction(
+      sATA,
+      rATA,
+      sender,
+      BigInt(Math.round(amt*10**t.decimals))
+    ));
   }
 
-  const input = prompt("Enter " + symbol + " amount");
-  if (!input) return;
-
-  const amount = Number(input);
-  if (!Number.isFinite(amount) || amount <= 0) {
-    notify("Invalid amount");
-    return;
-  }
-
-  try {
-    await window.solana.connect();
-
-    const sender = window.solana.publicKey;
-    const recipient = new solanaWeb3.PublicKey(solAddress);
-
-    const tx = new solanaWeb3.Transaction();
-
-    if (symbol === "SOL") {
-      tx.add(
-        solanaWeb3.SystemProgram.transfer({
-          fromPubkey: sender,
-          toPubkey: recipient,
-          lamports: Math.round(
-            amount * solanaWeb3.LAMPORTS_PER_SOL
-          )
-        })
-      );
-    } else {
-      const token = solTokens[symbol];
-      if (!token) {
-        notify("Unsupported token");
-        return;
-      }
-
-      const mint = new solanaWeb3.PublicKey(token.mint);
-
-      const senderATA =
-        await splToken.getAssociatedTokenAddress(
-          mint,
-          sender
-        );
-
-      const recipientATA =
-        await splToken.getAssociatedTokenAddress(
-          mint,
-          recipient
-        );
-
-      const recipientInfo =
-        await solConnection.getAccountInfo(recipientATA);
-
-      if (!recipientInfo) {
-        tx.add(
-          splToken.createAssociatedTokenAccountInstruction(
-            sender,
-            recipientATA,
-            recipient,
-            mint
-          )
-        );
-      }
-
-      const rawAmount = BigInt(
-        Math.round(amount * 10 ** token.decimals)
-      );
-
-      tx.add(
-        splToken.createTransferInstruction(
-          senderATA,
-          recipientATA,
-          sender,
-          rawAmount
-        )
-      );
-    }
-
-    tx.feePayer = sender;
-    tx.recentBlockhash =
-      (await solConnection.getLatestBlockhash()).blockhash;
-
-    const signed = await window.solana.signTransaction(tx);
-    const sig = await solConnection.sendRawTransaction(
-      signed.serialize()
-    );
-
-    await solConnection.confirmTransaction(sig, "confirmed");
-
-    notify(symbol + " donation sent");
-  } catch (err) {
-    console.error(err);
-    notify("Transaction cancelled");
-  }
-}
-
-
-
-
+  tx.feePayer=sender;
+  tx.recentBlockhash=(await connection.getLatestBlockhash()).blockhash;
+  const signed=await window.solana.signTransaction(tx);
+  await connection.sendRawTransaction(signed.serialize());
+  alert(symbol+" donation sent");
+};
 </script>
 
 </body>
