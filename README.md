@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -101,6 +102,20 @@
     #donateUSDT { background-color: #26a17b; }
     #donatePML { background-color: #008cff; }
 
+    .donate-more {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .donate-more:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    :root.dark .donate-more:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
     #wallet-connect {
       position: fixed;
       top: 10px;
@@ -176,6 +191,10 @@
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
     <button id="donatePML">Donate PML</button>
+   <button class="donate-more"
+          onclick="window.location.href='https://hrweb3buttons.github.io/pfbuttons/donations.html'">
+          View more donation options
+        </button>
   </div>
 </section>
 
@@ -242,7 +261,7 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.8
+    </a> | v1.1.7
   </footer>
 
   <script>
