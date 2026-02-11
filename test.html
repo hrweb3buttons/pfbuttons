@@ -160,6 +160,11 @@
       display: flex;
       justify-content: center;
     }
+
+    html {
+  scroll-behavior: smooth;
+}
+
   </style>
 </head>
 
@@ -174,14 +179,14 @@
   </div>
 
   <main>
-    <section class="card">
+<section class="card" id="home">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
-<section class="card highlight">
+<section class="card highlight" id="donate">
   <h2>Support Community Development</h2>
   <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
   <p>They are used daily by many members and continue to grow and improve.</p>
@@ -198,12 +203,12 @@
 </section>
 
 
-    <section class="card">
+<section class="card" id="add-tokens">
       <h2>Add Tokens to MetaMask</h2>
       <button id="addTokens">Add All Tokens</button>
     </section>
 
-    <section class="card">
+<section class="card" id="rpc">
       <h2>Switch Binance Smart Chain RPC</h2>
       <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
       <p>Note: The Chainstack RPC Node is no longer available due to technical problems.</p>
@@ -245,7 +250,7 @@
       
     </section>
 
-<section class="card">
+<section class="card" id="charts">
   <h2>Token Charts</h2>
   <p>View real time charts for Pool Funding tokens on ApeSpace.</p>
 
@@ -272,9 +277,9 @@
   </div>
 </section>
 
-    <section class="card">
+<section class="card" id="calculator">
   <h2>Token Value Calculator</h2>
-  <p>Calculate the USD value of a token amount using either a current price or a predefined price target.</p>
+  <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
 
   <div style="margin-bottom: 1rem;">
     <strong>Mode</strong><br>
@@ -322,7 +327,7 @@
 
 
     
-    <section class="card">
+<section class="card" id="documents">
       <h2>Community Documents</h2>
       <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
       <div class="doc-buttons">
@@ -337,7 +342,7 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.9
+    </a> | v1.1.11
   </footer>
 
   <script>
