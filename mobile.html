@@ -410,6 +410,23 @@ async function addAllTokens() {
   try {
     await ethereum.request({ method: "eth_requestAccounts" });
 
+    const requiredChain = "0x38";
+    const currentChain = await ethereum.request({ method: "eth_chainId" });
+
+    if (currentChain !== requiredChain) {
+      try {
+        await ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: requiredChain }]
+        });
+      } catch (switchError) {
+        notify("Please switch to BNB Chain first");
+        btn.disabled = false;
+        btn.textContent = "Add All Tokens";
+        return;
+      }
+    }
+
     for (const token of tokens) {
       const wasAdded = await ethereum.request({
         method: "wallet_watchAsset",
@@ -440,6 +457,7 @@ async function addAllTokens() {
   btn.disabled = false;
   btn.textContent = "Add All Tokens";
 }
+
 
 
 
