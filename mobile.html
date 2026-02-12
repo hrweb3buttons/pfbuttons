@@ -405,53 +405,36 @@ async function addAllTokens() {
 
   const btn = document.getElementById("addTokens");
   btn.disabled = true;
-  btn.textContent = "Processing...";
+  btn.textContent = "Testing...";
 
   try {
     await ethereum.request({ method: "eth_requestAccounts" });
 
-    const requiredChain = "0x38";
-    const currentChain = await ethereum.request({ method: "eth_chainId" });
+    console.log("Provider:", ethereum);
+    console.log("Is MetaMask:", ethereum.isMetaMask);
 
-    if (currentChain !== requiredChain) {
-      try {
-        await ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: requiredChain }]
-        });
-      } catch (switchError) {
-        notify("Please switch to BNB Chain first");
-        btn.disabled = false;
-        btn.textContent = "Add All Tokens";
-        return;
-      }
-    }
+    const testToken = tokens[0];
 
-    for (const token of tokens) {
-      const wasAdded = await ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: token.address,
-            symbol: token.symbol,
-            decimals: token.decimals
-          }
+    console.log("Attempting watchAsset for:", testToken.symbol);
+
+    const result = await ethereum.request({
+      method: "wallet_watchAsset",
+      params: {
+        type: "ERC20",
+        options: {
+          address: testToken.address,
+          symbol: testToken.symbol,
+          decimals: testToken.decimals
         }
-      });
-
-      if (!wasAdded) {
-        notify("Token add cancelled");
-        btn.disabled = false;
-        btn.textContent = "Add All Tokens";
-        return;
       }
-    }
+    });
 
-    notify("Finished suggesting tokens");
+    console.log("watchAsset result:", result);
+    notify("Result: " + result);
+
   } catch (err) {
-    console.error(err);
-    notify("Error suggesting token");
+    console.error("watchAsset error:", err);
+    notify("Error: " + (err?.message || "unknown"));
   }
 
   btn.disabled = false;
