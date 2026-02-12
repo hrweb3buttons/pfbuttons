@@ -403,22 +403,28 @@ async function addAllTokens() {
     return;
   }
 
-  // Prevent double tapping
   const btn = document.getElementById("addTokens");
   btn.disabled = true;
   btn.textContent = "Processing...";
 
   try {
+    // Force connection first (required on MetaMask mobile)
+    await ethereum.request({ method: "eth_requestAccounts" });
+
     for (const token of tokens) {
       const wasAdded = await ethereum.request({
         method: "wallet_watchAsset",
         params: {
           type: "ERC20",
-          options: token
+          options: {
+            address: token.address,
+            symbol: token.symbol,
+            decimals: token.decimals,
+            image: token.image
+          }
         }
       });
 
-      // If user rejects any token, stop the flow
       if (!wasAdded) {
         notify("Token add cancelled");
         btn.disabled = false;
@@ -429,12 +435,14 @@ async function addAllTokens() {
 
     notify("Finished suggesting tokens");
   } catch (err) {
+    console.error(err);
     notify("Error suggesting token");
   }
 
   btn.disabled = false;
   btn.textContent = "Add All Tokens";
 }
+
 
 
 async function switchRPC(url, name) {
