@@ -590,6 +590,73 @@ function resetCalculator() {
 }
 
 calcReset.addEventListener("click", resetCalculator);
+
+function isMetaMaskMobile() {
+  return (
+    typeof window.ethereum !== "undefined" &&
+    window.ethereum.isMetaMask &&
+    /MetaMaskMobile/i.test(navigator.userAgent)
+  );
+}
+
+    function isMetaMaskMobile() {
+  return (
+    typeof window.ethereum !== "undefined" &&
+    window.ethereum.isMetaMask &&
+    /MetaMaskMobile/i.test(navigator.userAgent)
+  );
+}
+
+function showMobileFallback() {
+  const btn = document.getElementById("addTokens");
+  btn.style.display = "none";
+
+  const container = document.createElement("div");
+  container.style.marginTop = "20px";
+
+  const title = document.createElement("h3");
+  title.textContent = "Manual Token Add Required (MetaMask Mobile)";
+  container.appendChild(title);
+
+  const instructions = document.createElement("p");
+  instructions.textContent =
+    "MetaMask mobile currently does not support automatic token suggestions. Please add tokens manually using the contract addresses below.";
+  container.appendChild(instructions);
+
+  tokens.forEach(token => {
+    const wrapper = document.createElement("div");
+    wrapper.style.marginBottom = "10px";
+
+    const label = document.createElement("strong");
+    label.textContent = token.symbol + ": ";
+    wrapper.appendChild(label);
+
+    const addr = document.createElement("span");
+    addr.textContent = token.address;
+    wrapper.appendChild(addr);
+
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy";
+    copyBtn.style.marginLeft = "10px";
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(token.address);
+      notify(token.symbol + " address copied");
+    };
+
+    wrapper.appendChild(copyBtn);
+    container.appendChild(wrapper);
+  });
+
+  document.body.appendChild(container);
+}
+
+window.addEventListener("load", () => {
+  if (isMetaMaskMobile()) {
+    showMobileFallback();
+  }
+});
+
+    
   </script>
 </body>
 </html>
