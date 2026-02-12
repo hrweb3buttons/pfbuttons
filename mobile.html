@@ -439,8 +439,15 @@ async function addAllTokens() {
 
   const chainId = "0x38";
 
+async function switchRPC(url, name) {
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  const chainId = "0x38";
+
   try {
-    // Ask MetaMask to update the existing BSC network with the new RPC
     await ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
@@ -452,7 +459,6 @@ async function addAllTokens() {
       }]
     });
 
-    // Force MetaMask to reselect the chain so the new RPC is actually used
     await ethereum.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId }]
@@ -463,6 +469,7 @@ async function addAllTokens() {
     notify("RPC change rejected");
   }
 }
+
 
 
 
