@@ -357,6 +357,7 @@
       if (localStorage.getItem("theme") === "dark") {
         root.classList.add("dark");
         themeToggle.textContent = "Light mode";
+        
       }
 
       themeToggle.onclick = () => {
@@ -418,7 +419,6 @@ async function switchRPC(url, name) {
   const chainId = "0x38";
 
   try {
-    // Ask MetaMask to update the existing BSC network with the new RPC
     await ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
@@ -428,6 +428,77 @@ async function switchRPC(url, name) {
         rpcUrls: [url],
         blockExplorerUrls: ["https://bscscan.com"]
       }]
+    });
+
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId }]
+    });
+
+    notify("RPC switched to " + name);
+  } catch (e) {
+    notify("RPC change rejected");
+  }
+}
+
+
+
+
+      async function donateBNB() {
+        const amt = parseFloat(prompt("Enter BNB amount"));
+        if (!amt) return;
+        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+        const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
+        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: walletAddress, value }] });
+        notify("BNB donation sent");
+      }
+
+      async function donateToken(contract, symbol) {
+        const amt = parseFloat(prompt(`Enter ${symbol} amount`));
+        if (!amt) return;
+        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+        const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64,"0");
+        const data = "0xa9059cbb" + walletAddress.replace("0x","").padStart(64,"0") + value;
+        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
+        notify(symbol + " donation sent");
+      }
+
+      async function fetchPrices() {
+        try {
+          const bnb = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd").then(r => r.json());
+          document.getElementById("bnbPrice").textContent = bnb.binancecoin.usd.toFixed(2);
+        } catch {}
+
+        try {
+          const pml = await fetch("https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4").then(r => r.json());
+          document.getElementById("pmlPrice").textContent =
+            parseFloat(pml.data.attributes.base_token_price_usd).toFixed(2);
+        } catch {}
+      }
+
+      document.getElementById("connectWallet").onclick = connectWallet;
+      document.getElementById("addTokens").onclick = addAllTokens;
+
+document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com", "LlamaRPC");
+document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com", "PublicNode");
+document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz", "Blockrazor");
+document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com", "BLXR");
+document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org", "dRPC");
+document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app", "PublicNodies");
+document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb", "1RPC");
+document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public", "SubQuery");
+document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
+
+
+
+
+      document.getElementById("donateBNB").onclick = donateBNB;
+     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
+
+fetchPrices();
+
+/* ===== MOBILE FALLBACK GOES HERE ===== */
+
 function isMetaMaskMobile() {
   return (
     typeof window.ethereum !== "undefined" &&
@@ -484,76 +555,10 @@ function showMobileFallback() {
 if (isMetaMaskMobile()) {
   showMobileFallback();
 }
-      
-    });
 
-    // Force MetaMask to reselect the chain so the new RPC is actually used
-    await ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId }]
-    });
+/* ===== END MOBILE FALLBACK ===== */
+});
 
-    notify("RPC switched to " + name);
-  } catch (e) {
-    notify("RPC change rejected");
-  }
-}
-
-
-
-      async function donateBNB() {
-        const amt = parseFloat(prompt("Enter BNB amount"));
-        if (!amt) return;
-        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-        const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: walletAddress, value }] });
-        notify("BNB donation sent");
-      }
-
-      async function donateToken(contract, symbol) {
-        const amt = parseFloat(prompt(`Enter ${symbol} amount`));
-        if (!amt) return;
-        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-        const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64,"0");
-        const data = "0xa9059cbb" + walletAddress.replace("0x","").padStart(64,"0") + value;
-        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
-        notify(symbol + " donation sent");
-      }
-
-      async function fetchPrices() {
-        try {
-          const bnb = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd").then(r => r.json());
-          document.getElementById("bnbPrice").textContent = bnb.binancecoin.usd.toFixed(2);
-        } catch {}
-
-        try {
-          const pml = await fetch("https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4").then(r => r.json());
-          document.getElementById("pmlPrice").textContent =
-            parseFloat(pml.data.attributes.base_token_price_usd).toFixed(2);
-        } catch {}
-      }
-
-      document.getElementById("connectWallet").onclick = connectWallet;
-      document.getElementById("addTokens").onclick = addAllTokens;
-
-document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com", "LlamaRPC");
-document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com", "PublicNode");
-document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz", "Blockrazor");
-document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com", "BLXR");
-document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org", "dRPC");
-document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app", "PublicNodies");
-document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb", "1RPC");
-document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public", "SubQuery");
-document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
-
-
-
-
-      document.getElementById("donateBNB").onclick = donateBNB;
-      document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
-      
-      fetchPrices();
-    });
 
     const priceTargets = {
   PFI: 500000,
