@@ -357,6 +357,7 @@
       if (localStorage.getItem("theme") === "dark") {
         root.classList.add("dark");
         themeToggle.textContent = "Light mode";
+        
       }
 
       themeToggle.onclick = () => {
@@ -418,7 +419,6 @@ async function switchRPC(url, name) {
   const chainId = "0x38";
 
   try {
-    // Ask MetaMask to update the existing BSC network with the new RPC
     await ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
@@ -430,7 +430,6 @@ async function switchRPC(url, name) {
       }]
     });
 
-    // Force MetaMask to reselect the chain so the new RPC is actually used
     await ethereum.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId }]
@@ -441,6 +440,7 @@ async function switchRPC(url, name) {
     notify("RPC change rejected");
   }
 }
+
 
 
 
@@ -493,10 +493,103 @@ document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public
 
 
       document.getElementById("donateBNB").onclick = donateBNB;
-      document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
-      
-      fetchPrices();
-    });
+     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
+
+fetchPrices();
+
+/* ===== MOBILE FALLBACK GOES HERE ===== */
+
+function isMetaMaskMobile() {
+  return (
+    typeof window.ethereum !== "undefined" &&
+    window.ethereum.isMetaMask &&
+    /MetaMaskMobile/i.test(navigator.userAgent)
+  );
+}
+
+function showMobileFallback() {
+  const section = document.getElementById("add-tokens");
+  const btn = document.getElementById("addTokens");
+
+  btn.style.display = "none";
+
+  const container = document.createElement("div");
+  container.style.marginTop = "1rem";
+
+  const title = document.createElement("h3");
+  title.textContent = "Manual Token Add Required";
+  container.appendChild(title);
+
+  const instructions = document.createElement("p");
+  instructions.textContent =
+    "MetaMask mobile does not currently support automatic token suggestions. Please add tokens manually using the contract addresses below.";
+  container.appendChild(instructions);
+  const stepsTitle = document.createElement("h4");
+stepsTitle.textContent = "How to Add Tokens in MetaMask Mobile";
+stepsTitle.style.marginTop = "1rem";
+container.appendChild(stepsTitle);
+
+const stepsList = document.createElement("ol");
+stepsList.style.paddingLeft = "1.25rem";
+
+const steps = [
+  "Copy the USDT token contract address.",
+  "Tap the X in the top left corner.",
+  "Tap Home in the bottom left corner.",
+  "Tap the plus sign above BNB.",
+  "Tap Custom token.",
+  "Paste in the token contract address you just copied.",
+  "Tap Next.",
+  "Tap Import.",
+  "Tap Explore and tap the 1 in the box near the top right corner.",
+  "Tap on this site again.",
+  "Repeat these steps for the rest of the tokens."
+];
+
+steps.forEach(text => {
+  const li = document.createElement("li");
+  li.textContent = text;
+  li.style.marginBottom = "6px";
+  stepsList.appendChild(li);
+});
+
+container.appendChild(stepsList);
+
+
+  tokens.forEach(token => {
+    const row = document.createElement("div");
+    row.style.marginBottom = "8px";
+
+    const label = document.createElement("strong");
+    label.textContent = token.symbol + ": ";
+    row.appendChild(label);
+
+    const addr = document.createElement("span");
+    addr.textContent = token.address;
+    row.appendChild(addr);
+
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy";
+    copyBtn.style.marginLeft = "10px";
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(token.address);
+      notify(token.symbol + " address copied");
+    };
+
+    row.appendChild(copyBtn);
+    container.appendChild(row);
+  });
+
+  section.appendChild(container);
+}
+
+if (isMetaMaskMobile()) {
+  showMobileFallback();
+}
+
+/* ===== END MOBILE FALLBACK ===== */
+});
+
 
     const priceTargets = {
   PFI: 500000,
