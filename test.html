@@ -524,6 +524,37 @@ function showMobileFallback() {
   instructions.textContent =
     "MetaMask mobile does not currently support automatic token suggestions. Please add tokens manually using the contract addresses below.";
   container.appendChild(instructions);
+  const stepsTitle = document.createElement("h4");
+stepsTitle.textContent = "How to Add Tokens in MetaMask Mobile";
+stepsTitle.style.marginTop = "1rem";
+container.appendChild(stepsTitle);
+
+const stepsList = document.createElement("ol");
+stepsList.style.paddingLeft = "1.25rem";
+
+const steps = [
+  "Copy the USDT token contract address.",
+  "Tap the X in the top left corner.",
+  "Tap Home in the bottom left corner.",
+  "Tap the plus sign above BNB.",
+  "Tap Custom token.",
+  "Paste in the token contract address you just copied.",
+  "Tap Next.",
+  "Tap Import.",
+  "Tap Explore and tap the 1 in the box near the top right corner.",
+  "Tap on this site again.",
+  "Repeat these steps for the rest of the tokens."
+];
+
+steps.forEach(text => {
+  const li = document.createElement("li");
+  li.textContent = text;
+  li.style.marginBottom = "6px";
+  stepsList.appendChild(li);
+});
+
+container.appendChild(stepsList);
+
 
   tokens.forEach(token => {
     const row = document.createElement("div");
