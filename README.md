@@ -160,6 +160,11 @@
       display: flex;
       justify-content: center;
     }
+
+    html {
+  scroll-behavior: smooth;
+}
+
   </style>
 </head>
 
@@ -174,15 +179,15 @@
   </div>
 
   <main>
-    <section class="card">
+<section class="card" id="home">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
-<section class="card highlight">
-  <h2>Support Community Development</h2>
+<section class="card highlight" id="donate">
+<h2><a href="#donate" style="text-decoration:none; color:inherit;">Support Community Development</a></h2>
   <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
   <p>They are used daily by many members and continue to grow and improve.</p>
   <p>If you find them useful, your support helps keep them running, improving, and available to everyone. Your contribution directly supports development and maintenance of the project.</p>
@@ -190,7 +195,6 @@
   <div class="donate-group">
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
-    <button id="donatePML">Donate PML</button>
    <button class="donate-more"
           onclick="window.location.href='https://hrweb3buttons.github.io/pfbuttons/donations.html'">
           View more donation options
@@ -199,13 +203,17 @@
 </section>
 
 
-    <section class="card">
-      <h2>Add Tokens to MetaMask</h2>
+<section class="card" id="add-tokens">
+<h2><a href="#add-tokens" style="text-decoration:none; color:inherit;">Add Tokens to MetaMask</a></h2>
       <button id="addTokens">Add All Tokens</button>
     </section>
 
-    <section class="card">
-      <h2>Switch Binance Smart Chain RPC</h2>
+<section class="card" id="rpc">
+  <h2>
+    <a href="#rpc" style="text-decoration:none; color:inherit;">
+      Switch Binance Smart Chain RPC
+    </a>
+  </h2>
       <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
       <p>Note: The Chainstack RPC Node is no longer available due to technical problems.</p>
 
@@ -245,9 +253,9 @@
 
       
     </section>
-
-<section class="card">
-  <h2>Token Charts</h2>
+<section class="card" id="charts">
+    <a href="#charts" style="text-decoration:none; color:inherit;">
+  <h2>Token Charts</h2> </a>
   <p>View real time charts for Pool Funding tokens on ApeSpace.</p>
 
   <div class="doc-buttons">
@@ -273,9 +281,58 @@
   </div>
 </section>
 
-    
-    <section class="card">
-      <h2>Community Documents</h2>
+      <section class="card" id="calculator">
+    <a href="#calculator" style="text-decoration:none; color:inherit;"> </a>
+  <h2>Token Value Calculator</h2>
+  <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
+
+  <div style="margin-bottom: 1rem;">
+    <strong>Mode</strong><br>
+    <label>
+      <input type="radio" name="calcMode" value="current" checked>
+      Current Price
+    </label><br>
+    <label>
+      <input type="radio" name="calcMode" value="target">
+      Price Target
+    </label>
+  </div>
+
+  <div id="targetSelector" style="display: none; margin-bottom: 1rem;">
+    <strong>Token Price Target</strong><br>
+    <label><input type="radio" name="targetToken" value="PFI"> PFI</label><br>
+    <label><input type="radio" name="targetToken" value="PFB"> PFB</label><br>
+    <label><input type="radio" name="targetToken" value="PFS"> PFS</label><br>
+    <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
+    <label><input type="radio" name="targetToken" value="PML"> PML</label>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label>
+      <strong>Price USD</strong><br>
+      <input id="calcPrice" type="number" step="any" style="width: 100%; padding: 0.5rem;">
+    </label>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label>
+      <strong>Token Amount</strong><br>
+      <input id="calcAmount" type="number" step="any" style="width: 100%; padding: 0.5rem;">
+    </label>
+  </div>
+
+<div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+  <button id="calcButton">Calculate</button>
+  <button id="calcReset" class="donate-more">Reset</button>
+</div>
+
+  <div id="calcAlert" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
+  <div id="calcResult" style="margin-top: 1rem; font-weight: bold;"></div>
+</section>
+
+<section class="card" id="documents">
+    <a href="#documents" style="text-decoration:none; color:inherit;">
+      <h2>Community Documents</h2> </a>
       <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
       <div class="doc-buttons">
         <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank')">Common Problems Guide</button>
@@ -289,7 +346,7 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.10
+    </a> | v1.1.11
   </footer>
 
   <script>
@@ -437,10 +494,102 @@ document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public
 
       document.getElementById("donateBNB").onclick = donateBNB;
       document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
-      document.getElementById("donatePML").onclick = () => donateToken(pmlContract,"PML");
-
+      
       fetchPrices();
     });
+
+    const priceTargets = {
+  PFI: 500000,
+  PFB: 1000000,
+  PFS: 2000000,
+  PFG: 4000000,
+  PML: 2000000
+};
+
+const modeRadios = document.querySelectorAll('input[name="calcMode"]');
+const tokenRadios = document.querySelectorAll('input[name="targetToken"]');
+const targetSelector = document.getElementById("targetSelector");
+const priceInput = document.getElementById("calcPrice");
+const amountInput = document.getElementById("calcAmount");
+const calcButton = document.getElementById("calcButton");
+const calcResult = document.getElementById("calcResult");
+const calcAlert = document.getElementById("calcAlert");
+
+function clearCalcOutput() {
+  calcResult.textContent = "";
+  calcAlert.style.display = "none";
+  calcAlert.textContent = "";
+}
+
+function setMode(mode) {
+  clearCalcOutput();
+  priceInput.value = "";
+  amountInput.value = "";
+
+  if (mode === "target") {
+    targetSelector.style.display = "block";
+    priceInput.readOnly = true;
+  } else {
+    targetSelector.style.display = "none";
+    priceInput.readOnly = false;
+  }
+}
+
+modeRadios.forEach(radio => {
+  radio.addEventListener("change", e => {
+    setMode(e.target.value);
+  });
+});
+
+tokenRadios.forEach(radio => {
+  radio.addEventListener("change", e => {
+    const price = priceTargets[e.target.value];
+    priceInput.value = price;
+    clearCalcOutput();
+  });
+});
+
+calcButton.addEventListener("click", () => {
+  clearCalcOutput();
+
+  const price = parseFloat(priceInput.value);
+  const amount = parseFloat(amountInput.value);
+
+  if (!price || price <= 0) {
+    calcAlert.textContent = "Please enter a valid price.";
+    calcAlert.style.display = "block";
+    return;
+  }
+
+  if (!amount || amount <= 0) {
+    calcAlert.textContent = "Please enter a valid token amount.";
+    calcAlert.style.display = "block";
+    return;
+  }
+
+  const total = price * amount;
+
+  calcResult.textContent =
+    "Estimated value: $" +
+    total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+    " USD";
+});
+
+const calcReset = document.getElementById("calcReset");
+
+function resetCalculator() {
+  clearCalcOutput();
+  priceInput.value = "";
+  amountInput.value = "";
+
+  document.querySelector('input[name="calcMode"][value="current"]').checked = true;
+  targetSelector.style.display = "none";
+  priceInput.readOnly = false;
+
+  tokenRadios.forEach(r => r.checked = false);
+}
+
+calcReset.addEventListener("click", resetCalculator);
   </script>
 </body>
 </html>
