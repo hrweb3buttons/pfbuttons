@@ -668,19 +668,31 @@ tokenRadios.forEach(radio => {
 function parseLocalizedNumber(value) {
   if (!value) return NaN;
 
-  // Remove spaces
-  let normalized = value.replace(/\s/g, "");
+  let normalized = value.trim();
 
-  // If both comma and dot exist, assume comma is thousands separator
-  if (normalized.includes(",") && normalized.includes(".")) {
-    normalized = normalized.replace(/,/g, "");
-  } else if (normalized.includes(",")) {
-    // If only comma exists, treat it as decimal separator
+  // Remove spaces
+  normalized = normalized.replace(/\s/g, "");
+
+  const hasComma = normalized.includes(",");
+  const hasDot = normalized.includes(".");
+
+  if (hasComma && hasDot) {
+    // Determine which is decimal separator by last occurrence
+    if (normalized.lastIndexOf(",") > normalized.lastIndexOf(".")) {
+      // European format: 1.234,56
+      normalized = normalized.replace(/\./g, "");
+      normalized = normalized.replace(",", ".");
+    } else {
+      // US format: 1,234.56
+      normalized = normalized.replace(/,/g, "");
+    }
+  } else if (hasComma) {
     normalized = normalized.replace(",", ".");
   }
 
   return parseFloat(normalized);
 }
+
 
     
 calcButton.addEventListener("click", () => {
