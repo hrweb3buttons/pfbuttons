@@ -688,30 +688,29 @@ function parseLocalizedNumber(value) {
       normalized = normalized.replace(/\./g, "");
       normalized = normalized.replace(",", ".");
     }
-  } else if (lastComma !== -1) {
-    // Only comma exists, treat as decimal
-    normalized = normalized.replace(",", ".");
-  }
+else if (lastComma !== -1) {
+// If multiple commas and no dot, treat commas as thousands separators
+if ((normalized.match(/,/g) || []).length > 1) {
+normalized = normalized.replace(/,/g, "");
+} else {
+normalized = normalized.replace(",", ".");
+}
+}
 
   return parseFloat(normalized);
 }
 
-   function sanitizeInputField(input) {
+ function sanitizeInputField(input) {
   input.addEventListener("input", () => {
     let value = input.value;
 
     // Allow only digits, comma, dot
     value = value.replace(/[^\d.,]/g, "");
 
-    // Prevent multiple separators
-    const parts = value.split(/[.,]/);
-    if (parts.length > 2) {
-      value = parts[0] + value.match(/[.,]/)[0] + parts.slice(1).join("");
-    }
-
     input.value = value;
   });
 }
+
 
 function formatOnBlur(input) {
   input.addEventListener("blur", () => {
