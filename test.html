@@ -672,8 +672,6 @@ function parseLocalizedNumber(value) {
   if (!value) return NaN;
 
   let normalized = value.trim();
-
-  // Remove spaces
   normalized = normalized.replace(/\s/g, "");
 
   const lastComma = normalized.lastIndexOf(",");
@@ -681,24 +679,35 @@ function parseLocalizedNumber(value) {
 
   if (lastComma !== -1 && lastDot !== -1) {
     if (lastDot > lastComma) {
-      // Format like 1,234,567.89 (USD style)
+      // 1,234,567.89
       normalized = normalized.replace(/,/g, "");
     } else {
-      // Format like 1.234.567,89 (EU style)
+      // 1.234.567,89
       normalized = normalized.replace(/\./g, "");
       normalized = normalized.replace(",", ".");
     }
-else if (lastComma !== -1) {
-// If multiple commas and no dot, treat commas as thousands separators
-if ((normalized.match(/,/g) || []).length > 1) {
-normalized = normalized.replace(/,/g, "");
-} else {
-normalized = normalized.replace(",", ".");
-}
-}
+  } else if (lastComma !== -1) {
+    const commaCount = (normalized.match(/,/g) || []).length;
+
+    if (commaCount > 1) {
+      // 1,234,567
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1000,50
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastDot !== -1) {
+    const dotCount = (normalized.match(/\./g) || []).length;
+
+    if (dotCount > 1) {
+      // 1.234.567
+      normalized = normalized.replace(/\./g, "");
+    }
+  }
 
   return parseFloat(normalized);
 }
+
 
  function sanitizeInputField(input) {
   input.addEventListener("input", () => {
