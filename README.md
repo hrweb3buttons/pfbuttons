@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -369,7 +368,7 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.12
+    </a> | v1.1.14
   </footer>
 
   <script>
