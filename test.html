@@ -369,7 +369,7 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.12
+    </a> | v1.1.14
   </footer>
 
   <script>
@@ -665,11 +665,30 @@ tokenRadios.forEach(radio => {
   });
 });
 
+function parseLocalizedNumber(value) {
+  if (!value) return NaN;
+
+  // Remove spaces
+  let normalized = value.replace(/\s/g, "");
+
+  // If both comma and dot exist, assume comma is thousands separator
+  if (normalized.includes(",") && normalized.includes(".")) {
+    normalized = normalized.replace(/,/g, "");
+  } else if (normalized.includes(",")) {
+    // If only comma exists, treat it as decimal separator
+    normalized = normalized.replace(",", ".");
+  }
+
+  return parseFloat(normalized);
+}
+
+    
 calcButton.addEventListener("click", () => {
   clearCalcOutput();
 
-  const price = parseFloat(priceInput.value);
-  const amount = parseFloat(amountInput.value);
+const price = parseLocalizedNumber(priceInput.value);
+const amount = parseLocalizedNumber(amountInput.value);
+
 
   if (!price || price <= 0) {
     calcAlert.textContent = "Please enter a valid price.";
