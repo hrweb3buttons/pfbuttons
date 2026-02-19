@@ -333,14 +333,14 @@
   <div style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
-      <input id="calcPrice" type="number" step="any" style="width: 100%; padding: 0.5rem;">
+     <input id="calcPrice" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
 
   <div style="margin-bottom: 1rem;">
     <label>
       <strong>Token Amount</strong><br>
-      <input id="calcAmount" type="number" step="any" style="width: 100%; padding: 0.5rem;">
+      <input id="calcAmount" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
 
@@ -690,13 +690,15 @@ const price = parseLocalizedNumber(priceInput.value);
 const amount = parseLocalizedNumber(amountInput.value);
 
 
-  if (!price || price <= 0) {
+ if (isNaN(price) || price <= 0)
+ {
     calcAlert.textContent = "Please enter a valid price.";
     calcAlert.style.display = "block";
     return;
   }
 
-  if (!amount || amount <= 0) {
+  if (isNaN(!amount) || amount <= 0)
+ {
     calcAlert.textContent = "Please enter a valid token amount.";
     calcAlert.style.display = "block";
     return;
