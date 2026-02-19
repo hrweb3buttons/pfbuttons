@@ -676,20 +676,20 @@ function parseLocalizedNumber(value) {
   // Remove spaces
   normalized = normalized.replace(/\s/g, "");
 
-  const hasComma = normalized.includes(",");
-  const hasDot = normalized.includes(".");
+  const lastComma = normalized.lastIndexOf(",");
+  const lastDot = normalized.lastIndexOf(".");
 
-  if (hasComma && hasDot) {
-    // Determine which is decimal separator by last occurrence
-    if (normalized.lastIndexOf(",") > normalized.lastIndexOf(".")) {
-      // European format: 1.234,56
+  if (lastComma !== -1 && lastDot !== -1) {
+    if (lastDot > lastComma) {
+      // Format like 1,234,567.89 (USD style)
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // Format like 1.234.567,89 (EU style)
       normalized = normalized.replace(/\./g, "");
       normalized = normalized.replace(",", ".");
-    } else {
-      // US format: 1,234.56
-      normalized = normalized.replace(/,/g, "");
     }
-  } else if (hasComma) {
+  } else if (lastComma !== -1) {
+    // Only comma exists, treat as decimal
     normalized = normalized.replace(",", ".");
   }
 
