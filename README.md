@@ -332,14 +332,14 @@
   <div style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
-      <input id="calcPrice" type="number" step="any" style="width: 100%; padding: 0.5rem;">
+     <input id="calcPrice" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
 
   <div style="margin-bottom: 1rem;">
     <label>
       <strong>Token Amount</strong><br>
-      <input id="calcAmount" type="number" step="any" style="width: 100%; padding: 0.5rem;">
+      <input id="calcAmount" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
 
@@ -368,7 +368,7 @@
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
       View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.14
+    </a> | v1.1.15
   </footer>
 
   <script>
@@ -626,6 +626,9 @@ const tokenRadios = document.querySelectorAll('input[name="targetToken"]');
 const targetSelector = document.getElementById("targetSelector");
 const priceInput = document.getElementById("calcPrice");
 const amountInput = document.getElementById("calcAmount");
+const example = (1.1).toLocaleString();
+priceInput.placeholder = example;
+amountInput.placeholder = example;
 const calcButton = document.getElementById("calcButton");
 const calcResult = document.getElementById("calcResult");
 const calcAlert = document.getElementById("calcAlert");
@@ -664,19 +667,99 @@ tokenRadios.forEach(radio => {
   });
 });
 
+function parseLocalizedNumber(value) {
+  if (!value) return NaN;
+
+  let normalized = value.trim();
+  normalized = normalized.replace(/\s/g, "");
+
+  const lastComma = normalized.lastIndexOf(",");
+  const lastDot = normalized.lastIndexOf(".");
+
+  if (lastComma !== -1 && lastDot !== -1) {
+    if (lastDot > lastComma) {
+      // 1,234,567.89
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1.234.567,89
+      normalized = normalized.replace(/\./g, "");
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastComma !== -1) {
+    const commaCount = (normalized.match(/,/g) || []).length;
+
+    if (commaCount > 1) {
+      // 1,234,567
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1000,50
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastDot !== -1) {
+    const dotCount = (normalized.match(/\./g) || []).length;
+
+    if (dotCount > 1) {
+      // 1.234.567
+      normalized = normalized.replace(/\./g, "");
+    }
+  }
+
+  return parseFloat(normalized);
+}
+
+
+ function sanitizeInputField(input) {
+  input.addEventListener("input", () => {
+    let value = input.value;
+
+    // Allow only digits, comma, dot
+    value = value.replace(/[^\d.,]/g, "");
+
+    input.value = value;
+  });
+}
+
+
+function formatOnBlur(input) {
+  input.addEventListener("blur", () => {
+    const number = parseLocalizedNumber(input.value);
+
+    if (isNaN(number)) return;
+
+    input.value = new Intl.NumberFormat(navigator.language, {
+      maximumFractionDigits: 20
+    }).format(number);
+  });
+}
+
+sanitizeInputField(priceInput);
+sanitizeInputField(amountInput);
+formatOnBlur(priceInput);
+formatOnBlur(amountInput);
+
+
+
+    
 calcButton.addEventListener("click", () => {
   clearCalcOutput();
 
-  const price = parseFloat(priceInput.value);
-  const amount = parseFloat(amountInput.value);
+const price = parseLocalizedNumber(priceInput.value);
+const amount = parseLocalizedNumber(amountInput.value);
 
-  if (!price || price <= 0) {
+
+
+
+
+ if (isNaN(price) || price <= 0)
+ {
     calcAlert.textContent = "Please enter a valid price.";
     calcAlert.style.display = "block";
     return;
   }
 
-  if (!amount || amount <= 0) {
+ if (isNaN(amount) || amount <= 0)
+
+ {
     calcAlert.textContent = "Please enter a valid token amount.";
     calcAlert.style.display = "block";
     return;
@@ -686,7 +769,11 @@ calcButton.addEventListener("click", () => {
 
   calcResult.textContent =
     "Estimated value: $" +
-    total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+   new Intl.NumberFormat(navigator.language, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}).format(total)
+ +
     " USD";
 });
 
