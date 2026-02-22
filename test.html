@@ -644,7 +644,22 @@ if (isMetaMaskMobile()) {
 
 /* ===== END MOBILE FALLBACK ===== */
 });
+function openSwap(url) {
+  const isMobile =
+    typeof window.ethereum !== "undefined" &&
+    window.ethereum.isMetaMask &&
+    /MetaMaskMobile/i.test(navigator.userAgent);
 
+  if (isMobile) {
+    const n = document.createElement("div");
+    n.className = "notify";
+    n.textContent = "Swap links work best with the MetaMask browser extension on desktop.";
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 4000);
+  }
+
+  window.open(url, "_blank");
+}
 
     const priceTargets = {
   PFI: 500000,
