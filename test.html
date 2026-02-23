@@ -556,12 +556,8 @@ fetchPrices();
 
 /* ===== MOBILE FALLBACK GOES HERE ===== */
 
-function isMetaMaskMobile() {
-  return (
-    typeof window.ethereum !== "undefined" &&
-    window.ethereum.isMetaMask &&
-    /MetaMaskMobile/i.test(navigator.userAgent)
-  );
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 }
 
 function showMobileFallback() {
@@ -852,8 +848,8 @@ const swapLinks = [
 ];
 
 function setupMobileSwapFallback() {
-  if (!isMetaMaskMobile()) return;
-
+if (!isMobileDevice()) return;
+  
   document.getElementById("swapButtons").style.display = "none";
 
   const container = document.getElementById("swapMobileContainer");
