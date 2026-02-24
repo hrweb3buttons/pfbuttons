@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -300,7 +301,29 @@
   <button onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank')">
     PML
   </button>
-</div>  
+</div>
+
+<h3 id="quick-swap" style="margin-top: 1.75rem;">
+  <a href="#quick-swap" style="text-decoration:none; color:inherit;">
+    Quick Swap USDT to PF Tokens
+  </a>
+</h3>
+
+<p style="font-size: 0.9rem; margin-bottom: 0.75rem;">
+  Opens PancakeSwap with USDT preselected for swapping.
+  Desktop extension recommended for best results.
+</p>
+
+<div id="swapButtons" class="doc-buttons">
+  <button data-swap="PFI">Swap USDT to PFI</button>
+  <button data-swap="PFB">Swap USDT to PFB</button>
+  <button data-swap="PFS">Swap USDT to PFS</button>
+  <button data-swap="PFG">Swap USDT to PFG</button>
+  <button data-swap="PML">Swap USDT to PML</button>
+</div>
+
+<div id="swapMobileContainer" style="display:none; margin-top:1rem;"></div>
+
 </section>
 
       <section class="card" id="calculator">
@@ -367,8 +390,10 @@
   <footer>
     © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
-      View on GitHub <a href="terms.html">Terms of Use</a>
-    </a> | v1.1.15
+  View on GitHub
+</a>
+ | 
+<a href="terms.html">Terms of Use</a> | v1.1.15
   </footer>
 
   <script>
@@ -401,6 +426,18 @@
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
         { address: pmlContract, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
       ];
+
+      const swapLinks = {
+  PFI: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF&chain=bsc",
+  PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
+  PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
+  PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
+  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc"
+};
+
+function isMobileBrowser() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+}
 
       const notify = msg => {
         const n = document.createElement("div");
@@ -610,7 +647,6 @@ if (isMetaMaskMobile()) {
 }
 
 /* ===== END MOBILE FALLBACK ===== */
-});
 
 
     const priceTargets = {
@@ -792,6 +828,51 @@ function resetCalculator() {
 }
 
 calcReset.addEventListener("click", resetCalculator);
+const swapButtonsContainer = document.getElementById("swapButtons");
+const swapMobileContainer = document.getElementById("swapMobileContainer");
+
+if (swapButtonsContainer) {
+  if (isMobileBrowser()) {
+    swapButtonsContainer.style.display = "none";
+    swapMobileContainer.style.display = "block";
+
+    const note = document.createElement("p");
+    note.style.fontSize = "0.9rem";
+    note.textContent =
+      "Mobile wallets may not auto fill swaps. Copy a link below and paste it into the MetaMask browser.";
+    swapMobileContainer.appendChild(note);
+
+    Object.entries(swapLinks).forEach(([symbol, url]) => {
+      const row = document.createElement("div");
+      row.style.marginBottom = "10px";
+
+      const label = document.createElement("strong");
+      label.textContent = "USDT to " + symbol + ": ";
+      row.appendChild(label);
+
+      const copyBtn = document.createElement("button");
+      copyBtn.textContent = "Copy Link";
+      copyBtn.style.marginLeft = "10px";
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(url);
+        notify(symbol + " swap link copied");
+      };
+
+      row.appendChild(copyBtn);
+      swapMobileContainer.appendChild(row);
+    });
+  } else {
+    swapButtonsContainer.addEventListener("click", e => {
+      const button = e.target.closest("button[data-swap]");
+      if (!button) return;
+
+      const symbol = button.getAttribute("data-swap");
+      const url = swapLinks[symbol];
+      window.open(url, "_blank");
+    });
+  }
+}
+    });
   </script>
 </body>
 </html>
