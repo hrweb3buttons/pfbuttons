@@ -392,7 +392,7 @@
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | v1.1.15
+<a href="terms.html">Terms of Use</a> | v1.1.16
   </footer>
 
   <script>
