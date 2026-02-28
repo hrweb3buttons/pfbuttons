@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -527,12 +528,35 @@ async function switchRPC(url, name) {
           document.getElementById("bnbPrice").textContent = bnb.binancecoin.usd.toFixed(2);
         } catch {}
 
-        try {
-          const pml = await fetch("https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4").then(r => r.json());
-          document.getElementById("pmlPrice").textContent =
-            parseFloat(pml.data.attributes.base_token_price_usd).toFixed(2);
-        } catch {}
-      }
+ try {
+  const targetUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+
+  const proxyUrl =
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
+
+  const response = await fetch(proxyUrl);
+
+  if (!response.ok) {
+    throw new Error("Proxy response not OK");
+  }
+
+  const pml = await response.json();
+
+  const price = pml?.data?.attributes?.base_token_price_usd;
+
+  if (price) {
+    document.getElementById("pmlPrice").textContent =
+      parseFloat(price).toFixed(2);
+  } else {
+    document.getElementById("pmlPrice").textContent = "--";
+  }
+
+} catch (err) {
+  console.error("PML price fetch failed:", err);
+  document.getElementById("pmlPrice").textContent = "--";
+}
+
+        }  
 
       document.getElementById("connectWallet").onclick = connectWallet;
       document.getElementById("addTokens").onclick = addAllTokens;
