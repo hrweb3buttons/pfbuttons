@@ -582,9 +582,6 @@ async function switchRPC(url, name) {
           document.getElementById("bnbPrice").textContent = bnb.binancecoin.usd.toFixed(2);
         } catch {}
 
- try {
-
-
 try {
   const response = await fetch(
     "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4"
