@@ -341,6 +341,7 @@
       <input type="radio" name="calcMode" value="target">
       Price Target
     </label>
+    <label> <input type="radio" name="calcMode" value="community"> Community Coin </label>
   </div>
 
   <div id="targetSelector" style="display: none; margin-bottom: 1rem;">
@@ -370,6 +371,8 @@
   <button id="calcButton">Calculate</button>
   <button id="calcReset" class="donate-more">Reset</button>
 </div>
+
+        <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
 
   <div id="calcAlert" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
   <div id="calcResult" style="margin-top: 1rem; font-weight: bold;"></div>
@@ -740,17 +743,36 @@ function clearCalcOutput() {
 }
 
 function setMode(mode) {
-  clearCalcOutput();
-  priceInput.value = "";
-  amountInput.value = "";
+clearCalcOutput();
+priceInput.value = "";
+amountInput.value = "";
+communityPml.value = "";
 
-  if (mode === "target") {
-    targetSelector.style.display = "block";
-    priceInput.readOnly = true;
-  } else {
-    targetSelector.style.display = "none";
-    priceInput.readOnly = false;
-  }
+resultDivide.textContent = "";
+resultMultiply1.textContent = "";
+resultMultiply2.textContent = "";
+resultFinal.textContent = "";
+
+if (mode === "target") {
+targetSelector.style.display = "block";
+priceInput.readOnly = true;
+priceInput.parentElement.parentElement.style.display = "block";
+amountInput.parentElement.parentElement.style.display = "block";
+communityContainer.style.display = "none";
+
+} else if (mode === "community") {
+targetSelector.style.display = "none";
+priceInput.parentElement.parentElement.style.display = "none";
+amountInput.parentElement.parentElement.style.display = "none";
+communityContainer.style.display = "block";
+
+} else {
+targetSelector.style.display = "none";
+priceInput.readOnly = false;
+priceInput.parentElement.parentElement.style.display = "block";
+amountInput.parentElement.parentElement.style.display = "block";
+communityContainer.style.display = "none";
+}
 }
 
 modeRadios.forEach(radio => {
@@ -841,6 +863,47 @@ formatOnBlur(amountInput);
 
     
 calcButton.addEventListener("click", () => {
+  const selectedMode = document.querySelector('input[name="calcMode"]:checked').value;
+
+if (selectedMode === "community") {
+clearCalcOutput();
+const pmlAmount = parseLocalizedNumber(communityPml.value);
+
+if (isNaN(pmlAmount) || pmlAmount <= 0) {
+calcAlert.textContent = "Please enter a valid PML amount.";
+calcAlert.style.display = "block";
+return;
+}
+
+const step1 = pmlAmount / 5;
+const step2 = step1 * 1000000000;
+const step3 = step2 * 1000;
+
+resultDivide.textContent =
+"After dividing by 5: " +
+new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step1);
+
+resultMultiply1.textContent =
+"After multiplying by 1,000,000,000: " +
+new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step2);
+
+resultMultiply2.textContent =
+"After multiplying by $1,000: $" +
+new Intl.NumberFormat(navigator.language, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}).format(step3);
+
+resultFinal.textContent =
+"Final value: $" +
+new Intl.NumberFormat(navigator.language, {
+minimumFractionDigits: 2,
+maximumFractionDigits: 2
+}).format(step3) +
+" USD";
+
+return;
+}
   clearCalcOutput();
 
 const price = parseLocalizedNumber(priceInput.value);
@@ -881,15 +944,36 @@ const calcReset = document.getElementById("calcReset");
 
 function resetCalculator() {
   clearCalcOutput();
+
   priceInput.value = "";
   amountInput.value = "";
+  communityPml.value = "";
+
+  resultDivide.textContent = "";
+  resultMultiply1.textContent = "";
+  resultMultiply2.textContent = "";
+  resultFinal.textContent = "";
 
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
+
   targetSelector.style.display = "none";
   priceInput.readOnly = false;
 
+  priceInput.parentElement.parentElement.style.display = "block";
+  amountInput.parentElement.parentElement.style.display = "block";
+  communityContainer.style.display = "none";
+
   tokenRadios.forEach(r => r.checked = false);
 }
+
+      const communityContainer = document.getElementById("communityContainer");
+const communityPml = document.getElementById("communityPml");
+const resultDivide = document.getElementById("resultDivide");
+const resultMultiply1 = document.getElementById("resultMultiply1");
+const resultMultiply2 = document.getElementById("resultMultiply2");
+const resultFinal = document.getElementById("resultFinal");
+      sanitizeInputField(communityPml);
+formatOnBlur(communityPml);
 
 calcReset.addEventListener("click", resetCalculator);
 const swapButtonsContainer = document.getElementById("swapButtons");
