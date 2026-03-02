@@ -588,10 +588,13 @@ async function switchRPC(url, name) {
   const proxyUrl =
     "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
 
-  const response = await fetch(proxyUrl);
+try {
+  const response = await fetch(
+    "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4"
+  );
 
   if (!response.ok) {
-    throw new Error("Proxy response not OK");
+    throw new Error("GeckoTerminal response not OK");
   }
 
   const pml = await response.json();
