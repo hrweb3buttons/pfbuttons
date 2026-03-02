@@ -331,18 +331,30 @@
   <h2>Token Value Calculator</h2>
   <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
 
-  <div style="margin-bottom: 1rem;">
-    <strong>Mode</strong><br>
+<div style="margin-bottom:1rem;">
+  <strong>Mode</strong><br>
+
+  <div>
     <label>
       <input type="radio" name="calcMode" value="current" checked>
       Current Price
-    </label><br>
+    </label>
+  </div>
+
+  <div>
     <label>
       <input type="radio" name="calcMode" value="target">
       Price Target
     </label>
-    <label> <input type="radio" name="calcMode" value="community"> Community Coin </label>
   </div>
+
+  <div>
+    <label>
+      <input type="radio" name="calcMode" value="community">
+      Community Coin
+    </label>
+  </div>
+</div>
 
   <div id="targetSelector" style="display: none; margin-bottom: 1rem;">
     <strong>Token Price Target</strong><br>
