@@ -331,17 +331,30 @@
   <h2>Token Value Calculator</h2>
   <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
 
-  <div style="margin-bottom: 1rem;">
-    <strong>Mode</strong><br>
+<div style="margin-bottom:1rem;">
+  <strong>Mode</strong><br>
+
+  <div>
     <label>
       <input type="radio" name="calcMode" value="current" checked>
       Current Price
-    </label><br>
+    </label>
+  </div>
+
+  <div>
     <label>
       <input type="radio" name="calcMode" value="target">
       Price Target
     </label>
   </div>
+
+  <div>
+    <label>
+      <input type="radio" name="calcMode" value="community">
+      Community Coin
+    </label>
+  </div>
+</div>
 
   <div id="targetSelector" style="display: none; margin-bottom: 1rem;">
     <strong>Token Price Target</strong><br>
@@ -371,6 +384,8 @@
   <button id="calcReset" class="donate-more">Reset</button>
 </div>
 
+        <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
+
   <div id="calcAlert" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
   <div id="calcResult" style="margin-top: 1rem; font-weight: bold;"></div>
 </section>
@@ -385,6 +400,45 @@
         <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank')">General Newbies Guide</button>
       </div>
     </section>
+
+    <section class="card" id="services">
+  <h2>
+    <a href="#services" style="text-decoration:none; color:inherit;">
+      Premium Web3 Support Services
+    </a>
+  </h2>
+
+  <p>
+    In addition to the free community tools on this page, I offer private, one on one Web3 support services for members who want deeper analysis or additional security guidance.
+  </p>
+
+  <div style="margin-top: 1.25rem;">
+    <h3>Program Analysis and Risk Review</h3>
+    <p>
+      For a one time fee of <strong>10 USDT</strong>, I will review a crypto related investment opportunity, platform, or pitch you are considering.
+    </p>
+    <p>
+      You will receive an unbiased, experience based opinion focused on identifying potential red flags, structural weaknesses, unrealistic promises, or hidden risks before you commit funds.
+    </p>
+  </div>
+
+  <div style="margin-top: 1.5rem;">
+    <h3>Wallet Permission and Approval Check</h3>
+    <p>
+      Also priced at <strong>10 USDT</strong>, this service involves reviewing the token approvals and permissions connected to your wallet address.
+    </p>
+    <p>
+      The goal is to identify any risky or malicious approvals that could allow third parties to move your assets, and guide you through safely removing unnecessary permissions.
+    </p>
+  </div>
+
+  <div style="margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+    <p>
+      If you are interested in either service, reach out to me directly and we can coordinate next steps.
+    </p>
+  </div>
+</section>
+    
   </main>
 
   <footer>
@@ -393,7 +447,7 @@
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | v1.1.16
+<a href="terms.html">Terms of Use</a> | Operation Pantheon Pre Check
   </footer>
 
   <script>
@@ -522,41 +576,40 @@ async function switchRPC(url, name) {
         notify(symbol + " donation sent");
       }
 
-      async function fetchPrices() {
-        try {
-          const bnb = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd").then(r => r.json());
-          document.getElementById("bnbPrice").textContent = bnb.binancecoin.usd.toFixed(2);
-        } catch {}
+async function fetchPrices() {
+  try {
+    const bnb = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
+    ).then(r => r.json());
 
- try {
-  const targetUrl = "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4";
+    document.getElementById("bnbPrice").textContent =
+      bnb.binancecoin.usd.toFixed(2);
 
-  const proxyUrl =
-    "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
-
-  const response = await fetch(proxyUrl);
-
-  if (!response.ok) {
-    throw new Error("Proxy response not OK");
+  } catch (err) {
+    console.error("BNB price fetch failed:", err);
+    document.getElementById("bnbPrice").textContent = "--";
   }
 
-  const pml = await response.json();
+  try {
+    const response = await fetch(
+      "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4"
+    );
 
-  const price = pml?.data?.attributes?.base_token_price_usd;
+    if (!response.ok) {
+      throw new Error("GeckoTerminal response not OK");
+    }
 
-  if (price) {
+    const pml = await response.json();
+    const price = pml?.data?.attributes?.base_token_price_usd;
+
     document.getElementById("pmlPrice").textContent =
-      parseFloat(price).toFixed(2);
-  } else {
+      price ? parseFloat(price).toFixed(2) : "--";
+
+  } catch (err) {
+    console.error("PML price fetch failed:", err);
     document.getElementById("pmlPrice").textContent = "--";
   }
-
-} catch (err) {
-  console.error("PML price fetch failed:", err);
-  document.getElementById("pmlPrice").textContent = "--";
 }
-
-        }  
 
       document.getElementById("connectWallet").onclick = connectWallet;
       document.getElementById("addTokens").onclick = addAllTokens;
@@ -665,8 +718,10 @@ container.appendChild(stepsList);
   section.appendChild(container);
 }
 
-if (isMetaMaskMobile()) {
+if (isMobileBrowser()) {
   showMobileFallback();
+} else {
+  document.getElementById("addTokens").style.display = "inline-block";
 }
 
 /* ===== END MOBILE FALLBACK ===== */
@@ -699,17 +754,36 @@ function clearCalcOutput() {
 }
 
 function setMode(mode) {
-  clearCalcOutput();
-  priceInput.value = "";
-  amountInput.value = "";
+clearCalcOutput();
+priceInput.value = "";
+amountInput.value = "";
+communityPml.value = "";
 
-  if (mode === "target") {
-    targetSelector.style.display = "block";
-    priceInput.readOnly = true;
-  } else {
-    targetSelector.style.display = "none";
-    priceInput.readOnly = false;
-  }
+resultDivide.textContent = "";
+resultMultiply1.textContent = "";
+resultMultiply2.textContent = "";
+resultFinal.textContent = "";
+
+if (mode === "target") {
+targetSelector.style.display = "block";
+priceInput.readOnly = true;
+priceInput.parentElement.parentElement.style.display = "block";
+amountInput.parentElement.parentElement.style.display = "block";
+communityContainer.style.display = "none";
+
+} else if (mode === "community") {
+targetSelector.style.display = "none";
+priceInput.parentElement.parentElement.style.display = "none";
+amountInput.parentElement.parentElement.style.display = "none";
+communityContainer.style.display = "block";
+
+} else {
+targetSelector.style.display = "none";
+priceInput.readOnly = false;
+priceInput.parentElement.parentElement.style.display = "block";
+amountInput.parentElement.parentElement.style.display = "block";
+communityContainer.style.display = "none";
+}
 }
 
 modeRadios.forEach(radio => {
@@ -800,6 +874,47 @@ formatOnBlur(amountInput);
 
     
 calcButton.addEventListener("click", () => {
+  const selectedMode = document.querySelector('input[name="calcMode"]:checked').value;
+
+if (selectedMode === "community") {
+clearCalcOutput();
+const pmlAmount = parseLocalizedNumber(communityPml.value);
+
+if (isNaN(pmlAmount) || pmlAmount <= 0) {
+calcAlert.textContent = "Please enter a valid PML amount.";
+calcAlert.style.display = "block";
+return;
+}
+
+const step1 = pmlAmount / 5;
+const step2 = step1 * 1000000000;
+const step3 = step2 * 1000;
+
+resultDivide.textContent =
+"After dividing by 5: " +
+new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step1);
+
+resultMultiply1.textContent =
+"After multiplying by 1,000,000,000: " +
+new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step2);
+
+resultMultiply2.textContent =
+"After multiplying by $1,000: $" +
+new Intl.NumberFormat(navigator.language, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}).format(step3);
+
+resultFinal.textContent =
+"Final value: $" +
+new Intl.NumberFormat(navigator.language, {
+minimumFractionDigits: 2,
+maximumFractionDigits: 2
+}).format(step3) +
+" USD";
+
+return;
+}
   clearCalcOutput();
 
 const price = parseLocalizedNumber(priceInput.value);
@@ -840,15 +955,36 @@ const calcReset = document.getElementById("calcReset");
 
 function resetCalculator() {
   clearCalcOutput();
+
   priceInput.value = "";
   amountInput.value = "";
+  communityPml.value = "";
+
+  resultDivide.textContent = "";
+  resultMultiply1.textContent = "";
+  resultMultiply2.textContent = "";
+  resultFinal.textContent = "";
 
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
+
   targetSelector.style.display = "none";
   priceInput.readOnly = false;
 
+  priceInput.parentElement.parentElement.style.display = "block";
+  amountInput.parentElement.parentElement.style.display = "block";
+  communityContainer.style.display = "none";
+
   tokenRadios.forEach(r => r.checked = false);
 }
+
+      const communityContainer = document.getElementById("communityContainer");
+const communityPml = document.getElementById("communityPml");
+const resultDivide = document.getElementById("resultDivide");
+const resultMultiply1 = document.getElementById("resultMultiply1");
+const resultMultiply2 = document.getElementById("resultMultiply2");
+const resultFinal = document.getElementById("resultFinal");
+      sanitizeInputField(communityPml);
+formatOnBlur(communityPml);
 
 calcReset.addEventListener("click", resetCalculator);
 const swapButtonsContainer = document.getElementById("swapButtons");
