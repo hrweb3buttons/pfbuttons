@@ -446,7 +446,7 @@
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | Operation Pantheon Pre Check
+<a href="terms.html">Terms of Use</a> | Operation Pantheon - Project Atlas
   </footer>
 
   <script>
