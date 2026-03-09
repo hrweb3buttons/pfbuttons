@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf8" />
@@ -400,8 +401,7 @@
       </div>
     </section>
 
-    <section class="card" id="services">
-  <h2>
+<section class="card highlight" id="services">  <h2>
     <a href="#services" style="text-decoration:none; color:inherit;">
       Premium Web3 Support Services
     </a>
