@@ -126,6 +126,8 @@
       flex-wrap: wrap;
     }
 
+    
+
     footer {
       text-align: center;
       color: #777;
@@ -148,6 +150,21 @@
       box-shadow: var(--shadow);
       z-index: 99999;
     }
+
+    #site-nav {
+  position: fixed;
+  top: 50px;
+  left: 10px;
+  z-index: 9999;
+}
+
+#pageSelector {
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  color: var(--text);
+}
 
     .doc-buttons {
       display: flex;
@@ -177,6 +194,16 @@
       <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
   </div>
+
+  <div id="site-nav">
+  <select id="pageSelector">
+    <option value="">Navigate</option>
+    <option value="index.html">Main Tools</option>
+    <option value="donations.html">Donation Options</option>
+    <option value="cryptodirectory.html">Crypto Directory</option>
+    <option value="terms.html">Terms of Use</option>
+  </select>
+</div>
 
   <main>
 <section class="card" id="home">
@@ -459,6 +486,14 @@
         themeToggle.textContent = "Light mode";
         
       }
+
+      const pageSelector = document.getElementById("pageSelector");
+
+pageSelector.addEventListener("change", e => {
+  const page = e.target.value;
+  if (!page) return;
+  window.location.href = page;
+});
 
       themeToggle.onclick = () => {
         root.classList.toggle("dark");
