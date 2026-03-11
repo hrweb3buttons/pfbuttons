@@ -152,7 +152,7 @@
 
     #site-nav {
   position: fixed;
-  top: 50px;
+  top: 60px;
   left: 10px;
   z-index: 9999;
 }
