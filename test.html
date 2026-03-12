@@ -152,7 +152,11 @@ button {
   border: 1px solid var(--border);
 }
 
-    main { width: 100%; max-width: 720px; margin: 2rem; }
+main {
+  width: 100%;
+  max-width: 720px;
+  margin: 2rem auto;
+}
     h1, h2 { color: #111; }
     :root.dark h1,
     :root.dark h2 { color: #fff; }
@@ -206,9 +210,9 @@ button {
   border: 1px solid var(--border);
 }
 
-    .donate-more:hover {
-      background-color: rgba(0, 0, 0, 0.04);
-    }
+.donate-more:hover {
+  background-color: var(--border);
+}
 
     :root.dark .donate-more:hover {
       background-color: rgba(255, 255, 255, 0.05);
@@ -216,8 +220,8 @@ button {
 
     #wallet-connect {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 16px;
+      left: 16px;
       display: flex;
       gap: 12px;
       z-index: 9999;
@@ -251,8 +255,8 @@ button {
 
     #site-nav {
   position: fixed;
-  top: 65px;
-  left: 10px;
+  top: 90px;
+  left: 16px;
   z-index: 9999;
 }
 
@@ -318,6 +322,7 @@ button {
 </nav>
   
 <main id="main-content" tabindex="-1" aria-label="Main content">
+  <div class="container">
   <h1 class="sr-only">Pool Funding Web3 Tools</h1>
     <section class="card" id="home">
       <h2>Unofficial Pool Funding Web3 Tools</h2>
@@ -580,7 +585,7 @@ button {
     </p>
   </div>
 </section>
-    
+  </div>
   </main>
 
 <footer aria-label="Site footer">
