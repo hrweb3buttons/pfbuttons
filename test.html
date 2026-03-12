@@ -131,11 +131,13 @@ a:focus-visible {
 /* Buttons with AAA Contrast */
 button {
   background-color: var(--primary);
-  color: white; /* For light-blue buttons in dark mode, black text often has higher contrast */
+  color: white;
   font-weight: 700;
   letter-spacing: 0.02rem;
-  border: 2px solid transparent;
+  border: none;
+  border-radius: var(--radius);
   padding: 0.75rem 1.25rem;
+  cursor: pointer;
   transition: background 0.2s, transform 0.1s;
 }
 
@@ -176,14 +178,6 @@ main {
       box-shadow: var(--shadow);
     }
 
-    button {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.75rem 1.25rem;
-      cursor: pointer;
-    }
 
     button:hover { background-color: var(--primary-hover); }
 
