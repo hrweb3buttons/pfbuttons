@@ -9,56 +9,131 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
   <style>
+/* Skip Link - Hidden until Tabbed */
+.skip-link {
+  position: absolute;
+  top: -100px; /* Hide off-screen */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: #fff;
+  padding: 1rem 2rem;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: top 0.2s ease;
+  border: 2px solid var(--focus-ring);
+}
+
+.skip-link:focus {
+  top: 0; /* Pop into view on focus */
+  outline: none;
+}
+
+/* Ensure the main area can receive programatic focus */
+main:focus {
+  outline: none;
+}
+    
     :root {
-      --primary: #007bff;
-      --primary-hover: #0056b3;
-      --background: #f4f6f8;
-      --text: #333;
-      --card-bg: #fff;
-      --border: #e1e4e8;
-      --radius: 12px;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .card.highlight {
-  border: 2px solid var(--primary);
-  box-shadow: 0 6px 24px rgba(0, 123, 255, 0.25);
-  background: linear-gradient(
-    0deg,
-    var(--card-bg),
-    var(--card-bg)
-  ), linear-gradient(
-    180deg,
-    rgba(0, 123, 255, 0.08),
-    rgba(0, 123, 255, 0.02)
-  );
+  /* High-Contrast Light Mode (AAA) */
+  --primary: #004aab;        /* Deep blue: 7.1:1 contrast on white */
+  --primary-hover: #00357a;
+  --background: #f8f9fa;
+  --text: #1a1a1b;           /* Near black for maximum readability */
+  --text-muted: #454545;     /* Darker grey to maintain 7:1 */
+  --card-bg: #ffffff;
+  --border: #b0b5bb;         /* Darker border for clear containment */
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --focus-ring: #ff9500;     /* High-contrast orange for keyboard navigation */
 }
 
-:root.dark .card.highlight {
-  box-shadow: 0 6px 28px rgba(77, 163, 255, 0.35);
+:root.dark {
+  /* High-Contrast Dark Mode (AAA) */
+  --primary: #a3d1ff;        /* Light azure: 8.5:1 contrast on dark background */
+  --primary-hover: #cce4ff;
+  --background: #0f141a;
+  --text: #f0f4f8;           /* Off-white for reduced glare but high contrast */
+  --text-muted: #b0b8c4;
+  --card-bg: #151b23;
+  --border: #3e4c5f;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
 }
 
+/* Global Accessibility Improvements */
+body {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  line-height: 1.6; /* Improved leading for readability */
+  background-color: var(--background);
+  color: var(--text);
+  margin: 0;
+}
 
-    :root.dark {
-      --primary: #4da3ff;
-      --primary-hover: #2f7fd6;
-      --background: #0f141a;
-      --text: #e6eaf0;
-      --card-bg: #151b23;
-      --border: #273142;
-      --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-    }
+/* Focus indicator for keyboard users */
+button:focus-visible, 
+select:focus-visible, 
+a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
 
-    body {
-      font-family: Inter, system-ui, Arial, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+/* Screen Reader Only Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Enhanced Highlight Card */
+.card.highlight {
+  border: 4px solid var(--primary); /* Thicker border for visual weight */
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Texture overlay for color-blind users to distinguish the highlight */
+.card.highlight::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
+  background-size: 10px 10px;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* Buttons with AAA Contrast */
+button {
+  background-color: var(--primary);
+  color: #000; /* For light-blue buttons in dark mode, black text often has higher contrast */
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+  border: 2px solid transparent;
+  padding: 0.75rem 1.25rem;
+  transition: background 0.2s, transform 0.1s;
+}
+
+:root:not(.dark) button {
+  color: #ffffff; /* White text on dark blue background in light mode */
+}
+
+/* Price Display with Aria-Live updates */
+#priceDisplay {
+  font-size: 0.95rem;
+  background: var(--card-bg);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
 
     main { width: 100%; max-width: 720px; margin: 2rem; }
     h1, h2 { color: #111; }
@@ -186,6 +261,8 @@
 </head>
 
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
   <div id="wallet-connect">
     <button id="connectWallet">Connect Wallet</button>
     <button id="themeToggle">Dark mode</button>
@@ -206,7 +283,8 @@
 </div>
 
   <main>
-<section class="card" id="home">
+<main id="main-content" tabindex="-1">
+    <section class="card" id="home">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
@@ -527,13 +605,28 @@ function isMobileBrowser() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 }
 
-      const notify = msg => {
-        const n = document.createElement("div");
-        n.className = "notify";
-        n.textContent = msg;
-        document.body.appendChild(n);
-        setTimeout(() => n.remove(), 4000);
-      };
+  const notify = msg => {
+  // 1. Audible Announcement
+  const announcer = document.getElementById("announcement-region");
+  announcer.textContent = ""; // Clear old message
+  setTimeout(() => { announcer.textContent = msg; }, 50); // Trigger new announcement
+
+  // 2. Visual Toast (Your existing logic, slightly refined)
+  const n = document.createElement("div");
+  n.className = "notify";
+  n.textContent = msg;
+  // Ensure the visual toast also has accessibility markers
+  n.setAttribute("role", "alert"); 
+  
+  document.body.appendChild(n);
+  
+  // Keep it visible slightly longer for cognitive accessibility
+  setTimeout(() => {
+    n.style.opacity = "0";
+    n.style.transition = "opacity 0.5s ease";
+    setTimeout(() => n.remove(), 500);
+  }, 5000);
+};
 
       async function connectWallet() {
         if (!window.ethereum) return notify("MetaMask not detected");
@@ -725,29 +818,34 @@ steps.forEach(text => {
 container.appendChild(stepsList);
 
 
-  tokens.forEach(token => {
-    const row = document.createElement("div");
-    row.style.marginBottom = "8px";
+tokens.forEach(token => {
+  const row = document.createElement("div");
+  row.style.marginBottom = "12px"; // Increased spacing for touch targets
 
-    const label = document.createElement("strong");
-    label.textContent = token.symbol + ": ";
-    row.appendChild(label);
+  const label = document.createElement("strong");
+  label.textContent = token.symbol + ": ";
+  row.appendChild(label);
 
-    const addr = document.createElement("span");
-    addr.textContent = token.address;
-    row.appendChild(addr);
+  const addr = document.createElement("span");
+  addr.textContent = token.address;
+  addr.style.wordBreak = "break-all"; // Prevention for layout breaking
+  row.appendChild(addr);
 
-    const copyBtn = document.createElement("button");
-    copyBtn.textContent = "Copy";
-    copyBtn.style.marginLeft = "10px";
-    copyBtn.onclick = () => {
-      navigator.clipboard.writeText(token.address);
-      notify(token.symbol + " address copied");
-    };
+  const copyBtn = document.createElement("button");
+  copyBtn.textContent = "Copy";
+  
+  // ACCESSIBILITY UPGRADE: Descriptive label for screen readers
+  copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
+  
+  copyBtn.style.marginLeft = "10px";
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(token.address);
+    notify(`${token.symbol} address copied to clipboard`);
+  };
 
-    row.appendChild(copyBtn);
-    container.appendChild(row);
-  });
+  row.appendChild(copyBtn);
+  container.appendChild(row);
+});
 
   section.appendChild(container);
 }
@@ -760,6 +858,10 @@ if (isMobileBrowser()) {
 
 /* ===== END MOBILE FALLBACK ===== */
 
+      document.querySelector('.skip-link').addEventListener('click', (e) => {
+  const target = document.getElementById('main-content');
+  target.focus();
+});
 
     const priceTargets = {
   PFI: 500000,
@@ -1067,5 +1169,11 @@ if (swapButtonsContainer) {
 }
     });
   </script>
+    <div id="announcement-region" 
+     class="sr-only" 
+     role="status" 
+     aria-live="polite" 
+     aria-atomic="true">
+</div>
 </body>
 </html>
