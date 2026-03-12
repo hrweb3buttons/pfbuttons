@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
@@ -92,6 +92,23 @@ a:focus-visible {
   border-width: 0;
 }
 
+    .sr-only-focusable a {
+  position:absolute;
+  left:-9999px;
+}
+
+.sr-only-focusable a:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top:60px;
+  background:var(--card-bg);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  z-index:10000;
+}
+
 /* Enhanced Highlight Card */
 .card.highlight {
   border: 4px solid var(--primary); /* Thicker border for visual weight */
@@ -114,7 +131,7 @@ a:focus-visible {
 /* Buttons with AAA Contrast */
 button {
   background-color: var(--primary);
-  color: #000; /* For light-blue buttons in dark mode, black text often has higher contrast */
+  color: white; /* For light-blue buttons in dark mode, black text often has higher contrast */
   font-weight: 700;
   letter-spacing: 0.02rem;
   border: 2px solid transparent;
@@ -205,7 +222,7 @@ button {
 
     footer {
       text-align: center;
-      color: #777;
+      color:  var(--text-muted);
       font-size: 0.9rem;
       margin: 2rem 0;
     }
@@ -262,37 +279,49 @@ button {
 
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav class="skip-nav sr-only-focusable" aria-label="Quick navigation" role="navigation">
+<a href="#main-content">Skip to main content</a>
+<a href="#wallet-connect">Skip to wallet connection</a>
+<a href="#calculator">Skip to calculator</a>
+<a href="#donate">Skip to donate section</a>
+<a href="#priceDisplay">Skip to token prices</a>
+</nav>
   
   <div id="wallet-connect">
-    <button id="connectWallet">Connect Wallet</button>
-    <button id="themeToggle">Dark mode</button>
-    <div id="priceDisplay">
+   <button id="connectWallet" aria-label="Connect MetaMask wallet"> Connect Wallet</button>
+    <button id="themeToggle" aria-label="Toggle dark mode"> Dark mode</button>
+    <div id="priceDisplay" aria-live="polite" aria-label="Token prices">
       <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
       <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
   </div>
 
-  <div id="site-nav">
-  <select id="pageSelector">
-    <option value="">Navigate</option>
-    <option value="index.html">Main Tools</option>
-    <option value="donations.html">Donation Options</option>
-    <option value="cryptodirectory.html">Crypto Directory</option>
-    <option value="terms.html">Terms of Use</option>
-  </select>
-</div>
+<nav id="site-nav" aria-label="Site navigation">
 
-  <main>
-<main id="main-content" tabindex="-1">
+<label for="pageSelector" class="sr-only">Page navigation</label>
+
+<select id="pageSelector">
+<option value="">Navigate</option>
+<option value="index.html">Main Tools</option>
+<option value="donations.html">Donation Options</option>
+<option value="cryptodirectory.html">Crypto Directory</option>
+<option value="terms.html">Terms of Use</option>
+</select>
+
+</nav>
+  
+<main id="main-content" tabindex="-1" aria-label="Main content">
+  <h1 class="sr-only">Pool Funding Web3 Tools</h1>
     <section class="card" id="home">
-      <h1>Unofficial Pool Funding Web3 Tools</h1>
+      <h2>Unofficial Pool Funding Web3 Tools</h2>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
 <section class="card highlight" id="donate">
-<h2><a href="#donate" style="text-decoration:none; color:inherit;">Support Community Development</a></h2>
+<h2>Support Community Development</h2>
   <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
   <p>They are used daily by many members and continue to grow and improve.</p>
   <p>If you find them useful, your support helps keep them running, improving, and available to everyone. Your contribution directly supports development and maintenance of the project.</p>
@@ -309,17 +338,13 @@ button {
 
 
 <section class="card" id="add-tokens">
-<h2><a href="#add-tokens" style="text-decoration:none; color:inherit;">Add Tokens to MetaMask</a></h2>
-      <button id="addTokens">Add All Tokens</button>
+<h2>Add Tokens to MetaMask</h2>
+  <button id="addTokens">Add All Tokens</button>
     </section>
 
 <section class="card" id="rpc">
-  <h2>
-    <a href="#rpc" style="text-decoration:none; color:inherit;">
-      Switch Binance Smart Chain RPC
-    </a>
-  </h2>
-      <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
+<h2>Switch Binance Smart Chain RPC</h2>
+  <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
       <p>Note: The Chainstack RPC Node is no longer available due to technical problems.</p>
 
       <div style="margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.95rem;">
@@ -359,51 +384,60 @@ button {
       
     </section>
 <section class="card" id="charts">
-    <a href="#charts" style="text-decoration:none; color:inherit;">
-  <h2>Token Charts</h2> </a>
+  <h2>Token Charts</h2>
   <p>View real time charts for Pool Funding tokens on ApeSpace.</p>
 
   <div class="doc-buttons">
-    <button onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank')">
+    <button aria-label="Open PFI chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank')">
       PFI Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank')">
+    <button aria-label="Open PFB chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank')">
       PFB Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank')">
+    <button aria-label="Open PFS chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank')">
       PFS Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank')">
+    <button aria-label="Open PFG chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank')">
       PFG Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank')">
+    <button aria-label="Open PML chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank')">
       PML Chart
     </button>
   </div>
 <h3 style="margin-top: 1.5rem;">View Token on BscScan</h3>
 
 <div class="doc-buttons">
-  <button onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank')">
+      <button aria-label="Open PFI on BscScan in a new tab"
+ onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank')">
     PFI
   </button>
 
-  <button onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank')">
+  <button aria-label="Open PFB on BscScan in a new tab" 
+    onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank')">
     PFB
   </button>
 
-  <button onclick="window.open('https://bscscan.com/token/0x25895b6dfd4fbcfcb8ad9b4cb9d9d9c25d7397ccda','_blank')">
+  <button aria-label="Open PFS on BscScan in a new tab" 
+    onclick="window.open('https://bscscan.com/token/0x25895b6dfd4fbcfcb8ad9b4cb9d9d9c25d7397ccda','_blank')">
     PFS
   </button>
 
-  <button onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank')">
+  <button aria-label="Open PFG on BscScan in a new tab" 
+    onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank')">
     PFG
   </button>
 
-  <button onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank')">
+  <button aria-label="Open PML on BscScan in a new tab" 
+    onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank')">
     PML
   </button>
 </div>
@@ -432,7 +466,6 @@ button {
 </section>
 
       <section class="card" id="calculator">
-    <a href="#calculator" style="text-decoration:none; color:inherit;"> </a>
   <h2>Token Value Calculator</h2>
   <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
 
@@ -485,19 +518,18 @@ button {
   </div>
 
 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-  <button id="calcButton">Calculate</button>
-  <button id="calcReset" class="donate-more">Reset</button>
+<button id="calcButton" type="button">Calculate</button>
+<button id="calcReset" type="button" class="donate-more">Reset</button>
 </div>
 
         <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
 
-  <div id="calcAlert" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
-  <div id="calcResult" style="margin-top: 1rem; font-weight: bold;"></div>
+  <div id="calcAlert" aria-live="assertive" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
+  <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
 </section>
 
 <section class="card" id="documents">
-    <a href="#documents" style="text-decoration:none; color:inherit;">
-      <h2>Community Documents</h2> </a>
+      <h2>Community Documents</h2>
       <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
       <div class="doc-buttons">
         <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank')">Common Problems Guide</button>
@@ -545,8 +577,8 @@ button {
     
   </main>
 
-  <footer>
-    © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
+<footer aria-label="Site footer">
+  © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
   View on GitHub
 </a>
@@ -778,6 +810,9 @@ function showMobileFallback() {
   const container = document.createElement("div");
   container.style.marginTop = "1rem";
 
+  container.setAttribute("role", "region");
+  container.setAttribute("aria-label", "Manual token instructions for MetaMask mobile");
+
   const title = document.createElement("h3");
   title.textContent = "Manual Token Add Required";
   container.appendChild(title);
@@ -857,11 +892,6 @@ if (isMobileBrowser()) {
 }
 
 /* ===== END MOBILE FALLBACK ===== */
-
-      document.querySelector('.skip-link').addEventListener('click', (e) => {
-  const target = document.getElementById('main-content');
-  target.focus();
-});
 
     const priceTargets = {
   PFI: 500000,
