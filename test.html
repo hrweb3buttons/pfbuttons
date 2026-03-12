@@ -26,6 +26,17 @@
   border: 2px solid var(--focus-ring);
 }
 
+    fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
 .skip-link:focus {
   top: 0; /* Pop into view on focus */
   outline: none;
@@ -476,8 +487,8 @@ button.donate-more {
   <h2>Token Value Calculator</h2>
   <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
 
-<div style="margin-bottom:1rem;">
-  <strong>Mode</strong><br>
+<fieldset style="margin-bottom:1rem;">
+  <legend><strong>Mode</strong></legend>
 
   <div>
     <label>
@@ -499,17 +510,17 @@ button.donate-more {
       Community Coin
     </label>
   </div>
-</div>
+</fieldset>
 
-  <div id="targetSelector" style="display: none; margin-bottom: 1rem;">
-    <strong>Token Price Target</strong><br>
+<fieldset id="targetSelector" style="display:none; margin-bottom:1rem;">
+  <legend><strong>Token Price Target</strong></legend>
     <label><input type="radio" name="targetToken" value="PFI"> PFI</label><br>
     <label><input type="radio" name="targetToken" value="PFB"> PFB</label><br>
     <label><input type="radio" name="targetToken" value="PFS"> PFS</label><br>
     <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
     <label><input type="radio" name="targetToken" value="PML"> PML</label>
-  </div>
-
+</fieldset>
+        
   <div style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
