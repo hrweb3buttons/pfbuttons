@@ -1,417 +1,482 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Crypto Services Directory</title>
-  <meta name="description" content="A curated directory of commonly used cryptocurrency wallets, exchanges, and services for beginners.">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crypto Services Directory</title>
+<meta name="description" content="A curated directory of commonly used cryptocurrency wallets, exchanges, and services for beginners.">
 
-  <style>
-    :root {
-      --primary: #007bff;
-      --primary-hover: #0056b3;
-      --background: #f4f6f8;
-      --text: #333;
-      --card-bg: #fff;
-      --border: #e1e4e8;
-      --radius: 12px;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
+<style>
 
-    :root.dark {
-      --primary: #4da3ff;
-      --primary-hover: #2f7fd6;
-      --background: #0f141a;
-      --text: #e6eaf0;
-      --card-bg: #151b23;
-      --border: #273142;
-      --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-    }
-
-    .skip-link {
-  position: absolute;
-  left: -9999px;
+:root{
+--primary:#007bff;
+--primary-hover:#0056b3;
+--background:#f4f6f8;
+--text:#333;
+--card-bg:#fff;
+--border:#e1e4e8;
+--radius:12px;
+--shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-.skip-link:focus {
-  left: 20px;
-  top: 20px;
-  background: #000;
-  color: #fff;
-  padding: 8px 12px;
-  z-index: 1000;
+:root.dark{
+--primary:#4da3ff;
+--primary-hover:#2f7fd6;
+--background:#0f141a;
+--text:#e6eaf0;
+--card-bg:#151b23;
+--border:#273142;
+--shadow:0 4px 16px rgba(0,0,0,.6);
 }
 
-    .link-button {
-  display: inline-block;
-  background-color: var(--primary);
-  color: white;
-  border-radius: var(--radius);
-  padding: 0.65rem 1.1rem;
-  text-decoration: none;
-  font-size: 0.95rem;
+body{
+font-family:Inter,system-ui,Arial,sans-serif;
+background:var(--background);
+color:var(--text);
+margin:0;
+display:flex;
+flex-direction:column;
+align-items:center;
+min-height:100vh;
 }
 
-.link-button:hover {
-  background-color: var(--primary-hover);
+main{
+width:100%;
+max-width:820px;
+margin:2rem;
 }
 
-    body {
-      font-family: Inter, system-ui, Arial, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    main {
-      width: 100%;
-      max-width: 820px;
-      margin: 2rem;
-    }
-
-    h1, h2, h3 {
-      color: #111;
-    }
-
-    :root.dark h1,
-    :root.dark h2,
-    :root.dark h3 {
-      color: #fff;
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow);
-    }
-
-    button {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.65rem 1.1rem;
-      cursor: pointer;
-      font-size: 0.95rem;
-    }
-
-    button:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .item {
-      margin-top: 1rem;
-    }
-
-    .item p {
-      margin: 0.4rem 0 0;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    :root.dark .item p {
-      color: #aaa;
-    }
-
-    .item-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .note {
-      margin-top: 1rem;
-      padding: 0.9rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 0.9rem;
-      background-color: rgba(0, 0, 0, 0.02);
-    }
-
-    :root.dark .note {
-      background-color: rgba(255, 255, 255, 0.04);
-    }
-
-    #themeToggle {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      z-index: 9999;
-    }
-
-    footer {
-      text-align: center;
-      color: #777;
-      font-size: 0.85rem;
-      margin: 2rem 0;
-    }
-.button-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+h1,h2,h3{
+color:#111;
 }
-    
-  </style>
+
+:root.dark h1,
+:root.dark h2,
+:root.dark h3{
+color:#fff;
+}
+
+.card{
+background:var(--card-bg);
+border:1px solid var(--border);
+border-radius:var(--radius);
+padding:1.5rem;
+margin-bottom:1.5rem;
+box-shadow:var(--shadow);
+}
+
+.item{
+margin-top:1rem;
+}
+
+.item p{
+margin:.4rem 0 0;
+font-size:.9rem;
+color:#555;
+}
+
+:root.dark .item p{
+color:#aaa;
+}
+
+.item-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:1rem;
+margin-top:1rem;
+}
+
+.note{
+margin-top:1rem;
+padding:.9rem;
+border:1px solid var(--border);
+border-radius:var(--radius);
+font-size:.9rem;
+background:rgba(0,0,0,.02);
+}
+
+:root.dark .note{
+background:rgba(255,255,255,.04);
+}
+
+.link-button{
+display:inline-block;
+background:var(--primary);
+color:#fff;
+border-radius:var(--radius);
+padding:.65rem 1.1rem;
+text-decoration:none;
+font-size:.95rem;
+}
+
+.link-button:hover{
+background:var(--primary-hover);
+}
+
+.button-stack{
+display:flex;
+flex-direction:column;
+gap:.5rem;
+margin-top:.5rem;
+}
+
+#themeToggle{
+position:fixed;
+top:12px;
+right:12px;
+z-index:9999;
+}
+
+.skip-link{
+position:absolute;
+left:-9999px;
+}
+
+.skip-link:focus{
+left:20px;
+top:20px;
+background:#000;
+color:#fff;
+padding:8px 12px;
+z-index:1000;
+}
+
+footer{
+text-align:center;
+color:#777;
+font-size:.85rem;
+margin:2rem 0;
+}
+
+</style>
 </head>
 
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  <button id="themeToggle">Dark mode</button>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<button id="themeToggle" aria-pressed="false">Dark mode</button>
 
 <main id="main-content">
-  <section class="card">
-      <h1>Crypto Services Directory</h1>
-      <div style="margin-top:0.75rem;">
-  <button onclick="window.open('https://hrweb3buttons.github.io/pfbuttons/','_self')">
-    Back to Main Tools
-  </button>
+
+<section class="card">
+
+<h1>Crypto Services Directory</h1>
+
+<div style="margin-top:.75rem;">
+<a href="https://hrweb3buttons.github.io/pfbuttons/" class="link-button">Back to Main Tools</a>
 </div>
-      
-      <p>This page is a curated list of commonly used cryptocurrency wallets, exchanges, and services intended to help newer users find reputable tools.</p>
-      <p>Some sites listed may include referral or affiliate programs. I may recevie a commission from any purchase at these sites. Any referral commission is used to maintain my tooling site.</p>
-      <p>This page is informational only. Always do your own research before using any crypto related service.</p>
-      <p>These services are not officially promoted or endorced, and any inclusion here does not necessarily reflect the views of Pool Funding</p>
 
-    </section>
+<p>This page is a curated list of commonly used cryptocurrency wallets, exchanges, and services intended to help newer users find reputable tools.</p>
 
-    <section class="card">
-      <h2>Wallets</h2>
+<p>Some sites listed may include referral or affiliate programs. I may receive a commission from any purchase at these sites. Any referral commission is used to maintain my tooling site.</p>
 
-      <h3>Desktop Wallets</h3>
+<p>This page is informational only. Always do your own research before using any crypto related service.</p>
 
-      <h4>Bitcoin Only</h4>
-      <div class="item-grid">
-        <div class="item">
-          <a href="https://electrum.org/" target="_blank" rel="noopener" class="link-button">
-          Electrum </a>
-          <p>A lightweight and widely used Bitcoin only wallet for desktop users.</p>
-        </div>
-      </div>
+<p>These services are not officially promoted or endorsed, and any inclusion here does not necessarily reflect the views of Pool Funding.</p>
 
-      <h4>Multichain</h4>
-      <div class="item-grid">
-        <div class="item">
-          <a href="'https://www.exodus.com/" target="_blank" rel="noopener" class="link-button">
-            Exodus</a>
-          <p>A beginner friendly wallet supporting Bitcoin, Ethereum, and many other assets.</p>
-        </div>
-        <div class="item">
-          <a href="'https://atomicwallet.io/" target="_blank" rel="noopener" class="link-button">
-            Atomic Wallet</a>
-          <p>A multichain desktop wallet with built in swapping features.</p>
-        </div>
-      </div>
+</section>
 
-      <h3>Browser Wallets</h3>
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('https://metamask.io/','_blank')">MetaMask</button>
-          <p>The most commonly used browser wallet for Ethereum and Ethereum based chains.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://trustwallet.com/','_blank')">Trust Wallet</button>
-          <p>A popular wallet available as a browser extension and mobile app.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://rabby.io/','_blank')">Rabby</button>
-          <p>A browser wallet focused on safety warnings and transaction clarity.</p>
-        </div>
-      </div>
+<section class="card">
 
-      <p style="margin-top:1rem;font-size:0.9rem;">Most wallets also offer mobile apps.</p>
+<h2>Wallets</h2>
 
-      <h3>Hardware Wallets</h3>
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('http://trezorio.refr.cc/default/u/hunterr','_blank')">Trezor</button>
-          <p>A well known hardware wallet for long term secure storage.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://www.ledger.com/','_blank')">Ledger</button>
-          <p>A popular hardware wallet supporting a wide range of assets.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://tangem.com/en/','_blank')">Tangem</button>
-          <p>A card based hardware wallet designed for simplicity.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://www.tmxglobal.io/','_blank')">TMX Global</button>
-          <p>A hardware wallet solution with additional enterprise focused features.</p>
-        </div>
-      </div>
+<h3>Desktop Wallets</h3>
 
-      <div class="note">
-        <strong>Important:</strong><br>
-        When purchasing a hardware wallet, always order directly from the manufacturer. Do not buy from third party marketplaces such as Amazon or Newegg.
-      </div>
-    </section>
+<h4>Bitcoin Only</h4>
 
-    <section class="card">
-      <h2>Centralized Exchanges</h2>
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('https://www.gemini.com/','_blank')">Gemini</button>
-          <p>A regulated exchange based in the US. Not related to Google Gemini.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://www.kraken.com/','_blank')">Kraken</button>
-          <p>A long standing exchange known for security and transparency.</p>
-        </div>
-      <div class="item">
-<div class="item"> <button onclick="window.open('https://crypto.com/en','_blank')">Crypto.com</button> <p>An exchange offering trading, cards, and other crypto services.</p>
-        <div class="item">
-          <button onclick="window.open('https://www.binance.com/en','_blank')">Binance</button>
-          <p>One of the largest global cryptocurrency exchanges.</p>
-        </div>
-      </div>
-
-      <div class="item" style="margin-top:1.2rem;">
-        <button onclick="window.open('https://bisq.network/','_blank')">Bisq</button>
-        <p>Peer to peer cryptocurrency trading without traditional accounts. Not recommended for novice users.</p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Swap Tools</h2>
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('https://ff.io/?ref=61ae6bqc','_blank')">FixedFloat</button>
-          <p>A quick swap service for exchanging cryptocurrencies. Not available in the US.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://simpleswap.io/customer-account/signup?referral=IJqos24nRd','_blank')">SimpleSwap</button>
-          <p>A beginner friendly crypto swap service. Creating an account isn't required, but helps save on fees.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://sideshift.ai/a/aSyMb8Ml8','_blank')">SideShift</button>
-          <p>A privacy focused instant exchange service.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Decentralized Exchanges</h2>
-      <p>For use with Web3 wallets such as MetaMask or Trust Wallet.</p>
-
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('https://app.uniswap.org/','_blank')">Uniswap</button>
-          <p>The primary decentralized exchange on Ethereum.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://www.sushi.com/ethereum/swap','_blank')">SushiSwap</button>
-          <p>An alternative decentralized exchange on Ethereum.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://raydium.io/swap/','_blank')">Raydium</button>
-          <p>The most commonly used DEX on the Solana network.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://pancakeswap.finance/swap','_blank')">PancakeSwap</button>
-          <p>The primary DEX for Binance Smart Chain.</p>
-        </div>
-      </div>
-
-      <div class="item" style="margin-top:1.2rem;">
-        <button onclick="window.open('https://smolrefuel.com/?partner=0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795','_blank')">Smol Refuel</button>
-        <p>A gasless swap utility for when you do not have the native gas token for a chain.</p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Charts and Market Data</h2>
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('https://coinmarketcap.com/','_blank')">CoinMarketCap</button>
-          <p>Market data, rankings, and basic token information.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://www.coingecko.com/','_blank')">CoinGecko</button>
-          <p>Comprehensive cryptocurrency market data and analytics.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Crypto Backed Debit Cards</h2>
-      <div class="item-grid">
+<div class="item-grid">
 <div class="item">
-  <div class="button-stack">
-    <button onclick="window.open('https://onyxcard.info/','_blank')">OnyxCard Info</button>
-    <button onclick="window.open('https://onyxcard.pro/frontend/signup.html?ref=F6113747','_blank')">OnyxCard Sign Up</button>
-  </div>
-  <p>A crypto backed debit card. The info page explains the program and the signup page allows you to apply.</p>
+<a class="link-button" href="https://electrum.org/" target="_blank" rel="noopener">Electrum</a>
+<p>A lightweight and widely used Bitcoin only wallet for desktop users.</p>
 </div>
-        <div class="item">
-          <button onclick="window.open('https://go.bancus.io/?ref=U9PSYT2B','_blank')">Bancus</button>
-          <p>A crypto friendly payment card solution.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://ultimopay.io/','_blank')">UltimoPay</button>
-          <p>A crypto backed card and payment platform.</p>
-        </div>
-      </div>
-    </section>
+</div>
 
-    <section class="card">
-      <h2>Where to Use Your Crypto</h2>
-      <div class="item-grid">
-        <div class="item">
-          <button onclick="window.open('https://www.bitrefill.com/invite/z6qjt9nu','_blank')">Bitrefill</button>
-          <p>Gift cards and mobile service top ups using crypto.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://stealths.net/','_blank')">Stealths</button>
-          <p>Similar to Bitrefill with a focus on privacy.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://mullvad.net/en','_blank')">Mullvad</button>
-          <p>A privacy focused VPN service accepting crypto.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://shopinbit.com/?partner=gmtn7258-72','_blank')">ShopinBit</button>
-          <p>Goods and services purchasable with cryptocurrency. Use code gmtn7258-72 to save 5€ at checkout</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://thegivingblock.com/donate/','_blank')">The Giving Block</button>
-          <p>A directory of charities that accept crypto donations.</p>
-        </div>
-        <div class="item">
-          <button onclick="window.open('https://nano-gpt.com/r/kFQdUXx9','_blank')">NanoGPT</button>
-          <p>Access modern AI models and pay only for what you use.</p>
-        </div>
-      </div>
-    </section>
-  </main>
+<h4>Multichain</h4>
 
-  <footer>
-    © Hunter Rodriguez 2026. Not affiliated with any listed service.
-  </footer>
+<div class="item-grid">
 
-  <script>
-    const root = document.documentElement;
-    const toggle = document.getElementById("themeToggle");
+<div class="item">
+<a class="link-button" href="https://www.exodus.com/" target="_blank" rel="noopener">Exodus</a>
+<p>A beginner friendly wallet supporting Bitcoin, Ethereum, and many other assets.</p>
+</div>
 
-    if (localStorage.getItem("theme") === "dark") {
-      root.classList.add("dark");
-      toggle.textContent = "Light mode";
-    }
+<div class="item">
+<a class="link-button" href="https://atomicwallet.io/" target="_blank" rel="noopener">Atomic Wallet</a>
+<p>A multichain desktop wallet with built in swapping features.</p>
+</div>
 
-    toggle.onclick = () => {
-      root.classList.toggle("dark");
-      const dark = root.classList.contains("dark");
-      localStorage.setItem("theme", dark ? "dark" : "light");
-      toggle.textContent = dark ? "Light mode" : "Dark mode";
-    };
-  </script>
+</div>
+
+<h3>Browser Wallets</h3>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="https://metamask.io/" target="_blank" rel="noopener">MetaMask</a>
+<p>The most commonly used browser wallet for Ethereum and Ethereum based chains.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://trustwallet.com/" target="_blank" rel="noopener">Trust Wallet</a>
+<p>A popular wallet available as a browser extension and mobile app.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://rabby.io/" target="_blank" rel="noopener">Rabby</a>
+<p>A browser wallet focused on safety warnings and transaction clarity.</p>
+</div>
+
+</div>
+
+<p style="margin-top:1rem;font-size:.9rem;">Most wallets also offer mobile apps.</p>
+
+<h3>Hardware Wallets</h3>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="http://trezorio.refr.cc/default/u/hunterr" target="_blank" rel="noopener">Trezor</a>
+<p>A well known hardware wallet for long term secure storage.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://www.ledger.com/" target="_blank" rel="noopener">Ledger</a>
+<p>A popular hardware wallet supporting a wide range of assets.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://tangem.com/en/" target="_blank" rel="noopener">Tangem</a>
+<p>A card based hardware wallet designed for simplicity.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://www.tmxglobal.io/" target="_blank" rel="noopener">TMX Global</a>
+<p>A hardware wallet solution with additional enterprise focused features.</p>
+</div>
+
+</div>
+
+<div class="note">
+<strong>Important:</strong><br>
+When purchasing a hardware wallet, always order directly from the manufacturer. Do not buy from third party marketplaces such as Amazon or Newegg.
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Centralized Exchanges</h2>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="https://www.gemini.com/" target="_blank" rel="noopener">Gemini</a>
+<p>A regulated exchange based in the US. Not related to Google Gemini.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://www.kraken.com/" target="_blank" rel="noopener">Kraken</a>
+<p>A long standing exchange known for security and transparency.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://crypto.com/en" target="_blank" rel="noopener">Crypto.com</a>
+<p>An exchange offering trading, cards, and other crypto services.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://www.binance.com/en" target="_blank" rel="noopener">Binance</a>
+<p>One of the largest global cryptocurrency exchanges.</p>
+</div>
+
+</div>
+
+<div class="item" style="margin-top:1.2rem;">
+<a class="link-button" href="https://bisq.network/" target="_blank" rel="noopener">Bisq</a>
+<p>Peer to peer cryptocurrency trading without traditional accounts. Not recommended for novice users.</p>
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Swap Tools</h2>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="https://ff.io/?ref=61ae6bqc" target="_blank" rel="noopener">FixedFloat</a>
+<p>A quick swap service for exchanging cryptocurrencies. Not available in the US.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://simpleswap.io/customer-account/signup?referral=IJqos24nRd" target="_blank" rel="noopener">SimpleSwap</a>
+<p>A beginner friendly crypto swap service. Creating an account isn't required, but helps save on fees.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://sideshift.ai/a/aSyMb8Ml8" target="_blank" rel="noopener">SideShift</a>
+<p>A privacy focused instant exchange service.</p>
+</div>
+
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Decentralized Exchanges</h2>
+
+<p>For use with Web3 wallets such as MetaMask or Trust Wallet.</p>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="https://app.uniswap.org/" target="_blank" rel="noopener">Uniswap</a>
+<p>The primary decentralized exchange on Ethereum.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://www.sushi.com/ethereum/swap" target="_blank" rel="noopener">SushiSwap</a>
+<p>An alternative decentralized exchange on Ethereum.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://raydium.io/swap/" target="_blank" rel="noopener">Raydium</a>
+<p>The most commonly used DEX on the Solana network.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://pancakeswap.finance/swap" target="_blank" rel="noopener">PancakeSwap</a>
+<p>The primary DEX for Binance Smart Chain.</p>
+</div>
+
+</div>
+
+<div class="item" style="margin-top:1.2rem;">
+<a class="link-button" href="https://smolrefuel.com/?partner=0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795" target="_blank" rel="noopener">Smol Refuel</a>
+<p>A gasless swap utility for when you do not have the native gas token for a chain.</p>
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Charts and Market Data</h2>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="https://coinmarketcap.com/" target="_blank" rel="noopener">CoinMarketCap</a>
+<p>Market data, rankings, and basic token information.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://www.coingecko.com/" target="_blank" rel="noopener">CoinGecko</a>
+<p>Comprehensive cryptocurrency market data and analytics.</p>
+</div>
+
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Crypto Backed Debit Cards</h2>
+
+<div class="item-grid">
+
+<div class="item">
+<div class="button-stack">
+<a class="link-button" href="https://onyxcard.info/" target="_blank" rel="noopener">OnyxCard Info</a>
+<a class="link-button" href="https://onyxcard.pro/frontend/signup.html?ref=F6113747" target="_blank" rel="noopener">OnyxCard Sign Up</a>
+</div>
+<p>A crypto backed debit card. The info page explains the program and the signup page allows you to apply.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://go.bancus.io/?ref=U9PSYT2B" target="_blank" rel="noopener">Bancus</a>
+<p>A crypto friendly payment card solution.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://ultimopay.io/" target="_blank" rel="noopener">UltimoPay</a>
+<p>A crypto backed card and payment platform.</p>
+</div>
+
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Where to Use Your Crypto</h2>
+
+<div class="item-grid">
+
+<div class="item">
+<a class="link-button" href="https://www.bitrefill.com/invite/z6qjt9nu" target="_blank" rel="noopener">Bitrefill</a>
+<p>Gift cards and mobile service top ups using crypto.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://stealths.net/" target="_blank" rel="noopener">Stealths</a>
+<p>Similar to Bitrefill with a focus on privacy.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://mullvad.net/en" target="_blank" rel="noopener">Mullvad</a>
+<p>A privacy focused VPN service accepting crypto.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://shopinbit.com/?partner=gmtn7258-72" target="_blank" rel="noopener">ShopinBit</a>
+<p>Goods and services purchasable with cryptocurrency. Use code gmtn7258-72 to save 5€ at checkout.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://thegivingblock.com/donate/" target="_blank" rel="noopener">The Giving Block</a>
+<p>A directory of charities that accept crypto donations.</p>
+</div>
+
+<div class="item">
+<a class="link-button" href="https://nano-gpt.com/r/kFQdUXx9" target="_blank" rel="noopener">NanoGPT</a>
+<p>Access modern AI models and pay only for what you use.</p>
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<footer aria-label="Site footer">
+© Hunter Rodriguez 2026. Not affiliated with any listed service.
+</footer>
+
+<script>
+
+const root=document.documentElement
+const toggle=document.getElementById("themeToggle")
+
+if(localStorage.getItem("theme")==="dark"){
+root.classList.add("dark")
+toggle.textContent="Light mode"
+toggle.setAttribute("aria-pressed","true")
+}
+
+toggle.onclick=()=>{
+root.classList.toggle("dark")
+const dark=root.classList.contains("dark")
+localStorage.setItem("theme",dark?"dark":"light")
+toggle.textContent=dark?"Light mode":"Dark mode"
+toggle.setAttribute("aria-pressed",dark)
+}
+
+</script>
+
 </body>
 </html>
+```
