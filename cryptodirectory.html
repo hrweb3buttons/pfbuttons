@@ -9,8 +9,8 @@
 <style>
 
 :root{
---primary:#007bff;
---primary-hover:#0056b3;
+--primary:#0056b3;
+--primary-hover:#003f85;
 --background:#f4f6f8;
 --text:#333;
 --card-bg:#fff;
@@ -111,6 +111,11 @@ font-size:.95rem;
 
 .link-button:hover{
 background:var(--primary-hover);
+}
+
+  .link-button:focus-visible{
+outline:3px solid #f0b90b;
+outline-offset:2px;
 }
 
 .button-stack{
@@ -478,4 +483,3 @@ toggle.setAttribute("aria-pressed",dark)
 
 </body>
 </html>
-```
