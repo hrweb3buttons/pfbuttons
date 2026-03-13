@@ -144,10 +144,10 @@ button {
 
     .eth { background:#627eea }
     .bnb { background:#f3ba2f; color:#000 }
-    .matic { background:#8247e5 }
+    .matic { background:#6f32d2 }
     .avax { background:#e84142 }
     .usdt { background:#26a17b }
-    .usdc { background:#2775ca }
+    .usdc { background:#1f63ad }
     .dai { background:#f5ac37; color:#000 }
     .trx { background:#ff060a }
     .sol { background:#14f195; color:#000 }
@@ -172,21 +172,21 @@ button {
   <section class="card">
     <h2>Ethereum</h2>
     <div class="buttons">
-      <button class="eth" onclick="donateNative(evmChains.eth)aria-label="Donate Ethereum on the Ethereum network"
+      <button class="eth" onclick="donateNative(evmChains.eth)" aria-label="Donate Ethereum on the Ethereum network">
         >ETH</button>
-<button class="usdt" onclick="donateToken(evmChains.eth,tokens.eth.usdt,'USDT')aria-label="Donate USDT on the Ethereum network">USDT</button>     
-      <button class="usdc" onclick="donateToken(evmChains.eth,tokens.eth.usdc,'USDC')aria-label="Donate USDC on the Ethereum network" >USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.eth,tokens.eth.dai,'DAI')aria-label="Donate DAI on the Ethereum network" >DAI</button>
+<button class="usdt" onclick="donateToken(evmChains.eth,tokens.eth.usdt,'USDT')" aria-label="Donate USDT on the Ethereum network">USDT</button>     
+      <button class="usdc" onclick="donateToken(evmChains.eth,tokens.eth.usdc,'USDC')" aria-label="Donate USDC on the Ethereum network" >USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.eth,tokens.eth.dai,'DAI')" aria-label="Donate DAI on the Ethereum network" >DAI</button>
     </div>
   </section>
 
   <section class="card">
     <h2>BNB Chain</h2>
     <div class="buttons">
-      <button class="bnb" onclick="donateNative(evmChains.bsc)aria-label="Donate BNB on BNB Chain">BNB</button>
-      <button class="usdt" onclick="donateToken(evmChains.bsc,tokens.bsc.usdt,'USDT')aria-label="Donate USDT on BNB Chain"">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.bsc,tokens.bsc.usdc,'USDC')aria-label="Donate USDC on BNB Chain"">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.bsc,tokens.bsc.dai,'DAI')aria-label="Donate DAI on BNB Chain">DAI</button>
+      <button class="bnb" onclick="donateNative(evmChains.bsc)" aria-label="Donate BNB on BNB Chain">BNB</button>
+      <button class="usdt" onclick="donateToken(evmChains.bsc,tokens.bsc.usdt,'USDT')" aria-label="Donate USDT on BNB Chain"">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.bsc,tokens.bsc.usdc,'USDC')" aria-label="Donate USDC on BNB Chain"">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.bsc,tokens.bsc.dai,'DAI')" aria-label="Donate DAI on BNB Chain">DAI</button>
     </div>
   </section>
 
@@ -194,27 +194,27 @@ button {
     <h2>Polygon</h2>
     <div class="buttons">
       <button class="matic" onclick="donateNative(evmChains.polygon)">MATIC</button>
-      <button class="usdt" onclick="donateToken(evmChains.polygon,tokens.polygon.usdt,'USDT')aria-label="Donate USDT on the Polygon Chain">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.polygon,tokens.polygon.usdc,'USDC')aria-label="Donate USDC on the Polygon Chain">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.polygon,tokens.polygon.dai,'DAI')aria-label="Donate DAI on the Polygon Chain">DAI</button>
+      <button class="usdt" onclick="donateToken(evmChains.polygon,tokens.polygon.usdt,'USDT')" aria-label="Donate USDT on the Polygon Chain">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.polygon,tokens.polygon.usdc,'USDC')" aria-label="Donate USDC on the Polygon Chain">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.polygon,tokens.polygon.dai,'DAI')" aria-label="Donate DAI on the Polygon Chain">DAI</button>
     </div>
   </section>
 
   <section class="card">
     <h2>Avalanche</h2>
     <div class="buttons">
-      <button class="avax" onclick="donateNative(evmChains.avax)aria-label="Donate AVAX on the Avalanche Chain">AVAX</button>
-      <button class="usdt" onclick="donateToken(evmChains.avax,tokens.avax.usdt,'USDT')aria-label="Donate USDT on the Avalanche Chain">USDT</button>
-      <button class="usdc" onclick="donateToken(evmChains.avax,tokens.avax.usdc,'USDC')aria-label="Donate USDC on the Avalanche Chain">USDC</button>
-      <button class="dai" onclick="donateToken(evmChains.avax,tokens.avax.dai,'DAI')aria-label="Donate DAI on the Avalanche Chain">DAI</button>
+      <button class="avax" onclick="donateNative(evmChains.avax)" aria-label="Donate AVAX on the Avalanche Chain">AVAX</button>
+      <button class="usdt" onclick="donateToken(evmChains.avax,tokens.avax.usdt,'USDT')" aria-label="Donate USDT on the Avalanche Chain">USDT</button>
+      <button class="usdc" onclick="donateToken(evmChains.avax,tokens.avax.usdc,'USDC')" aria-label="Donate USDC on the Avalanche Chain">USDC</button>
+      <button class="dai" onclick="donateToken(evmChains.avax,tokens.avax.dai,'DAI')" aria-label="Donate DAI on the Avalanche Chain">DAI</button>
     </div>
   </section>
 
   <section class="card">
     <h2>Tron</h2>
     <div class="buttons">
-      <button class="trx" onclick="donateTron('TRX')aria-label="Donate TRX on the TRON Chain">TRX</button>
-      <button class="usdt" onclick="donateTron('USDT')aria-label="Donate USDT on the TRON Chain">USDT</button>
+      <button class="trx" onclick="donateTron('TRX')" aria-label="Donate TRX on the TRON Chain">TRX</button>
+      <button class="usdt" onclick="donateTron('USDT')" aria-label="Donate USDT on the TRON Chain">USDT</button>
     </div>
   </section>
 
