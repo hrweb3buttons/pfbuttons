@@ -147,16 +147,16 @@ button {
       }
     }
 
-    .eth { background:#627eea }
+    .eth { background:#627eea; color:#fff }
     .bnb { background:#f3ba2f; color:#000 }
-    .matic { background:#6f32d2 }
-    .avax { background:#e84142 }
-    .usdt { background:#26a17b }
-    .usdc { background:#1f63ad }
+    .matic { background:#6f32d2; color:#fff }
+    .avax { background:#e84142; color:#fff }
+    .usdt { background:#26a17b; color:#fff }
+    .usdc { background:#1f63ad; color:#fff }
     .dai { background:#f5ac37; color:#000 }
-    .trx { background:#ff060a }
+    .trx { background:#ff060a; color:#fff }
     .sol { background:#14f195; color:#000 }
-    .bat { background:#ff5000 }
+    .bat { background:#ff5000; color:#fff }
   </style>
 </head>
 
@@ -198,7 +198,7 @@ button {
   <section class="card">
     <h2>Polygon</h2>
     <div class="buttons">
-      <button class="matic" onclick="donateNative(evmChains.polygon)">MATIC</button>
+      <button class="matic" onclick="donateNative(evmChains.polygon)" aria-label="Donate MATIC on the Polygon Chain">MATIC</button>
       <button class="usdt" onclick="donateToken(evmChains.polygon,tokens.polygon.usdt,'USDT')" aria-label="Donate USDT on the Polygon Chain">USDT</button>
       <button class="usdc" onclick="donateToken(evmChains.polygon,tokens.polygon.usdc,'USDC')" aria-label="Donate USDC on the Polygon Chain">USDC</button>
       <button class="dai" onclick="donateToken(evmChains.polygon,tokens.polygon.dai,'DAI')" aria-label="Donate DAI on the Polygon Chain">DAI</button>
@@ -233,6 +233,12 @@ button {
       <button class="bat" data-sol="BAT">BAT</button>
     </div>
   </section>
+
+  <section class="card">
+  <h2>Other Assets</h2>
+  <p>
+    Donate assets not listed above. They will be converted and sent as USDT on BNB Chain.
+  </p>
 </main>
 
 <script>
@@ -391,11 +397,7 @@ document.querySelectorAll("[data-sol]").forEach(btn => {
 });
 </script>
 
-  <section class="card">
-  <h2>Other Assets</h2>
-  <p>
-    Donate assets not listed above. They will be converted and sent as USDT on BNB Chain.
-  </p>
+
 
   <div class="trocador-wrapper">
 <iframe
