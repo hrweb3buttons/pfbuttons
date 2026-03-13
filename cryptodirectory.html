@@ -133,6 +133,7 @@ background:rgba(255,255,255,.04);
 
 .link-button{
 display:inline-block;
+width:fit-content;
 background:var(--primary);
 color:#fff;
 border-radius:var(--radius);
@@ -147,11 +148,7 @@ background:var(--primary-hover);
 
   .link-button:focus-visible{
 outline:3px solid #f0b90b;
-outline-offset:2px;
-}
-
-  .item .link-button{
-width:fit-content;
+outline-offset:3px;
 }
 
 .button-stack{
@@ -219,6 +216,7 @@ margin:2rem 0;
 </section>
 
   <nav aria-label="Directory sections">
+  <h2 class="visually-hidden">Directory navigation</h2>
 <ul>
 <li><a href="#wallets">Wallets</a></li>
 <li><a href="#exchanges">Centralized Exchanges</a></li>
@@ -243,7 +241,8 @@ margin:2rem 0;
 <li class="item">
 <a class="link-button" href="https://electrum.org/" target="_blank" rel="noopener">
 Electrum <span class="visually-hidden">(opens in a new tab)</span>
-</a> <p>A lightweight and widely used Bitcoin only wallet for desktop users.</p>
+</a> 
+<p>A lightweight and widely used Bitcoin only wallet for desktop users.</p>
 </li>
 
 </ul>
@@ -270,53 +269,63 @@ Atomic Wallet <span class="visually-hidden">(opens in a new tab)</span>
 
 <h3>Browser Wallets</h3>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
-<a class="link-button" href="https://metamask.io/" target="_blank" rel="noopener">MetaMask</a>
+<li class="item">
+<a class="link-button" href="https://metamask.io/" target="_blank" rel="noopener">
+MetaMask <span class="visually-hidden">(opens in a new tab)</span>
+</a>
 <p>The most commonly used browser wallet for Ethereum and Ethereum based chains.</p>
-</div>
+</li>
 
-<div class="item">
-<a class="link-button" href="https://trustwallet.com/" target="_blank" rel="noopener">Trust Wallet</a>
+<li class="item">
+<a class="link-button" href="https://trustwallet.com/" target="_blank" rel="noopener">
+Trust Wallet <span class="visually-hidden">(opens in a new tab)</span>
+</a>
 <p>A popular wallet available as a browser extension and mobile app.</p>
-</div>
+</li>
 
-<div class="item">
-<a class="link-button" href="https://rabby.io/" target="_blank" rel="noopener">Rabby</a>
+<li class="item">
+<a class="link-button" href="https://rabby.io/" target="_blank" rel="noopener">
+Rabby <span class="visually-hidden">(opens in a new tab)</span>
+</a>
 <p>A browser wallet focused on safety warnings and transaction clarity.</p>
-</div>
+</li>
 
-</div>
+</ul>
 
 <p style="margin-top:1rem;font-size:.9rem;">Most wallets also offer mobile apps.</p>
 
 <h3>Hardware Wallets</h3>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
-<a class="link-button" href="http://trezorio.refr.cc/default/u/hunterr" target="_blank" rel="noopener">Trezor</a>
+<li class="item">
+  <a class="link-button" href="http://trezorio.refr.cc/default/u/hunterr" target="_blank" rel="noopener">Trezor <span class="visually-hidden">(opens in a new tab)</span>
+  </a>
 <p>A well known hardware wallet for long term secure storage.</p>
-</div>
+</li>
 
-<div class="item">
-<a class="link-button" href="https://www.ledger.com/" target="_blank" rel="noopener">Ledger</a>
+<li class="item">
+<a class="link-button" href="https://www.ledger.com/" target="_blank" rel="noopener">Ledger <span class="visually-hidden">(opens in a new tab)</span>
+</a>
 <p>A popular hardware wallet supporting a wide range of assets.</p>
-</div>
+</li>
 
-<div class="item">
-<a class="link-button" href="https://tangem.com/en/" target="_blank" rel="noopener">Tangem</a>
+<li class="item">
+<a class="link-button" href="https://tangem.com/en/" target="_blank" rel="noopener">Tangem <span class="visually-hidden">(opens in a new tab)</span>
+</a>
 <p>A card based hardware wallet designed for simplicity.</p>
-</div>
+</li>
 
-<div class="item">
-<a class="link-button" href="https://www.tmxglobal.io/" target="_blank" rel="noopener">TMX Global</a>
+<li class="item">
+<a class="link-button" href="https://www.tmxglobal.io/" target="_blank" rel="noopener">TMX Global <span class="visually-hidden">(opens in a new tab)</span>
+</a>
 <p>A hardware wallet solution with additional enterprise focused features.</p>
-</div>
+</li>
 
-</div>
-
+</ul>
+  
 <div class="note">
 <strong>Important:</strong><br>
 When purchasing a hardware wallet, always order directly from the manufacturer. Do not buy from third party marketplaces such as Amazon or Newegg.
@@ -327,33 +336,34 @@ When purchasing a hardware wallet, always order directly from the manufacturer. 
 <section class="card">
 
 <h2 id="exchanges">Centralized Exchanges</h2>
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://www.gemini.com/" target="_blank" rel="noopener">Gemini <span class="visually-hidden">(opens in a new tab)</span>
-</a> <p>A regulated exchange based in the US. Not related to Google Gemini.</p>
-</div>
+</a> 
+<p>A regulated exchange based in the US. Not related to Google Gemini.</p>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://kraken.com" target="_blank" rel="noopener">
 Kraken <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>A long standing exchange known for security and transparency.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://crypto.com/en" target="_blank" rel="noopener">Crypto.com <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>An exchange offering trading, cards, and other crypto services.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://www.binance.com/en" target="_blank" rel="noopener">Binance <span class="visually-hidden">(opens in a new tab)</span> </a>
 <p>One of the largest global cryptocurrency exchanges.</p>
-</div>
+</li>
 
-</div>
-
+</ul>
+  
 <div class="item" style="margin-top:1.2rem;">
 <a class="link-button" href="https://bisq.network/" target="_blank" rel="noopener">Bisq <span class="visually-hidden">(opens in a new tab)</span> </a>
 <p>Peer to peer cryptocurrency trading without traditional accounts. Not recommended for novice users.</p>
@@ -365,26 +375,26 @@ Kraken <span class="visually-hidden">(opens in a new tab)</span>
 
 <h2 id="swap">Swap Tools</h2>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://ff.io/?ref=61ae6bqc" target="_blank" rel="noopener">FixedFloat <span class="visually-hidden">(opens in a new tab)</span> </a>
 <p>A quick swap service for exchanging cryptocurrencies. Not available in the US.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://simpleswap.io/customer-account/signup?referral=IJqos24nRd" target="_blank" rel="noopener">SimpleSwap <span class="visually-hidden">(opens in a new tab)</span> 
 </a>
 <p>A beginner friendly crypto swap service. Creating an account isn't required, but helps save on fees.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://sideshift.ai/a/aSyMb8Ml8" target="_blank" rel="noopener">SideShift <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>A privacy focused instant exchange service.</p>
-</div>
+</li>
 
-</div>
+</ul>
 
 </section>
 
@@ -394,33 +404,33 @@ Kraken <span class="visually-hidden">(opens in a new tab)</span>
 
 <p>For use with Web3 wallets such as MetaMask or Trust Wallet.</p>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://app.uniswap.org/" target="_blank" rel="noopener">Uniswap <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>The primary decentralized exchange on Ethereum.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://www.sushi.com/ethereum/swap" target="_blank" rel="noopener">SushiSwap <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>An alternative decentralized exchange on Ethereum.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://raydium.io/swap/" target="_blank" rel="noopener">Raydium <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>The most commonly used DEX on the Solana network.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://pancakeswap.finance/swap" target="_blank" rel="noopener">PancakeSwap <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>The primary DEX for Binance Smart Chain.</p>
-</div>
+</li>
 
-</div>
+</ul>
 
 <div class="item" style="margin-top:1.2rem;">
 <a class="link-button" href="https://smolrefuel.com/?partner=0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795" target="_blank" rel="noopener">Smol Refuel <span class="visually-hidden">(opens in a new tab)</span>
@@ -434,21 +444,21 @@ Kraken <span class="visually-hidden">(opens in a new tab)</span>
 
 <h2 id="charts">Charts and Market Data</h2>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://coinmarketcap.com/" target="_blank" rel="noopener">CoinMarketCap <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>Market data, rankings, and basic token information.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://www.coingecko.com/" target="_blank" rel="noopener">CoinGecko <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>Comprehensive cryptocurrency market data and analytics.</p>
-</div>
+</li>
 
-</div>
+</ul>
 
 </section>
 
@@ -456,9 +466,9 @@ Kraken <span class="visually-hidden">(opens in a new tab)</span>
 
 <h2 id="cards">Crypto Backed Debit Cards</h2>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
+<li class="item">
 <div class="button-stack">
 <a class="link-button" href="https://onyxcard.info/" target="_blank" rel="noopener">OnyxCard Info <span class="visually-hidden">(opens in a new tab)
 </span></a>
@@ -466,21 +476,21 @@ Kraken <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 </div>
 <p>A crypto backed debit card. The info page explains the program and the signup page allows you to apply.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://go.bancus.io/?ref=U9PSYT2B" target="_blank" rel="noopener">Bancus <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>A crypto friendly payment card solution.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://ultimopay.io/" target="_blank" rel="noopener">UltimoPay <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>A crypto backed card and payment platform.</p>
-</div>
+</li>
 
-</div>
+</ul>
 
 </section>
 
@@ -488,51 +498,51 @@ Kraken <span class="visually-hidden">(opens in a new tab)</span>
 
 <h2 id="spend">Where to Use Your Crypto</h2>
 
-<div class="item-grid">
+<ul class="item-grid">
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://www.bitrefill.com/invite/z6qjt9nu" target="_blank" rel="noopener">Bitrefill <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>Gift cards and mobile service top ups using crypto.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://stealths.net/" target="_blank" rel="noopener">Stealths <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>Similar to Bitrefill with a focus on privacy.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://mullvad.net/en" target="_blank" rel="noopener">Mullvad <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>A privacy focused VPN service accepting crypto.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://shopinbit.com/?partner=gmtn7258-72" target="_blank" rel="noopener">ShopinBit <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>Goods and services purchasable with cryptocurrency. Use code gmtn7258-72 to save 5€ at checkout.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://thegivingblock.com/donate/" target="_blank" rel="noopener">The Giving Block <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>A directory of charities that accept crypto donations.</p>
-</div>
+</li>
 
-<div class="item">
+<li class="item">
 <a class="link-button" href="https://nano-gpt.com/r/kFQdUXx9" target="_blank" rel="noopener">NanoGPT <span class="visually-hidden">(opens in a new tab)</span>
 </a>
 <p>Access modern AI models and pay only for what you use.</p>
-</div>
+</li>
 
-</div>
+</ul>
 
 </section>
 
 </main>
 
-<footer aria-label="Site footer">
+<footer>
 © Hunter Rodriguez 2026. Not affiliated with any listed service.
 </footer>
 
