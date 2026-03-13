@@ -6,7 +6,7 @@
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
   <style>
 /* Skip Link - Hidden until Tabbed */
@@ -170,9 +170,10 @@ main {
   max-width: 720px;
   margin: 2rem auto;
 }
-    h1, h2 { color: #111; }
-    :root.dark h1,
-    :root.dark h2 { color: #fff; }
+ 
+    h1, h2 {
+color: var(--text);
+}
 
     .container {
   max-width: 1100px;
@@ -298,7 +299,6 @@ button.donate-more {
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
 <nav class="skip-nav sr-only-focusable" aria-label="Quick navigation" role="navigation">
-<a href="#main-content">Skip to main content</a>
 <a href="#wallet-connect">Skip to wallet connection</a>
 <a href="#calculator">Skip to calculator</a>
 <a href="#donate">Skip to donate section</a>
@@ -308,7 +308,7 @@ button.donate-more {
   <div id="wallet-connect">
    <button id="connectWallet" aria-label="Connect MetaMask wallet"> Connect Wallet</button>
     <button id="themeToggle" aria-label="Toggle dark mode"> Dark mode</button>
-    <div id="priceDisplay" aria-live="polite" aria-label="Token prices">
+    <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
       <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
       <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
@@ -357,7 +357,7 @@ button.donate-more {
 
 <section class="card" id="add-tokens">
 <h2>Add Tokens to MetaMask</h2>
-  <button id="addTokens">Add All Tokens</button>
+  <button id="addTokens">Add Pool Funding Tokens to MetaMask</button>
     </section>
 
 <section class="card" id="rpc">
@@ -407,27 +407,27 @@ button.donate-more {
 
   <div class="doc-buttons">
     <button aria-label="Open PFI chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank')">
+ onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank' 'noopener')">
       PFI Chart
     </button>
 
     <button aria-label="Open PFB chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank')">
+ onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank' 'noopener')">
       PFB Chart
     </button>
 
     <button aria-label="Open PFS chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank')">
+ onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank' 'noopener')">
       PFS Chart
     </button>
 
     <button aria-label="Open PFG chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank')">
+ onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank' 'noopener')">
       PFG Chart
     </button>
 
     <button aria-label="Open PML chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank')">
+ onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank' 'noopener')">
       PML Chart
     </button>
   </div>
@@ -435,27 +435,27 @@ button.donate-more {
 
 <div class="doc-buttons">
       <button aria-label="Open PFI on BscScan in a new tab"
- onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank')">
+ onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank' 'noopener')">
     PFI
   </button>
 
   <button aria-label="Open PFB on BscScan in a new tab" 
-    onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank')">
+    onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank' 'noopener")">
     PFB
   </button>
 
   <button aria-label="Open PFS on BscScan in a new tab" 
-    onclick="window.open('https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa','_blank')">
+    onclick="window.open('https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa','_blank' "noopener')">
     PFS
   </button>
 
   <button aria-label="Open PFG on BscScan in a new tab" 
-    onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank')">
+    onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank' 'noopener')">
     PFG
   </button>
 
   <button aria-label="Open PML on BscScan in a new tab" 
-    onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank')">
+    onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank' 'noopener')">
     PML
   </button>
 </div>
@@ -542,17 +542,17 @@ button.donate-more {
 
         <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
 
-  <div id="calcAlert" aria-live="assertive" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
+  <div id="calcAlert" role="alert" style="display:none; color:#b00020;"></div>
   <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
 </section>
 
 <section class="card" id="documents">
       <h2>Community Documents</h2>
-      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank' 'noopener')">Open Shared Folder</button>
       <div class="doc-buttons">
-        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank')">Common Problems Guide</button>
-        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank')">$777 Newbies Guide</button>
-        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank')">General Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank' 'noopener')">Common Problems Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank' 'noopener')">$777 Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank' 'noopener')">General Newbies Guide</button>
       </div>
     </section>
 
@@ -1211,7 +1211,7 @@ if (swapButtonsContainer) {
 
       const symbol = button.getAttribute("data-swap");
       const url = swapLinks[symbol];
-      window.open(url, "_blank");
+      window.open(url, "_blank", 'noopener');
     });
   }
 }
