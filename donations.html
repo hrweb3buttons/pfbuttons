@@ -346,6 +346,13 @@ const notify = msg => {
   setTimeout(() => n.remove(), 4000);
 };
 
+  footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 2rem 0;
+}
+
 document.getElementById("connectWallet").onclick = async () => {
   if (!window.ethereum)
     return notify("No EVM wallet detected. Please install MetaMask or use a wallet browser.");
@@ -488,9 +495,12 @@ toggle.onclick = () => {
 
 
 <footer aria-label="Site footer">
-  <p>
-    <a href="index.html">Back to main site</a>
-  </p>
+  © 2026 Hunter Rodriguez |
+  <a href="https://hrweb3buttons.github.io/pfbuttons/">Main Tools</a> |
+  <a href="https://hrweb3buttons.github.io/pfbuttons/terms.html">Terms of Use</a> |
+  <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
+    View on GitHub
+  </a>
 </footer>
   
 </body>
