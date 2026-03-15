@@ -164,7 +164,8 @@ button {
 
 /* Price Display with Aria-Live updates */
 #priceDisplay {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
   background: var(--card-bg);
   padding: 4px 12px;
   border-radius: 20px;
@@ -251,8 +252,6 @@ button.donate-more {
       margin: 2rem 0;
     }
 
-    #priceDisplay { font-size: 0.85rem; color: #555; }
-    :root.dark #priceDisplay { color: #aaa; }
 
     .notify {
       position: fixed;
@@ -311,14 +310,14 @@ button.donate-more {
 <a href="#priceDisplay">Skip to token prices</a>
 </nav>
   
-  <div id="wallet-connect">
+  <header id="wallet-connect" aria-label="Site controls">
    <button id="connectWallet" aria-label="Connect MetaMask wallet"> Connect Wallet</button>
     <button id="themeToggle" aria-label="Toggle dark mode"> Dark mode</button>
     <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
       <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
       <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
-  </div>
+  </header>
 
 <nav id="site-nav" aria-label="Site navigation">
 
