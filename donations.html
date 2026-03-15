@@ -11,6 +11,8 @@
       --text:#333;
       --card-bg:#fff;
       --border:#e1e4e8;
+      --primary: #004aab;
+      --focus-ring: #ff9500;
       --radius:12px;
       --shadow:0 2px 8px rgba(0,0,0,.08);
     }
@@ -20,6 +22,7 @@
       --text:#e6eaf0;
       --card-bg:#151b23;
       --border:#273142;
+      --primary: #a3d1ff;
       --shadow:0 4px 16px rgba(0,0,0,.6);
     }
 
@@ -28,19 +31,25 @@
   left: -9999px;
 }
 
-.skip-link:focus {
+.skip-link {
   position: absolute;
-  left: 20px;
-  top: 20px;
-  background: #000;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
   color: #fff;
-  padding: 8px 12px;
-  z-index: 1000;
+  padding: 1rem 2rem;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: top 0.2s ease;
+  border: 2px solid var(--focus-ring);
 }
 
-button:focus-visible {
-  outline: 3px solid #ff9500;
-  outline-offset: 3px;
+.skip-link:focus {
+  top: 0;
+  outline: none;
 }
 
     a:focus-visible {
