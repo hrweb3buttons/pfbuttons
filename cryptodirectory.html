@@ -133,16 +133,11 @@ background:var(--primary-hover);
   outline-offset: 3px;
 }
 
-.link-button:focus-visible {
-  outline: 3px solid #ff9500;
+.link-button:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
-}
-
-.button-stack{
-display:flex;
-flex-direction:column;
-gap:.5rem;
-margin-top:.5rem;
 }
 
 #themeToggle{
