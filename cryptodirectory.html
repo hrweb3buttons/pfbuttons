@@ -13,6 +13,9 @@
 --primary-hover:#003f85;
 --background:#f4f6f8;
 --text:#333;
+--text-heading: #111111;
+--text-muted: #555555;
+--note-bg: rgba(0, 0, 0, 0.02);
 --card-bg:#fff;
 --border:#e1e4e8;
 --radius:12px;
@@ -24,13 +27,12 @@
 --primary-hover:#2f7fd6;
 --background:#0f141a;
 --text:#e6eaf0;
+--text-heading: #ffffff;
+--text-muted: #aaaaaa;
+--note-bg: rgba(255, 255, 255, 0.04);
 --card-bg:#151b23;
 --border:#273142;
 --shadow:0 4px 16px rgba(0,0,0,.6);
-}
-
-  :root.dark footer{
-color:#aaa;
 }
 
   .visually-hidden{
@@ -76,15 +78,8 @@ max-width:820px;
 margin:2rem;
 }
 
-h1,h2,h3{
-color:#111;
-}
-
-:root.dark h1,
-:root.dark h2,
-:root.dark h3{
-color:#fff;
-}
+h1, h2, h3 { color: var(--text-heading); }
+.item p { color: var(--text-muted); }
 
 .card{
 background:var(--card-bg);
@@ -97,16 +92,6 @@ box-shadow:var(--shadow);
 
 .item{
 margin-top:1rem;
-}
-
-.item p{
-margin:.4rem 0 0;
-font-size:.9rem;
-color:#555;
-}
-
-:root.dark .item p{
-color:#aaa;
 }
 
 .item-grid{
@@ -124,11 +109,7 @@ padding:.9rem;
 border:1px solid var(--border);
 border-radius:var(--radius);
 font-size:.9rem;
-background:rgba(0,0,0,.02);
-}
-
-:root.dark .note{
-background:rgba(255,255,255,.04);
+background: var(--note-bg);
 }
 
 .link-button{
@@ -146,9 +127,14 @@ font-size:.95rem;
 background:var(--primary-hover);
 }
 
-  .link-button:focus-visible{
-outline:3px solid #f0b90b;
-outline-offset:3px;
+  button:focus-visible {
+  outline: 3px solid #ff9500;
+  outline-offset: 3px;
+}
+
+.link-button:focus-visible {
+  outline: 3px solid #ff9500;
+  outline-offset: 3px;
 }
 
 .button-stack{
@@ -181,7 +167,7 @@ z-index:1000;
 
 footer{
 text-align:center;
-color:#555;
+color: var(--text-muted);
 font-size:.85rem;
 margin:2rem 0;
 }
@@ -195,7 +181,7 @@ margin:2rem 0;
 
 <button id="themeToggle" aria-pressed="false">Dark mode</button>
 
-<main id="main-content">
+<main id="main-content" tabindex="-1">
 
 <section class="card">
 
