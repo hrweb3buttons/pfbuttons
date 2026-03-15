@@ -59,6 +59,7 @@ main:focus {
   --radius: 12px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   --focus-ring: #ff9500;     /* High-contrast orange for keyboard navigation */
+  --error: #b00020;    
 }
 
 :root.dark {
@@ -71,6 +72,11 @@ main:focus {
   --card-bg: #151b23;
   --border: #3e4c5f;
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --error: #ff6b6b;
+}
+
+    #calcAlert {
+  color: var(--error);
 }
 
 /* Global Accessibility Improvements */
@@ -330,9 +336,8 @@ button.donate-more {
   
 <main id="main-content" tabindex="-1" aria-label="Main content">
   <div class="container">
-  <h1 class="sr-only">Pool Funding Web3 Tools</h1>
     <section class="card" id="home">
-      <h2>Unofficial Pool Funding Web3 Tools</h2>
+      <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
@@ -352,6 +357,21 @@ button.donate-more {
           View more donation options
         </button>
   </div>
+  
+  <div id="donateForm" style="display:none; margin-top:1rem;">
+  <label for="donateAmount">
+    <strong id="donateFormLabel">Amount</strong>
+  </label>
+  <input id="donateAmount"
+         type="text"
+         inputmode="decimal"
+         autocomplete="off"
+         style="width:100%; padding:0.5rem; margin-top:0.25rem; box-sizing:border-box;">
+  <div style="display:flex; gap:0.75rem; margin-top:0.75rem; flex-wrap:wrap;">
+    <button id="donateConfirm" type="button">Confirm</button>
+    <button id="donateCancel" type="button" class="donate-more">Cancel</button>
+  </div>
+</div>
 </section>
 
 
@@ -542,7 +562,7 @@ button.donate-more {
 
         <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
 
-  <div id="calcAlert" role="alert" style="display:none; color:#b00020;"></div>
+  <div id="calcAlert" role="alert" style="display:none;"></div>
   <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
 </section>
 
@@ -735,24 +755,65 @@ async function switchRPC(url, name) {
 
 
 
-      async function donateBNB() {
-        const amt = parseFloat(prompt("Enter BNB amount"));
-        if (!amt) return;
-        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-        const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: walletAddress, value }] });
-        notify("BNB donation sent");
-      }
+let pendingDonation = null;
+let donateCallerBtn = null;
 
-      async function donateToken(contract, symbol) {
-        const amt = parseFloat(prompt(`Enter ${symbol} amount`));
-        if (!amt) return;
-        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-        const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64,"0");
-        const data = "0xa9059cbb" + walletAddress.replace("0x","").padStart(64,"0") + value;
-        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
-        notify(symbol + " donation sent");
-      }
+function openDonateForm(label, btn, onConfirm) {
+  donateCallerBtn = btn;
+  pendingDonation = onConfirm;
+  document.getElementById("donateFormLabel").textContent = "Amount (" + label + ")";
+  document.getElementById("donateAmount").value = "";
+  const form = document.getElementById("donateForm");
+  form.style.display = "block";
+  document.getElementById("donateAmount").focus();
+}
+
+function closeDonateForm() {
+  document.getElementById("donateForm").style.display = "none";
+  pendingDonation = null;
+  if (donateCallerBtn) {
+    donateCallerBtn.focus();
+    donateCallerBtn = null;
+  }
+}
+
+document.getElementById("donateConfirm").onclick = async () => {
+  const raw = document.getElementById("donateAmount").value;
+  const amt = parseFloat(raw);
+  if (!amt || amt <= 0) {
+    notify("Please enter a valid amount.");
+    return;
+  }
+  closeDonateForm();
+  if (pendingDonation) await pendingDonation(amt);
+};
+
+document.getElementById("donateCancel").onclick = closeDonateForm;
+
+async function donateBNB() {
+  openDonateForm("BNB", document.getElementById("donateBNB"), async (amt) => {
+    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+    const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from, to: walletAddress, value }]
+    });
+    notify("BNB donation sent");
+  });
+}
+
+async function donateToken(contract, symbol) {
+  openDonateForm(symbol, document.getElementById("donate" + symbol), async (amt) => {
+    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+    const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64, "0");
+    const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + value;
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from, to: contract, data }]
+    });
+    notify(symbol + " donation sent");
+  });
+}
 
 async function fetchPrices() {
   try {
