@@ -39,12 +39,13 @@
 }
 
 button:focus-visible {
-outline: 3px solid #000;
-outline-offset: 2px;
+  outline: 3px solid #ff9500;
+  outline-offset: 3px;
 }
 
-:root.dark button:focus-visible {
-outline: 3px solid #fff;
+    a:focus-visible {
+  outline: 3px solid #ff9500;
+  outline-offset: 3px;
 }
 
     body {
@@ -165,14 +166,37 @@ button {
 <div id="ariaNotify" aria-live="polite" style="position:absolute;left:-9999px;"></div>
 <div id="topbar">
   <button id="connectWallet">Connect Wallet</button>
-  <button id="themeToggle">Dark mode</button>
+  <button id="themeToggle" aria-pressed="false">Dark mode</button>
 </div>
 
-<main id="main-content">
+<main id="main-content" tabindex="-1">
+
   <section class="card">
     <h1>Support Community Development</h1>
     <p>Choose a network and token below to make a donation.</p>
   </section>
+
+  <div id="donateForm" style="display:none;">
+  <section class="card" aria-label="Donation amount entry">
+    <label for="donateAmount">
+      <strong id="donateFormLabel">Amount</strong>
+    </label>
+    <input id="donateAmount"
+           type="text"
+           inputmode="decimal"
+           autocomplete="off"
+           style="width:100%; padding:0.5rem; margin-top:0.25rem;
+                  box-sizing:border-box;">
+    <div style="display:flex; gap:0.75rem; margin-top:0.75rem; flex-wrap:wrap;">
+      <button id="donateConfirm" type="button">Confirm</button>
+      <button id="donateCancel" type="button"
+              style="background:var(--card-bg); color:var(--text);
+                     border:1px solid var(--border);">
+        Cancel
+      </button>
+    </div>
+  </section>
+</div>
 
   <section class="card">
     <h2>Ethereum</h2>
@@ -321,80 +345,96 @@ async function ensureChain(chain) {
   }
 }
 
-async function donateNative(chain) {
-  const input = prompt("Enter amount");
-  if (input === null) return;
+let pendingDonation = null;
+let donateCallerBtn = null;
 
-  const amt = Number(input.trim());
-  if (!Number.isFinite(amt) || amt <= 0)
-    return notify("Please enter a valid amount.");
+function openDonateForm(label, triggerBtn, onConfirm) {
+  donateCallerBtn = triggerBtn;
+  pendingDonation = onConfirm;
+  document.getElementById("donateFormLabel").textContent = "Amount (" + label + ")";
+  document.getElementById("donateAmount").value = "";
+  const form = document.getElementById("donateForm");
+  form.style.display = "block";
+  form.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  document.getElementById("donateAmount").focus();
+}
 
-  try {
-    await ensureChain(chain);
-  } catch {
-    return notify("Please switch networks manually in your wallet.");
+function closeDonateForm() {
+  document.getElementById("donateForm").style.display = "none";
+  pendingDonation = null;
+  if (donateCallerBtn) {
+    donateCallerBtn.focus();
+    donateCallerBtn = null;
   }
+}
 
-  const [from] = await ethereum.request({ method:"eth_requestAccounts" });
-  const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
+document.getElementById("donateConfirm").onclick = async () => {
+  const raw = document.getElementById("donateAmount").value;
+  const amt = Number(raw.trim());
+  if (!Number.isFinite(amt) || amt <= 0) {
+    notify("Please enter a valid amount.");
+    return;
+  }
+  const action = pendingDonation;
+  closeDonateForm();
+  if (action) await action(amt);
+};
 
-  await ethereum.request({
-    method:"eth_sendTransaction",
-    params:[{ from, to: evmAddress, value }]
+document.getElementById("donateCancel").onclick = closeDonateForm;
+
+async function donateNative(chain) {
+  const btn = document.activeElement;
+  openDonateForm("native token", btn, async (amt) => {
+    try {
+      await ensureChain(chain);
+    } catch {
+      return notify("Please switch networks manually in your wallet.");
+    }
+    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+    const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from, to: evmAddress, value }]
+    });
+    notify("Transaction submitted. Please confirm it in your wallet.");
   });
-
-  notify("Transaction submitted. Please confirm it in your wallet.");
 }
 
 async function donateToken(chain, token, symbol) {
-  const input = prompt("Enter " + symbol + " amount");
-  if (input === null) return;
-
-  const amt = Number(input.trim());
-  if (!Number.isFinite(amt) || amt <= 0)
-    return notify("Please enter a valid amount.");
-
-  try {
-    await ensureChain(chain);
-  } catch {
-    return notify("Please switch networks manually in your wallet.");
-  }
-
-  const [from] = await ethereum.request({ method:"eth_requestAccounts" });
-  const raw = BigInt(Math.round(amt * 10 ** token.decimals));
-
-  const data =
-    "0xa9059cbb" +
-    evmAddress.slice(2).padStart(64,"0") +
-    raw.toString(16).padStart(64,"0");
-
-  await ethereum.request({
-    method:"eth_sendTransaction",
-    params:[{ from, to: token.address, data }]
+  const btn = document.activeElement;
+  openDonateForm(symbol, btn, async (amt) => {
+    try {
+      await ensureChain(chain);
+    } catch {
+      return notify("Please switch networks manually in your wallet.");
+    }
+    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+    const raw = BigInt(Math.round(amt * 10 ** token.decimals));
+    const data =
+      "0xa9059cbb" +
+      evmAddress.slice(2).padStart(64, "0") +
+      raw.toString(16).padStart(64, "0");
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from, to: token.address, data }]
+    });
+    notify(symbol + " transaction submitted.");
   });
-
-  notify(symbol + " transaction submitted.");
 }
 
 async function donateTron(symbol) {
-  if (!window.tronWeb?.ready)
-    return notify("TronLink not detected or locked. Please unlock it.");
-
-  const input = prompt("Enter " + symbol + " amount");
-  if (input === null) return;
-
-  const amt = Number(input.trim());
-  if (!Number.isFinite(amt) || amt <= 0)
-    return notify("Please enter a valid amount.");
-
-  if (symbol === "TRX") {
-    await tronWeb.trx.sendTransaction(tronAddress, tronWeb.toSun(amt));
-  } else {
-    const c = await tronWeb.contract().at("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t");
-    await c.transfer(tronAddress, tronWeb.toSun(amt)).send();
-  }
-
-  notify(symbol + " transaction submitted.");
+  const btn = document.activeElement;
+  openDonateForm(symbol, btn, async (amt) => {
+    if (!window.tronWeb?.ready)
+      return notify("TronLink not detected or locked. Please unlock it.");
+    if (symbol === "TRX") {
+      await tronWeb.trx.sendTransaction(tronAddress, tronWeb.toSun(amt));
+    } else {
+      const c = await tronWeb.contract().at("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t");
+      await c.transfer(tronAddress, tronWeb.toSun(amt)).send();
+    }
+    notify(symbol + " transaction submitted.");
+  });
 }
 
 function donateSol(symbol) {
@@ -406,14 +446,21 @@ document.querySelectorAll("[data-sol]").forEach(btn => {
   btn.onclick = () => donateSol(btn.dataset.sol);
 });
 
-  if (localStorage.getItem("theme") === "dark")
-  document.documentElement.classList.add("dark");
+const root = document.documentElement;
+const toggle = document.getElementById("themeToggle");
 
-document.getElementById("themeToggle").onclick = () => {
-  const root = document.documentElement;
+if (localStorage.getItem("theme") === "dark") {
+  root.classList.add("dark");
+  toggle.textContent = "Light mode";
+  toggle.setAttribute("aria-pressed", "true");
+}
+
+toggle.onclick = () => {
   root.classList.toggle("dark");
-  localStorage.setItem("theme",
-    root.classList.contains("dark") ? "dark" : "light");
+  const dark = root.classList.contains("dark");
+  localStorage.setItem("theme", dark ? "dark" : "light");
+  toggle.textContent = dark ? "Light mode" : "Dark mode";
+  toggle.setAttribute("aria-pressed", String(dark));
 };
   
 </script>
