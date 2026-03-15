@@ -79,8 +79,13 @@ a {
   color: var(--primary);
 }
 
-    a:focus-visible {
-  outline: 3px solid #ff9500;
+  a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+  button:focus-visible {
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
