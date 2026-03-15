@@ -334,7 +334,8 @@ const notify = msg => {
   n.textContent = msg;
   document.body.appendChild(n);
 
-  document.getElementById("ariaNotify").textContent = msg;
+  document.getElementById("announcement-region").textContent = msg;
+
 
   setTimeout(() => n.remove(), 4000);
 };
