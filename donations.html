@@ -172,7 +172,12 @@ button {
 
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-<div id="ariaNotify" aria-live="polite" style="position:absolute;left:-9999px;"></div>
+<div id="announcement-region"
+     class="sr-only"
+     role="status"
+     aria-live="polite"
+     aria-atomic="true">
+</div>
 <div id="topbar">
   <button id="connectWallet">Connect Wallet</button>
   <button id="themeToggle" aria-pressed="false">Dark mode</button>
