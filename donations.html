@@ -173,6 +173,13 @@ button {
     .trx { background:#ff060a; color:#000 }
     .sol { background:#14f195; color:#000 }
     .bat { background:#ff5000; color:#000 }
+ 
+    footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 2rem 0;
+}
   </style>
 </head>
 
@@ -345,13 +352,6 @@ const notify = msg => {
 
   setTimeout(() => n.remove(), 4000);
 };
-
-  footer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 2rem 0;
-}
 
 document.getElementById("connectWallet").onclick = async () => {
   if (!window.ethereum)
