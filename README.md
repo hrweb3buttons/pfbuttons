@@ -1,68 +1,192 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
   <style>
+/* Skip Link - Hidden until Tabbed */
+.skip-link {
+  position: absolute;
+  top: -100px; /* Hide off-screen */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: #fff;
+  padding: 1rem 2rem;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: top 0.2s ease;
+  border: 2px solid var(--focus-ring);
+}
+
+    fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.skip-link:focus {
+  top: 0; /* Pop into view on focus */
+  outline: none;
+}
+
+/* Ensure the main area can receive programatic focus */
+main:focus {
+  outline: none;
+}
+    
     :root {
-      --primary: #007bff;
-      --primary-hover: #0056b3;
-      --background: #f4f6f8;
-      --text: #333;
-      --card-bg: #fff;
-      --border: #e1e4e8;
-      --radius: 12px;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .card.highlight {
-  border: 2px solid var(--primary);
-  box-shadow: 0 6px 24px rgba(0, 123, 255, 0.25);
-  background: linear-gradient(
-    0deg,
-    var(--card-bg),
-    var(--card-bg)
-  ), linear-gradient(
-    180deg,
-    rgba(0, 123, 255, 0.08),
-    rgba(0, 123, 255, 0.02)
-  );
+  /* High-Contrast Light Mode (AAA) */
+  --primary: #004aab;        /* Deep blue: 7.1:1 contrast on white */
+  --primary-hover: #00357a;
+  --background: #f8f9fa;
+  --text: #1a1a1b;           /* Near black for maximum readability */
+  --text-muted: #454545;     /* Darker grey to maintain 7:1 */
+  --card-bg: #ffffff;
+  --border: #b0b5bb;         /* Darker border for clear containment */
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --focus-ring: #ff9500;     /* High-contrast orange for keyboard navigation */
+  --error: #b00020;    
 }
 
-:root.dark .card.highlight {
-  box-shadow: 0 6px 28px rgba(77, 163, 255, 0.35);
+:root.dark {
+  /* High-Contrast Dark Mode (AAA) */
+  --primary: #a3d1ff;        /* Light azure: 8.5:1 contrast on dark background */
+  --primary-hover: #cce4ff;
+  --background: #0f141a;
+  --text: #f0f4f8;           /* Off-white for reduced glare but high contrast */
+  --text-muted: #b0b8c4;
+  --card-bg: #151b23;
+  --border: #3e4c5f;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --error: #ff6b6b;
 }
 
+    #calcAlert {
+  color: var(--error);
+}
 
-    :root.dark {
-      --primary: #4da3ff;
-      --primary-hover: #2f7fd6;
-      --background: #0f141a;
-      --text: #e6eaf0;
-      --card-bg: #151b23;
-      --border: #273142;
-      --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-    }
+/* Global Accessibility Improvements */
+body {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  line-height: 1.6; /* Improved leading for readability */
+  background-color: var(--background);
+  color: var(--text);
+  margin: 0;
+}
 
-    body {
-      font-family: Inter, system-ui, Arial, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+/* Focus indicator for keyboard users */
+button:focus-visible, 
+select:focus-visible, 
+a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
 
-    main { width: 100%; max-width: 720px; margin: 2rem; }
-    h1, h2 { color: #111; }
-    :root.dark h1,
-    :root.dark h2 { color: #fff; }
+/* Screen Reader Only Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+    .sr-only-focusable a {
+  position:absolute;
+  left:-9999px;
+}
+
+.sr-only-focusable a:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top:60px;
+  background:var(--card-bg);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  z-index:10000;
+}
+
+/* Enhanced Highlight Card */
+.card.highlight {
+  border: 4px solid var(--primary); /* Thicker border for visual weight */
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Texture overlay for color-blind users to distinguish the highlight */
+.card.highlight::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
+  background-size: 10px 10px;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* Buttons with AAA Contrast */
+button {
+  background-color: var(--primary);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+:root:not(.dark) button {
+  color: #ffffff; /* White text on dark blue background in light mode */
+}
+
+/* Price Display with Aria-Live updates */
+#priceDisplay {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--card-bg);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+main {
+  width: 100%;
+  max-width: 720px;
+  margin: 2rem auto;
+}
+ 
+    h1, h2 {
+color: var(--text);
+}
+
+    .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
 
     .card {
       background-color: var(--card-bg);
@@ -73,14 +197,6 @@
       box-shadow: var(--shadow);
     }
 
-    button {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.75rem 1.25rem;
-      cursor: pointer;
-    }
 
     button:hover { background-color: var(--primary-hover); }
 
@@ -98,18 +214,20 @@
     }
 
     #donateBNB { background-color: #f3ba2f; color: #000; }
-    #donateUSDT { background-color: #26a17b; }
+    #donateUSDT { background-color: #26a17b;
+    color: #000;
+}
     #donatePML { background-color: #008cff; }
 
-    .donate-more {
-      background-color: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
+button.donate-more {
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+}
 
-    .donate-more:hover {
-      background-color: rgba(0, 0, 0, 0.04);
-    }
+.donate-more:hover {
+  background-color: var(--border);
+}
 
     :root.dark .donate-more:hover {
       background-color: rgba(255, 255, 255, 0.05);
@@ -117,8 +235,8 @@
 
     #wallet-connect {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 16px;
+      left: 16px;
       display: flex;
       gap: 12px;
       z-index: 9999;
@@ -129,13 +247,11 @@
 
     footer {
       text-align: center;
-      color: #777;
+      color:  var(--text-muted);
       font-size: 0.9rem;
       margin: 2rem 0;
     }
 
-    #priceDisplay { font-size: 0.85rem; color: #555; }
-    :root.dark #priceDisplay { color: #aaa; }
 
     .notify {
       position: fixed;
@@ -152,8 +268,8 @@
 
     #site-nav {
   position: fixed;
-  top: 65px;
-  left: 10px;
+  top: 90px;
+  left: 16px;
   z-index: 9999;
 }
 
@@ -185,27 +301,41 @@
 </head>
 
 <body>
-  <div id="wallet-connect">
-    <button id="connectWallet">Connect Wallet</button>
-    <button id="themeToggle">Dark mode</button>
-    <div id="priceDisplay">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav class="skip-nav sr-only-focusable" aria-label="Quick navigation" role="navigation">
+<a href="#wallet-connect">Skip to wallet connection</a>
+<a href="#calculator">Skip to calculator</a>
+<a href="#donate">Skip to donate section</a>
+<a href="#priceDisplay">Skip to token prices</a>
+</nav>
+  
+  <header id="wallet-connect" aria-label="Site controls">
+   <button id="connectWallet" aria-label="Connect MetaMask wallet"> Connect Wallet</button>
+    <button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false"> Dark mode</button>
+    <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
       <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
       <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
-  </div>
+  </header>
 
-  <div id="site-nav">
-  <select id="pageSelector">
-    <option value="">Navigate</option>
-    <option value="index.html">Main Tools</option>
-    <option value="donations.html">Donation Options</option>
-    <option value="cryptodirectory.html">Crypto Directory</option>
-    <option value="terms.html">Terms of Use</option>
-  </select>
-</div>
+<nav id="site-nav" aria-label="Site navigation">
 
-  <main>
-<section class="card" id="home">
+<label for="pageSelector" class="sr-only">Page navigation</label>
+
+<select id="pageSelector">
+<option value="">Navigate</option>
+<option value="index.html">Main Tools</option>
+<option value="donations.html">Donation Options</option>
+<option value="cryptodirectory.html">Crypto Directory</option>
+<option value="terms.html">Terms of Use</option>
+</select>
+
+</nav>
+  
+<main id="main-content" tabindex="-1" aria-label="Main content">
+  <div class="container">
+    <section class="card" id="home">
       <h1>Unofficial Pool Funding Web3 Tools</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
@@ -213,7 +343,7 @@
     </section>
 
 <section class="card highlight" id="donate">
-<h2><a href="#donate" style="text-decoration:none; color:inherit;">Support Community Development</a></h2>
+<h2>Support Community Development</h2>
   <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
   <p>They are used daily by many members and continue to grow and improve.</p>
   <p>If you find them useful, your support helps keep them running, improving, and available to everyone. Your contribution directly supports development and maintenance of the project.</p>
@@ -221,26 +351,38 @@
   <div class="donate-group">
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
-   <button class="donate-more"
-          onclick="window.location.href='https://hrweb3buttons.github.io/pfbuttons/donations.html'">
-          View more donation options
-        </button>
+  <a href="https://hrweb3buttons.github.io/pfbuttons/donations.html"
+   class="donate-more"
+   style="display:inline-block; text-decoration:none; text-align:center;">
+  View more donation options
+</a>
   </div>
+  
+  <div id="donateForm" style="display:none; margin-top:1rem;">
+  <label for="donateAmount">
+    <strong id="donateFormLabel">Amount</strong>
+  </label>
+  <input id="donateAmount"
+         type="text"
+         inputmode="decimal"
+         autocomplete="off"
+         style="width:100%; padding:0.5rem; margin-top:0.25rem; box-sizing:border-box;">
+  <div style="display:flex; gap:0.75rem; margin-top:0.75rem; flex-wrap:wrap;">
+    <button id="donateConfirm" type="button">Confirm</button>
+    <button id="donateCancel" type="button" class="donate-more">Cancel</button>
+  </div>
+</div>
 </section>
 
 
 <section class="card" id="add-tokens">
-<h2><a href="#add-tokens" style="text-decoration:none; color:inherit;">Add Tokens to MetaMask</a></h2>
-      <button id="addTokens">Add All Tokens</button>
+<h2>Add Tokens to MetaMask</h2>
+  <button id="addTokens">Add Pool Funding Tokens to MetaMask</button>
     </section>
 
 <section class="card" id="rpc">
-  <h2>
-    <a href="#rpc" style="text-decoration:none; color:inherit;">
-      Switch Binance Smart Chain RPC
-    </a>
-  </h2>
-      <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
+<h2>Switch Binance Smart Chain RPC</h2>
+  <p>Use this only when you are having issues making payments. When you tap one of the buttons below, MetaMask should prompt you to update BNB Chain.</p>
       <p>Note: The Chainstack RPC Node is no longer available due to technical problems.</p>
 
       <div style="margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.95rem;">
@@ -280,53 +422,62 @@
       
     </section>
 <section class="card" id="charts">
-    <a href="#charts" style="text-decoration:none; color:inherit;">
-  <h2>Token Charts</h2> </a>
+  <h2>Token Charts</h2>
   <p>View real time charts for Pool Funding tokens on ApeSpace.</p>
 
   <div class="doc-buttons">
-    <button onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank')">
+    <button aria-label="Open PFI chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank','noopener')">
       PFI Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank')">
+    <button aria-label="Open PFB chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank','noopener')">
       PFB Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank')">
+    <button aria-label="Open PFS chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank','noopener')">
       PFS Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank')">
+    <button aria-label="Open PFG chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank','noopener')">
       PFG Chart
     </button>
 
-    <button onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank')">
+    <button aria-label="Open PML chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank','noopener')">
       PML Chart
     </button>
   </div>
 <h3 style="margin-top: 1.5rem;">View Token on BscScan</h3>
 
 <div class="doc-buttons">
-  <button onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank')">
-    PFI
-  </button>
+     <button aria-label="Open PFI on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank','noopener')">
+  PFI
+</button>
 
-  <button onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank')">
-    PFB
-  </button>
+<button aria-label="Open PFB on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank','noopener')">
+  PFB
+</button>
 
-  <button onclick="window.open('https://bscscan.com/token/0x25895b6dfd4fbcfcb8ad9b4cb9d9d9c25d7397ccda','_blank')">
-    PFS
-  </button>
+<button aria-label="Open PFS on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa','_blank','noopener')">
+  PFS
+</button>
 
-  <button onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank')">
-    PFG
-  </button>
+<button aria-label="Open PFG on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank','noopener')">
+  PFG
+</button>
 
-  <button onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank')">
-    PML
-  </button>
+<button aria-label="Open PML on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank','noopener')">
+  PML
+</button>
 </div>
 
 <h3 id="quick-swap" style="margin-top: 1.75rem;">
@@ -353,12 +504,11 @@
 </section>
 
       <section class="card" id="calculator">
-    <a href="#calculator" style="text-decoration:none; color:inherit;"> </a>
   <h2>Token Value Calculator</h2>
   <p>Calculate the USD value of an amount of our tokens using either the current price or their price target.</p>
 
-<div style="margin-bottom:1rem;">
-  <strong>Mode</strong><br>
+<fieldset style="margin-bottom:1rem;">
+  <legend><strong>Mode</strong></legend>
 
   <div>
     <label>
@@ -380,17 +530,17 @@
       Community Coin
     </label>
   </div>
-</div>
+</fieldset>
 
-  <div id="targetSelector" style="display: none; margin-bottom: 1rem;">
-    <strong>Token Price Target</strong><br>
+<fieldset id="targetSelector" style="display:none; margin-bottom:1rem;">
+  <legend><strong>Token Price Target</strong></legend>
     <label><input type="radio" name="targetToken" value="PFI"> PFI</label><br>
     <label><input type="radio" name="targetToken" value="PFB"> PFB</label><br>
     <label><input type="radio" name="targetToken" value="PFS"> PFS</label><br>
     <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
     <label><input type="radio" name="targetToken" value="PML"> PML</label>
-  </div>
-
+</fieldset>
+        
   <div style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
@@ -406,24 +556,23 @@
   </div>
 
 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-  <button id="calcButton">Calculate</button>
-  <button id="calcReset" class="donate-more">Reset</button>
+<button id="calcButton" type="button">Calculate</button>
+<button id="calcReset" type="button" class="donate-more">Reset</button>
 </div>
 
         <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
 
-  <div id="calcAlert" style="margin-top: 1rem; display: none; color: #c0392b;"></div>
-  <div id="calcResult" style="margin-top: 1rem; font-weight: bold;"></div>
+  <div id="calcAlert" role="alert" style="display:none;"></div>
+  <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
 </section>
 
 <section class="card" id="documents">
-    <a href="#documents" style="text-decoration:none; color:inherit;">
-      <h2>Community Documents</h2> </a>
-      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank')">Open Shared Folder</button>
+      <h2>Community Documents</h2>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank','noopener')">Open Shared Folder</button>
       <div class="doc-buttons">
-        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank')">Common Problems Guide</button>
-        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank')">$777 Newbies Guide</button>
-        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank')">General Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank','noopener')">Common Problems Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank','noopener')">$777 Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank','noopener')">General Newbies Guide</button>
       </div>
     </section>
 
@@ -445,6 +594,7 @@
     <p>
       You will receive an unbiased, experience based opinion focused on identifying potential red flags, structural weaknesses, unrealistic promises, or hidden risks before you commit funds.
     </p>
+    <p>Reviews are from the perspective of Hunter Rodriguez, and do not necessarily align with the views and opinions of Pool Funding itself.</p>
   </div>
 
   <div style="margin-top: 1.5rem;">
@@ -463,16 +613,16 @@
     </p>
   </div>
 </section>
-    
+  </div>
   </main>
 
-  <footer>
-    © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
+<footer aria-label="Site footer">
+  © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
     <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | Operation Pantheon - Project Atlas
+<a href="terms.html">Terms of Use</a> | Operation Pantheon - Project Iris Release Candidate
   </footer>
 
   <script>
@@ -526,13 +676,28 @@ function isMobileBrowser() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 }
 
-      const notify = msg => {
-        const n = document.createElement("div");
-        n.className = "notify";
-        n.textContent = msg;
-        document.body.appendChild(n);
-        setTimeout(() => n.remove(), 4000);
-      };
+  const notify = msg => {
+  // 1. Audible Announcement
+  const announcer = document.getElementById("announcement-region");
+  announcer.textContent = ""; // Clear old message
+  setTimeout(() => { announcer.textContent = msg; }, 50); // Trigger new announcement
+
+  // 2. Visual Toast (Your existing logic, slightly refined)
+  const n = document.createElement("div");
+  n.className = "notify";
+  n.textContent = msg;
+  // Ensure the visual toast also has accessibility markers
+  n.setAttribute("role", "alert"); 
+  
+  document.body.appendChild(n);
+  
+  // Keep it visible slightly longer for cognitive accessibility
+  setTimeout(() => {
+    n.style.opacity = "0";
+    n.style.transition = "opacity 0.5s ease";
+    setTimeout(() => n.remove(), 500);
+  }, 5000);
+};
 
       async function connectWallet() {
         if (!window.ethereum) return notify("MetaMask not detected");
@@ -590,24 +755,65 @@ async function switchRPC(url, name) {
 
 
 
-      async function donateBNB() {
-        const amt = parseFloat(prompt("Enter BNB amount"));
-        if (!amt) return;
-        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-        const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: walletAddress, value }] });
-        notify("BNB donation sent");
-      }
+let pendingDonation = null;
+let donateCallerBtn = null;
 
-      async function donateToken(contract, symbol) {
-        const amt = parseFloat(prompt(`Enter ${symbol} amount`));
-        if (!amt) return;
-        const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-        const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64,"0");
-        const data = "0xa9059cbb" + walletAddress.replace("0x","").padStart(64,"0") + value;
-        await ethereum.request({ method: "eth_sendTransaction", params: [{ from, to: contract, data }] });
-        notify(symbol + " donation sent");
-      }
+function openDonateForm(label, btn, onConfirm) {
+  donateCallerBtn = btn;
+  pendingDonation = onConfirm;
+  document.getElementById("donateFormLabel").textContent = "Amount (" + label + ")";
+  document.getElementById("donateAmount").value = "";
+  const form = document.getElementById("donateForm");
+  form.style.display = "block";
+  document.getElementById("donateAmount").focus();
+}
+
+function closeDonateForm() {
+  document.getElementById("donateForm").style.display = "none";
+  pendingDonation = null;
+  if (donateCallerBtn) {
+    donateCallerBtn.focus();
+    donateCallerBtn = null;
+  }
+}
+
+document.getElementById("donateConfirm").onclick = async () => {
+  const raw = document.getElementById("donateAmount").value;
+  const amt = parseFloat(raw);
+  if (!amt || amt <= 0) {
+    notify("Please enter a valid amount.");
+    return;
+  }
+  closeDonateForm();
+  if (pendingDonation) await pendingDonation(amt);
+};
+
+document.getElementById("donateCancel").onclick = closeDonateForm;
+
+async function donateBNB() {
+  openDonateForm("BNB", document.getElementById("donateBNB"), async (amt) => {
+    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+    const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from, to: walletAddress, value }]
+    });
+    notify("BNB donation sent");
+  });
+}
+
+async function donateToken(contract, symbol) {
+  openDonateForm(symbol, document.getElementById("donate" + symbol), async (amt) => {
+    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
+    const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64, "0");
+    const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + value;
+    await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{ from, to: contract, data }]
+    });
+    notify(symbol + " donation sent");
+  });
+}
 
 async function fetchPrices() {
   try {
@@ -684,6 +890,9 @@ function showMobileFallback() {
   const container = document.createElement("div");
   container.style.marginTop = "1rem";
 
+  container.setAttribute("role", "region");
+  container.setAttribute("aria-label", "Manual token instructions for MetaMask mobile");
+
   const title = document.createElement("h3");
   title.textContent = "Manual Token Add Required";
   container.appendChild(title);
@@ -724,29 +933,34 @@ steps.forEach(text => {
 container.appendChild(stepsList);
 
 
-  tokens.forEach(token => {
-    const row = document.createElement("div");
-    row.style.marginBottom = "8px";
+tokens.forEach(token => {
+  const row = document.createElement("div");
+  row.style.marginBottom = "12px"; // Increased spacing for touch targets
 
-    const label = document.createElement("strong");
-    label.textContent = token.symbol + ": ";
-    row.appendChild(label);
+  const label = document.createElement("strong");
+  label.textContent = token.symbol + ": ";
+  row.appendChild(label);
 
-    const addr = document.createElement("span");
-    addr.textContent = token.address;
-    row.appendChild(addr);
+  const addr = document.createElement("span");
+  addr.textContent = token.address;
+  addr.style.wordBreak = "break-all"; // Prevention for layout breaking
+  row.appendChild(addr);
 
-    const copyBtn = document.createElement("button");
-    copyBtn.textContent = "Copy";
-    copyBtn.style.marginLeft = "10px";
-    copyBtn.onclick = () => {
-      navigator.clipboard.writeText(token.address);
-      notify(token.symbol + " address copied");
-    };
+  const copyBtn = document.createElement("button");
+  copyBtn.textContent = "Copy";
+  
+  // ACCESSIBILITY UPGRADE: Descriptive label for screen readers
+  copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
+  
+  copyBtn.style.marginLeft = "10px";
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(token.address);
+    notify(`${token.symbol} address copied to clipboard`);
+  };
 
-    row.appendChild(copyBtn);
-    container.appendChild(row);
-  });
+  row.appendChild(copyBtn);
+  container.appendChild(row);
+});
 
   section.appendChild(container);
 }
@@ -758,7 +972,6 @@ if (isMobileBrowser()) {
 }
 
 /* ===== END MOBILE FALLBACK ===== */
-
 
     const priceTargets = {
   PFI: 500000,
@@ -1060,11 +1273,17 @@ if (swapButtonsContainer) {
 
       const symbol = button.getAttribute("data-swap");
       const url = swapLinks[symbol];
-      window.open(url, "_blank");
+      window.open(url, "_blank", 'noopener');
     });
   }
 }
     });
   </script>
+    <div id="announcement-region" 
+     class="sr-only" 
+     role="status" 
+     aria-live="polite" 
+     aria-atomic="true">
+</div>
 </body>
 </html>
