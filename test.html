@@ -622,7 +622,7 @@ button.donate-more {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | Operation Pantheon - Project Iris Release Candidate
+<a href="terms.html">Terms of Use</a> | Operation Pantheon - Project Iris
   </footer>
 
   <script>
@@ -911,7 +911,7 @@ stepsList.style.paddingLeft = "1.25rem";
 
 const steps = [
   "Copy the USDT token contract address.",
-  "Tap the X in the top left corner.",
+  "Tap the back arrow in the top left corner.",
   "Tap Home in the bottom left corner.",
   "Tap the plus sign above BNB.",
   "Tap Custom token.",
