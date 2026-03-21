@@ -667,15 +667,22 @@ button.donate-more {
 
 }
 
-      window.ethereum.on("accountsChanged", (accounts) => {
-  if (!accounts.length) {
-    notify("Wallet disconnected");
-    location.reload();
-    return;
-  }
+if (window.ethereum) {
 
-  location.reload();
-});
+  window.ethereum.on("chainChanged", () => {
+    window.location.reload();
+  });
+
+  window.ethereum.on("accountsChanged", (accounts) => {
+    if (!accounts.length) {
+      notify("Wallet disconnected");
+      location.reload();
+      return;
+    }
+    location.reload();
+  });
+
+}
 
       const pageSelector = document.getElementById("pageSelector");
 
@@ -961,6 +968,12 @@ async function ensureBSC() {
     return;
   }
 
+  if (!ethers.isAddress(CONFIG.donationWallet)) {
+    console.error("Invalid donation wallet");
+    notify("Configuration error");
+    return;
+  }
+
   const ok = await ensureBSC();
   if (!ok) return;
 
@@ -971,12 +984,6 @@ async function ensureBSC() {
     await signer.sendTransaction({
       to: CONFIG.donationWallet,
       value: value
-
-      if (!ethers.isAddress(CONFIG.donationWallet)) {
-  console.error("Invalid donation wallet");
-  notify("Configuration error");
-  return;
-}
     });
 
     notify("BNB donation sent");
@@ -1010,6 +1017,12 @@ async function donateToken(symbol, amt) {
     return;
   }
 
+  if (!ethers.isAddress(CONFIG.donationWallet)) {
+    console.error("Invalid donation wallet");
+    notify("Configuration error");
+    return;
+  }
+
   const token = CONFIG.tokens[symbol];
 
   if (!token) {
@@ -1037,12 +1050,6 @@ async function donateToken(symbol, amt) {
       CONFIG.donationWallet,
       value
     );
-
-    if (!ethers.isAddress(CONFIG.donationWallet)) {
-  console.error("Invalid donation wallet");
-  notify("Configuration error");
-  return;
-}
 
     notify(symbol + " donation sent");
 
