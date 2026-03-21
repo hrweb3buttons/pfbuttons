@@ -799,8 +799,8 @@ document.getElementById("donateCancel").onclick = closeDonateForm;
    Donations: BNB
 =========================== */
 
-async function donateBNB() {
-
+async function donateBNB(amt) {
+  
   if (!window.ethereum) {
     notify("MetaMask not detected");
     return;
@@ -845,7 +845,7 @@ async function donateBNB() {
    Donations: Tokens
 =========================== */
 
-async function donateToken(symbol) {
+async function donateToken(symbol, amt) {
 
   if (!window.ethereum) {
     notify("MetaMask not detected");
@@ -955,11 +955,15 @@ document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public
 
 
 const donateBNBBtn = document.getElementById("donateBNB");
-if (donateBNBBtn) donateBNBBtn.onclick = donateBNB;
-
+donateBNBBtn.onclick = (e) =>
+    openDonateForm("BNB", e.target, donateBNB);
+}
+                              
 const donateUSDTBtn = document.getElementById("donateUSDT");
-if (donateUSDTBtn) donateUSDTBtn.onclick = () => donateToken("USDT");
-
+donateUSDTBtn.onclick = (e) =>
+    openDonateForm("USDT", e.target, (amount) => donateToken("USDT", amount));
+}
+    
 const donatePMLBtn = document.getElementById("donatePML");
 if (donatePMLBtn) donatePMLBtn.onclick = () => donateToken("PML");
 
