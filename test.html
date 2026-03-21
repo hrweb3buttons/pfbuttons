@@ -954,11 +954,14 @@ document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public
 
 
 
-document.getElementById("donateBNB").onclick = donateBNB;
+const donateBNBBtn = document.getElementById("donateBNB");
+if (donateBNBBtn) donateBNBBtn.onclick = donateBNB;
 
-document.getElementById("donateUSDT").onclick = () => donateToken("USDT");
+const donateUSDTBtn = document.getElementById("donateUSDT");
+if (donateUSDTBtn) donateUSDTBtn.onclick = () => donateToken("USDT");
 
-document.getElementById("donatePML").onclick = () => donateToken("PML");
+const donatePMLBtn = document.getElementById("donatePML");
+if (donatePMLBtn) donatePMLBtn.onclick = () => donateToken("PML");
 
 fetchPrices();
 
