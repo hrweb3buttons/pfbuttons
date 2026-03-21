@@ -646,6 +646,18 @@ button.donate-more {
     }
   }
 };
+
+    const APPROVED_RPCS = new Set([
+  "https://binance.llamarpc.com",
+  "https://bsc-rpc.publicnode.com",
+  "https://bsc.blockrazor.xyz",
+  "https://bsc.rpc.blxrbdn.com",
+  "https://bsc.drpc.org",
+  "https://binance-smart-chain-public.nodies.app",
+  "https://1rpc.io/bnb",
+  "https://bnb.rpc.subquery.network/public",
+  "https://public-bsc.nownodes.io"
+]);
     
     document.addEventListener("DOMContentLoaded", () => {
       let provider = null;
@@ -658,14 +670,6 @@ button.donate-more {
         themeToggle.textContent = "Light mode";
         
       }
-
-      if (window.ethereum) {
-
-  window.ethereum.on("chainChanged", () => {
-    window.location.reload();
-  });
-
-}
 
 if (window.ethereum) {
 
@@ -699,17 +703,14 @@ pageSelector.addEventListener("change", e => {
         themeToggle.textContent = dark ? "Light mode" : "Dark mode";
       };
 
-      const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
-      const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
-      const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
       const tokens = [
-        { address: usdtContract, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
+        { address: CONFIG.tokens.USDT.address, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
         { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
         { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
-        { address: pmlContract, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
+        { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
       ];
 
       const swapLinks = {
@@ -728,7 +729,10 @@ function isMobileBrowser() {
   // 1. Audible Announcement
   const announcer = document.getElementById("announcement-region");
   announcer.textContent = ""; // Clear old message
-  setTimeout(() => { announcer.textContent = msg; }, 50); // Trigger new announcement
+  announcer.textContent = "";
+requestAnimationFrame(() => {
+  announcer.textContent = msg;
+}); // Trigger new announcement
 
   // 2. Visual Toast (Your existing logic, slightly refined)
   const n = document.createElement("div");
@@ -764,7 +768,9 @@ async function connectWallet() {
   if (!window.ethereum) return;
 
   try {
-    const provider = new ethers.BrowserProvider(window.ethereum);
+    if (!provider) {
+  provider = new ethers.BrowserProvider(window.ethereum);
+}
     const network = await provider.getNetwork();
 
     if (Number(network.chainId) !== CONFIG.chainId) {
@@ -791,6 +797,11 @@ async function connectWallet() {
       }
 
 async function switchRPC(url, name) {
+  if (!APPROVED_RPCS.has(url)) {
+  notify("Unapproved RPC");
+  return;
+}
+  
   if (!window.ethereum) {
     notify("MetaMask not detected");
     return;
@@ -1125,19 +1136,14 @@ if (donateUSDTBtn) {
 }
     
 const donatePMLBtn = document.getElementById("donatePML");
-if (donatePMLBtn) donatePMLBtn.onclick = () => donateToken("PML");
+if (donatePMLBtn) {
+  donatePMLBtn.onclick = (e) =>
+    openDonateForm("PML", e.target, (amt) => donateToken("PML", amt));
+}
 
 fetchPrices();
 
 /* ===== MOBILE FALLBACK GOES HERE ===== */
-
-function isMetaMaskMobile() {
-  return (
-    typeof window.ethereum !== "undefined" &&
-    window.ethereum.isMetaMask &&
-    /MetaMaskMobile/i.test(navigator.userAgent)
-  );
-}
 
 function showMobileFallback() {
   const section = document.getElementById("add-tokens");
