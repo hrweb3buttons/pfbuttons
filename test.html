@@ -856,10 +856,10 @@ document.getElementById("donateConfirm").onclick = async () => {
     notify("Please enter a valid amount.");
     return;
   }
+  const callback = pendingDonation; // capture before closeDonateForm nulls it
   closeDonateForm();
-  if (pendingDonation) await pendingDonation(amt);
+  if (callback) await callback(amt);
 };
-
 document.getElementById("donateCancel").onclick = closeDonateForm;
 
 /* ===========================
