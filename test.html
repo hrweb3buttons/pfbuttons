@@ -802,7 +802,7 @@ async function switchRPC(url, name) {
   const chainId = "0x38";
 
   try {
-    await ethereum.request({
+    await window.ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
         chainId: chainId,
@@ -813,7 +813,7 @@ async function switchRPC(url, name) {
       }]
     });
 
-    await ethereum.request({
+    await window.ethereum.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId }]
     });
