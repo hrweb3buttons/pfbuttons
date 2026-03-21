@@ -631,6 +631,22 @@ button.donate-more {
   </footer>
 
   <script>
+    const CONFIG = {
+  chainId: 56,
+  chainHex: "0x38",
+  donationWallet: "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795",
+  tokens: {
+    USDT: {
+      address: "0x55d398326f99059fF775485246999027B3197955",
+      decimals: 18
+    },
+    PML: {
+      address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+      decimals: 18
+    }
+  }
+};
+    
     document.addEventListener("DOMContentLoaded", () => {
       let provider = null;
       let signer = null;
@@ -650,6 +666,16 @@ button.donate-more {
   });
 
 }
+
+      window.ethereum.on("accountsChanged", (accounts) => {
+  if (!accounts.length) {
+    notify("Wallet disconnected");
+    location.reload();
+    return;
+  }
+
+  location.reload();
+});
 
       const pageSelector = document.getElementById("pageSelector");
 
@@ -842,7 +868,9 @@ async function ensureBSC() {
 
   try {
 
-    const provider = new ethers.BrowserProvider(window.ethereum);
+    if (!provider) {
+  provider = new ethers.BrowserProvider(window.ethereum);
+}
     const network = await provider.getNetwork();
 
     if (Number(network.chainId) === CONFIG.chainId) {
@@ -943,6 +971,12 @@ async function ensureBSC() {
     await signer.sendTransaction({
       to: CONFIG.donationWallet,
       value: value
+
+      if (!ethers.isAddress(CONFIG.donationWallet)) {
+  console.error("Invalid donation wallet");
+  notify("Configuration error");
+  return;
+}
     });
 
     notify("BNB donation sent");
@@ -1003,6 +1037,12 @@ async function donateToken(symbol, amt) {
       CONFIG.donationWallet,
       value
     );
+
+    if (!ethers.isAddress(CONFIG.donationWallet)) {
+  console.error("Invalid donation wallet");
+  notify("Configuration error");
+  return;
+}
 
     notify(symbol + " donation sent");
 
