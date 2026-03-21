@@ -795,29 +795,112 @@ document.getElementById("donateConfirm").onclick = async () => {
 
 document.getElementById("donateCancel").onclick = closeDonateForm;
 
+/* ===========================
+   Donations: BNB
+=========================== */
+
 async function donateBNB() {
-  openDonateForm("BNB", document.getElementById("donateBNB"), async (amt) => {
-    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-    const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{ from, to: walletAddress, value }]
+
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  if (!signer) {
+    notify("Please connect your wallet");
+    return;
+  }
+
+  const amt = parseFloat(document.getElementById("donateAmount").value);
+
+  if (!amt || amt <= 0) {
+    notify("Enter a valid amount");
+    return;
+  }
+
+  const ok = await ensureBSC();
+  if (!ok) return;
+
+  try {
+
+    const value = ethers.parseEther(amt.toString());
+
+    const tx = await signer.sendTransaction({
+      to: CONFIG.donationWallet,
+      value: value
     });
+
     notify("BNB donation sent");
-  });
+
+  } catch (err) {
+
+    console.error("BNB donation failed:", err);
+    notify("Transaction failed");
+
+  }
+
 }
 
-async function donateToken(contract, symbol) {
-  openDonateForm(symbol, document.getElementById("donate" + symbol), async (amt) => {
-    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-    const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64, "0");
-    const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + value;
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{ from, to: contract, data }]
-    });
+/* ===========================
+   Donations: Tokens
+=========================== */
+
+async function donateToken(symbol) {
+
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  if (!signer) {
+    notify("Please connect your wallet");
+    return;
+  }
+
+  const amt = parseFloat(document.getElementById("donateAmount").value);
+
+  if (!amt || amt <= 0) {
+    notify("Enter a valid amount");
+    return;
+  }
+
+  const token = CONFIG.tokens[symbol];
+
+  if (!token) {
+    notify("Unsupported token");
+    return;
+  }
+
+  const ok = await ensureBSC();
+  if (!ok) return;
+
+  try {
+
+    const contract = new ethers.Contract(
+      token.address,
+      ERC20_ABI,
+      signer
+    );
+
+    const value = ethers.parseUnits(
+      amt.toString(),
+      token.decimals
+    );
+
+    const tx = await contract.transfer(
+      CONFIG.donationWallet,
+      value
+    );
+
     notify(symbol + " donation sent");
-  });
+
+  } catch (err) {
+
+    console.error(symbol + " donation failed:", err);
+    notify("Transaction failed");
+
+  }
+
 }
 
 async function fetchPrices() {
@@ -871,8 +954,11 @@ document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public
 
 
 
-      document.getElementById("donateBNB").onclick = donateBNB;
-     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
+document.getElementById("donateBNB").onclick = donateBNB;
+
+document.getElementById("donateUSDT").onclick = () => donateToken("USDT");
+
+document.getElementById("donatePML").onclick = () => donateToken("PML");
 
 fetchPrices();
 
@@ -1283,6 +1369,15 @@ if (swapButtonsContainer) {
   }
 }
     });
+
+/* ===========================
+   Contracts
+=========================== */
+
+const ERC20_ABI = [
+  "function transfer(address to, uint256 amount) returns (bool)"
+];
+    
   </script>
     <div id="announcement-region" 
      class="sr-only" 
