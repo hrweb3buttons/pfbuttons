@@ -643,6 +643,14 @@ button.donate-more {
         
       }
 
+      if (window.ethereum) {
+
+  window.ethereum.on("chainChanged", () => {
+    window.location.reload();
+  });
+
+}
+
       const pageSelector = document.getElementById("pageSelector");
 
 pageSelector.addEventListener("change", e => {
@@ -719,9 +727,25 @@ async function connectWallet() {
   btn.disabled = true;
 }
 
+      async function checkNetworkOnLoad() {
+  if (!window.ethereum) return;
+
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await provider.getNetwork();
+
+    if (Number(network.chainId) !== CONFIG.chainId) {
+      notify("Switch to BNB Smart Chain");
+    }
+
+  } catch (err) {
+    console.error("Initial network check failed:", err);
+  }
+}
+
    
 
-                                 async function addAllTokens() {
+                                async function addAllTokens() {
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         const requests = tokens.map(t =>
           ethereum.request({
@@ -805,8 +829,94 @@ document.getElementById("donateCancel").onclick = closeDonateForm;
 /* ===========================
    Donations: BNB
 =========================== */
+/* ===========================
+   Network Guard (Hardened)
+=========================== */
 
-async function donateBNB(amt) {
+async function ensureBSC() {
+
+  if (!window.ethereum) {
+    notify("Wallet not detected");
+    return false;
+  }
+
+  try {
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await provider.getNetwork();
+
+    if (Number(network.chainId) === CONFIG.chainId) {
+      return true;
+    }
+
+    // Attempt network switch
+    try {
+
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: CONFIG.chainHex }]
+      });
+
+      // Re-check after switch
+      const updatedNetwork = await provider.getNetwork();
+
+      if (Number(updatedNetwork.chainId) === CONFIG.chainId) {
+        return true;
+      }
+
+      notify("Please switch to BNB Smart Chain");
+      return false;
+
+    } catch (switchError) {
+
+      // Chain not added to wallet
+      if (switchError.code === 4902) {
+
+        try {
+
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: CONFIG.chainHex,
+              chainName: "BNB Smart Chain",
+              nativeCurrency: {
+                name: "BNB",
+                symbol: "BNB",
+                decimals: 18
+              },
+              rpcUrls: ["https://bsc-dataseed.binance.org/"],
+              blockExplorerUrls: ["https://bscscan.com"]
+            }]
+          });
+
+          return true;
+
+        } catch (addError) {
+
+          console.error("Add chain failed:", addError);
+          notify("Please add BNB Smart Chain manually");
+          return false;
+
+        }
+      }
+
+      console.error("Network switch rejected:", switchError);
+      notify("Please switch to BNB Smart Chain");
+      return false;
+
+    }
+
+  } catch (err) {
+
+    console.error("Network check failed:", err);
+    notify("Network error");
+    return false;
+
+  }
+}
+
+      
+      async function donateBNB(amt) {
 
   if (!window.ethereum) {
     notify("MetaMask not detected");
