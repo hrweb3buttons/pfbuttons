@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+  connect-src https://api.coingecko.com https://api.geckoterminal.com;
+  img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
+  style-src 'self' 'unsafe-inline'">  
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
@@ -997,7 +1003,7 @@ async function ensureBSC() {
 
   try {
 
-    const value = ethers.parseEther(amt.toString());
+    const value = ethers.parseEther(amt.toFixed(18).replace(/\.?0+$/, "")
 
     await signer.sendTransaction({
       to: CONFIG.donationWallet,
@@ -1060,7 +1066,7 @@ async function donateToken(symbol, amt) {
     );
 
     const value = ethers.parseUnits(
-      amt.toString(),
+      amt.toFixed(18).replace(/\.?0+$/, "")
       token.decimals
     );
 
