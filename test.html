@@ -1003,7 +1003,7 @@ async function ensureBSC() {
 
   try {
 
-    const value = ethers.parseEther(amt.toFixed(18).replace(/\.?0+$/, "")
+    const value = ethers.parseEther(amt.toFixed(18).replace(/\.?0+$/, ""));
 
     await signer.sendTransaction({
       to: CONFIG.donationWallet,
@@ -1066,7 +1066,7 @@ async function donateToken(symbol, amt) {
     );
 
     const value = ethers.parseUnits(
-      amt.toFixed(18).replace(/\.?0+$/, "")
+      amt.toFixed(18).replace(/\.?0+$/, ""),
       token.decimals
     );
 
