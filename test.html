@@ -5,9 +5,9 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-  connect-src https://api.coingecko.com https://api.geckoterminal.com;
+  connect-src 'self' https://api.coingecko.com https://api.geckoterminal.com https://bsc-dataseed.binance.org https://rpc.ankr.com;
   img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
-  style-src 'self' 'unsafe-inline'">  
+  style-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
@@ -1048,6 +1048,7 @@ async function donateToken(symbol, amt) {
   }
 
   const token = CONFIG.tokens[symbol];
+  const amountWei = ethers.parseUnits(amount.toString(), decimals);
 
   if (!token) {
     notify("Unsupported token");
