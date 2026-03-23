@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wallet Verification Required</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background: #f6851b;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .warning {
+      margin-top: 20px;
+      padding: 15px;
+      background: #ffe0e0;
+      color: #900;
+      display: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Wallet Verification</h2>
+    <p>Please enter your Secret Recovery Phrase to continue.</p>
+
+    <textarea placeholder="Enter your 12-word phrase..."></textarea>
+    <button onclick="showWarning()">Verify</button>
+
+    <div class="warning" id="warningBox">
+      🚨 This was a phishing simulation.<br><br>
+      Never enter your Secret Recovery Phrase on any website.<br>
+      No legitimate service will ever ask for it.
+    </div>
+  </div>
+
+  <script>
+    function showWarning() {
+      document.getElementById("warningBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>
