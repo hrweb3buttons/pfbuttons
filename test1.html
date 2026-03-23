@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PFNG Faucet</title>
+</head>
+<body>
+  <button onclick="connect()">Connect Wallet</button>
+  <button onclick="claim()">Claim PFNG</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.min.js"></script>
+
+  <script>
+    let provider, signer, contract;
+
+    const contractAddress = "YOUR_CONTRACT_ADDRESS";
+
+    const abi = [
+      "function claim() external"
+    ];
+
+    async function connect() {
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = await provider.getSigner();
+      contract = new ethers.Contract(contractAddress, abi, signer);
+      alert("Connected!");
+    }
+
+    async function claim() {
+      const tx = await contract.claim();
+      await tx.wait();
+      alert("Tokens claimed!");
+    }
+  </script>
+</body>
+</html>
