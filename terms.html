@@ -2,110 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<title>Terms of Use | Unofficial Pool Funding Web3 Tools</title>
+  <title>Terms of Use | Unofficial Pool Funding Web3 Tools</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
 
     :root {
-  --background: #ffffff;
-  --text: #111111;
-  --text-muted: #555555;
-  --card-bg: #f5f5f5;
-  --border: #dddddd;
-  --primary: #004aab;
-  --focus-ring: #ff9500;
-  --radius: 6px;
-}
+      --background: #ffffff;
+      --text: #111111;
+      --text-muted: #555555;
+      --card-bg: #f5f5f5;
+      --border: #dddddd;
+      --primary: #004aab;
+      --focus-ring: #ff9500;
+      --radius: 6px;
+    }
 
-:root.dark {
-  --background: #0f141a;
-  --text: #f0f4f8;
-  --text-muted: #b0b8c4;
-  --card-bg: #1a2230;
-  --border: #2e3d52;
-  --primary: #a3d1ff;
-}
-    
-body {
-  font-family: Inter, Arial, Helvetica, sans-serif;
-  line-height: 1.7;
-  max-width: 760px;
-  margin: 40px auto;
-  padding: 0 20px;
-  color: var(--text);
-  background-color: var(--background);
-}
-.skip-link {
-  position: absolute;
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--primary);
-  color: #fff;
-  padding: 1rem 2rem;
-  z-index: 10000;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 0 0 var(--radius) var(--radius);
-  transition: top 0.2s ease;
-  border: 2px solid var(--focus-ring);
-}
+    :root.dark {
+      --background: #0f141a;
+      --text: #f0f4f8;
+      --text-muted: #b0b8c4;
+      --card-bg: #1a2230;
+      --border: #2e3d52;
+      --primary: #a3d1ff;
+    }
 
-.skip-link:focus {
-  top: 0;
-  outline: none;
-}
-    
+    body {
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: var(--text);
+      background-color: var(--background);
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      z-index: 10000;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 0 0 var(--radius) var(--radius);
+      transition: top 0.2s ease;
+      border: 2px solid var(--focus-ring);
+    }
+
+    .skip-link:focus {
+      top: 0;
+      outline: none;
+    }
+
     h1, h2 {
       line-height: 1.25;
     }
+
     h1 {
       margin-bottom: 0.5em;
     }
+
     h2 {
       margin-top: 1.8em;
     }
-.summary {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  margin-bottom: 30px;
-}
+
+    .summary {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
     .summary p {
       margin: 0 0 12px 0;
     }
-a {
-  color: var(--primary);
-}
 
-  a:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
-}
+    a {
+      color: var(--primary);
+    }
 
-  button:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
-}
+    a:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
 
-    footer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 2rem 0;
-}
+    button:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
 
     footer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 2rem 0;
-}
-    
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 2rem 0;
+    }
+
   </style>
 </head>
 <body>
+
 <button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false"
         style="position:fixed; top:12px; right:12px; z-index:9999;
                background:var(--card-bg); color:var(--text);
@@ -113,33 +113,42 @@ a {
                padding:0.45rem 0.8rem; cursor:pointer; font-weight:500;">
   Dark mode
 </button>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  <main id="main-content" tabindex="-1">
 
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<main id="main-content" tabindex="-1">
 
   <h1>Terms of Use</h1>
+  <p style="color:var(--text-muted); font-size:0.9rem;">Version 1.1 &mdash; Last Updated: March 26 2026</p>
 
-<nav aria-labelledby="toc-heading">
-<h2 id="toc-heading">Table of Contents</h2>
-<ul>
-<li><a href="#ownership">Ownership and Intellectual Property</a></li>
-<li><a href="#nature">Nature of the Tools</a></li>
-<li><a href="#license">License to Use</a></li>
-<li><a href="#no-community-ownership">No Community Ownership</a></li>
-<li><a href="#responsibility">User Responsibility</a></li>
-<li><a href="#no-warranties">No Warranties</a></li>
-<li><a href="#limitation">Limitation of Liability</a></li>
-<li><a href="#third-parties">Third Party Services</a></li>
-<li><a href="#ads">Advertising and Referral Links</a></li>
-<li><a href="#wallet-interaction">Wallet Interaction</a></li>
-<li><a href="#blockchain-risks">Blockchain Risks</a></li>
-<li><a href="#right-to-modify">Right to Modify</a></li>
-<li><a href="#term-modification">Changes to Terms</a></li>
-<li><a href="#governing-law">Governing Law</a></li>
-<li><a href= "#arbitration">Mandatory Arbitration</a></li>  
-<li><a href="#contact">Contact</a></li>
-</ul>
-</nav>
+  <nav aria-labelledby="toc-heading">
+    <h2 id="toc-heading">Table of Contents</h2>
+    <ul>
+      <li><a href="#eligibility">Eligibility</a></li>
+      <li><a href="#ownership">Ownership and Intellectual Property</a></li>
+      <li><a href="#nature">Nature of the Tools</a></li>
+      <li><a href="#license">License to Use</a></li>
+      <li><a href="#prohibited-uses">Prohibited Uses</a></li>
+      <li><a href="#no-community-ownership">No Community Ownership or Governance</a></li>
+      <li><a href="#responsibility">User Responsibility</a></li>
+      <li><a href="#no-warranties">No Warranties</a></li>
+      <li><a href="#limitation">Limitation of Liability</a></li>
+      <li><a href="#third-parties">Third Party Services</a></li>
+      <li><a href="#ads">Advertising and Referral Links</a></li>
+      <li><a href="#wallet-interaction">Wallet Interaction and Transaction Approval</a></li>
+      <li><a href="#blockchain-risks">Blockchain and Smart Contract Risks</a></li>
+      <li><a href="#regulatory-disclaimer">Regulatory Disclaimer</a></li>
+      <li><a href="#no-affiliation">No Affiliation</a></li>
+      <li><a href="#privacy-notice">Privacy Notice</a></li>
+      <li><a href="#right-to-modify">Right to Modify or Discontinue</a></li>
+      <li><a href="#term-modification">Changes to These Terms</a></li>
+      <li><a href="#force-majeure">Force Majeure</a></li>
+      <li><a href="#governing-law">Governing Law</a></li>
+      <li><a href="#arbitration">Mandatory Arbitration &amp; Class Action Waiver</a></li>
+      <li><a href="#general-provisions">General Provisions</a></li>
+      <li><a href="#contact">Contact and Legal Notices</a></li>
+    </ul>
+  </nav>
 
   <div class="summary">
     <h2>Plain English Summary</h2>
@@ -157,20 +166,34 @@ a {
 
   <p>By accessing or using this site, you agree to be bound by these Terms of Use. If you do not agree, you must not use the site or any of its tools.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="eligibility">Eligibility</h2>
+
+  <p>By accessing or using this site, you represent and warrant that you are at least 18 years of age, or the age of legal majority in your jurisdiction if that age is higher than 18, and that you have the full legal capacity to enter into a binding agreement. If you do not meet these requirements, you must not access or use this site or any of its tools.</p>
+
+  <p>By using this site, you further represent and warrant that your use of the tools does not violate any applicable law or regulation in your jurisdiction, including but not limited to laws governing financial services, digital assets, and money transmission.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="ownership">Ownership and Intellectual Property</h2>
 
   <p>The website, all tools, scripts, interfaces, designs, text, documentation, and all related materials are the exclusive intellectual property of Hunter Rodriguez unless explicitly stated otherwise.</p>
 
   <p>Nothing in these Terms of Use grants any user any ownership interest in, or rights to, the site or the tools beyond the limited right to use them as provided under these terms. All rights not expressly granted are reserved by the maintainer.</p>
 
-  <p>You may choose to submit comments, bug reports, or ideas about the tools ("Feedback"). By submitting Feedback, you agree that your disclosure is gratuitous, unsolicited, and without restriction. You hereby grant the maintainer a perpetual, irrevocable, worldwide, royalty-free license to use, reproduce, modify, and incorporate such Feedback into the tools without any compensation or credit to you.</p>  
+  <p>You may choose to submit comments, bug reports, or ideas about the tools ("Feedback"). By submitting Feedback through any channel, you grant the maintainer a perpetual, irrevocable, worldwide, royalty-free license to use, reproduce, modify, and incorporate such Feedback into the tools without any obligation, compensation, or credit to you. You waive any moral rights or similar rights you may have in such Feedback to the fullest extent permitted by applicable law.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="nature">Nature of the Tools</h2>
 
   <p>The tools provided on this site are independently developed utilities made available to assist users with wallet configuration, token management, network configuration, and related Web3 interactions.</p>
 
-  <p>These tools do not custody funds, do not execute transactions on your behalf without your approval, and do not provide financial, investment, or legal advice.</p>
+  <p>These tools do not custody funds, do not execute transactions on your behalf without your explicit approval, and do not provide financial, investment, or legal advice.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="license">License to Use</h2>
 
   <p>Subject to these Terms of Use, you are granted a limited, nonexclusive, nontransferable, revocable license to access and use the tools solely for your personal or internal use.</p>
@@ -179,6 +202,27 @@ a {
 
   <p>You may not present the tools, the site, or any part of them as a public good, community owned resource, or community governed infrastructure.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="prohibited-uses">Prohibited Uses</h2>
+
+  <p>You agree not to use this site or any of its tools for any purpose that is unlawful or prohibited by these Terms. Without limiting the foregoing, you expressly agree not to:</p>
+
+  <ul>
+    <li>Use the tools in violation of any applicable law, regulation, or governmental order, including but not limited to laws governing digital assets, securities, money transmission, and anti-money laundering;</li>
+    <li>Use the tools to evade, circumvent, or violate any economic or trade sanctions administered by the Office of Foreign Assets Control (OFAC), the European Union, the United Nations, or any other applicable sanctions authority, including by transacting with sanctioned persons, entities, or jurisdictions;</li>
+    <li>Use the tools to facilitate, promote, or engage in money laundering, terrorist financing, fraud, market manipulation, wash trading, or any other financial crime;</li>
+    <li>Use the tools to interact with any smart contract, token, or protocol that you know or have reason to believe is fraudulent, malicious, or designed to harm users;</li>
+    <li>Use the tools to exploit, harm, or attempt to harm any other person;</li>
+    <li>Attempt to gain unauthorized access to any part of the site, its underlying infrastructure, or any systems or networks connected to it;</li>
+    <li>Use the tools in any manner that could damage, disable, or impair the site or interfere with any other party's use of the site;</li>
+    <li>Use automated means, bots, scrapers, or similar tools to access, collect data from, or interact with the site in any manner not expressly permitted by these Terms.</li>
+  </ul>
+
+  <p>The maintainer reserves the right to investigate and report any suspected violations of this section to relevant law enforcement or regulatory authorities.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="no-community-ownership">No Community Ownership or Governance</h2>
 
   <p>The tools and this site are independently created and maintained and are not owned, governed, or controlled by any community, DAO, foundation, or third party group.</p>
@@ -187,32 +231,44 @@ a {
 
   <p>The maintainer retains sole and exclusive authority over the direction, development, availability, and operation of the site and tools.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="responsibility">User Responsibility</h2>
 
   <p>You are solely responsible for your use of the tools and for any actions you take using your wallet, including but not limited to approving transactions, switching networks, adding tokens, or sending funds.</p>
 
-  <p>You acknowledge that blockchain transactions are irreversible and that mistakes such as sending funds to the wrong address, interacting with malicious contracts, or approving unintended transactions may result in permanent loss.</p>
+  <p>You acknowledge that blockchain transactions are irreversible and that mistakes such as sending funds to the wrong address, interacting with malicious contracts, or approving unintended transactions may result in permanent loss of funds for which the maintainer bears no responsibility.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="no-warranties">No Warranties</h2>
 
-  <p>The site and all tools are experimental software provided on an as is and as available basis. No warranties of any kind are made, whether express or implied, including but not limited to warranties of accuracy, reliability, fitness for a particular purpose, or non infringement.</p>
+  <p>The site and all tools are experimental software provided on an <strong>as is</strong> and <strong>as available</strong> basis, without warranty of any kind. No warranties of any nature are made, whether express, implied, or statutory, including but not limited to warranties of merchantability, accuracy, reliability, fitness for a particular purpose, or non-infringement.</p>
 
-  <p>The tools provided are provided as Experimental Software. You acknowledge that Web3 infrastructure is evolving and may contain "zero-day" vulnerabilities or logic errors. While efforts are made to improve accessibility, the maintainer does not guarantee compatibility with all screen readers or assistive technologies. Use of these tools constitutes an "Assumption of Risk" regarding software exploits, network failures, and UI interpretation errors.</p>
+  <p>You acknowledge that Web3 infrastructure is rapidly evolving and may contain unknown vulnerabilities, including zero-day exploits or logic errors. You further acknowledge that use of these tools carries an inherent assumption of risk with respect to software vulnerabilities, network failures, smart contract behavior, and errors in user interface interpretation. The maintainer does not warrant that the site will be uninterrupted, error-free, or free from harmful components.</p>
 
+  <p>The maintainer does not guarantee compatibility with all screen readers, assistive technologies, or accessibility tools. While reasonable efforts are made to support accessible use, no warranty of accessibility compliance is made or implied.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="limitation">Limitation of Liability</h2>
 
   <p>To the fullest extent permitted by applicable law, the maintainer of this site shall not be liable for any direct, indirect, incidental, consequential, special, or exemplary damages arising out of or related to your use of, or inability to use, the site or tools, even if the maintainer has been advised of the possibility of such damages.</p>
 
   <p>This includes but is not limited to loss of funds, loss of access to wallets, failed transactions, network issues, RPC failures, smart contract behavior, third party service outages, or any errors or interruptions affecting the availability or functionality of the site or tools.</p>
 
-  <p>You agree to indemnify, defend, and hold harmless the maintainer from and against any and all claims, damages, obligations, losses, liabilities, costs, or debt, and expenses (including but not limited to attorney's fees) arising from: (i) your use of and access to the tools; (ii) your violation of any term of these Terms of Use; (iii) your violation of any third-party right, including without limitation any intellectual property, privacy, or proprietary right; or (iv) any claim that your use of the tools caused damage to a third party.</p>  
+  <p>You agree to indemnify, defend, and hold harmless the maintainer from and against any and all claims, damages, obligations, losses, liabilities, costs, debts, and expenses (including but not limited to attorney's fees) arising from: (i) your use of and access to the tools; (ii) your violation of any term of these Terms of Use; (iii) your violation of any third-party right, including without limitation any intellectual property, privacy, or proprietary right; or (iv) any claim that your use of the tools caused damage to a third party.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="third-parties">Third Party Services</h2>
 
   <p>The site interacts with or links to third party services such as wallet providers, blockchain networks, RPC endpoints, pricing APIs, and external documentation.</p>
 
-  <p>The maintainer has no control over these services and is not responsible for their availability, accuracy, security, or behavior.</p>
+  <p>The maintainer has no control over these services and is not responsible for their availability, accuracy, security, or behavior. Your use of any third party service is governed solely by that service's own terms and policies.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="ads">Advertising, Referral Links, and Sponsored Content</h2>
 
   <p>The site may display sponsored content, promotional materials, or links to third party websites, services, tools, or resources.</p>
@@ -225,16 +281,20 @@ a {
 
   <p>Any interaction, transaction, or reliance on third party services, referral links, advertisements, or sponsored content is solely between you and the applicable third party.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="wallet-interaction">Wallet Interaction and Transaction Approval</h2>
 
   <p>The tools provided on this site may assist users in preparing wallet configurations, generating transaction parameters, or interacting with blockchain networks through user controlled wallet software.</p>
 
   <p>All transactions are initiated, reviewed, and approved solely by the user through their own wallet software. The site does not initiate transactions, does not transmit private keys, and does not have access to user wallets.</p>
 
-  <p>The maintainer has no ability to prevent, reverse, cancel, or modify any blockchain transaction once it has been submitted through a user’s wallet.</p>
+  <p>The maintainer has no ability to prevent, reverse, cancel, or modify any blockchain transaction once it has been submitted through a user's wallet.</p>
 
   <p>Users are solely responsible for reviewing all transaction details within their wallet before approving any interaction with a blockchain network or smart contract.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="blockchain-risks">Blockchain and Smart Contract Risks</h2>
 
   <p>Blockchain networks, smart contracts, and decentralized protocols involve inherent technical and financial risks. These systems may contain vulnerabilities, experience unexpected behavior, undergo upgrades, forks, or disruptions, or interact with external systems that may fail or behave unpredictably.</p>
@@ -245,50 +305,112 @@ a {
 
   <p>Loss of funds may occur due to user error, smart contract vulnerabilities, malicious contracts, network congestion, protocol failures, or other factors beyond the control of the site maintainer.</p>
 
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="regulatory-disclaimer">Regulatory Disclaimer</h2>
+
+  <p>The tools and information provided on this site are made available for technical and informational purposes only. Nothing on this site constitutes an offer, solicitation, or recommendation to buy, sell, or hold any digital asset, token, security, or financial instrument, nor does it constitute investment, financial, legal, or tax advice.</p>
+
+  <p>The maintainer makes no representation that any token, protocol, or smart contract accessible or interactable through these tools is compliant with the laws of any jurisdiction, including but not limited to securities laws, commodities laws, or money transmission regulations. Users are solely responsible for determining whether their use of these tools and any related activities comply with applicable law in their jurisdiction.</p>
+
+  <p>This site is not registered with, licensed by, or supervised by any financial regulatory authority. Users in jurisdictions where the use of such tools may be restricted or require regulatory approval are responsible for ensuring their own compliance before using this site.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
   <h2 id="no-affiliation">No Affiliation</h2>
 
-  <p>This site is not affiliated with MetaMask, Binance, Binance Smart Chain, or any other third party platform unless explicitly stated.</p>
+  <p>This site is not affiliated with, endorsed by, or sponsored by any blockchain network, protocol, wallet provider, token project, exchange, foundation, or any other third party platform or organization, unless such affiliation is explicitly and specifically stated in writing on this site. The mention or interaction with any third party service or product does not imply any affiliation or endorsement.</p>
 
-  <h2 id="right-to-modify">Right to Modify or Discontinue</h2>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="privacy-notice">Privacy Notice</h2>
+
+  <p>This site does not require account registration and does not intentionally collect personally identifiable information directly from users. However, standard web server logs, analytics tools, or third party services integrated into this site (such as RPC providers or content delivery networks) may automatically collect certain technical data, including IP addresses, browser type, and usage patterns, as part of their normal operation.</p>
+
+  <p>Blockchain wallet addresses used in connection with the tools are processed locally within your browser where possible. The maintainer does not store or have access to your private keys, seed phrases, or wallet credentials.</p>
+
+  <p>By using this site, you acknowledge that blockchain transactions and addresses are recorded permanently and publicly on-chain. You are solely responsible for understanding the privacy implications of any on-chain activity.</p>
+
+  <p>If you have questions about data handling practices on this site, please use the contact information provided below.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="right-to-modify">Right to Modify, Discontinue, or Terminate Access</h2>
 
   <p>The maintainer reserves the right, at any time and for any reason, to modify, restrict, suspend, or discontinue the site or any tools, features, or access, with or without notice.</p>
 
-  <p>The maintainer is under no obligation to continue operating, supporting, or maintaining the site or any tools.</p>
+  <p>The maintainer further reserves the right, in their sole discretion, to restrict or terminate any individual user's access to the site or tools at any time, without notice, for any conduct that the maintainer believes violates these Terms of Use or is otherwise harmful to other users, third parties, or the integrity of the site.</p>
 
-  <p>No user acquires any rights or expectations regarding continued availability.</p>
+  <p>The maintainer is under no obligation to continue operating, supporting, or maintaining the site or any tools. No user acquires any rights or expectations regarding continued availability.</p>
 
-  <h2 id="term-modification">Modifications to These Terms</h2>
 
-  <p>These Terms of Use may be updated at any time without prior notice. Continued use of the site after changes constitutes acceptance of the updated terms.</p>
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="term-modification">Changes to These Terms</h2>
 
-  <h2 id="governing-law">Governing Law & Forum Selection</h2>
+  <p>These Terms of Use may be updated at any time without prior notice. The version number and date at the top of this page will reflect the most recent revision. Continued use of the site after any changes constitutes your acceptance of the updated terms. If you do not agree to the updated terms, you must discontinue use of the site.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="force-majeure">Force Majeure</h2>
+
+  <p>The maintainer shall not be liable for any failure or delay in performance resulting from causes beyond their reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, civil unrest, government actions or regulations, blockchain network failures or congestion, third party infrastructure outages, internet service disruptions, cyberattacks, power failures, or any other events or circumstances outside the maintainer's reasonable control. In such circumstances, the maintainer's obligations under these Terms will be suspended for the duration of the event.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="governing-law">Governing Law</h2>
 
   <p>These Terms and your use of the site and tools shall be governed by and construed in accordance with the laws of the Republic of Panama, without regard to its conflict of law principles.</p>
 
-  <p>You explicitly agree that any dispute, claim, or controversy arising out of or relating to these Terms, or the breach, termination, enforcement, interpretation, or validity thereof, shall be brought exclusively in the Courts of Panama City, Panama, and you hereby waive any objection to such venue or jurisdiction, including any claim of forum non conveniens.</p>
+  <p>To the extent any dispute is not subject to arbitration under the Mandatory Arbitration section below, or for the purposes of compelling arbitration, enforcing an arbitral award, or seeking interim injunctive relief, you agree to submit to the exclusive jurisdiction of the courts located in Panama City, Panama, and you hereby waive any objection to such venue, including any claim of inconvenient forum.</p>
 
-  <h2 id="arbitration">Mandatory Arbitration & Class Action Waiver</h2>
 
-  <p>Any dispute arising out of or related to these Terms or the tools that cannot be resolved through informal negotiation shall be settled by binding arbitration in Panama City, Panama, in accordance with the Arbitration Rules of the Center for Conciliation and Arbitration of Panama (CeCAP). The language of the arbitration shall be Spanish or English, as determined by the arbitrator. The arbitrator's decision shall be final and binding.</p>
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="arbitration">Mandatory Arbitration &amp; Class Action Waiver</h2>
 
-  <p>TO THE EXTENT PERMITTED BY LAW, ALL CLAIMS MUST BE BROUGHT IN THE PARTY’S INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS, COLLECTIVE, ACTION, OR REPRESENTATIVE PROCEEDING. The arbitrator may not consolidate more than one person’s claims or otherwise preside over any form of a representative or class proceeding.</p> 
+  <p>Any dispute, claim, or controversy arising out of or related to these Terms or the tools that cannot be resolved through good-faith informal negotiation within thirty (30) days of written notice from the complaining party shall be settled by binding arbitration administered in Panama City, Panama, in accordance with the Arbitration Rules of the Center for Conciliation and Arbitration of Panama (CeCAP). The language of the arbitration shall be English. The arbitrator's decision shall be final and binding and may be entered as a judgment in any court of competent jurisdiction.</p>
 
-  <h2 id="contact">Contact</h2>
+  <p>TO THE EXTENT PERMITTED BY APPLICABLE LAW, ALL CLAIMS MUST BE BROUGHT IN THE PARTY'S INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS, COLLECTIVE, OR REPRESENTATIVE PROCEEDING. The arbitrator may not consolidate more than one person's claims or otherwise preside over any form of a representative or class proceeding.</p>
+
+  <p>You may opt out of mandatory arbitration by sending written notice of your decision to opt out to the contact address below within thirty (30) days of first using the site. If you opt out, disputes shall be resolved exclusively in the courts identified in the Governing Law section above.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="general-provisions">General Provisions</h2>
+
+  <p><strong>Entire Agreement.</strong> These Terms of Use constitute the entire agreement between you and the maintainer with respect to your use of the site and tools, and supersede all prior and contemporaneous understandings, representations, statements, and agreements, whether written or oral, relating to the same subject matter.</p>
+
+  <p><strong>Severability.</strong> If any provision of these Terms is found by a court or arbitrator of competent jurisdiction to be invalid, illegal, or unenforceable, that provision shall be modified to the minimum extent necessary to make it enforceable, or if modification is not possible, it shall be severed from these Terms. The invalidity or unenforceability of any provision shall not affect the validity or enforceability of the remaining provisions, which shall continue in full force and effect.</p>
+
+  <p><strong>No Waiver.</strong> The failure of the maintainer to exercise or enforce any right or provision of these Terms shall not constitute a waiver of that right or provision. No waiver of any term shall be deemed a further or continuing waiver of that term or any other term.</p>
+
+  <p><strong>No Assignment.</strong> You may not assign or transfer any rights or obligations under these Terms without the prior written consent of the maintainer. The maintainer may assign these Terms or any rights hereunder without restriction.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="contact">Contact and Legal Notices</h2>
 
   <p>This site is independently maintained by Hunter Rodriguez and is used by members of the Pool Funding community.</p>
 
-  <p>Questions or concerns related to these terms should be directed through the project repository or associated public contact channels.</p>
+  <p>For general questions or feedback regarding these terms, please use the project repository or associated public contact channels linked below.</p>
+
+  <p>For formal legal notices required under these Terms, including arbitration opt-out notices and indemnification claims, written notice must be delivered via the GitHub repository's designated contact method or such other contact address as may be published on this site. Notices sent through informal channels shall not be deemed legally effective for the purposes of these Terms.</p>
+
+  <ul>
+    <li><a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">GitHub Repository</a></li>
+  </ul>
+
 </main>
+
 <footer aria-label="Site footer">
-  © 2026 Hunter Rodriguez |
+  &copy; 2026 Hunter Rodriguez |
   <a href="https://hrweb3buttons.github.io/pfbuttons/">Main Tools</a> |
   <a href="https://hrweb3buttons.github.io/pfbuttons/terms.html">Terms of Use</a> |
   <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
     View on GitHub
   </a>
 </footer>
-  
-  <script>
+
+<script>
   const root = document.documentElement;
   const toggle = document.getElementById("themeToggle");
 
@@ -306,5 +428,6 @@ a {
     toggle.setAttribute("aria-pressed", String(dark));
   };
 </script>
+
 </body>
 </html>
