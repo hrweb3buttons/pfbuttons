@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaMask – Wallet Recovery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Euclid+Circular+B:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mm-orange:  #f6851b;
+      --mm-orange2: #e2761b;
+      --mm-dark:    #24272a;
+      --mm-gray:    #6a737d;
+      --mm-light:   #f2f4f6;
+      --mm-border:  #d6d9dc;
+      --mm-white:   #ffffff;
+      --mm-red:     #d73a49;
+      --edu-bg:     rgba(0,0,0,0.82);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f7f8fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── EDUCATIONAL OVERLAY ── */
+    #edu-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--edu-bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      backdrop-filter: blur(4px);
+      transition: opacity 0.4s ease;
+    }
+
+    #edu-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .edu-card {
+      background: #1a1a2e;
+      border: 2px solid #e63946;
+      border-radius: 16px;
+      max-width: 540px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    .edu-badge {
+      display: inline-block;
+      background: #e63946;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 1.2rem;
+    }
+
+    .edu-card h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      line-height: 1.3;
+    }
+
+    .edu-card p {
+      font-size: 0.92rem;
+      color: #b0b8c8;
+      line-height: 1.65;
+      margin-bottom: 1.6rem;
+    }
+
+    .edu-card p strong { color: #fff; }
+
+    .btn-reveal {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-reveal:hover { background: #c1121f; }
+
+    /* ── TEACHER CONTROLS (always visible) ── */
+    #teacher-bar {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.2rem;
+      z-index: 10000;
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .t-btn {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .t-btn:hover { opacity: 0.85; }
+
+    .t-btn-show  { background: #e63946; color: #fff; }
+    .t-btn-hide  { background: #2d6a4f; color: #fff; }
+    .t-btn-reset { background: #444; color: #fff; }
+
+    /* ── FAKE BROWSER BAR ── */
+    .browser-bar {
+      width: 100%;
+      max-width: 680px;
+      background: #e8eaed;
+      border-radius: 10px 10px 0 0;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2rem;
+      border: 1px solid #ccc;
+      border-bottom: none;
+    }
+
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28c840; }
+
+    .url-bar {
+      flex: 1;
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: monospace;
+    }
+
+    .lock-icon { color: #555; font-size: 0.75rem; }
+
+    /* ── MAIN CARD ── */
+    .card {
+      background: var(--mm-white);
+      width: 100%;
+      max-width: 680px;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      margin-bottom: 3rem;
+    }
+
+    /* Header */
+    .mm-header {
+      background: var(--mm-white);
+      padding: 1.4rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--mm-border);
+    }
+
+    .mm-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mm-logo svg { width: 36px; height: 36px; }
+    .mm-logo-text { font-size: 1.1rem; font-weight: 700; color: var(--mm-dark); letter-spacing: -0.02em; }
+
+    .mm-badge {
+      font-size: 0.7rem;
+      background: #fff3e0;
+      color: var(--mm-orange2);
+      border: 1px solid #ffe0b2;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-weight: 600;
+    }
+
+    /* Alert banner */
+    .alert-banner {
+      background: #fff8e1;
+      border-bottom: 1px solid #ffe082;
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .alert-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .alert-text { font-size: 0.85rem; color: #555; line-height: 1.5; }
+    .alert-text strong { color: #333; }
+
+    /* Body */
+    .mm-body { padding: 2rem; }
+
+    .mm-body h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--mm-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .mm-body > p {
+      font-size: 0.88rem;
+      color: var(--mm-gray);
+      margin-bottom: 1.8rem;
+      line-height: 1.6;
+    }
+
+    /* Phrase grid */
+    .phrase-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--mm-dark);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .phrase-note {
+      font-size: 0.78rem;
+      color: var(--mm-gray);
+      margin-bottom: 1rem;
+    }
+
+    .phrase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .word-cell {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--mm-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--mm-light);
+      transition: border-color 0.2s;
+    }
+    .word-cell:focus-within { border-color: var(--mm-orange); background: #fff; }
+
+    .word-num {
+      font-size: 0.72rem;
+      color: var(--mm-gray);
+      padding: 0 8px;
+      min-width: 32px;
+      text-align: right;
+      user-select: none;
+    }
+
+    .word-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 9px 8px 9px 4px;
+      font-size: 0.9rem;
+      color: var(--mm-dark);
+      outline: none;
+      font-family: inherit;
+    }
+    .word-input::placeholder { color: #bbb; }
+
+    /* Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 1.2rem 0;
+      color: var(--mm-gray);
+      font-size: 0.8rem;
+    }
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--mm-border);
+    }
+
+    /* Paste area */
+    .paste-area {
+      width: 100%;
+      border: 1.5px dashed var(--mm-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 0.88rem;
+      color: var(--mm-dark);
+      background: var(--mm-light);
+      resize: none;
+      font-family: inherit;
+      outline: none;
+      height: 76px;
+      transition: border-color 0.2s;
+    }
+    .paste-area:focus { border-color: var(--mm-orange); background: #fff; }
+    .paste-area::placeholder { color: #bbb; }
+
+    .paste-hint {
+      font-size: 0.76rem;
+      color: var(--mm-gray);
+      margin-top: 6px;
+      margin-bottom: 1.6rem;
+    }
+
+    /* CTA */
+    .btn-submit {
+      width: 100%;
+      background: var(--mm-orange);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .btn-submit:hover  { background: var(--mm-orange2); }
+    .btn-submit:active { transform: scale(0.99); }
+
+    /* Footer disclaimer */
+    .mm-footer {
+      border-top: 1px solid var(--mm-border);
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--mm-gray);
+    }
+
+    .mm-footer a { color: var(--mm-orange); text-decoration: none; }
+    .mm-footer a:hover { text-decoration: underline; }
+
+    /* ── CAUGHT MODAL ── */
+    #caught-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    #caught-modal.show { display: flex; }
+
+    .caught-card {
+      background: #1a1a2e;
+      border: 2px solid #e63946;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    .caught-card .big-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+
+    .caught-card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      color: #e63946;
+    }
+
+    .caught-card p {
+      font-size: 0.9rem;
+      color: #b0b8c8;
+      line-height: 1.65;
+      margin-bottom: 1.8rem;
+    }
+
+    .caught-card p strong { color: #fff; }
+
+    .caught-tips {
+      background: rgba(230,57,70,0.12);
+      border: 1px solid rgba(230,57,70,0.3);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      text-align: left;
+      margin-bottom: 1.8rem;
+    }
+
+    .caught-tips h3 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e63946;
+      margin-bottom: 0.7rem;
+    }
+
+    .caught-tips ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .caught-tips li {
+      font-size: 0.84rem;
+      color: #b0b8c8;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+    .caught-tips li::before { content: "→"; position: absolute; left: 0; color: #e63946; }
+
+    .btn-dismiss {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-dismiss:hover { background: #c1121f; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       EDUCATIONAL OVERLAY (shown on load)
+  ══════════════════════════════════════ -->
+  <div id="edu-overlay">
+    <div class="edu-card">
+      <span class="edu-badge">🎓 Workshop Demo</span>
+      <h1>Phishing Demo — For Educational Use Only</h1>
+      <p>
+        The page behind this screen is a <strong>realistic replica of a MetaMask phishing site</strong>
+        — the kind of page used to steal Secret Recovery Phrases.<br><br>
+        This is a <strong>safe, non-functional demo</strong>. Nothing entered here is sent anywhere.
+        It exists only to make this workshop interactive and hands-on.<br><br>
+        <strong>In the role-play, enter random words — never real wallet words.</strong>
+      </p>
+      <button class="btn-reveal" onclick="hideEduOverlay()">▶ Show me the phishing page</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TEACHER CONTROLS (always-on)
+  ══════════════════════════════════════ -->
+  <div id="teacher-bar">
+    <button class="t-btn t-btn-show"  onclick="showEduOverlay()">📋 Show Overlay</button>
+    <button class="t-btn t-btn-reset" onclick="resetForm()">↺ Reset Form</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       FAKE BROWSER BAR
+  ══════════════════════════════════════ -->
+  <div class="browser-bar">
+    <div class="dot dot-r"></div>
+    <div class="dot dot-y"></div>
+    <div class="dot dot-g"></div>
+    <div class="url-bar">
+      <span class="lock-icon">🔒</span>
+      <span>metamask-wallet-recovery-secure.io/restore</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MAIN PHISHING PAGE
+  ══════════════════════════════════════ -->
+  <div class="card">
+
+    <!-- Header -->
+    <div class="mm-header">
+      <div class="mm-logo">
+        <!-- MetaMask fox SVG (simplified outline version) -->
+        <svg viewBox="0 0 35 33" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M32.9 1L19.4 10.7l2.5-5.9L32.9 1z" fill="#E2761B" stroke="#E2761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.1 1l13.4 9.8-2.4-5.9L2.1 1z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M28.2 23.5l-3.6 5.5 7.7 2.1 2.2-7.4-6.3-.2z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M1.3 23.7l2.2 7.4 7.7-2.1-3.6-5.5-6.3.2z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10.8 14.5l-2.1 3.2 7.5.3-.3-8.1-5.1 4.6z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M24.2 14.5l-5.2-4.7-.2 8.2 7.4-.3-2-3.2z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.2 29l4.5-2.2-3.9-3-0.6 5.2z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M19.3 26.8l4.5 2.2-.6-5.2-3.9 3z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M23.8 29l-4.5-2.2.4 3 0 .9 4.1-1.7z" fill="#D7C1B3" stroke="#D7C1B3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.2 29l4.1 1.7 0-.9.4-3L11.2 29z" fill="#D7C1B3" stroke="#D7C1B3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15.4 22.1l-3.7-1.1 2.6-1.2 1.1 2.3z" fill="#233447" stroke="#233447" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M19.6 22.1l1.1-2.3 2.6 1.2-3.7 1.1z" fill="#233447" stroke="#233447" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="mm-logo-text">MetaMask</span>
+      </div>
+      <span class="mm-badge">Wallet Support</span>
+    </div>
+
+    <!-- Alert banner -->
+    <div class="alert-banner">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>Action Required:</strong> We've detected unusual activity on your wallet.
+        To protect your funds and restore access, please verify your Secret Recovery Phrase below.
+        This process is encrypted and secure.
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="mm-body">
+      <h2>Restore Your Wallet</h2>
+      <p>
+        Enter your 12-word Secret Recovery Phrase in the exact order it was given to you.
+        Each word should be separated and entered in the correct numbered box.
+        Never share this phrase with anyone except on official MetaMask pages.
+      </p>
+
+      <div class="phrase-label">Secret Recovery Phrase</div>
+      <div class="phrase-note">Enter each word in order, exactly as it appears in your backup.</div>
+
+      <!-- 12-word grid -->
+      <div class="phrase-grid" id="phrase-grid">
+        <!-- Words 1–12 injected by JS -->
+      </div>
+
+      <!-- OR paste -->
+      <div class="or-divider">or paste all 12 words at once</div>
+
+      <textarea
+        class="paste-area"
+        id="paste-area"
+        placeholder="word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      ></textarea>
+      <div class="paste-hint">Words are separated by spaces. Do not include numbers or punctuation.</div>
+
+      <button class="btn-submit" onclick="handleSubmit()">
+        Restore Wallet &amp; Verify →
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="mm-footer">
+      <span>© 2024 MetaMask · ConsenSys</span>
+      <span>
+        <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
+        <a href="#">Terms of Use</a> &nbsp;·&nbsp;
+        <a href="#">Support</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       "YOU'VE BEEN PHISHED" MODAL
+  ══════════════════════════════════════ -->
+  <div id="caught-modal">
+    <div class="caught-card">
+      <div class="big-emoji">🚨</div>
+      <h2>You've Been Phished!</h2>
+      <p>
+        If this were a real site, <strong>your wallet would now be drained</strong>.
+        The attacker now has your Secret Recovery Phrase and full control
+        over every asset in your wallet — permanently.
+      </p>
+      <div class="caught-tips">
+        <h3>🔐 Key Takeaways</h3>
+        <ul>
+          <li><strong>Never</strong> enter your Secret Recovery Phrase on any website.</li>
+          <li>MetaMask will <strong>never</strong> ask for your phrase via a link or email.</li>
+          <li>Check the URL bar carefully — <em>one wrong character</em> = phishing site.</li>
+          <li>No alert, urgency, or "verification" can ever justify sharing your phrase.</li>
+          <li>When in doubt, close the tab and go directly to metamask.io.</li>
+        </ul>
+      </div>
+      <button class="btn-dismiss" onclick="closeCaughtModal()">Got it — close</button>
+    </div>
+  </div>
+
+  <script>
+    // ── Build 12-word input grid ──
+    const grid = document.getElementById('phrase-grid');
+    for (let i = 1; i <= 12; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'word-cell';
+      cell.innerHTML = `
+        <span class="word-num">${i}</span>
+        <input class="word-input" type="text" placeholder="word" autocomplete="off"
+               autocorrect="off" autocapitalize="off" spellcheck="false"
+               data-word="${i}" />
+      `;
+      grid.appendChild(cell);
+    }
+
+    // ── Overlay controls ──
+    function hideEduOverlay() {
+      document.getElementById('edu-overlay').classList.add('hidden');
+    }
+    function showEduOverlay() {
+      document.getElementById('edu-overlay').classList.remove('hidden');
+    }
+
+    // ── Form reset ──
+    function resetForm() {
+      document.querySelectorAll('.word-input').forEach(i => i.value = '');
+      document.getElementById('paste-area').value = '';
+    }
+
+    // ── Submit handler (shows caught modal) ──
+    function handleSubmit() {
+      // Check if any word has been filled in
+      const words = [...document.querySelectorAll('.word-input')].map(i => i.value.trim());
+      const paste = document.getElementById('paste-area').value.trim();
+      if (words.some(w => w.length > 0) || paste.length > 0) {
+        document.getElementById('caught-modal').classList.add('show');
+      }
+    }
+
+    // ── Dismiss caught modal ──
+    function closeCaughtModal() {
+      document.getElementById('caught-modal').classList.remove('show');
+      showEduOverlay(); // bring the edu banner back up
+    }
+  </script>
+</body>
+</html>
