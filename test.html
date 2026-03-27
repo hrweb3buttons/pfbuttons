@@ -678,7 +678,7 @@ button.donate-more {
       if (localStorage.getItem("theme") === "dark") {
         root.classList.add("dark");
         themeToggle.textContent = "Light mode";
-        
+        themeToggle.setAttribute("aria-pressed", "true");
       }
 
 if (window.ethereum) {
@@ -712,7 +712,8 @@ pageSelector.addEventListener("change", e => {
         const dark = root.classList.contains("dark");
         localStorage.setItem("theme", dark ? "dark" : "light");
         themeToggle.textContent = dark ? "Light mode" : "Dark mode";
-      };
+        themeToggle.setAttribute("aria-pressed", String(dark));
+        };
 
 
       const tokens = [
@@ -764,7 +765,7 @@ requestAnimationFrame(() => {
 async function connectWallet() {
   if (!window.ethereum) return notify("MetaMask not detected");
   try {
-    const accs = await ethereum.request({ method: "eth_requestAccounts" });
+    const accs = await ethereum.request({ method: "window.ethereum.request" });
     provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     const btn = document.getElementById("connectWallet");
@@ -782,7 +783,8 @@ async function connectWallet() {
 
    
 
-                                async function addAllTokens() {
+        async function addAllTokens() {
+        if (!window.ethereum) { notify("MetaMask not detected"); return; }
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         const requests = tokens.map(t =>
            window.ethereum.request({
@@ -1025,37 +1027,16 @@ async function ensureBSC() {
 =========================== */
 
 async function donateToken(symbol, amt) {
-
-  if (!window.ethereum) {
-    notify("MetaMask not detected");
-    return;
-  }
-
-  if (!signer) {
-    notify("Please connect your wallet");
-    return;
-  }
-
-  if (!amt || amt <= 0) {
-    notify("Enter a valid amount");
-    return;
-  }
-
-  if (!ethers.isAddress(CONFIG.donationWallet)) {
-    console.error("Invalid donation wallet");
-    notify("Configuration error");
-    return;
-  }
+  if (!window.ethereum) { notify("MetaMask not detected"); return; }
+  if (!signer) { notify("Please connect your wallet"); return; }
+  if (!amt || amt <= 0) { notify("Enter a valid amount"); return; }
+  if (!ethers.isAddress(CONFIG.donationWallet)) { notify("Configuration error"); return; }
 
   const token = CONFIG.tokens[symbol];
-  const amountWei = ethers.parseUnits(amount.toString(), decimals);
-
-  if (!token) {
-    notify("Unsupported token");
-    return;
-  }
+  if (!token) { notify("Unsupported token"); return; } // ← Guard moved here
 
   const ok = await ensureBSC();
+
   if (!ok) return;
 
   try {
