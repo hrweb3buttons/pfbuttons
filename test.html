@@ -739,8 +739,13 @@ function isMobileBrowser() {
 
   const notify = msg => {
   // 1. Audible Announcement
-  const announcer = document.getElementById("announcement-region");
-  announcer.textContent = ""; // Clear old message
+ const announcer = document.getElementById("announcement-region");
+if (announcer) {
+  announcer.textContent = "";
+  requestAnimationFrame(() => {
+    announcer.textContent = msg;
+  });
+}
 requestAnimationFrame(() => {
   announcer.textContent = msg;
 }); // Trigger new announcement
@@ -765,7 +770,7 @@ requestAnimationFrame(() => {
 async function connectWallet() {
   if (!window.ethereum) return notify("MetaMask not detected");
   try {
-    const accs = await ethereum.request({ method: "window.ethereum.request" });
+   const accs = await ethereum.request({ method: "eth_requestAccounts" });
     provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     const btn = document.getElementById("connectWallet");
