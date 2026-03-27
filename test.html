@@ -228,7 +228,6 @@ color: var(--text);
     #donateUSDT { background-color: #26a17b;
     color: #000;
 }
-    #donatePML { background-color: #008cff; }
 
 button.donate-more {
   background-color: var(--card-bg) !important;
@@ -551,15 +550,17 @@ button.donate-more {
     <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
     <label><input type="radio" name="targetToken" value="PML"> PML</label>
 </fieldset>
-        
-  <div style="margin-bottom: 1rem;">
+
+  <!-- FIX #6: Added id="calcPriceRow" and id="calcAmountRow" to avoid fragile
+       parentElement.parentElement traversal in setMode() and resetCalculator() -->
+  <div id="calcPriceRow" style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
      <input id="calcPrice" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
 
-  <div style="margin-bottom: 1rem;">
+  <div id="calcAmountRow" style="margin-bottom: 1rem;">
     <label>
       <strong>Token Amount</strong><br>
       <input id="calcAmount" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
@@ -571,7 +572,34 @@ button.donate-more {
 <button id="calcReset" type="button" class="donate-more">Reset</button>
 </div>
 
-        <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
+  <!-- FIX #2 (HTML): Restructured community calculator so each result div sits
+       directly under the label for the operation that produces it.
+       Removed resultMultiply2 entirely — it was a duplicate of resultFinal. -->
+  <div id="communityContainer" style="display:none; margin-top:1rem;">
+
+    <div style="margin-bottom:1rem;">
+      <label>
+        <strong>Your PML Amount</strong><br>
+        <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;">
+      </label>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <strong>Divisor</strong><br>5
+      <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <strong>Multiplier</strong><br>1,000,000,000
+      <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <strong>Final Multiplier</strong><br>$1,000
+      <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div>
+    </div>
+
+  </div>
 
   <div id="calcAlert" role="alert" style="display:none;"></div>
   <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
@@ -747,16 +775,14 @@ if (announcer) {
   });
 }
 
-  // 2. Visual Toast (Your existing logic, slightly refined)
+  // 2. Visual Toast
   const n = document.createElement("div");
   n.className = "notify";
   n.textContent = msg;
-  // Ensure the visual toast also has accessibility markers
   n.setAttribute("role", "alert"); 
   
   document.body.appendChild(n);
   
-  // Keep it visible slightly longer for cognitive accessibility
   setTimeout(() => {
     n.style.opacity = "0";
     n.style.transition = "opacity 0.5s ease";
@@ -764,10 +790,12 @@ if (announcer) {
   }, 5000);
 };
 
+// FIX #4: Changed bare `ethereum` to `window.ethereum` for consistency
+// and to prevent ReferenceError in strict/non-browser contexts.
 async function connectWallet() {
   if (!window.ethereum) return notify("MetaMask not detected");
   try {
-   const accs = await ethereum.request({ method: "eth_requestAccounts" });
+    const accs = await window.ethereum.request({ method: "eth_requestAccounts" });
     provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     const btn = document.getElementById("connectWallet");
@@ -784,20 +812,26 @@ async function connectWallet() {
 }
 
    
-
+// FIX #9: Removed redundant .catch(() => null) inside Promise.allSettled.
+// Previously both were present: .catch converted all rejections to resolved-null,
+// so allSettled could no longer distinguish failures from successes.
+// Now allSettled handles rejections directly as intended.
         async function addAllTokens() {
         if (!window.ethereum) { notify("MetaMask not detected"); return; }
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
-        const requests = tokens.map(t =>
-           window.ethereum.request({
-            method: "wallet_watchAsset",
-            params: { type: "ERC20", options: t }
-          }).catch(() => null)
+        await Promise.allSettled(
+          tokens.map(t =>
+            window.ethereum.request({
+              method: "wallet_watchAsset",
+              params: { type: "ERC20", options: t }
+            })
+          )
         );
-        await Promise.allSettled(requests);
         notify("Finished suggesting tokens");
       }
 
+// FIX #5: Changed hardcoded "0x38" to CONFIG.chainHex so switchRPC stays in
+// sync with the rest of the config if the chain ID is ever updated.
 async function switchRPC(url, name) {
   if (!APPROVED_RPCS.has(url)) {
   notify("Unapproved RPC");
@@ -809,7 +843,7 @@ async function switchRPC(url, name) {
     return;
   }
 
-  const chainId = "0x38";
+  const chainId = CONFIG.chainHex;
 
   try {
     await window.ethereum.request({
@@ -835,7 +869,47 @@ async function switchRPC(url, name) {
 }
 
 
+// FIX #1: Extracted normalizeNumberString() so donation functions can pass the
+// cleaned string directly to ethers.parseEther / ethers.parseUnits, avoiding
+// the float -> toFixed(18) precision loss (e.g. (0.1).toFixed(18) produces
+// "0.100000000000000006" which results in an off-by-a-few-wei transaction).
+// parseLocalizedNumber() now delegates to this same function for consistency.
+function normalizeNumberString(value) {
+  if (!value) return null;
 
+  let normalized = value.trim().replace(/\s/g, "");
+
+  const lastComma = normalized.lastIndexOf(",");
+  const lastDot   = normalized.lastIndexOf(".");
+
+  if (lastComma !== -1 && lastDot !== -1) {
+    if (lastDot > lastComma) {
+      // 1,234,567.89
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1.234.567,89
+      normalized = normalized.replace(/\./g, "");
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastComma !== -1) {
+    const commaCount = (normalized.match(/,/g) || []).length;
+    if (commaCount > 1) {
+      // 1,234,567
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1000,50
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastDot !== -1) {
+    const dotCount = (normalized.match(/\./g) || []).length;
+    if (dotCount > 1) {
+      // 1.234.567
+      normalized = normalized.replace(/\./g, "");
+    }
+  }
+
+  return normalized;
+}
 
 let pendingDonation = null;
 let donateCallerBtn = null;
@@ -859,20 +933,24 @@ function closeDonateForm() {
   }
 }
 
+// FIX #1 (continued): donateConfirm now passes the normalized string to the
+// callback instead of a parsed float, preserving full decimal precision for
+// ethers.parseEther / ethers.parseUnits.
 document.getElementById("donateConfirm").onclick = async () => {
   const raw = document.getElementById("donateAmount").value;
-  const amt = parseLocalizedNumber(raw);
+  const normalized = normalizeNumberString(raw);
+  const amt = normalized ? parseFloat(normalized) : NaN;
   if (!amt || amt <= 0) {
     notify("Please enter a valid amount.");
     return;
   }
   if (amt > 1_000_000) {
-  notify("Amount too large");
-  return;
-}
+    notify("Amount too large");
+    return;
+  }
   const callback = pendingDonation; // capture before closeDonateForm nulls it
   closeDonateForm();
-  if (callback) await callback(amt);
+  if (callback) await callback(normalized); // pass the string, not the float
 };
 document.getElementById("donateCancel").onclick = closeDonateForm;
 
@@ -909,15 +987,12 @@ async function ensureBSC() {
         params: [{ chainId: CONFIG.chainHex }]
       });
 
-      // Re-check after switch
-      const updatedNetwork = await provider.getNetwork();
-
-      if (Number(updatedNetwork.chainId) === CONFIG.chainId) {
-        return true;
-      }
-
-      notify("Please switch to BNB Smart Chain");
-      return false;
+      // FIX #8: Removed the dead re-check that followed wallet_switchEthereumChain.
+      // The chainChanged listener at the top of the file calls location.reload()
+      // on a successful switch, so JS execution never reaches any code after the
+      // await above. The re-check and the notify/return-false path below it were
+      // both unreachable dead code.
+      return true;
 
     } catch (switchError) {
 
@@ -983,7 +1058,9 @@ async function ensureBSC() {
 }
 
       
-      async function donateBNB(amt) {
+// FIX #1 (continued): donateBNB now accepts a normalized decimal string and
+// passes it directly to ethers.parseEther, avoiding float precision loss.
+async function donateBNB(amtStr) {
 
   if (!window.ethereum) {
     notify("MetaMask not detected");
@@ -995,7 +1072,7 @@ async function ensureBSC() {
     return;
   }
 
-  if (!amt || amt <= 0) {
+  if (!amtStr || parseFloat(amtStr) <= 0) {
     notify("Enter a valid amount");
     return;
   }
@@ -1011,7 +1088,7 @@ async function ensureBSC() {
 
   try {
 
-    const value = ethers.parseEther(amt.toFixed(18).replace(/\.?0+$/, ""));
+    const value = ethers.parseEther(amtStr);
 
     await signer.sendTransaction({
       to: CONFIG.donationWallet,
@@ -1032,14 +1109,16 @@ async function ensureBSC() {
    Donations: Tokens
 =========================== */
 
-async function donateToken(symbol, amt) {
+// FIX #1 (continued): donateToken now accepts a normalized decimal string and
+// passes it directly to ethers.parseUnits, avoiding float precision loss.
+async function donateToken(symbol, amtStr) {
   if (!window.ethereum) { notify("MetaMask not detected"); return; }
   if (!signer) { notify("Please connect your wallet"); return; }
-  if (!amt || amt <= 0) { notify("Enter a valid amount"); return; }
+  if (!amtStr || parseFloat(amtStr) <= 0) { notify("Enter a valid amount"); return; }
   if (!ethers.isAddress(CONFIG.donationWallet)) { notify("Configuration error"); return; }
 
   const token = CONFIG.tokens[symbol];
-  if (!token) { notify("Unsupported token"); return; } // ← Guard moved here
+  if (!token) { notify("Unsupported token"); return; }
 
   const ok = await ensureBSC();
 
@@ -1053,10 +1132,7 @@ async function donateToken(symbol, amt) {
       signer
     );
 
-    const value = ethers.parseUnits(
-      amt.toFixed(18).replace(/\.?0+$/, ""),
-      token.decimals
-    );
+    const value = ethers.parseUnits(amtStr, token.decimals);
 
     await contract.transfer(
       CONFIG.donationWallet,
@@ -1073,15 +1149,22 @@ async function donateToken(symbol, amt) {
   }
 }
 
+// FIX #3: Added r.ok check to the BNB price fetch, matching the pattern
+// already used correctly in the PML fetch below it.
 async function fetchPrices() {
   try {
-    const bnb = await fetch(
+    const res = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
-    ).then(r => r.json());
-     
+    );
 
+    if (!res.ok) {
+      throw new Error("CoinGecko response not OK: " + res.status);
+    }
+
+    const bnb = await res.json();
+    const price = bnb?.binancecoin?.usd;
     document.getElementById("bnbPrice").textContent =
-      bnb.binancecoin.usd.toFixed(2);
+      price != null ? price.toFixed(2) : "--";
 
   } catch (err) {
     console.error("BNB price fetch failed:", err);
@@ -1123,8 +1206,6 @@ document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rp
 document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
 
 
-
-
 const donateBNBBtn = document.getElementById("donateBNB");
 if (donateBNBBtn) {
   donateBNBBtn.onclick = (e) =>
@@ -1134,14 +1215,12 @@ if (donateBNBBtn) {
 const donateUSDTBtn = document.getElementById("donateUSDT");
 if (donateUSDTBtn) {
   donateUSDTBtn.onclick = (e) =>
-    openDonateForm("USDT", e.target, (amt) => donateToken("USDT", amt));
+    openDonateForm("USDT", e.target, (amtStr) => donateToken("USDT", amtStr));
 }
-    
-const donatePMLBtn = document.getElementById("donatePML");
-if (donatePMLBtn) {
-  donatePMLBtn.onclick = (e) =>
-    openDonateForm("PML", e.target, (amt) => donateToken("PML", amt));
-}
+
+// FIX #7: Removed donatePML button wiring. PML donations have been suspended
+// per community guidance. The button was already absent from the HTML on this
+// page; the JS wiring is removed here for clarity.
 
 fetchPrices();
 
@@ -1201,7 +1280,7 @@ container.appendChild(stepsList);
 
 tokens.forEach(token => {
   const row = document.createElement("div");
-  row.style.marginBottom = "12px"; // Increased spacing for touch targets
+  row.style.marginBottom = "12px";
 
   const label = document.createElement("strong");
   label.textContent = token.symbol + ": ";
@@ -1209,15 +1288,12 @@ tokens.forEach(token => {
 
   const addr = document.createElement("span");
   addr.textContent = token.address;
-  addr.style.wordBreak = "break-all"; // Prevention for layout breaking
+  addr.style.wordBreak = "break-all";
   row.appendChild(addr);
 
   const copyBtn = document.createElement("button");
   copyBtn.textContent = "Copy";
-  
-  // ACCESSIBILITY UPGRADE: Descriptive label for screen readers
   copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
-  
   copyBtn.style.marginLeft = "10px";
 copyBtn.onclick = async () => {
   try {
@@ -1264,12 +1340,18 @@ const calcButton = document.getElementById("calcButton");
 const calcResult = document.getElementById("calcResult");
 const calcAlert = document.getElementById("calcAlert");
 
+// FIX #6: Referenced by ID instead of fragile parentElement.parentElement chains.
+const calcPriceRow = document.getElementById("calcPriceRow");
+const calcAmountRow = document.getElementById("calcAmountRow");
+
 function clearCalcOutput() {
   calcResult.textContent = "";
   calcAlert.style.display = "none";
   calcAlert.textContent = "";
 }
 
+// FIX #6 (continued): setMode now uses calcPriceRow / calcAmountRow IDs
+// instead of priceInput.parentElement.parentElement.
 function setMode(mode) {
 clearCalcOutput();
 priceInput.value = "";
@@ -1278,27 +1360,26 @@ communityPml.value = "";
 
 resultDivide.textContent = "";
 resultMultiply1.textContent = "";
-resultMultiply2.textContent = "";
 resultFinal.textContent = "";
 
 if (mode === "target") {
 targetSelector.style.display = "block";
 priceInput.readOnly = true;
-priceInput.parentElement.parentElement.style.display = "block";
-amountInput.parentElement.parentElement.style.display = "block";
+calcPriceRow.style.display = "block";
+calcAmountRow.style.display = "block";
 communityContainer.style.display = "none";
 
 } else if (mode === "community") {
 targetSelector.style.display = "none";
-priceInput.parentElement.parentElement.style.display = "none";
-amountInput.parentElement.parentElement.style.display = "none";
+calcPriceRow.style.display = "none";
+calcAmountRow.style.display = "none";
 communityContainer.style.display = "block";
 
 } else {
 targetSelector.style.display = "none";
 priceInput.readOnly = false;
-priceInput.parentElement.parentElement.style.display = "block";
-amountInput.parentElement.parentElement.style.display = "block";
+calcPriceRow.style.display = "block";
+calcAmountRow.style.display = "block";
 communityContainer.style.display = "none";
 }
 }
@@ -1317,43 +1398,11 @@ tokenRadios.forEach(radio => {
   });
 });
 
+// parseLocalizedNumber now delegates to normalizeNumberString for consistency
+// with the donation flow (FIX #1).
 function parseLocalizedNumber(value) {
-  if (!value) return NaN;
-
-  let normalized = value.trim();
-  normalized = normalized.replace(/\s/g, "");
-
-  const lastComma = normalized.lastIndexOf(",");
-  const lastDot = normalized.lastIndexOf(".");
-
-  if (lastComma !== -1 && lastDot !== -1) {
-    if (lastDot > lastComma) {
-      // 1,234,567.89
-      normalized = normalized.replace(/,/g, "");
-    } else {
-      // 1.234.567,89
-      normalized = normalized.replace(/\./g, "");
-      normalized = normalized.replace(",", ".");
-    }
-  } else if (lastComma !== -1) {
-    const commaCount = (normalized.match(/,/g) || []).length;
-
-    if (commaCount > 1) {
-      // 1,234,567
-      normalized = normalized.replace(/,/g, "");
-    } else {
-      // 1000,50
-      normalized = normalized.replace(",", ".");
-    }
-  } else if (lastDot !== -1) {
-    const dotCount = (normalized.match(/\./g) || []).length;
-
-    if (dotCount > 1) {
-      // 1.234.567
-      normalized = normalized.replace(/\./g, "");
-    }
-  }
-
+  const normalized = normalizeNumberString(value);
+  if (!normalized) return NaN;
   return parseFloat(normalized);
 }
 
@@ -1393,6 +1442,10 @@ formatOnBlur(amountInput);
 calcButton.addEventListener("click", () => {
   const selectedMode = document.querySelector('input[name="calcMode"]:checked').value;
 
+// FIX #2 (JS): Community calculator now shows each step result under the
+// correct label. resultMultiply2 has been removed (it was a duplicate of
+// resultFinal). Results are now: resultDivide → step1, resultMultiply1 →
+// step2, resultFinal → step3 — matching the restructured HTML above.
 if (selectedMode === "community") {
 clearCalcOutput();
 const pmlAmount = parseLocalizedNumber(communityPml.value);
@@ -1415,13 +1468,6 @@ resultMultiply1.textContent =
 "After multiplying by 1,000,000,000: " +
 new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step2);
 
-resultMultiply2.textContent =
-"After multiplying by $1,000: $" +
-new Intl.NumberFormat(navigator.language, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-}).format(step3);
-
 resultFinal.textContent =
 "Final value: $" +
 new Intl.NumberFormat(navigator.language, {
@@ -1436,9 +1482,6 @@ return;
 
 const price = parseLocalizedNumber(priceInput.value);
 const amount = parseLocalizedNumber(amountInput.value);
-
-
-
 
 
  if (isNaN(price) || price <= 0)
@@ -1470,6 +1513,8 @@ const amount = parseLocalizedNumber(amountInput.value);
 
 const calcReset = document.getElementById("calcReset");
 
+// FIX #6 (continued): resetCalculator also uses IDs instead of
+// parentElement.parentElement.
 function resetCalculator() {
   clearCalcOutput();
 
@@ -1479,7 +1524,6 @@ function resetCalculator() {
 
   resultDivide.textContent = "";
   resultMultiply1.textContent = "";
-  resultMultiply2.textContent = "";
   resultFinal.textContent = "";
 
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
@@ -1487,8 +1531,8 @@ function resetCalculator() {
   targetSelector.style.display = "none";
   priceInput.readOnly = false;
 
-  priceInput.parentElement.parentElement.style.display = "block";
-  amountInput.parentElement.parentElement.style.display = "block";
+  calcPriceRow.style.display = "block";
+  calcAmountRow.style.display = "block";
   communityContainer.style.display = "none";
 
   tokenRadios.forEach(r => r.checked = false);
@@ -1498,7 +1542,6 @@ function resetCalculator() {
 const communityPml = document.getElementById("communityPml");
 const resultDivide = document.getElementById("resultDivide");
 const resultMultiply1 = document.getElementById("resultMultiply1");
-const resultMultiply2 = document.getElementById("resultMultiply2");
 const resultFinal = document.getElementById("resultFinal");
       sanitizeInputField(communityPml);
 formatOnBlur(communityPml);
@@ -1531,8 +1574,8 @@ if (swapButtonsContainer) {
       copyBtn.style.marginLeft = "10px";
 copyBtn.onclick = async () => {
   try {
-    await navigator.clipboard.writeText(url);            // ✅ url from forEach
-    notify(`${symbol} swap link copied`);                // ✅ symbol from forEach
+    await navigator.clipboard.writeText(url);
+    notify(`${symbol} swap link copied`);
   } catch (err) {
     notify("Copy failed — please copy manually");
     console.error("Clipboard write failed:", err);
