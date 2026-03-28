@@ -240,17 +240,6 @@ button.donate-more {
 
     :root.dark .donate-more:hover {
       background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    #wallet-connect {
-      position: fixed;
-      top: 16px;
-      left: 16px;
-      display: flex;
-      gap: 12px;
-      z-index: 9999;
-      flex-wrap: wrap;
-    }
 
     
 
@@ -275,11 +264,10 @@ button.donate-more {
       z-index: 99999;
     }
 
-    #site-nav {
-  position: fixed;
-  top: 90px;
-  left: 16px;
-  z-index: 9999;
+#wallet-connect,
+#site-nav {
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #pageSelector {
