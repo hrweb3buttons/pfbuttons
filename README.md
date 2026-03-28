@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -182,10 +183,10 @@ button {
   border: 1px solid var(--border);
 }
 
-    
 main {
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  max-width: 720px;
+  margin: 2rem auto;
 }
  
     h1, h2 {
@@ -240,6 +241,17 @@ button.donate-more {
 
     :root.dark .donate-more:hover {
       background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    #wallet-connect {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      gap: 12px;
+      z-index: 9999;
+      flex-wrap: wrap;
+    }
 
     
 
@@ -264,10 +276,11 @@ button.donate-more {
       z-index: 99999;
     }
 
-#wallet-connect,
-#site-nav {
-  left: 50%;
-  transform: translateX(-50%);
+    #site-nav {
+  position: fixed;
+  top: 90px;
+  left: 16px;
+  z-index: 9999;
 }
 
 #pageSelector {
@@ -326,7 +339,7 @@ button.donate-more {
 <option value="donations.html">Donation Options</option>
 <option value="cryptodirectory.html">Crypto Directory</option>
 <option value="terms.html">Terms of Use</option>
-<option value="privacy.html">Privacy Policy  
+<option value="privacy.html">Privacy Policy</option>  
 </select>
 
 </nav>
