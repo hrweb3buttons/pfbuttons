@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Privacy Policy | Unofficial Pool Funding Web3 Tools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Privacy Policy for the Unofficial Pool Funding Web3 Tools site, maintained by Hunter Rodriguez.">
+  <style>
+
+    :root {
+      --background: #ffffff;
+      --text: #111111;
+      --text-muted: #555555;
+      --card-bg: #f5f5f5;
+      --border: #dddddd;
+      --primary: #004aab;
+      --focus-ring: #ff9500;
+      --radius: 6px;
+    }
+
+    :root.dark {
+      --background: #0f141a;
+      --text: #f0f4f8;
+      --text-muted: #b0b8c4;
+      --card-bg: #1a2230;
+      --border: #2e3d52;
+      --primary: #a3d1ff;
+    }
+
+    body {
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: var(--text);
+      background-color: var(--background);
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      z-index: 10000;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 0 0 var(--radius) var(--radius);
+      transition: top 0.2s ease;
+      border: 2px solid var(--focus-ring);
+    }
+
+    .skip-link:focus {
+      top: 0;
+      outline: none;
+    }
+
+    h1, h2 {
+      line-height: 1.25;
+    }
+
+    h1 {
+      margin-bottom: 0.5em;
+    }
+
+    h2 {
+      margin-top: 1.8em;
+    }
+
+    h3 {
+      margin-top: 1.2em;
+      margin-bottom: 0.4em;
+    }
+
+    .summary {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
+    .summary p {
+      margin: 0 0 12px 0;
+    }
+
+    .summary p:last-child {
+      margin-bottom: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--card-bg);
+      font-weight: 600;
+    }
+
+    a {
+      color: var(--primary);
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    button:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 2rem 0;
+    }
+
+  </style>
+</head>
+<body>
+
+<button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false"
+        style="position:fixed; top:12px; right:12px; z-index:9999;
+               background:var(--card-bg); color:var(--text);
+               border:1px solid var(--border); border-radius:var(--radius);
+               padding:0.45rem 0.8rem; cursor:pointer; font-weight:500;">
+  Dark mode
+</button>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<main id="main-content" tabindex="-1">
+
+  <h1>Privacy Policy</h1>
+  <p style="color:var(--text-muted); font-size:0.9rem;">Version 1.0 &mdash; Last Updated: March 27, 2026</p>
+
+  <nav aria-labelledby="toc-heading">
+    <h2 id="toc-heading">Table of Contents</h2>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#controller">Data Controller</a></li>
+      <li><a href="#what-we-do-not-collect">What This Site Does Not Collect</a></li>
+      <li><a href="#local-storage">Local Browser Storage</a></li>
+      <li><a href="#technical-reads">Client-Side Technical Reads</a></li>
+      <li><a href="#wallet-data">Wallet Addresses and Blockchain Data</a></li>
+      <li><a href="#third-party-data">Third Party Data Processing</a></li>
+      <li><a href="#external-links">External Links and Redirects</a></li>
+      <li><a href="#children">Children's Privacy</a></li>
+      <li><a href="#gdpr">Rights Under the GDPR and Similar Laws</a></li>
+      <li><a href="#international-transfers">International Data Transfers</a></li>
+      <li><a href="#retention">Data Retention</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#changes">Changes to This Policy</a></li>
+      <li><a href="#governing-law">Governing Law</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="summary">
+    <h2>Plain English Summary</h2>
+    <p>This site does not have a backend, does not run a database, and does not collect your name, email address, or any other personal information.</p>
+    <p>The only thing stored on your device is your dark mode preference, saved in your browser's local storage. No tracking cookies are set.</p>
+    <p>When your browser loads the page, it fetches live token prices from CoinGecko and GeckoTerminal, and loads a JavaScript library from jsDelivr. Those services receive your IP address as part of how the internet works. This site does not control that.</p>
+    <p>Wallet interactions — connecting MetaMask, approving transactions, switching networks — happen entirely inside your wallet software. This site never sees your private keys, seed phrase, or wallet credentials.</p>
+    <p>Blockchain transactions you broadcast are public by nature and permanently recorded on-chain. That is inherent to how blockchain works and is unrelated to this site's data practices.</p>
+    <p>GitHub Pages, which hosts this site, may log server-side access data such as IP addresses. That is governed by GitHub's own privacy policy.</p>
+    <p>The full policy below explains everything in detail.</p>
+  </div>
+
+  <p>This Privacy Policy describes how the Unofficial Pool Funding Web3 Tools website (the "Site") handles information in connection with your use of its tools, interfaces, and documentation.</p>
+
+  <p>This policy applies to all pages and tools hosted under this project. It should be read alongside the <a href="terms.html">Terms of Use</a>, which governs your use of the Site.</p>
+
+  <p>By using this Site, you acknowledge that you have read and understood this Privacy Policy.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="overview">Overview</h2>
+
+  <p>This Site is a static, client-side web application hosted on GitHub Pages. It has no server-side application layer, no database, no user accounts, no registration system, and no backend infrastructure operated by the maintainer.</p>
+
+  <p>As a result, the maintainer does not directly collect, store, or process personal information about users of this Site. However, certain third party services that this Site depends on for its operation may process technical data, including IP addresses, as a normal function of delivering content over the internet. Those services and their data practices are described in detail below.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="controller">Data Controller</h2>
+
+  <p>For the limited purposes for which any personal data may be considered to be processed in connection with this Site, the data controller is:</p>
+
+  <p><strong>Hunter Rodriguez</strong><br>
+  Maintainer, Unofficial Pool Funding Web3 Tools<br>
+  Contact: Via GitHub repository (see <a href="#contact">Contact</a> section below)</p>
+
+  <p>Because this Site does not operate a backend or collect personal data directly, the maintainer's role as a data controller is limited primarily to the Site's design choices regarding which third party services are embedded or relied upon. Each third party service identified in this policy operates as an independent data controller for its own data processing activities.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="what-we-do-not-collect">What This Site Does Not Collect</h2>
+
+  <p>The following types of data are <strong>not</strong> collected, stored, or transmitted to the maintainer by this Site:</p>
+
+  <ul>
+    <li>Names, email addresses, phone numbers, or any other contact information</li>
+    <li>Account credentials of any kind</li>
+    <li>Wallet private keys, seed phrases, or mnemonics</li>
+    <li>Precise geolocation data</li>
+    <li>Payment card information</li>
+    <li>Behavioral tracking data or cross-site tracking profiles</li>
+    <li>Form submissions containing personal information (this Site has no such forms)</li>
+  </ul>
+
+  <p>This Site does not use advertising networks, behavioral analytics platforms, session replay tools, heatmapping services, or fingerprinting technologies.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="local-storage">Local Browser Storage</h2>
+
+  <p>This Site uses your browser's <code>localStorage</code> API for one purpose only: to remember your display preference between visits (light mode or dark mode). This preference is stored under the key <code>theme</code> with the value <code>"light"</code> or <code>"dark"</code>.</p>
+
+  <p>This data:</p>
+  <ul>
+    <li>Remains on your device and is never transmitted to any server by this Site</li>
+    <li>Contains no personally identifiable information</li>
+    <li>Is not used for tracking or analytics of any kind</li>
+    <li>Can be cleared at any time through your browser's settings</li>
+  </ul>
+
+  <p>This Site does not set any HTTP cookies. No cookie consent banner is required because no cookies are placed on your device by this Site's own code.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="technical-reads">Client-Side Technical Reads</h2>
+
+  <p>This Site reads certain browser-provided values client-side in order to function correctly. These reads occur entirely within your browser and the values are not transmitted to the maintainer. Specifically:</p>
+
+  <ul>
+    <li><strong>User Agent String (<code>navigator.userAgent</code>):</strong> Read once on page load to detect whether you are using a mobile browser. This is used to determine whether to display the automatic token-add button or the manual token address flow for MetaMask Mobile users. The value is not stored or sent anywhere by this Site.</li>
+    <li><strong>Browser Language (<code>navigator.language</code>):</strong> Read to format numbers in your locale's style within the token value calculator. Not stored or transmitted.</li>
+    <li><strong>Clipboard API (<code>navigator.clipboard</code>):</strong> Used to copy token contract addresses or swap links to your clipboard when you tap a Copy button. The data written is a public blockchain address or URL only. Nothing is read from your clipboard.</li>
+  </ul>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="wallet-data">Wallet Addresses and Blockchain Data</h2>
+
+  <p>Certain tools on this Site interact with MetaMask or other browser-based Web3 wallet extensions. The following applies to those interactions:</p>
+
+  <ul>
+    <li>This Site does not transmit wallet addresses, private keys, seed phrases, or any wallet credentials to the maintainer or any server controlled by the maintainer.</li>
+    <li>When you connect your wallet, your wallet's public address is displayed in the browser interface for your reference. It is not stored by this Site beyond the active browser session.</li>
+    <li>All transaction parameters generated by this Site (such as donation amounts or token transfer data) are passed locally to your wallet extension for your review and approval. The Site does not submit or broadcast any transaction on your behalf.</li>
+    <li>When you use the RPC switching tools, this Site calls MetaMask's standard <code>wallet_addEthereumChain</code> and <code>wallet_switchEthereumChain</code> methods. These calls go through your wallet extension. This Site does not communicate directly with RPC nodes during this process.</li>
+  </ul>
+
+  <p><strong>On-Chain Transparency:</strong> Blockchain transactions you approve and broadcast are recorded permanently and publicly on the BNB Smart Chain. This includes transaction amounts, wallet addresses, and timestamps. This is an inherent property of public blockchain networks and is entirely outside the control of this Site or its maintainer. You are solely responsible for understanding the privacy implications of any on-chain activity you initiate.</p>
+
+  <p><strong>Donation Wallet:</strong> The maintainer's donation wallet address is publicly disclosed in the Site's source code. Any donations you send to that address are permanently recorded on-chain and visible to anyone.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="third-party-data">Third Party Data Processing</h2>
+
+  <p>This Site relies on several third party services to function. Each of these services may process your IP address and other technical data as part of their normal operation. The maintainer does not control these services and is not responsible for their data practices. You are encouraged to review each service's own privacy policy.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Purpose</th>
+        <th>What May Be Processed</th>
+        <th>Their Privacy Policy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>GitHub Pages</strong> (GitHub, Inc.)</td>
+        <td>Hosts and serves this Site</td>
+        <td>IP address, HTTP request headers, browser type, pages accessed, timestamps</td>
+        <td><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a></td>
+      </tr>
+      <tr>
+        <td><strong>CoinGecko API</strong></td>
+        <td>Fetches live BNB price data</td>
+        <td>IP address, HTTP request metadata</td>
+        <td><a href="https://www.coingecko.com/en/privacy" target="_blank" rel="noopener noreferrer">CoinGecko Privacy Policy</a></td>
+      </tr>
+      <tr>
+        <td><strong>GeckoTerminal API</strong></td>
+        <td>Fetches live PML token price data</td>
+        <td>IP address, HTTP request metadata</td>
+        <td><a href="https://www.coingecko.com/en/privacy" target="_blank" rel="noopener noreferrer">CoinGecko / GeckoTerminal Privacy Policy</a></td>
+      </tr>
+      <tr>
+        <td><strong>jsDelivr CDN</strong></td>
+        <td>Delivers the ethers.js JavaScript library</td>
+        <td>IP address, HTTP request metadata, browser type</td>
+        <td><a href="https://www.jsdelivr.com/privacy-policy-jsdelivr-net" target="_blank" rel="noopener noreferrer">jsDelivr Privacy Policy</a></td>
+      </tr>
+      <tr>
+        <td><strong>pmlcoin.app</strong></td>
+        <td>Serves token logo images displayed in the Site's UI</td>
+        <td>IP address, HTTP request metadata</td>
+        <td>Refer to that site's privacy policy if available</td>
+      </tr>
+      <tr>
+        <td><strong>cryptologos.cc</strong></td>
+        <td>Serves the USDT logo image</td>
+        <td>IP address, HTTP request metadata</td>
+        <td><a href="https://cryptologos.cc" target="_blank" rel="noopener noreferrer">cryptologos.cc</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Price data is fetched automatically when the page loads. No user action is required to trigger these requests. This means that simply visiting the Site will result in your browser making requests to CoinGecko's API, GeckoTerminal's API, and jsDelivr's CDN, each of which may log your IP address.</p>
+
+  <h3>RPC Providers</h3>
+
+  <p>When you use the RPC switching tool and approve the MetaMask prompt, MetaMask registers a new RPC endpoint with your wallet. Thereafter, when your wallet communicates with the BNB Smart Chain through that endpoint, your IP address and transaction requests will be processed by the RPC provider's infrastructure. This communication occurs between your wallet and the RPC provider directly — it does not pass through this Site. The RPC providers made available through this Site include LlamaRPC, PublicNode, Blockrazor, BLXR, dRPC, PublicNodies, 1RPC, SubQuery, and NowNodes. Each operates independently and is governed by its own terms and privacy policy.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="external-links">External Links and Redirects</h2>
+
+  <p>This Site contains links and buttons that open external websites in a new tab, including ApeSpace, BscScan, PancakeSwap, Google Drive, and GitHub. When you navigate to these sites, you leave this Site entirely. The maintainer has no control over, and no responsibility for, the data practices of any external site. Your use of those sites is governed solely by their own terms and privacy policies.</p>
+
+  <p>All external links are opened with <code>noopener noreferrer</code> attributes to prevent the destination site from accessing this page's context and to avoid passing the HTTP referrer header where supported.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="children">Children's Privacy</h2>
+
+  <p>This Site is intended for users who are at least 18 years of age, as stated in the Terms of Use. This Site does not knowingly collect personal information from anyone under the age of 18. If you believe a minor has provided personal information in connection with this Site, please contact the maintainer using the information in the Contact section below.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="gdpr">Rights Under the GDPR and Similar Laws</h2>
+
+  <p>This section applies to individuals located in the European Economic Area (EEA), the United Kingdom, and other jurisdictions with comprehensive data protection laws such as Brazil's LGPD, Canada's PIPEDA, and California's CCPA/CPRA.</p>
+
+  <p>Because this Site does not directly collect or store personal data, the maintainer generally cannot fulfill data subject rights requests that presuppose the existence of stored personal data (such as access, correction, or deletion requests) with respect to information this Site itself holds — because no such information exists in the maintainer's possession.</p>
+
+  <p>For data processed by third party services (such as GitHub, CoinGecko, or jsDelivr), you must submit your request directly to those services, as they are the independent data controllers for that data.</p>
+
+  <p>Nonetheless, to the extent any rights apply, users in applicable jurisdictions may have the following rights:</p>
+
+  <ul>
+    <li><strong>Right of Access:</strong> The right to request information about personal data processed about you.</li>
+    <li><strong>Right to Rectification:</strong> The right to request correction of inaccurate personal data.</li>
+    <li><strong>Right to Erasure:</strong> The right to request deletion of personal data under certain circumstances.</li>
+    <li><strong>Right to Restriction of Processing:</strong> The right to request that processing be limited in certain circumstances.</li>
+    <li><strong>Right to Data Portability:</strong> The right to receive personal data in a structured, machine-readable format.</li>
+    <li><strong>Right to Object:</strong> The right to object to processing based on legitimate interests.</li>
+    <li><strong>Right to Withdraw Consent:</strong> Where processing is based on consent, the right to withdraw consent at any time without affecting the lawfulness of prior processing.</li>
+    <li><strong>Right to Lodge a Complaint:</strong> The right to lodge a complaint with your local data protection supervisory authority.</li>
+  </ul>
+
+  <p>To the extent that any processing of personal data by this Site is subject to the GDPR, the legal basis for such processing is <strong>legitimate interests</strong> (Article 6(1)(f) GDPR): specifically, the legitimate interest in making the Site's tools available and functional to users, which requires the loading of third party scripts and the fetching of price data. The maintainer has assessed that this interest is not overridden by the interests or fundamental rights of users, given the minimal and technical nature of the data involved, the absence of tracking, and the absence of any profiling.</p>
+
+  <p>To exercise any applicable rights, or for questions regarding data protection, please use the contact information in the <a href="#contact">Contact</a> section below.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="international-transfers">International Data Transfers</h2>
+
+  <p>This Site is hosted by GitHub Pages, a service operated by GitHub, Inc., which is based in the United States. When your browser accesses this Site, your technical data (such as your IP address) may be transferred to and processed in the United States and other countries where GitHub and its infrastructure partners operate.</p>
+
+  <p>Similarly, CoinGecko, GeckoTerminal, and jsDelivr may process requests from their respective infrastructure locations, which may be outside your country of residence.</p>
+
+  <p>The maintainer has no direct control over the international transfer practices of these third party services. You are encouraged to review the privacy policies of those services for information on their data transfer safeguards.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="retention">Data Retention</h2>
+
+  <p>This Site does not retain personal data on behalf of the maintainer. The only data stored on your device is the dark mode preference in <code>localStorage</code>, which persists until you clear your browser data or change the setting.</p>
+
+  <p>Data retained by third party services (such as GitHub server logs) is subject to those services' own retention policies.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="security">Security</h2>
+
+  <p>This Site implements a Content Security Policy (CSP) header that restricts which external domains the browser is permitted to load resources from or connect to. This is designed to reduce the risk of unauthorized script injection or data exfiltration.</p>
+
+  <p>The Site loads its JavaScript library (ethers.js) from jsDelivr with a Subresource Integrity (SRI) hash, ensuring that the script cannot be silently modified or tampered with by the CDN without detection.</p>
+
+  <p>However, no security measure is perfect. The maintainer makes no warranty that the Site is free from vulnerabilities. Your device, browser, wallet software, and network connection each carry their own security considerations that are outside the scope of this Site.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="changes">Changes to This Policy</h2>
+
+  <p>This Privacy Policy may be updated from time to time. The version number and date at the top of this page reflect the most recent revision. Material changes will be noted where possible. Continued use of the Site after any update constitutes your acceptance of the revised policy. If you do not agree with a revised policy, you must discontinue use of the Site.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="governing-law">Governing Law</h2>
+
+  <p>This Privacy Policy is governed by and construed in accordance with the laws of the Republic of Panama, without regard to its conflict of law principles, consistent with the governing law provisions of the <a href="terms.html">Terms of Use</a>.</p>
+
+  <p>Nothing in this Privacy Policy limits any rights you may have under mandatory data protection laws applicable in your jurisdiction, including the GDPR where applicable.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="contact">Contact</h2>
+
+  <p>This Site is independently maintained by Hunter Rodriguez.</p>
+
+  <p>For questions or concerns about this Privacy Policy, data protection inquiries, or to exercise any applicable data subject rights, please use the project's GitHub repository as the designated contact channel.</p>
+
+  <ul>
+    <li><a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+  </ul>
+
+  <p>For formal legal notices, please refer to the contact procedures described in the <a href="terms.html">Terms of Use</a>.</p>
+
+</main>
+
+<footer aria-label="Site footer">
+  &copy; 2026 Hunter Rodriguez |
+  <a href="https://hrweb3buttons.github.io/pfbuttons/">Main Tools</a> |
+  <a href="terms.html">Terms of Use</a> |
+  <a href="privacy.html">Privacy Policy</a> |
+  <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">
+    View on GitHub
+  </a>
+</footer>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.getElementById("themeToggle");
+
+  if (localStorage.getItem("theme") === "dark") {
+    root.classList.add("dark");
+    toggle.textContent = "Light mode";
+    toggle.setAttribute("aria-pressed", "true");
+  }
+
+  toggle.onclick = () => {
+    root.classList.toggle("dark");
+    const dark = root.classList.contains("dark");
+    localStorage.setItem("theme", dark ? "dark" : "light");
+    toggle.textContent = dark ? "Light mode" : "Dark mode";
+    toggle.setAttribute("aria-pressed", String(dark));
+  };
+</script>
+
+</body>
+</html>
