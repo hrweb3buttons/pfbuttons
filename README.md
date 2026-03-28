@@ -182,6 +182,10 @@ button {
   border: 1px solid var(--border);
 }
 
+body {
+  display: flex;
+  justify-content: center;
+    
 main {
   width: 100%;
   max-width: 720px;
