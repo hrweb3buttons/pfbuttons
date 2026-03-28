@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  connect-src 'self' https://bsc-dataseed.binance.org https://rpc.ankr.com;
+  style-src 'self' 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PF Web3 Tools — Lite</title>
+<meta name="description" content="Lightweight Pool Funding Web3 tools for low-bandwidth and low-end devices.">
+
+<style>
+:root {
+  --bg: #f5f5f5;
+  --text: #111111;
+  --muted: #444444;
+  --border: #999999;
+  --accent: #004aab;
+  --btn-text: #ffffff;
+  --card-bg: #ffffff;
+  --focus: #ff9500;
+  --error: #b00020;
+}
+
+:root.dark {
+  --bg: #111111;
+  --text: #eeeeee;
+  --muted: #aaaaaa;
+  --border: #444444;
+  --accent: #a3d1ff;
+  --btn-text: #111111;
+  --card-bg: #1a1a1a;
+  --focus: #ff9500;
+  --error: #ff6b6b;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: ui-monospace, 'Cascadia Code', 'Menlo', 'Consolas', monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--btn-text);
+  padding: 0.75rem 1.5rem;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: bold;
+}
+.skip-link:focus { top: 0; outline: none; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+header span {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+main {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+main:focus { outline: none; }
+
+section {
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background: var(--card-bg);
+}
+
+h1 { font-size: 1.15rem; margin: 0 0 0.5rem 0; }
+h2 { font-size: 1rem; margin: 0 0 0.75rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+h3 { font-size: 0.95rem; margin: 1rem 0 0.5rem 0; }
+
+p { margin: 0.5rem 0; font-size: 0.9rem; color: var(--muted); }
+
+button {
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  padding: 0.5rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover { opacity: 0.85; }
+
+button.secondary {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+button.secondary:hover { background: var(--border); }
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  margin-top: 0.25rem;
+}
+
+label { font-size: 0.9rem; }
+
+fieldset { border: none; padding: 0; margin: 0 0 0.75rem 0; }
+legend { font-size: 0.9rem; font-weight: bold; margin-bottom: 0.4rem; }
+
+.radio-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.radio-row label { display: flex; align-items: center; gap: 0.3rem; }
+
+.token-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.token-row strong { min-width: 3.5rem; }
+
+.token-addr {
+  word-break: break-all;
+  flex: 1;
+  color: var(--muted);
+}
+
+.alert {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.result {
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-top: 0.75rem;
+}
+
+.community-step {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.community-step .step-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.community-step .step-val {
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+
+footer a { color: var(--accent); }
+
+.notify-toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  z-index: 99999;
+  white-space: nowrap;
+}
+
+#connectWallet:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+</style>
+</head>
+
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div id="announce" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<header aria-label="Site controls">
+  <span>PF Web3 Tools — Lite</span>
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+    <button id="connectWallet" aria-label="Connect MetaMask wallet">Connect Wallet</button>
+    <button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false">Dark mode</button>
+  </div>
+</header>
+
+<main id="main-content" tabindex="-1" aria-label="Main content">
+
+  <!-- Intro -->
+  <section id="home" aria-labelledby="home-heading">
+    <h1 id="home-heading">Unofficial Pool Funding Web3 Tools</h1>
+    <p>Lite version — reduced data usage. Full version at <a href="index.html">index.html</a>.</p>
+    <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
+  </section>
+
+  <!-- Add Tokens -->
+  <section id="add-tokens" aria-labelledby="add-tokens-heading">
+    <h2 id="add-tokens-heading">Add Tokens to MetaMask</h2>
+    <p>Copy a contract address, then add it as a custom token in MetaMask.</p>
+
+    <h3>How to add in MetaMask Mobile</h3>
+    <ol style="font-size:0.875rem; padding-left:1.25rem; color:var(--muted);">
+      <li>Copy the token contract address below.</li>
+      <li>Tap the back arrow in the top left corner.</li>
+      <li>Tap Home in the bottom left corner.</li>
+      <li>Tap the plus sign above BNB.</li>
+      <li>Tap Custom token.</li>
+      <li>Paste the contract address.</li>
+      <li>Tap Next, then Import.</li>
+      <li>Repeat for each token.</li>
+    </ol>
+
+    <div id="tokenList" style="margin-top:0.75rem;"></div>
+  </section>
+
+  <!-- RPC Switcher -->
+  <section id="rpc" aria-labelledby="rpc-heading">
+    <h2 id="rpc-heading">Switch BSC RPC</h2>
+    <p>Use when having trouble making payments. After approving, manually select the new RPC in MetaMask under BNB Chain settings.</p>
+
+    <h3>Standard</h3>
+    <div class="btn-row">
+      <button data-rpc="https://binance.llamarpc.com" data-rpc-name="LlamaRPC">LlamaRPC</button>
+      <button data-rpc="https://bsc-rpc.publicnode.com" data-rpc-name="PublicNode">PublicNode</button>
+      <button data-rpc="https://bsc.blockrazor.xyz" data-rpc-name="Blockrazor">Blockrazor</button>
+    </div>
+
+    <h3>Cloudflare</h3>
+    <div class="btn-row">
+      <button data-rpc="https://bsc.rpc.blxrbdn.com" data-rpc-name="BLXR">BLXR</button>
+      <button data-rpc="https://bsc.drpc.org" data-rpc-name="dRPC">dRPC</button>
+    </div>
+
+    <h3>AWS</h3>
+    <div class="btn-row">
+      <button data-rpc="https://binance-smart-chain-public.nodies.app" data-rpc-name="PublicNodies">PublicNodies</button>
+    </div>
+
+    <h3>Azure</h3>
+    <div class="btn-row">
+      <button data-rpc="https://1rpc.io/bnb" data-rpc-name="1RPC">1RPC</button>
+      <button data-rpc="https://bnb.rpc.subquery.network/public" data-rpc-name="SubQuery">SubQuery</button>
+      <button data-rpc="https://public-bsc.nownodes.io" data-rpc-name="NowNodes">NowNodes</button>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section id="charts" aria-labelledby="charts-heading">
+    <h2 id="charts-heading">Token Charts &amp; Info</h2>
+
+    <h3>ApeSpace Charts</h3>
+    <div class="btn-row">
+      <button data-url="https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63" aria-label="Copy PFI chart link">PFI</button>
+      <button data-url="https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313" aria-label="Copy PFB chart link">PFB</button>
+      <button data-url="https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2" aria-label="Copy PFS chart link">PFS</button>
+      <button data-url="https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b" aria-label="Copy PFG chart link">PFG</button>
+      <button data-url="https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4" aria-label="Copy PML chart link">PML</button>
+    </div>
+    <p style="margin-top:0.5rem;">Tap to copy link, then open in your browser.</p>
+
+    <h3>BscScan</h3>
+    <div class="btn-row">
+      <button data-url="https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff" aria-label="Copy PFI BscScan link">PFI</button>
+      <button data-url="https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17" aria-label="Copy PFB BscScan link">PFB</button>
+      <button data-url="https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa" aria-label="Copy PFS BscScan link">PFS</button>
+      <button data-url="https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e" aria-label="Copy PFG BscScan link">PFG</button>
+      <button data-url="https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd" aria-label="Copy PML BscScan link">PML</button>
+    </div>
+    <p style="margin-top:0.5rem;">Tap to copy link, then open in your browser.</p>
+
+    <h3>Swap USDT to PF Tokens</h3>
+    <p>Copy a PancakeSwap link and open it in the MetaMask browser or your desktop browser.</p>
+    <div id="swapList" class="btn-row"></div>
+  </section>
+
+  <!-- Calculator -->
+  <section id="calculator" aria-labelledby="calc-heading">
+    <h2 id="calc-heading">Token Value Calculator</h2>
+
+    <fieldset>
+      <legend>Mode</legend>
+      <div class="radio-row">
+        <label><input type="radio" name="calcMode" value="current" checked> Current Price</label>
+        <label><input type="radio" name="calcMode" value="target"> Price Target</label>
+        <label><input type="radio" name="calcMode" value="community"> Community Coin</label>
+      </div>
+    </fieldset>
+
+    <!-- Target token selector -->
+    <fieldset id="targetSelector" style="display:none;">
+      <legend>Token Price Target</legend>
+      <div class="radio-row">
+        <label><input type="radio" name="targetToken" value="PFI"> PFI</label>
+        <label><input type="radio" name="targetToken" value="PFB"> PFB</label>
+        <label><input type="radio" name="targetToken" value="PFS"> PFS</label>
+        <label><input type="radio" name="targetToken" value="PFG"> PFG</label>
+        <label><input type="radio" name="targetToken" value="PML"> PML</label>
+      </div>
+    </fieldset>
+
+    <!-- Standard inputs -->
+    <div id="standardInputs">
+      <div style="margin-bottom:0.75rem;">
+        <label for="calcPrice"><strong>Price (USD)</strong>
+          <input id="calcPrice" type="text" inputmode="decimal" autocomplete="off">
+        </label>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label for="calcAmount"><strong>Token Amount</strong>
+          <input id="calcAmount" type="text" inputmode="decimal" autocomplete="off">
+        </label>
+      </div>
+    </div>
+
+    <!-- Community mode inputs -->
+    <div id="communityInputs" style="display:none;">
+      <div style="margin-bottom:0.75rem;">
+        <label for="communityPml"><strong>Your PML Amount</strong>
+          <input id="communityPml" type="text" inputmode="decimal" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="community-step">
+        <div class="step-label">÷ 5</div>
+        <div id="resDivide" class="step-val"></div>
+      </div>
+      <div class="community-step">
+        <div class="step-label">× 1,000,000,000</div>
+        <div id="resMult1" class="step-val"></div>
+      </div>
+      <div class="community-step">
+        <div class="step-label">× $1,000</div>
+        <div id="resMult2" class="step-val"></div>
+      </div>
+      <div class="community-step">
+        <div class="step-label">Final value</div>
+        <div id="resFinal" class="step-val"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="calcButton" type="button">Calculate</button>
+      <button id="calcReset" type="button" class="secondary">Reset</button>
+    </div>
+
+    <div id="calcAlert" class="alert" role="alert"></div>
+    <div id="calcResult" class="result" aria-live="polite"></div>
+  </section>
+
+</main>
+
+<footer aria-label="Site footer">
+  © 2026 Hunter Rodriguez — not affiliated with MetaMask or Binance Smart Chain.<br>
+  <a href="https://hrweb3buttons.github.io/pfbuttons/terms.html">Terms of Use</a>
+</footer>
+
+<script>
+"use strict";
+
+/* ── Config ─────────────────────────────────────────────── */
+
+const CFG = {
+  chainId: 56,
+  chainHex: "0x38",
+  chainName: "BNB Smart Chain"
+};
+
+const TOKENS = [
+  { symbol: "USDT", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
+  { symbol: "PFB",  address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", decimals: 18 },
+  { symbol: "PFI",  address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", decimals: 18 },
+  { symbol: "PFS",  address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", decimals: 18 },
+  { symbol: "PFG",  address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", decimals: 18 },
+  { symbol: "PML",  address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD", decimals: 18 }
+];
+
+const SWAP_LINKS = {
+  PFI: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF&chain=bsc",
+  PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
+  PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
+  PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
+  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc"
+};
+
+const APPROVED_RPCS = new Set([
+  "https://binance.llamarpc.com",
+  "https://bsc-rpc.publicnode.com",
+  "https://bsc.blockrazor.xyz",
+  "https://bsc.rpc.blxrbdn.com",
+  "https://bsc.drpc.org",
+  "https://binance-smart-chain-public.nodies.app",
+  "https://1rpc.io/bnb",
+  "https://bnb.rpc.subquery.network/public",
+  "https://public-bsc.nownodes.io"
+]);
+
+const PRICE_TARGETS = { PFI: 500000, PFB: 1000000, PFS: 2000000, PFG: 4000000, PML: 2000000 };
+
+/* ── Notify ─────────────────────────────────────────────── */
+
+function notify(msg) {
+  const region = document.getElementById("announce");
+  region.textContent = "";
+  requestAnimationFrame(() => { region.textContent = msg; });
+
+  const toast = document.createElement("div");
+  toast.className = "notify-toast";
+  toast.setAttribute("role", "alert");
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+/* ── Theme ──────────────────────────────────────────────── */
+
+const root = document.documentElement;
+const themeBtn = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+  root.classList.add("dark");
+  themeBtn.textContent = "Light mode";
+  themeBtn.setAttribute("aria-pressed", "true");
+}
+
+themeBtn.onclick = () => {
+  const dark = root.classList.toggle("dark");
+  localStorage.setItem("theme", dark ? "dark" : "light");
+  themeBtn.textContent = dark ? "Light mode" : "Dark mode";
+  themeBtn.setAttribute("aria-pressed", String(dark));
+};
+
+/* ── Wallet connect ─────────────────────────────────────── */
+
+const connectBtn = document.getElementById("connectWallet");
+
+connectBtn.onclick = async () => {
+  if (!window.ethereum) { notify("MetaMask not detected"); return; }
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    const addr = accounts[0];
+    connectBtn.textContent = addr.slice(0, 6) + "…" + addr.slice(-4);
+    connectBtn.disabled = true;
+  } catch (err) {
+    notify(err.code === 4001 ? "Connection rejected" : "Connection failed");
+  }
+};
+
+if (window.ethereum) {
+  window.ethereum.on("chainChanged", () => location.reload());
+  window.ethereum.on("accountsChanged", accs => {
+    if (!accs.length) { notify("Wallet disconnected"); location.reload(); }
+    else location.reload();
+  });
+}
+
+/* ── Add Tokens (copy flow) ─────────────────────────────── */
+
+const tokenList = document.getElementById("tokenList");
+
+TOKENS.forEach(token => {
+  const row = document.createElement("div");
+  row.className = "token-row";
+
+  const sym = document.createElement("strong");
+  sym.textContent = token.symbol;
+  row.appendChild(sym);
+
+  const addr = document.createElement("span");
+  addr.className = "token-addr";
+  addr.textContent = token.address;
+  row.appendChild(addr);
+
+  const copyBtn = document.createElement("button");
+  copyBtn.textContent = "Copy";
+  copyBtn.setAttribute("aria-label", "Copy " + token.symbol + " contract address");
+  copyBtn.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(token.address);
+      notify(token.symbol + " address copied");
+    } catch {
+      notify("Copy failed — copy manually");
+    }
+  };
+  row.appendChild(copyBtn);
+  tokenList.appendChild(row);
+});
+
+/* ── RPC Switcher ───────────────────────────────────────── */
+
+document.querySelectorAll("button[data-rpc]").forEach(btn => {
+  btn.onclick = async () => {
+    const url = btn.getAttribute("data-rpc");
+    const name = btn.getAttribute("data-rpc-name");
+
+    if (!APPROVED_RPCS.has(url)) { notify("Unapproved RPC"); return; }
+    if (!window.ethereum) { notify("MetaMask not detected"); return; }
+
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: CFG.chainHex,
+          chainName: CFG.chainName + " (" + name + ")",
+          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+          rpcUrls: [url],
+          blockExplorerUrls: ["https://bscscan.com"]
+        }]
+      });
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: CFG.chainHex }]
+      });
+      notify("RPC switched to " + name);
+    } catch {
+      notify("RPC change rejected");
+    }
+  };
+});
+
+/* ── Chart / BscScan links (copy) ───────────────────────── */
+
+document.querySelectorAll("button[data-url]").forEach(btn => {
+  btn.onclick = async () => {
+    const url = btn.getAttribute("data-url");
+    try {
+      await navigator.clipboard.writeText(url);
+      notify("Link copied");
+    } catch {
+      notify("Copy failed — copy manually");
+    }
+  };
+});
+
+/* ── Swap links ─────────────────────────────────────────── */
+
+const swapList = document.getElementById("swapList");
+
+Object.entries(SWAP_LINKS).forEach(([symbol, url]) => {
+  const btn = document.createElement("button");
+  btn.textContent = "USDT → " + symbol;
+  btn.setAttribute("aria-label", "Copy USDT to " + symbol + " swap link");
+  btn.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      notify(symbol + " swap link copied");
+    } catch {
+      notify("Copy failed — copy manually");
+    }
+  };
+  swapList.appendChild(btn);
+});
+
+/* ── Number helpers ─────────────────────────────────────── */
+
+function parseNum(value) {
+  if (!value) return NaN;
+  let s = value.trim().replace(/\s/g, "");
+  const lc = s.lastIndexOf(","), ld = s.lastIndexOf(".");
+  if (lc !== -1 && ld !== -1) {
+    s = ld > lc ? s.replace(/,/g, "") : s.replace(/\./g, "").replace(",", ".");
+  } else if (lc !== -1) {
+    s = (s.match(/,/g) || []).length > 1 ? s.replace(/,/g, "") : s.replace(",", ".");
+  } else if (ld !== -1) {
+    if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, "");
+  }
+  return parseFloat(s);
+}
+
+function fmt(n, decimals = 2) {
+  return new Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(n);
+}
+
+function fmtLong(n) {
+  return new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(n);
+}
+
+function sanitize(input) {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/[^\d.,]/g, "");
+  });
+}
+
+function formatBlur(input) {
+  input.addEventListener("blur", () => {
+    const n = parseNum(input.value);
+    if (!isNaN(n)) input.value = fmtLong(n);
+  });
+}
+
+/* ── Calculator ─────────────────────────────────────────── */
+
+const calcPrice    = document.getElementById("calcPrice");
+const calcAmount   = document.getElementById("calcAmount");
+const communityPml = document.getElementById("communityPml");
+const calcAlert    = document.getElementById("calcAlert");
+const calcResult   = document.getElementById("calcResult");
+const targetSel    = document.getElementById("targetSelector");
+const stdInputs    = document.getElementById("standardInputs");
+const commInputs   = document.getElementById("communityInputs");
+const resDivide    = document.getElementById("resDivide");
+const resMult1     = document.getElementById("resMult1");
+const resMult2     = document.getElementById("resMult2");
+const resFinal     = document.getElementById("resFinal");
+
+const ex = (1.1).toLocaleString();
+calcPrice.placeholder = ex;
+calcAmount.placeholder = ex;
+
+[calcPrice, calcAmount, communityPml].forEach(i => { sanitize(i); formatBlur(i); });
+
+function clearOutput() {
+  calcAlert.style.display = "none";
+  calcAlert.textContent = "";
+  calcResult.textContent = "";
+  resDivide.textContent = "";
+  resMult1.textContent = "";
+  resMult2.textContent = "";
+  resFinal.textContent = "";
+}
+
+function getMode() {
+  return document.querySelector('input[name="calcMode"]:checked').value;
+}
+
+function setMode(mode) {
+  clearOutput();
+  calcPrice.value = "";
+  calcAmount.value = "";
+  communityPml.value = "";
+
+  targetSel.style.display  = mode === "target"    ? "block" : "none";
+  stdInputs.style.display  = mode === "community" ? "none"  : "block";
+  commInputs.style.display = mode === "community" ? "block" : "none";
+  calcPrice.readOnly       = mode === "target";
+
+  document.querySelectorAll('input[name="targetToken"]').forEach(r => r.checked = false);
+}
+
+document.querySelectorAll('input[name="calcMode"]').forEach(r => {
+  r.addEventListener("change", e => setMode(e.target.value));
+});
+
+document.querySelectorAll('input[name="targetToken"]').forEach(r => {
+  r.addEventListener("change", e => {
+    calcPrice.value = PRICE_TARGETS[e.target.value];
+    clearOutput();
+  });
+});
+
+document.getElementById("calcButton").onclick = () => {
+  clearOutput();
+  const mode = getMode();
+
+  if (mode === "community") {
+    const pml = parseNum(communityPml.value);
+    if (isNaN(pml) || pml <= 0) {
+      calcAlert.textContent = "Please enter a valid PML amount.";
+      calcAlert.style.display = "block";
+      return;
+    }
+    const s1 = pml / 5;
+    const s2 = s1 * 1_000_000_000;
+    const s3 = s2 * 1_000;
+    resDivide.textContent = fmtLong(s1);
+    resMult1.textContent  = fmtLong(s2);
+    resMult2.textContent  = "$" + fmt(s3);
+    resFinal.textContent  = "$" + fmt(s3) + " USD";
+    return;
+  }
+
+  const price  = parseNum(calcPrice.value);
+  const amount = parseNum(calcAmount.value);
+
+  if (isNaN(price) || price <= 0) {
+    calcAlert.textContent = "Please enter a valid price.";
+    calcAlert.style.display = "block";
+    return;
+  }
+  if (isNaN(amount) || amount <= 0) {
+    calcAlert.textContent = "Please enter a valid token amount.";
+    calcAlert.style.display = "block";
+    return;
+  }
+
+  calcResult.textContent = "Estimated value: $" + fmt(price * amount) + " USD";
+};
+
+document.getElementById("calcReset").onclick = () => {
+  document.querySelector('input[name="calcMode"][value="current"]').checked = true;
+  setMode("current");
+};
+</script>
+
+</body>
+</html>
