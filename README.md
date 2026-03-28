@@ -1,11 +1,23 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+  connect-src 'self' https://api.coingecko.com https://api.geckoterminal.com https://bsc-dataseed.binance.org https://rpc.ankr.com;
+  img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
+  style-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unofficial Pool Funding Web3 Tools</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
-  <script defer src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script
+  defer
+  src="https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.umd.min.js"
+  integrity="sha384-POWgdAoUVoSKkKYCBiE8vhaiaawRSqMLmzJK50pZmRICRfkn2pYEHFRmn7Bogvej"
+  crossorigin="anonymous">
+</script>
 
   <style>
 /* Skip Link - Hidden until Tabbed */
@@ -216,7 +228,6 @@ color: var(--text);
     #donateUSDT { background-color: #26a17b;
     color: #000;
 }
-    #donatePML { background-color: #008cff; }
 
 button.donate-more {
   background-color: var(--card-bg) !important;
@@ -328,6 +339,7 @@ button.donate-more {
 <option value="donations.html">Donation Options</option>
 <option value="cryptodirectory.html">Crypto Directory</option>
 <option value="terms.html">Terms of Use</option>
+<option value="privacy.html">Privacy Policy  
 </select>
 
 </nav>
@@ -426,27 +438,27 @@ button.donate-more {
 
   <div class="doc-buttons">
     <button aria-label="Open PFI chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank','noopener')">
+ onclick="window.open('https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63','_blank','noopener,noreferrer')">
       PFI Chart
     </button>
 
     <button aria-label="Open PFB chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank','noopener')">
+ onclick="window.open('https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313','_blank','noopener,noreferrer')">
       PFB Chart
     </button>
 
     <button aria-label="Open PFS chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank','noopener')">
+ onclick="window.open('https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2','_blank','noopener,noreferrer')">
       PFS Chart
     </button>
 
     <button aria-label="Open PFG chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank','noopener')">
+ onclick="window.open('https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b','_blank','noopener,noreferrer')">
       PFG Chart
     </button>
 
     <button aria-label="Open PML chart in a new tab"
- onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank','noopener')">
+ onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank','noopener,noreferrer')">
       PML Chart
     </button>
   </div>
@@ -454,27 +466,27 @@ button.donate-more {
 
 <div class="doc-buttons">
      <button aria-label="Open PFI on BscScan in a new tab"
-  onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank','noopener')">
+  onclick="window.open('https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff','_blank','noopener,noreferrer')">
   PFI
 </button>
 
 <button aria-label="Open PFB on BscScan in a new tab"
-  onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank','noopener')">
+  onclick="window.open('https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17','_blank','noopener,noreferrer')">
   PFB
 </button>
 
 <button aria-label="Open PFS on BscScan in a new tab"
-  onclick="window.open('https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa','_blank','noopener')">
+  onclick="window.open('https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa','_blank','noopener,noreferrer')">
   PFS
 </button>
 
 <button aria-label="Open PFG on BscScan in a new tab"
-  onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank','noopener')">
+  onclick="window.open('https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e','_blank','noopener,noreferrer')">
   PFG
 </button>
 
 <button aria-label="Open PML on BscScan in a new tab"
-  onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank','noopener')">
+  onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank','noopener,noreferrer')">
   PML
 </button>
 </div>
@@ -539,15 +551,17 @@ button.donate-more {
     <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
     <label><input type="radio" name="targetToken" value="PML"> PML</label>
 </fieldset>
-        
-  <div style="margin-bottom: 1rem;">
+
+  <!-- FIX #6: Added id="calcPriceRow" and id="calcAmountRow" to avoid fragile
+       parentElement.parentElement traversal in setMode() and resetCalculator() -->
+  <div id="calcPriceRow" style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
      <input id="calcPrice" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
 
-  <div style="margin-bottom: 1rem;">
+  <div id="calcAmountRow" style="margin-bottom: 1rem;">
     <label>
       <strong>Token Amount</strong><br>
       <input id="calcAmount" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
@@ -559,7 +573,34 @@ button.donate-more {
 <button id="calcReset" type="button" class="donate-more">Reset</button>
 </div>
 
-        <div id="communityContainer" style="display:none; margin-top:1rem;"> <div style="margin-bottom:1rem;"> <label> <strong>Your PML Amount</strong><br> <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;"> </label> <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Divisor</strong><br> 5 <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Multiplier</strong><br> 1,000,000,000 <div id="resultMultiply2" style="margin-top:0.5rem; font-weight:500;"></div> </div> <div style="margin-bottom:1rem;"> <strong>Final Multiplier</strong><br> $1,000 <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div> </div> </div>
+  <!-- FIX #2 (HTML): Restructured community calculator so each result div sits
+       directly under the label for the operation that produces it.
+       Removed resultMultiply2 entirely — it was a duplicate of resultFinal. -->
+  <div id="communityContainer" style="display:none; margin-top:1rem;">
+
+    <div style="margin-bottom:1rem;">
+      <label>
+        <strong>Your PML Amount</strong><br>
+        <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;">
+      </label>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <strong>Divisor</strong><br>5
+      <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <strong>Multiplier</strong><br>1,000,000,000
+      <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <strong>Final Multiplier</strong><br>$1,000
+      <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div>
+    </div>
+
+  </div>
 
   <div id="calcAlert" role="alert" style="display:none;"></div>
   <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
@@ -567,11 +608,11 @@ button.donate-more {
 
 <section class="card" id="documents">
       <h2>Community Documents</h2>
-      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank','noopener')">Open Shared Folder</button>
+      <button onclick="window.open('https://drive.google.com/drive/u/0/folders/1QMpDLyxwV5ZqUR7TFxfyh5HqTLr0A4ty','_blank','noopener,noreferrer')">Open Shared Folder</button>
       <div class="doc-buttons">
-        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank','noopener')">Common Problems Guide</button>
-        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank','noopener')">$777 Newbies Guide</button>
-        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank','noopener')">General Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1H3aSw6LAcxw7BRMm7QjD1yVYjTMGWWR6/view','_blank','noopener,noreferrer')">Common Problems Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1zsqY3QDiY2r1BgNwID0cEP5xYsOjlFHN/view','_blank','noopener,noreferrer')">$777 Newbies Guide</button>
+        <button onclick="window.open('https://drive.google.com/file/d/1nNY7cih0Yc-UPsKq0wucCVRI1gcoJC9Z/view','_blank','noopener,noreferrer')">General Newbies Guide</button>
       </div>
     </section>
 
@@ -617,29 +658,81 @@ button.donate-more {
 
 <footer aria-label="Site footer">
   © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
-    <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
+    <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | Operation Pantheon - Project Iris
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | Operation Pantheon - Project Aegis Release Candidate
   </footer>
 
   <script>
+    const CONFIG = {
+  chainId: 56,
+  chainHex: "0x38",
+  donationWallet: "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795",
+  tokens: {
+    USDT: {
+      address: "0x55d398326f99059fF775485246999027B3197955",
+      decimals: 18
+    },
+    PML: {
+      address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+      decimals: 18
+    }
+  }
+};
+
+    const APPROVED_RPCS = new Set([
+  "https://binance.llamarpc.com",
+  "https://bsc-rpc.publicnode.com",
+  "https://bsc.blockrazor.xyz",
+  "https://bsc.rpc.blxrbdn.com",
+  "https://bsc.drpc.org",
+  "https://binance-smart-chain-public.nodies.app",
+  "https://1rpc.io/bnb",
+  "https://bnb.rpc.subquery.network/public",
+  "https://public-bsc.nownodes.io"
+]);
+
+    const ERC20_ABI = [
+  "function transfer(address to, uint256 amount) returns (bool)"
+];
+    
     document.addEventListener("DOMContentLoaded", () => {
+      let provider = null;
+      let signer = null;
       const root = document.documentElement;
       const themeToggle = document.getElementById("themeToggle");
 
       if (localStorage.getItem("theme") === "dark") {
         root.classList.add("dark");
         themeToggle.textContent = "Light mode";
-        
+        themeToggle.setAttribute("aria-pressed", "true");
       }
+
+if (window.ethereum) {
+
+  window.ethereum.on("chainChanged", () => {
+    window.location.reload();
+  });
+
+  window.ethereum.on("accountsChanged", (accounts) => {
+    if (!accounts.length) {
+      notify("Wallet disconnected");
+      location.reload();
+      return;
+    }
+    location.reload();
+  });
+
+}
 
       const pageSelector = document.getElementById("pageSelector");
 
+const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html"]);
 pageSelector.addEventListener("change", e => {
   const page = e.target.value;
-  if (!page) return;
+  if (!page || !ALLOWED_PAGES.has(page)) return;
   window.location.href = page;
 });
 
@@ -648,19 +741,17 @@ pageSelector.addEventListener("change", e => {
         const dark = root.classList.contains("dark");
         localStorage.setItem("theme", dark ? "dark" : "light");
         themeToggle.textContent = dark ? "Light mode" : "Dark mode";
-      };
+        themeToggle.setAttribute("aria-pressed", String(dark));
+        };
 
-      const walletAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
-      const usdtContract = "0x55d398326f99059fF775485246999027B3197955";
-      const pmlContract = "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD";
 
       const tokens = [
-        { address: usdtContract, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
+        { address: CONFIG.tokens.USDT.address, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
         { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
         { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
-        { address: pmlContract, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
+        { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
       ];
 
       const swapLinks = {
@@ -677,20 +768,22 @@ function isMobileBrowser() {
 
   const notify = msg => {
   // 1. Audible Announcement
-  const announcer = document.getElementById("announcement-region");
-  announcer.textContent = ""; // Clear old message
-  setTimeout(() => { announcer.textContent = msg; }, 50); // Trigger new announcement
+ const announcer = document.getElementById("announcement-region");
+if (announcer) {
+  announcer.textContent = "";
+  requestAnimationFrame(() => {
+    announcer.textContent = msg;
+  });
+}
 
-  // 2. Visual Toast (Your existing logic, slightly refined)
+  // 2. Visual Toast
   const n = document.createElement("div");
   n.className = "notify";
   n.textContent = msg;
-  // Ensure the visual toast also has accessibility markers
   n.setAttribute("role", "alert"); 
   
   document.body.appendChild(n);
   
-  // Keep it visible slightly longer for cognitive accessibility
   setTimeout(() => {
     n.style.opacity = "0";
     n.style.transition = "opacity 0.5s ease";
@@ -698,38 +791,63 @@ function isMobileBrowser() {
   }, 5000);
 };
 
-      async function connectWallet() {
-        if (!window.ethereum) return notify("MetaMask not detected");
-        const accs = await ethereum.request({ method: "eth_requestAccounts" });
-        const btn = document.getElementById("connectWallet");
-        btn.textContent = accs[0].slice(0,6) + "..." + accs[0].slice(-4);
-        btn.disabled = true;
-      }
+// FIX #4: Changed bare `ethereum` to `window.ethereum` for consistency
+// and to prevent ReferenceError in strict/non-browser contexts.
+async function connectWallet() {
+  if (!window.ethereum) return notify("MetaMask not detected");
+  try {
+    const accs = await window.ethereum.request({ method: "eth_requestAccounts" });
+    provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    const btn = document.getElementById("connectWallet");
+    btn.textContent = accs[0].slice(0,6) + "..." + accs[0].slice(-4);
+    btn.disabled = true;
+  } catch (err) {
+    if (err.code === 4001) {
+      notify("Connection rejected");
+    } else {
+      notify("Connection failed");
+    }
+    console.error("Wallet connection failed:", err);
+  }
+}
 
    
-
-                                 async function addAllTokens() {
+// FIX #9: Removed redundant .catch(() => null) inside Promise.allSettled.
+// Previously both were present: .catch converted all rejections to resolved-null,
+// so allSettled could no longer distinguish failures from successes.
+// Now allSettled handles rejections directly as intended.
+        async function addAllTokens() {
+        if (!window.ethereum) { notify("MetaMask not detected"); return; }
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
-        const requests = tokens.map(t =>
-          ethereum.request({
-            method: "wallet_watchAsset",
-            params: { type: "ERC20", options: t }
-          }).catch(() => null)
+        await Promise.allSettled(
+          tokens.map(t =>
+            window.ethereum.request({
+              method: "wallet_watchAsset",
+              params: { type: "ERC20", options: t }
+            })
+          )
         );
-        await Promise.allSettled(requests);
         notify("Finished suggesting tokens");
       }
 
+// FIX #5: Changed hardcoded "0x38" to CONFIG.chainHex so switchRPC stays in
+// sync with the rest of the config if the chain ID is ever updated.
 async function switchRPC(url, name) {
+  if (!APPROVED_RPCS.has(url)) {
+  notify("Unapproved RPC");
+  return;
+}
+  
   if (!window.ethereum) {
     notify("MetaMask not detected");
     return;
   }
 
-  const chainId = "0x38";
+  const chainId = CONFIG.chainHex;
 
   try {
-    await ethereum.request({
+    await window.ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
         chainId: chainId,
@@ -740,7 +858,7 @@ async function switchRPC(url, name) {
       }]
     });
 
-    await ethereum.request({
+    await window.ethereum.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId }]
     });
@@ -752,7 +870,47 @@ async function switchRPC(url, name) {
 }
 
 
+// FIX #1: Extracted normalizeNumberString() so donation functions can pass the
+// cleaned string directly to ethers.parseEther / ethers.parseUnits, avoiding
+// the float -> toFixed(18) precision loss (e.g. (0.1).toFixed(18) produces
+// "0.100000000000000006" which results in an off-by-a-few-wei transaction).
+// parseLocalizedNumber() now delegates to this same function for consistency.
+function normalizeNumberString(value) {
+  if (!value) return null;
 
+  let normalized = value.trim().replace(/\s/g, "");
+
+  const lastComma = normalized.lastIndexOf(",");
+  const lastDot   = normalized.lastIndexOf(".");
+
+  if (lastComma !== -1 && lastDot !== -1) {
+    if (lastDot > lastComma) {
+      // 1,234,567.89
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1.234.567,89
+      normalized = normalized.replace(/\./g, "");
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastComma !== -1) {
+    const commaCount = (normalized.match(/,/g) || []).length;
+    if (commaCount > 1) {
+      // 1,234,567
+      normalized = normalized.replace(/,/g, "");
+    } else {
+      // 1000,50
+      normalized = normalized.replace(",", ".");
+    }
+  } else if (lastDot !== -1) {
+    const dotCount = (normalized.match(/\./g) || []).length;
+    if (dotCount > 1) {
+      // 1.234.567
+      normalized = normalized.replace(/\./g, "");
+    }
+  }
+
+  return normalized;
+}
 
 let pendingDonation = null;
 let donateCallerBtn = null;
@@ -776,52 +934,238 @@ function closeDonateForm() {
   }
 }
 
+// FIX #1 (continued): donateConfirm now passes the normalized string to the
+// callback instead of a parsed float, preserving full decimal precision for
+// ethers.parseEther / ethers.parseUnits.
 document.getElementById("donateConfirm").onclick = async () => {
   const raw = document.getElementById("donateAmount").value;
-  const amt = parseFloat(raw);
+  const normalized = normalizeNumberString(raw);
+  const amt = normalized ? parseFloat(normalized) : NaN;
   if (!amt || amt <= 0) {
     notify("Please enter a valid amount.");
     return;
   }
+  if (amt > 1_000_000) {
+    notify("Amount too large");
+    return;
+  }
+  const callback = pendingDonation; // capture before closeDonateForm nulls it
   closeDonateForm();
-  if (pendingDonation) await pendingDonation(amt);
+  if (callback) await callback(normalized); // pass the string, not the float
 };
-
 document.getElementById("donateCancel").onclick = closeDonateForm;
 
-async function donateBNB() {
-  openDonateForm("BNB", document.getElementById("donateBNB"), async (amt) => {
-    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-    const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{ from, to: walletAddress, value }]
+/* ===========================
+   Donations: BNB
+=========================== */
+/* ===========================
+   Network Guard (Hardened)
+=========================== */
+
+async function ensureBSC() {
+
+  if (!window.ethereum) {
+    notify("Wallet not detected");
+    return false;
+  }
+
+  try {
+
+    if (!provider) {
+  provider = new ethers.BrowserProvider(window.ethereum);
+}
+    const network = await provider.getNetwork();
+
+    if (Number(network.chainId) === CONFIG.chainId) {
+      return true;
+    }
+
+    // Attempt network switch
+    try {
+
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: CONFIG.chainHex }]
+      });
+
+      // FIX #8: Removed the dead re-check that followed wallet_switchEthereumChain.
+      // The chainChanged listener at the top of the file calls location.reload()
+      // on a successful switch, so JS execution never reaches any code after the
+      // await above. The re-check and the notify/return-false path below it were
+      // both unreachable dead code.
+      return true;
+
+    } catch (switchError) {
+
+      // Chain not added to wallet
+      if (switchError.code === 4902) {
+
+        try {
+
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: CONFIG.chainHex,
+              chainName: "BNB Smart Chain",
+              nativeCurrency: {
+                name: "BNB",
+                symbol: "BNB",
+                decimals: 18
+              },
+              rpcUrls: [Array.from(APPROVED_RPCS)[0]],
+              blockExplorerUrls: ["https://bscscan.com"]
+            }]
+          });
+
+          return true;
+
+        } catch (addError) {
+
+          console.error("Add chain failed:", addError);
+          notify("Please add BNB Smart Chain manually");
+          return false;
+
+        }
+      }
+
+      console.error("Network switch rejected:", switchError);
+      notify("Please switch to BNB Smart Chain");
+      return false;
+
+    }
+
+  } catch (err) {
+
+    console.error("Network check failed:", err);
+    notify("Network error");
+    return false;
+
+  }
+}
+
+      async function checkNetworkOnLoad() {
+  if (!window.ethereum) return;
+  try {
+    if (!provider) {
+      provider = new ethers.BrowserProvider(window.ethereum);
+    }
+    const network = await provider.getNetwork();
+    if (Number(network.chainId) !== CONFIG.chainId) {
+      notify("Switch to BNB Smart Chain");
+    }
+  } catch (err) {
+    console.error("Initial network check failed:", err);
+  }
+}
+
+      
+// FIX #1 (continued): donateBNB now accepts a normalized decimal string and
+// passes it directly to ethers.parseEther, avoiding float precision loss.
+async function donateBNB(amtStr) {
+
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  if (!signer) {
+    notify("Please connect your wallet");
+    return;
+  }
+
+  if (!amtStr || parseFloat(amtStr) <= 0) {
+    notify("Enter a valid amount");
+    return;
+  }
+
+  if (!ethers.isAddress(CONFIG.donationWallet)) {
+    console.error("Invalid donation wallet");
+    notify("Configuration error");
+    return;
+  }
+
+  const ok = await ensureBSC();
+  if (!ok) return;
+
+  try {
+
+    const value = ethers.parseEther(amtStr);
+
+    await signer.sendTransaction({
+      to: CONFIG.donationWallet,
+      value: value
     });
+
     notify("BNB donation sent");
-  });
+
+  } catch (err) {
+
+    console.error("BNB donation failed:", err);
+    notify("Transaction failed");
+
+  }
 }
 
-async function donateToken(contract, symbol) {
-  openDonateForm(symbol, document.getElementById("donate" + symbol), async (amt) => {
-    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-    const value = BigInt(Math.floor(amt * 1e18)).toString(16).padStart(64, "0");
-    const data = "0xa9059cbb" + walletAddress.replace("0x", "").padStart(64, "0") + value;
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{ from, to: contract, data }]
-    });
+/* ===========================
+   Donations: Tokens
+=========================== */
+
+// FIX #1 (continued): donateToken now accepts a normalized decimal string and
+// passes it directly to ethers.parseUnits, avoiding float precision loss.
+async function donateToken(symbol, amtStr) {
+  if (!window.ethereum) { notify("MetaMask not detected"); return; }
+  if (!signer) { notify("Please connect your wallet"); return; }
+  if (!amtStr || parseFloat(amtStr) <= 0) { notify("Enter a valid amount"); return; }
+  if (!ethers.isAddress(CONFIG.donationWallet)) { notify("Configuration error"); return; }
+
+  const token = CONFIG.tokens[symbol];
+  if (!token) { notify("Unsupported token"); return; }
+
+  const ok = await ensureBSC();
+
+  if (!ok) return;
+
+  try {
+
+    const contract = new ethers.Contract(
+      token.address,
+      ERC20_ABI,
+      signer
+    );
+
+    const value = ethers.parseUnits(amtStr, token.decimals);
+
+    await contract.transfer(
+      CONFIG.donationWallet,
+      value
+    );
+
     notify(symbol + " donation sent");
-  });
+
+  } catch (err) {
+
+    console.error(symbol + " donation failed:", err);
+    notify("Transaction failed");
+
+  }
 }
 
+// FIX #3: Added r.ok check to the BNB price fetch, matching the pattern
+// already used correctly in the PML fetch below it.
 async function fetchPrices() {
   try {
-    const bnb = await fetch(
+    const res = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
-    ).then(r => r.json());
+    );
 
+    if (!res.ok) {
+      throw new Error("CoinGecko response not OK: " + res.status);
+    }
+
+    const bnb = await res.json();
+    const price = bnb?.binancecoin?.usd;
     document.getElementById("bnbPrice").textContent =
-      bnb.binancecoin.usd.toFixed(2);
+      price != null ? price.toFixed(2) : "--";
 
   } catch (err) {
     console.error("BNB price fetch failed:", err);
@@ -848,7 +1192,7 @@ async function fetchPrices() {
     document.getElementById("pmlPrice").textContent = "--";
   }
 }
-
+ checkNetworkOnLoad();
       document.getElementById("connectWallet").onclick = connectWallet;
       document.getElementById("addTokens").onclick = addAllTokens;
 
@@ -863,22 +1207,25 @@ document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rp
 document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
 
 
+const donateBNBBtn = document.getElementById("donateBNB");
+if (donateBNBBtn) {
+  donateBNBBtn.onclick = (e) =>
+    openDonateForm("BNB", e.target, donateBNB);
+}
 
+const donateUSDTBtn = document.getElementById("donateUSDT");
+if (donateUSDTBtn) {
+  donateUSDTBtn.onclick = (e) =>
+    openDonateForm("USDT", e.target, (amtStr) => donateToken("USDT", amtStr));
+}
 
-      document.getElementById("donateBNB").onclick = donateBNB;
-     document.getElementById("donateUSDT").onclick = () => donateToken(usdtContract,"USDT");
+// FIX #7: Removed donatePML button wiring. PML donations have been suspended
+// per community guidance. The button was already absent from the HTML on this
+// page; the JS wiring is removed here for clarity.
 
 fetchPrices();
 
 /* ===== MOBILE FALLBACK GOES HERE ===== */
-
-function isMetaMaskMobile() {
-  return (
-    typeof window.ethereum !== "undefined" &&
-    window.ethereum.isMetaMask &&
-    /MetaMaskMobile/i.test(navigator.userAgent)
-  );
-}
 
 function showMobileFallback() {
   const section = document.getElementById("add-tokens");
@@ -934,7 +1281,7 @@ container.appendChild(stepsList);
 
 tokens.forEach(token => {
   const row = document.createElement("div");
-  row.style.marginBottom = "12px"; // Increased spacing for touch targets
+  row.style.marginBottom = "12px";
 
   const label = document.createElement("strong");
   label.textContent = token.symbol + ": ";
@@ -942,20 +1289,22 @@ tokens.forEach(token => {
 
   const addr = document.createElement("span");
   addr.textContent = token.address;
-  addr.style.wordBreak = "break-all"; // Prevention for layout breaking
+  addr.style.wordBreak = "break-all";
   row.appendChild(addr);
 
   const copyBtn = document.createElement("button");
   copyBtn.textContent = "Copy";
-  
-  // ACCESSIBILITY UPGRADE: Descriptive label for screen readers
   copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
-  
   copyBtn.style.marginLeft = "10px";
-  copyBtn.onclick = () => {
-    navigator.clipboard.writeText(token.address);
-    notify(`${token.symbol} address copied to clipboard`);
-  };
+copyBtn.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(token.address);
+    notify(`${token.symbol} address copied`);
+  } catch (err) {
+    notify(`Copy failed — please copy manually`);
+    console.error("Clipboard write failed:", err);
+  }
+};
 
   row.appendChild(copyBtn);
   container.appendChild(row);
@@ -992,12 +1341,18 @@ const calcButton = document.getElementById("calcButton");
 const calcResult = document.getElementById("calcResult");
 const calcAlert = document.getElementById("calcAlert");
 
+// FIX #6: Referenced by ID instead of fragile parentElement.parentElement chains.
+const calcPriceRow = document.getElementById("calcPriceRow");
+const calcAmountRow = document.getElementById("calcAmountRow");
+
 function clearCalcOutput() {
   calcResult.textContent = "";
   calcAlert.style.display = "none";
   calcAlert.textContent = "";
 }
 
+// FIX #6 (continued): setMode now uses calcPriceRow / calcAmountRow IDs
+// instead of priceInput.parentElement.parentElement.
 function setMode(mode) {
 clearCalcOutput();
 priceInput.value = "";
@@ -1006,27 +1361,26 @@ communityPml.value = "";
 
 resultDivide.textContent = "";
 resultMultiply1.textContent = "";
-resultMultiply2.textContent = "";
 resultFinal.textContent = "";
 
 if (mode === "target") {
 targetSelector.style.display = "block";
 priceInput.readOnly = true;
-priceInput.parentElement.parentElement.style.display = "block";
-amountInput.parentElement.parentElement.style.display = "block";
+calcPriceRow.style.display = "block";
+calcAmountRow.style.display = "block";
 communityContainer.style.display = "none";
 
 } else if (mode === "community") {
 targetSelector.style.display = "none";
-priceInput.parentElement.parentElement.style.display = "none";
-amountInput.parentElement.parentElement.style.display = "none";
+calcPriceRow.style.display = "none";
+calcAmountRow.style.display = "none";
 communityContainer.style.display = "block";
 
 } else {
 targetSelector.style.display = "none";
 priceInput.readOnly = false;
-priceInput.parentElement.parentElement.style.display = "block";
-amountInput.parentElement.parentElement.style.display = "block";
+calcPriceRow.style.display = "block";
+calcAmountRow.style.display = "block";
 communityContainer.style.display = "none";
 }
 }
@@ -1045,43 +1399,11 @@ tokenRadios.forEach(radio => {
   });
 });
 
+// parseLocalizedNumber now delegates to normalizeNumberString for consistency
+// with the donation flow (FIX #1).
 function parseLocalizedNumber(value) {
-  if (!value) return NaN;
-
-  let normalized = value.trim();
-  normalized = normalized.replace(/\s/g, "");
-
-  const lastComma = normalized.lastIndexOf(",");
-  const lastDot = normalized.lastIndexOf(".");
-
-  if (lastComma !== -1 && lastDot !== -1) {
-    if (lastDot > lastComma) {
-      // 1,234,567.89
-      normalized = normalized.replace(/,/g, "");
-    } else {
-      // 1.234.567,89
-      normalized = normalized.replace(/\./g, "");
-      normalized = normalized.replace(",", ".");
-    }
-  } else if (lastComma !== -1) {
-    const commaCount = (normalized.match(/,/g) || []).length;
-
-    if (commaCount > 1) {
-      // 1,234,567
-      normalized = normalized.replace(/,/g, "");
-    } else {
-      // 1000,50
-      normalized = normalized.replace(",", ".");
-    }
-  } else if (lastDot !== -1) {
-    const dotCount = (normalized.match(/\./g) || []).length;
-
-    if (dotCount > 1) {
-      // 1.234.567
-      normalized = normalized.replace(/\./g, "");
-    }
-  }
-
+  const normalized = normalizeNumberString(value);
+  if (!normalized) return NaN;
   return parseFloat(normalized);
 }
 
@@ -1121,6 +1443,10 @@ formatOnBlur(amountInput);
 calcButton.addEventListener("click", () => {
   const selectedMode = document.querySelector('input[name="calcMode"]:checked').value;
 
+// FIX #2 (JS): Community calculator now shows each step result under the
+// correct label. resultMultiply2 has been removed (it was a duplicate of
+// resultFinal). Results are now: resultDivide → step1, resultMultiply1 →
+// step2, resultFinal → step3 — matching the restructured HTML above.
 if (selectedMode === "community") {
 clearCalcOutput();
 const pmlAmount = parseLocalizedNumber(communityPml.value);
@@ -1143,13 +1469,6 @@ resultMultiply1.textContent =
 "After multiplying by 1,000,000,000: " +
 new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step2);
 
-resultMultiply2.textContent =
-"After multiplying by $1,000: $" +
-new Intl.NumberFormat(navigator.language, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-}).format(step3);
-
 resultFinal.textContent =
 "Final value: $" +
 new Intl.NumberFormat(navigator.language, {
@@ -1164,9 +1483,6 @@ return;
 
 const price = parseLocalizedNumber(priceInput.value);
 const amount = parseLocalizedNumber(amountInput.value);
-
-
-
 
 
  if (isNaN(price) || price <= 0)
@@ -1198,6 +1514,8 @@ const amount = parseLocalizedNumber(amountInput.value);
 
 const calcReset = document.getElementById("calcReset");
 
+// FIX #6 (continued): resetCalculator also uses IDs instead of
+// parentElement.parentElement.
 function resetCalculator() {
   clearCalcOutput();
 
@@ -1207,7 +1525,6 @@ function resetCalculator() {
 
   resultDivide.textContent = "";
   resultMultiply1.textContent = "";
-  resultMultiply2.textContent = "";
   resultFinal.textContent = "";
 
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
@@ -1215,8 +1532,8 @@ function resetCalculator() {
   targetSelector.style.display = "none";
   priceInput.readOnly = false;
 
-  priceInput.parentElement.parentElement.style.display = "block";
-  amountInput.parentElement.parentElement.style.display = "block";
+  calcPriceRow.style.display = "block";
+  calcAmountRow.style.display = "block";
   communityContainer.style.display = "none";
 
   tokenRadios.forEach(r => r.checked = false);
@@ -1226,7 +1543,6 @@ function resetCalculator() {
 const communityPml = document.getElementById("communityPml");
 const resultDivide = document.getElementById("resultDivide");
 const resultMultiply1 = document.getElementById("resultMultiply1");
-const resultMultiply2 = document.getElementById("resultMultiply2");
 const resultFinal = document.getElementById("resultFinal");
       sanitizeInputField(communityPml);
 formatOnBlur(communityPml);
@@ -1257,10 +1573,16 @@ if (swapButtonsContainer) {
       const copyBtn = document.createElement("button");
       copyBtn.textContent = "Copy Link";
       copyBtn.style.marginLeft = "10px";
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(url);
-        notify(symbol + " swap link copied");
-      };
+copyBtn.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(url);
+    notify(`${symbol} swap link copied`);
+  } catch (err) {
+    notify("Copy failed — please copy manually");
+    console.error("Clipboard write failed:", err);
+  }
+};
+
 
       row.appendChild(copyBtn);
       swapMobileContainer.appendChild(row);
@@ -1272,11 +1594,17 @@ if (swapButtonsContainer) {
 
       const symbol = button.getAttribute("data-swap");
       const url = swapLinks[symbol];
-      window.open(url, "_blank", 'noopener');
+      window.open(url, "_blank", 'noopener,noreferrer');
     });
   }
 }
     });
+
+/* ===========================
+   Contracts
+=========================== */
+    
+    
   </script>
     <div id="announcement-region" 
      class="sr-only" 
