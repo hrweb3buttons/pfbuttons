@@ -337,6 +337,7 @@ button.donate-more {
 <option value="index.html">Main Tools</option>
 <option value="donations.html">Donation Options</option>
 <option value="cryptodirectory.html">Crypto Directory</option>
+<option value="lite.html">Lite Version</option>  
 <option value="terms.html">Terms of Use</option>
 <option value="privacy.html">Privacy Policy</option>  
 </select>
@@ -661,7 +662,7 @@ button.donate-more {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | Operation Pantheon - Project Aegis Release Candidate
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.0
   </footer>
 
   <script>
@@ -728,7 +729,7 @@ if (window.ethereum) {
 
       const pageSelector = document.getElementById("pageSelector");
 
-const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html"]);
+const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html"]);
 pageSelector.addEventListener("change", e => {
   const page = e.target.value;
   if (!page || !ALLOWED_PAGES.has(page)) return;
