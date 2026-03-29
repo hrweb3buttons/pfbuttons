@@ -9,6 +9,7 @@
     :root {
       --background:#f4f6f8;
       --text:#333;
+      --text-muted: #666;
       --card-bg:#fff;
       --border:#e1e4e8;
       --primary: #004aab;
@@ -26,6 +27,7 @@
     :root.dark {
       --background:#0f141a;
       --text:#e6eaf0;
+      --text-muted: #9aa4b2;
       --card-bg:#151b23;
       --border:#273142;
       --primary: #a3d1ff;
@@ -57,6 +59,18 @@
   top: 0;
   outline: none;
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}    
 
     a:focus-visible {
   outline: 3px solid #ff9500;
@@ -305,7 +319,7 @@ button {
   </div>
 </section>
 </main>
-
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js"></script>
 <script>
 const evmAddress = "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795";
 const tronAddress = "TXPYc7Mtdu6ZUjeiowApGLi8bjzUXFwz5F";
@@ -317,6 +331,10 @@ const evmChains = {
   polygon:{ chainId:"0x89" },
   avax:{ chainId:"0xa86a" }
 };
+
+  const ERC20_ABI = [
+  "function transfer(address to, uint256 amount) returns (bool)"
+];
 
 const tokens = {
   eth:{
@@ -365,11 +383,11 @@ document.getElementById("connectWallet").onclick = async () => {
 async function ensureChain(chain) {
   try {
     await ethereum.request({
-      method:"wallet_switchEthereumChain",
-      params:[{ chainId: chain.chainId }]
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chain.chainId }]
     });
-  } catch {
-    throw new Error("chain");
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -399,10 +417,12 @@ function closeDonateForm() {
 document.getElementById("donateConfirm").onclick = async () => {
   const raw = document.getElementById("donateAmount").value;
   const amt = Number(raw.trim());
-  if (!Number.isFinite(amt) || amt <= 0) {
-    notify("Please enter a valid amount.");
-    return;
-  }
+const amt = Number(raw.trim());
+
+if (!Number.isFinite(amt) || amt <= 0) {
+  notify("Please enter a valid amount.");
+  return;
+}
   const action = pendingDonation;
   closeDonateForm();
   if (action) await action(amt);
@@ -412,41 +432,89 @@ document.getElementById("donateCancel").onclick = closeDonateForm;
 
 async function donateNative(chain) {
   const btn = document.activeElement;
+
   openDonateForm("native token", btn, async (amt) => {
     try {
       await ensureChain(chain);
-    } catch {
-      return notify("Please switch networks manually in your wallet.");
-    }
-    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-    const value = "0x" + BigInt(Math.floor(amt * 1e18)).toString(16);
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{ from, to: evmAddress, value }]
-    });
-    notify("Transaction submitted. Please confirm it in your wallet.");
+    } 
+    catch (err) {
+  if (err.code === 4902) {
+    notify("This network is not added in your wallet.");
+  } else if (err.code === 4001) {
+    notify("Network switch was rejected.");
+  } else {
+    notify("Please switch networks manually.");
+  }
+  return;
+}
+
+    if (!window.ethereum)
+      return notify("No EVM wallet detected.");
+
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+
+      const value = ethers.parseEther(amt.toString());
+
+      const tx = await signer.sendTransaction({
+        to: evmAddress,
+        value
+      });
+
+      notify("Transaction submitted: " + tx.hash.slice(0, 10) + "...");
+    } catch (err) {
+  console.error(err);
+  notify("Transaction failed or rejected.");
+}
   });
 }
 
 async function donateToken(chain, token, symbol) {
   const btn = document.activeElement;
+
   openDonateForm(symbol, btn, async (amt) => {
+   try {
+  await ensureChain(chain);
+} catch (err) {
+  if (err.code === 4902) {
+    notify("This network is not added in your wallet.");
+  } else if (err.code === 4001) {
+    notify("Network switch was rejected.");
+  } else {
+    notify("Please switch networks manually.");
+  }
+  return;
+}
+
+    if (!window.ethereum)
+      return notify("No EVM wallet detected.");
+
     try {
-      await ensureChain(chain);
-    } catch {
-      return notify("Please switch networks manually in your wallet.");
-    }
-    const [from] = await ethereum.request({ method: "eth_requestAccounts" });
-    const raw = BigInt(Math.round(amt * 10 ** token.decimals));
-    const data =
-      "0xa9059cbb" +
-      evmAddress.slice(2).padStart(64, "0") +
-      raw.toString(16).padStart(64, "0");
-    await ethereum.request({
-      method: "eth_sendTransaction",
-      params: [{ from, to: token.address, data }]
-    });
-    notify(symbol + " transaction submitted.");
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+
+      const contract = new ethers.Contract(
+        token.address,
+        ERC20_ABI,
+        signer
+      );
+
+      const amount = ethers.parseUnits(
+        amt.toString(),
+        token.decimals
+      );
+
+      const tx = await contract.transfer(evmAddress, amount);
+
+      notify(symbol + " transaction submitted.");
+    } 
+    catch (err) {
+  console.error(err);
+  notify(symbol + " transaction failed or rejected.");
+}
   });
 }
 
@@ -499,7 +567,7 @@ toggle.onclick = () => {
   <a href="https://hrweb3buttons.github.io/pfbuttons/">Main Tools</a> |
   <a href="https://hrweb3buttons.github.io/pfbuttons/terms.html">Terms of Use</a> |
   <a href="https://hrweb3buttons.github.io/pfbuttons/privacy.html">Privacy Policy</a> |
-  <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener">
+  <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">
     View on GitHub
   </a>
 </footer>
