@@ -943,13 +943,22 @@ function updateWalletUI(isConnected) {
 
   if (isConnected && connectedAccount) {
     btn.textContent =
-      connectedAccount.slice(0, 6) + "..." + connectedAccount.slice(-4);
+      connectedAccount.slice(0, 6) + "..." + connectedAccount.slice(-4) + " (Disconnect)";
     btn.dataset.connected = "true";
   } else {
     btn.textContent = "Connect Wallet";
     btn.dataset.connected = "false";
     btn.disabled = false;
   }
+}
+
+function disconnectWallet() {
+  connectedAccount = null;
+  signer = null;
+  provider = null;
+
+  updateWalletUI(false);
+  notify("Wallet disconnected");
 }      
 
 function closeDonateForm() {
