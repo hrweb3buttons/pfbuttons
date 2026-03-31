@@ -243,15 +243,16 @@ button.donate-more {
       background-color: rgba(255, 255, 255, 0.05);
     }
 
-    #wallet-connect {
-      position: fixed;
-      top: 16px;
-      left: 16px;
-      display: flex;
-      gap: 12px;
-      z-index: 9999;
-      flex-wrap: wrap;
-    }
+#wallet-connect {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px; /* NEW */
+  display: flex;
+  justify-content: space-between; /* KEY */
+  align-items: center;
+  z-index: 9999;
+}
 
     
 
@@ -282,6 +283,12 @@ button.donate-more {
   left: 16px;
   z-index: 9999;
 }
+
+#controlButtons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}    
 
 #pageSelector {
   padding: 0.5rem;
@@ -320,14 +327,21 @@ button.donate-more {
 <a href="#priceDisplay">Skip to token prices</a>
 </nav>
   
-  <header id="wallet-connect" aria-label="Site controls">
-   <button id="connectWallet" aria-label="Connect MetaMask wallet"> Connect Wallet</button>
-    <button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false"> Dark mode</button>
+<header id="wallet-connect" aria-label="Site controls">
+
+  <div id="priceContainer">
     <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
       <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
       <strong>PML:</strong> <span id="pmlPrice">--</span> USD
     </div>
-  </header>
+  </div>
+
+  <div id="controlButtons">
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="themeToggle">Dark mode</button>
+  </div>
+
+</header>
 
 <nav id="site-nav" aria-label="Site navigation">
 
@@ -792,32 +806,34 @@ if (announcer) {
   }, 5000);
 };
 
-// FIX #4: Changed bare `ethereum` to `window.ethereum` for consistency
-// and to prevent ReferenceError in strict/non-browser contexts.
+
+let connectedAccount = null;
+
 async function connectWallet() {
   if (!window.ethereum) return notify("MetaMask not detected");
+
   try {
     const accs = await window.ethereum.request({ method: "eth_requestAccounts" });
+
     provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
-    const btn = document.getElementById("connectWallet");
-    btn.textContent = accs[0].slice(0,6) + "..." + accs[0].slice(-4);
-    btn.disabled = true;
+
+    connectedAccount = accs[0];
+
+    updateWalletUI(true);
+
   } catch (err) {
     if (err.code === 4001) {
       notify("Connection rejected");
     } else {
       notify("Connection failed");
     }
-    console.error("Wallet connection failed:", err);
+    console.error(err);
   }
 }
 
    
-// FIX #9: Removed redundant .catch(() => null) inside Promise.allSettled.
-// Previously both were present: .catch converted all rejections to resolved-null,
-// so allSettled could no longer distinguish failures from successes.
-// Now allSettled handles rejections directly as intended.
+
         async function addAllTokens() {
         if (!window.ethereum) { notify("MetaMask not detected"); return; }
         if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
@@ -871,11 +887,7 @@ async function switchRPC(url, name) {
 }
 
 
-// FIX #1: Extracted normalizeNumberString() so donation functions can pass the
-// cleaned string directly to ethers.parseEther / ethers.parseUnits, avoiding
-// the float -> toFixed(18) precision loss (e.g. (0.1).toFixed(18) produces
-// "0.100000000000000006" which results in an off-by-a-few-wei transaction).
-// parseLocalizedNumber() now delegates to this same function for consistency.
+
 function normalizeNumberString(value) {
   if (!value) return null;
 
@@ -925,6 +937,20 @@ function openDonateForm(label, btn, onConfirm) {
   form.style.display = "block";
   document.getElementById("donateAmount").focus();
 }
+
+function updateWalletUI(isConnected) {
+  const btn = document.getElementById("connectWallet");
+
+  if (isConnected && connectedAccount) {
+    btn.textContent =
+      connectedAccount.slice(0, 6) + "..." + connectedAccount.slice(-4);
+    btn.dataset.connected = "true";
+  } else {
+    btn.textContent = "Connect Wallet";
+    btn.dataset.connected = "false";
+    btn.disabled = false;
+  }
+}      
 
 function closeDonateForm() {
   document.getElementById("donateForm").style.display = "none";
@@ -1194,7 +1220,15 @@ async function fetchPrices() {
   }
 }
  checkNetworkOnLoad();
-      document.getElementById("connectWallet").onclick = connectWallet;
+      const connectBtn = document.getElementById("connectWallet");
+
+connectBtn.onclick = () => {
+  if (connectBtn.dataset.connected === "true") {
+    disconnectWallet();
+  } else {
+    connectWallet();
+  }
+};
       document.getElementById("addTokens").onclick = addAllTokens;
 
 document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com", "LlamaRPC");
