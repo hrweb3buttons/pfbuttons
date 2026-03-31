@@ -417,7 +417,6 @@ function closeDonateForm() {
 document.getElementById("donateConfirm").onclick = async () => {
   const raw = document.getElementById("donateAmount").value;
   const amt = Number(raw.trim());
-const amt = Number(raw.trim());
 
 if (!Number.isFinite(amt) || amt <= 0) {
   notify("Please enter a valid amount.");
