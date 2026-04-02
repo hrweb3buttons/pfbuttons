@@ -744,6 +744,30 @@ button.donate-more {
   }
 };
 
+    const ERC20_ALLOWANCE_ABI = [
+  "function allowance(address owner, address spender) view returns (uint256)"
+];
+
+// Minimal starter list (expand later)
+const APPROVAL_SPENDERS = [
+  {
+    address: "0x10ED43C718714eb63d5aA57B78B54704E256024E", // PancakeSwap Router v2
+    name: "PancakeSwap Router",
+    trusted: true
+  },
+  {
+    address: "0x000000000000000000000000000000000000dead",
+    name: "Burn Address",
+    trusted: true
+  }
+];
+
+// Optional flagged list (you can expand over time)
+const FLAGGED_SPENDERS = new Set([
+  // Example placeholder (replace with real known bad actors if you want)
+  // "0x123..."
+]);
+
     const APPROVED_RPCS = new Set([
   "https://binance.llamarpc.com",
   "https://bsc-rpc.publicnode.com",
@@ -770,6 +794,20 @@ button.donate-more {
         root.classList.add("dark");
         themeToggle.textContent = "Light mode";
         themeToggle.setAttribute("aria-pressed", "true");
+  
+    const scanBtn = document.getElementById("scanApprovals");
+
+if (scanBtn) {
+  scanBtn.onclick = runApprovalScan;
+}
+
+        const reviewBtn = document.getElementById("requestReview");
+
+if (reviewBtn) {
+  reviewBtn.onclick = () => {
+    document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+  };
+}
       }
 
 if (window.ethereum) {
@@ -879,7 +917,72 @@ async function connectWallet() {
   }
 }
 
-   
+   async function runApprovalScan() {
+  const status = document.getElementById("approvalStatus");
+  const resultsContainer = document.getElementById("approvalResults");
+  const list = document.getElementById("approvalList");
+  const summary = document.getElementById("approvalSummary");
+
+  // Reset UI
+  status.textContent = "";
+  list.innerHTML = "";
+  summary.textContent = "";
+  resultsContainer.style.display = "none";
+
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  if (!signer) {
+    notify("Please connect your wallet");
+    return;
+  }
+
+  const ok = await ensureBSC();
+  if (!ok) return;
+
+  status.textContent = "Scanning approvals...";
+
+  try {
+    const owner = await signer.getAddress();
+
+    let findings = [];
+
+    for (const token of tokens) {
+      const contract = new ethers.Contract(
+        token.address,
+        ERC20_ALLOWANCE_ABI,
+        provider
+      );
+
+      for (const spender of APPROVAL_SPENDERS) {
+        try {
+          const allowance = await contract.allowance(owner, spender.address);
+
+          if (allowance > 0n) {
+            findings.push({
+              token: token.symbol,
+              spender: spender.address,
+              spenderName: spender.name,
+              trusted: spender.trusted,
+              allowance
+            });
+          }
+        } catch (err) {
+          console.error("Allowance check failed:", err);
+        }
+      }
+    }
+
+    renderApprovalResults(findings);
+
+  } catch (err) {
+    console.error("Scan failed:", err);
+    status.textContent = "";
+    notify("Scan failed");
+  }
+}
 
         async function addAllTokens() {
         if (!window.ethereum) { notify("MetaMask not detected"); return; }
@@ -997,6 +1100,74 @@ function updateWalletUI(isConnected) {
     btn.dataset.connected = "false";
     btn.disabled = false;
   }
+}
+
+      function classifyRisk(item) {
+  const isUnlimited = item.allowance === ethers.MaxUint256;
+  const isFlagged = FLAGGED_SPENDERS.has(item.spender);
+
+  if (isFlagged) {
+    return { level: "high", label: "High Risk" };
+  }
+
+  if (isUnlimited && !item.trusted) {
+    return { level: "medium", label: "Unlimited Approval" };
+  }
+
+  return { level: "low", label: "Normal" };
+}
+
+      function renderApprovalResults(findings) {
+  const status = document.getElementById("approvalStatus");
+  const resultsContainer = document.getElementById("approvalResults");
+  const list = document.getElementById("approvalList");
+  const summary = document.getElementById("approvalSummary");
+
+  status.textContent = "";
+  resultsContainer.style.display = "block";
+
+  if (!findings.length) {
+    summary.textContent = "✅ No high-risk approvals detected";
+    return;
+  }
+
+  let high = 0;
+  let medium = 0;
+
+  findings.forEach(item => {
+    const risk = classifyRisk(item);
+
+    if (risk.level === "high") high++;
+    if (risk.level === "medium") medium++;
+
+    const row = document.createElement("div");
+    row.style.marginBottom = "12px";
+    row.style.padding = "10px";
+    row.style.border = "1px solid var(--border)";
+    row.style.borderRadius = "var(--radius)";
+
+    const allowanceText =
+      item.allowance === ethers.MaxUint256 ? "Unlimited" : "Custom";
+
+    row.innerHTML = `
+      <strong>${item.token}</strong><br>
+      Spender: ${item.spenderName}<br>
+      Allowance: ${allowanceText}<br>
+      Risk: ${risk.label}
+    `;
+
+    // Optional: color hint (non-critical, still accessible)
+    if (risk.level === "high") {
+      row.style.borderColor = "var(--error)";
+    } else if (risk.level === "medium") {
+      row.style.borderColor = "orange";
+    }
+
+    list.appendChild(row);
+  });
+
+  summary.textContent =
+    `${high > 0 ? high + " high risk, " : ""}${medium > 0 ? medium + " warnings" : ""}`;
 }
 
 function disconnectWallet() {
