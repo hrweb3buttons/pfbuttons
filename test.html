@@ -447,6 +447,53 @@ button.donate-more {
 
       
     </section>
+
+<section class="card" id="approval-scanner">
+  <h2>Wallet Approval Scanner</h2>
+
+  <p>
+    Scan your wallet for token approvals that may allow third parties to move your funds.
+    This tool highlights common risk patterns, but does not replace a full manual review.
+  </p>
+
+  <!-- Action -->
+  <div style="margin-top: 1rem;">
+    <button id="scanApprovals">Scan Approvals</button>
+  </div>
+
+  <!-- Status / Messages -->
+  <div id="approvalStatus" 
+       role="status" 
+       aria-live="polite" 
+       style="margin-top: 1rem; font-weight: 500;">
+  </div>
+
+  <!-- Results Container -->
+  <div id="approvalResults" style="margin-top: 1rem; display: none;">
+    
+    <h3>Results</h3>
+
+    <div id="approvalList"></div>
+
+    <!-- Summary -->
+    <div id="approvalSummary" style="margin-top: 1rem; font-weight: 600;"></div>
+
+    <!-- CTA Funnel -->
+    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+      <p>
+        Want a full manual review with risk analysis and cleanup guidance?
+      </p>
+      <button id="requestReview">Request Wallet Review (10 USDT)</button>
+    </div>
+
+  </div>
+
+  <!-- Disclaimer -->
+  <p style="font-size: 0.85rem; margin-top: 1rem; color: var(--text-muted);">
+    This scan checks a limited set of known contracts. Unknown approvals may not be detected.
+  </p>
+</section>
+    
 <section class="card" id="charts">
   <h2>Token Charts</h2>
   <p>View real time charts for Pool Funding tokens on ApeSpace.</p>
