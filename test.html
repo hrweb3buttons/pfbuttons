@@ -523,6 +523,11 @@ button.donate-more {
  onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank','noopener,noreferrer')">
       PML Chart
     </button>
+
+    <button aria-label="Open JOY chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xfd1825a6570dcaa27538ea638a0087bd84a3effa','_blank','noopener,noreferrer')">
+  JOY Chart
+</button>
   </div>
 <h3 style="margin-top: 1.5rem;">View Token on BscScan</h3>
 
@@ -551,6 +556,11 @@ button.donate-more {
   onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank','noopener,noreferrer')">
   PML
 </button>
+
+  <button aria-label="Open JOY on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/address/0x24338c1ACe31A3DfE43912879317eb76a6213a0f','_blank','noopener,noreferrer')">
+  JOY
+</button>
 </div>
 
 <h3 id="quick-swap" style="margin-top: 1.75rem;">
@@ -570,6 +580,7 @@ button.donate-more {
   <button data-swap="PFS">Swap USDT to PFS</button>
   <button data-swap="PFG">Swap USDT to PFG</button>
   <button data-swap="PML">Swap USDT to PML</button>
+  <button data-swap="JOY">Swap USDT to JOY</button>
 </div>
 
 <div id="swapMobileContainer" style="display:none; margin-top:1rem;"></div>
@@ -860,7 +871,8 @@ pageSelector.addEventListener("change", e => {
   PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
   PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
   PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
-  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc"
+  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc",
+  JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"      
 };
 
 function isMobileBrowser() {
