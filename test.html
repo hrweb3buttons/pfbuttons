@@ -1001,6 +1001,7 @@ async function connectWallet() {
 
         async function addAllTokens() {
         if (!window.ethereum) { notify("MetaMask not detected"); return; }
+        const ok = await ensureBSC();  
         if (!confirm("Add all ecosystem tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         await Promise.allSettled(
           tokens.map(t =>
