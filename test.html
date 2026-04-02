@@ -784,30 +784,30 @@ const FLAGGED_SPENDERS = new Set([
   "function transfer(address to, uint256 amount) returns (bool)"
 ];
     
-    document.addEventListener("DOMContentLoaded", () => {
-      let provider = null;
-      let signer = null;
-      const root = document.documentElement;
-      const themeToggle = document.getElementById("themeToggle");
+   document.addEventListener("DOMContentLoaded", () => {
+  let provider = null;
+  let signer = null;
+  const root = document.documentElement;
+  const themeToggle = document.getElementById("themeToggle");
 
-if (localStorage.getItem("theme") === "dark") {
-  root.classList.add("dark");
-  themeToggle.textContent = "Light mode";
-  themeToggle.setAttribute("aria-pressed", "true");
-}
+  if (localStorage.getItem("theme") === "dark") {
+    root.classList.add("dark");
+    themeToggle.textContent = "Light mode";
+    themeToggle.setAttribute("aria-pressed", "true");
+  }
 
-// ✅ ALWAYS bind these
-const scanBtn = document.getElementById("scanApprovals");
-if (scanBtn) {
-  scanBtn.onclick = runApprovalScan;
-}
+  const scanBtn = document.getElementById("scanApprovals");
+  if (scanBtn) {
+    scanBtn.onclick = runApprovalScan;
+  }
 
-const reviewBtn = document.getElementById("requestReview");
-if (reviewBtn) {
-  reviewBtn.onclick = () => {
-    document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
-  };
-}
+  const reviewBtn = document.getElementById("requestReview");
+  if (reviewBtn) {
+    reviewBtn.onclick = () => {
+      document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+    };
+  }
+}); // ✅ THIS was missing
       }
 
 if (window.ethereum) {
