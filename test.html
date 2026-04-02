@@ -790,19 +790,19 @@ const FLAGGED_SPENDERS = new Set([
       const root = document.documentElement;
       const themeToggle = document.getElementById("themeToggle");
 
-      if (localStorage.getItem("theme") === "dark") {
-        root.classList.add("dark");
-        themeToggle.textContent = "Light mode";
-        themeToggle.setAttribute("aria-pressed", "true");
-  
-    const scanBtn = document.getElementById("scanApprovals");
+if (localStorage.getItem("theme") === "dark") {
+  root.classList.add("dark");
+  themeToggle.textContent = "Light mode";
+  themeToggle.setAttribute("aria-pressed", "true");
+}
 
+// ✅ ALWAYS bind these
+const scanBtn = document.getElementById("scanApprovals");
 if (scanBtn) {
   scanBtn.onclick = runApprovalScan;
 }
 
-        const reviewBtn = document.getElementById("requestReview");
-
+const reviewBtn = document.getElementById("requestReview");
 if (reviewBtn) {
   reviewBtn.onclick = () => {
     document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
