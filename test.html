@@ -739,6 +739,9 @@ button.donate-more {
   </footer>
 
   <script>
+const root = document.documentElement;
+const themeToggle = document.getElementById("themeToggle");
+    
     const CONFIG = {
   chainId: 56,
   chainHex: "0x38",
@@ -905,8 +908,6 @@ if (announcer) {
 let provider = null;
 let signer = null;
 let connectedAccount = null;
-const root = document.documentElement;
-const themeToggle = document.getElementById("themeToggle");
 
 async function connectWallet() {
   if (!window.ethereum) return notify("MetaMask not detected");
