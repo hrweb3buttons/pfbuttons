@@ -206,7 +206,157 @@
   </footer>
 
 </div>
+<script>
+/* --- GAME STATE --- */
 
+const state = {
+  players: [
+    { id: 1, name: "Alice", coins: 5, cards: 2, alive: true },
+    { id: 2, name: "Bob", coins: 2, cards: 1, alive: true },
+    { id: 3, name: "Carol", coins: 0, cards: 0, alive: false }
+  ],
+  currentPlayer: 0,
+  phase: "action",
+  log: [
+    "Game started",
+    "Alice takes income"
+  ]
+};
+
+/* --- RENDER FUNCTIONS --- */
+
+function render() {
+  renderPlayers();
+  renderHeader();
+  renderLog();
+}
+
+function renderHeader() {
+  const player = state.players[state.currentPlayer];
+  document.getElementById("turn-indicator").textContent =
+    player.name + "'s turn";
+  document.getElementById("phase-indicator").textContent =
+    "Phase: " + state.phase;
+}
+
+function renderPlayers() {
+  const container = document.getElementById("players");
+  container.innerHTML = "<h2>Players</h2>";
+
+  state.players.forEach((p, index) => {
+    const div = document.createElement("div");
+    div.className = "player";
+
+    if (index === state.currentPlayer) div.classList.add("current");
+    if (!p.alive) div.classList.add("eliminated");
+
+    div.innerHTML = `
+      <div class="name">${p.name}</div>
+      <div>Coins: ${p.coins}</div>
+      <div class="cards">${"🂠".repeat(p.cards) || "❌"}</div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function renderLog() {
+  const logDiv = document.getElementById("log-messages");
+  logDiv.innerHTML = "";
+
+  state.log.forEach(entry => {
+    const el = document.createElement("div");
+    el.textContent = entry;
+    logDiv.appendChild(el);
+  });
+
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+/* --- GAME LOGIC --- */
+
+function nextTurn() {
+  let next = state.currentPlayer;
+
+  do {
+    next = (next + 1) % state.players.length;
+  } while (!state.players[next].alive);
+
+  state.currentPlayer = next;
+  state.phase = "action";
+}
+
+function addLog(message) {
+  state.log.push(message);
+}
+
+/* --- ACTIONS --- */
+
+function income() {
+  const player = state.players[state.currentPlayer];
+  player.coins += 1;
+
+  addLog(player.name + " takes income (+1 coin)");
+
+  nextTurn();
+  render();
+}
+
+function foreignAid() {
+  const player = state.players[state.currentPlayer];
+  player.coins += 2;
+
+  addLog(player.name + " takes foreign aid (+2 coins)");
+
+  nextTurn();
+  render();
+}
+
+function coup() {
+  const player = state.players[state.currentPlayer];
+
+  if (player.coins < 7) {
+    alert("Need 7 coins to coup");
+    return;
+  }
+
+  player.coins -= 7;
+
+  // eliminate next player (simple version)
+  const target = state.players[(state.currentPlayer + 1) % state.players.length];
+  target.cards -= 1;
+
+  if (target.cards <= 0) {
+    target.alive = false;
+    addLog(target.name + " is eliminated!");
+  } else {
+    addLog(target.name + " loses influence");
+  }
+
+  addLog(player.name + " performs a coup");
+
+  nextTurn();
+  render();
+}
+
+/* --- BUTTON HOOKUP --- */
+
+function setupButtons() {
+  const buttons = document.querySelectorAll(".buttons button");
+
+  buttons[0].onclick = income;
+  buttons[1].onclick = foreignAid;
+  buttons[2].onclick = coup;
+
+  // others can be added later
+}
+
+/* --- INIT --- */
+
+setupButtons();
+render();
+
+</script>
 </body>
 
   
