@@ -4,9 +4,130 @@
   <meta charset="UTF-8">
   <title>Coup Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+<head>
+  <meta charset="UTF-8">
+  <title>Coup Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #1e1e2f;
+      color: #fff;
+    }
+
+    #app {
+      display: grid;
+      grid-template-rows: auto 1fr auto auto;
+      height: 100vh;
+    }
+
+    #game-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #2c2c3e;
+      font-weight: bold;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    #players {
+      background: #2a2a3a;
+      padding: 10px;
+      border-radius: 10px;
+      overflow-y: auto;
+    }
+
+    .player {
+      background: #3a3a4f;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+
+    .player.current {
+      border: 2px solid gold;
+    }
+
+    .player.eliminated {
+      opacity: 0.5;
+    }
+
+    #log {
+      background: #2a2a3a;
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #log-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+
+    #actions {
+      background: #2c2c3e;
+      padding: 10px;
+    }
+
+    .buttons,
+    .reactions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #f39c12;
+    }
+
+    #hand {
+      background: #222;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card {
+      background: #444;
+      padding: 12px;
+      border-radius: 8px;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body>
 
 <div id="app">
 
