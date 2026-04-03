@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-  connect-src 'self' https://api.coingecko.com https://api.geckoterminal.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io;
+  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io;
   img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -534,8 +534,7 @@ button.donate-more {
 
   <div id="priceContainer">
     <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
-      <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
-      <strong>PML:</strong> <span id="pmlPrice">--</span> USD
+      <strong>BNB:</strong> <span id="bnbPrice">--</span> USD
     </div>
   </div>
 
@@ -680,11 +679,12 @@ button.donate-more {
     <div id="approvalSummary" style="margin-top: 1rem;"></div>
 
     <div class="scan-cta" id="scanCta" style="display:none;">
-      <div class="scan-cta-title">Want a complete security review?</div>
+      <div class="scan-cta-title">Want a deeper look at your wallet?</div>
       <p>
-        The scanner above checks a curated set of known contracts. A full manual review
-        covers your entire approval history, identifies hidden risks, and walks you through
-        safely removing dangerous permissions.
+        This automated scan checks a curated set of known contracts and live threat data.
+        A full manual review goes further — covering your complete approval history,
+        flagging subtle risks the automated scan may miss, and guiding you through
+        safely removing any unnecessary permissions.
       </p>
       <button id="requestReview">Request Wallet Review (10 USDT)</button>
     </div>
@@ -811,13 +811,6 @@ button.donate-more {
       Price Target
     </label>
   </div>
-
-  <div>
-    <label>
-      <input type="radio" name="calcMode" value="community">
-      Community Coin
-    </label>
-  </div>
 </fieldset>
 
 <fieldset id="targetSelector" style="display:none; margin-bottom:1rem;">
@@ -848,31 +841,6 @@ button.donate-more {
 <button id="calcReset" type="button" class="donate-more">Reset</button>
 </div>
 
-  <div id="communityContainer" style="display:none; margin-top:1rem;">
-
-    <div style="margin-bottom:1rem;">
-      <label>
-        <strong>Your PML Amount</strong><br>
-        <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;">
-      </label>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <strong>Divisor</strong><br>5
-      <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <strong>Multiplier</strong><br>1,000,000,000
-      <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <strong>Final Multiplier</strong><br>$1,000
-      <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div>
-    </div>
-
-  </div>
 
   <div id="calcAlert" role="alert" style="display:none;"></div>
   <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
@@ -1193,7 +1161,7 @@ pageSelector.addEventListener("change", e => {
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
         { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
-        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18 }
+        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "./assets/joy64.png" /* TODO: commit joy64.png to /assets/ in your repo */ }
       ];
 
       const swapLinks = {
@@ -1408,6 +1376,8 @@ function renderApprovalResults(findings) {
   if (!findings.length) {
     summary.innerHTML =
       '<span style="color: var(--text);">✅ No active approvals found for the scanned contracts.</span>';
+    // Still show CTA — a clean scan is still worth a deeper manual review
+    if (cta) cta.style.display = "block";
     return;
   }
 
@@ -1512,10 +1482,8 @@ function renderApprovalResults(findings) {
 
   summary.innerHTML = `<div class="scan-summary-bar">${summaryParts.join("")}</div>`;
 
-  // Show CTA if there are any non-trivial findings
-  if (cta && (countHigh > 0 || countMedium > 0)) {
-    cta.style.display = "block";
-  }
+  // Always surface the CTA after any completed scan
+  if (cta) cta.style.display = "block";
 }
 
         async function addAllTokens() {
@@ -1858,25 +1826,6 @@ async function fetchPrices() {
     document.getElementById("bnbPrice").textContent = "--";
   }
 
-  try {
-    const response = await fetch(
-      "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4"
-    );
-
-    if (!response.ok) {
-      throw new Error("GeckoTerminal response not OK");
-    }
-
-    const pml = await response.json();
-    const price = pml?.data?.attributes?.base_token_price_usd;
-
-    document.getElementById("pmlPrice").textContent =
-      price ? parseFloat(price).toFixed(2) : "--";
-
-  } catch (err) {
-    console.error("PML price fetch failed:", err);
-    document.getElementById("pmlPrice").textContent = "--";
-  }
 }
  checkNetworkOnLoad();
       const connectBtn = document.getElementById("connectWallet");
@@ -2044,31 +1993,18 @@ function setMode(mode) {
 clearCalcOutput();
 priceInput.value = "";
 amountInput.value = "";
-communityPml.value = "";
-
-resultDivide.textContent = "";
-resultMultiply1.textContent = "";
-resultFinal.textContent = "";
 
 if (mode === "target") {
 targetSelector.style.display = "block";
 priceInput.readOnly = true;
 calcPriceRow.style.display = "block";
 calcAmountRow.style.display = "block";
-communityContainer.style.display = "none";
-
-} else if (mode === "community") {
-targetSelector.style.display = "none";
-calcPriceRow.style.display = "none";
-calcAmountRow.style.display = "none";
-communityContainer.style.display = "block";
 
 } else {
 targetSelector.style.display = "none";
 priceInput.readOnly = false;
 calcPriceRow.style.display = "block";
 calcAmountRow.style.display = "block";
-communityContainer.style.display = "none";
 }
 }
 
@@ -2123,40 +2059,6 @@ formatOnBlur(amountInput);
 
     
 calcButton.addEventListener("click", () => {
-  const selectedMode = document.querySelector('input[name="calcMode"]:checked').value;
-
-if (selectedMode === "community") {
-clearCalcOutput();
-const pmlAmount = parseLocalizedNumber(communityPml.value);
-
-if (isNaN(pmlAmount) || pmlAmount <= 0) {
-calcAlert.textContent = "Please enter a valid PML amount.";
-calcAlert.style.display = "block";
-return;
-}
-
-const step1 = pmlAmount / 5;
-const step2 = step1 * 1000000000;
-const step3 = step2 * 1000;
-
-resultDivide.textContent =
-"After dividing by 5: " +
-new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step1);
-
-resultMultiply1.textContent =
-"After multiplying by 1,000,000,000: " +
-new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step2);
-
-resultFinal.textContent =
-"Final value: $" +
-new Intl.NumberFormat(navigator.language, {
-minimumFractionDigits: 2,
-maximumFractionDigits: 2
-}).format(step3) +
-" USD";
-
-return;
-}
   clearCalcOutput();
 
 const price = parseLocalizedNumber(priceInput.value);
@@ -2197,11 +2099,6 @@ function resetCalculator() {
 
   priceInput.value = "";
   amountInput.value = "";
-  communityPml.value = "";
-
-  resultDivide.textContent = "";
-  resultMultiply1.textContent = "";
-  resultFinal.textContent = "";
 
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
 
@@ -2210,18 +2107,9 @@ function resetCalculator() {
 
   calcPriceRow.style.display = "block";
   calcAmountRow.style.display = "block";
-  communityContainer.style.display = "none";
 
   tokenRadios.forEach(r => r.checked = false);
 }
-
-      const communityContainer = document.getElementById("communityContainer");
-const communityPml = document.getElementById("communityPml");
-const resultDivide = document.getElementById("resultDivide");
-const resultMultiply1 = document.getElementById("resultMultiply1");
-const resultFinal = document.getElementById("resultFinal");
-      sanitizeInputField(communityPml);
-formatOnBlur(communityPml);
 
 calcReset.addEventListener("click", resetCalculator);
 const swapButtonsContainer = document.getElementById("swapButtons");
