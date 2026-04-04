@@ -1111,6 +1111,7 @@ function extractGoPlusFlags(goplusData) {
     themeToggle.textContent = "Light mode";
     themeToggle.setAttribute("aria-pressed", "true");
   }
+  tryRestoreConnection();   
 
   const scanBtn = document.getElementById("scanApprovals");
   if (scanBtn) {
@@ -1124,6 +1125,8 @@ function extractGoPlusFlags(goplusData) {
     };
   }
 });
+
+    
 
 if (window.ethereum) {
 
@@ -1491,6 +1494,22 @@ function renderApprovalResults(findings) {
   // Always surface the CTA after any completed scan
   if (cta) cta.style.display = "block";
 }
+
+  async function tryRestoreConnection() {
+  if (!window.ethereum) return;
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    if (!accounts || !accounts.length) return;
+
+    provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    connectedAccount = accounts[0];
+
+    updateWalletUI(true);
+  } catch (err) {
+    console.error("Auto-restore failed:", err);
+  }
+}  
 
         async function addAllTokens() {
         if (!window.ethereum) { notify("MetaMask not detected"); return; }
