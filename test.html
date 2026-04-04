@@ -304,6 +304,80 @@ button.donate-more {
 }
 
 /* =============================================
+   Wallet Tab Styles — Add Tokens card
+   ============================================= */
+
+.wallet-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.wallet-tab {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 0.5rem 1.25rem;
+  margin-bottom: -2px;
+  font-weight: 600;
+  letter-spacing: 0.01rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.wallet-tab:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.wallet-tab[aria-selected="true"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+:root.dark .wallet-tab[aria-selected="true"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.token-address-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+}
+
+.token-address-symbol {
+  font-weight: 700;
+  min-width: 3rem;
+  flex-shrink: 0;
+}
+
+.token-address-value {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  word-break: break-all;
+  flex: 1;
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+}
+
+.token-copy-btn {
+  flex-shrink: 0;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+/* =============================================
    Approval Scanner Enhanced Styles
    ============================================= */
 
@@ -606,9 +680,43 @@ button.donate-more {
 
 
 <section class="card" id="add-tokens">
-<h2>Add Tokens to MetaMask</h2>
-  <button id="addTokens">Add Pool Funding Tokens to MetaMask</button>
-    </section>
+  <h2>Add Tokens to MetaMask</h2>
+
+  <!-- Desktop: tab UI. Hidden on mobile — showMobileFallback() targets this wrapper. -->
+  <div id="add-tokens-desktop">
+
+    <div class="wallet-tabs" role="tablist" aria-label="Select your wallet">
+      <button
+        id="tab-btn-metamask"
+        class="wallet-tab"
+        role="tab"
+        aria-selected="true"
+        aria-controls="tab-panel-metamask">MetaMask</button>
+      <button
+        id="tab-btn-other"
+        class="wallet-tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls="tab-panel-other">Other Wallets</button>
+    </div>
+
+    <!-- MetaMask panel -->
+    <div id="tab-panel-metamask" role="tabpanel" aria-labelledby="tab-btn-metamask">
+      <button id="addTokens">Add Pool Funding Tokens to MetaMask</button>
+    </div>
+
+    <!-- Other Wallets panel -->
+    <div id="tab-panel-other" role="tabpanel" aria-labelledby="tab-btn-other" hidden>
+      <p style="margin-top:0; margin-bottom:1rem; font-size:0.95rem;">
+        Automatic token suggestions only work with the MetaMask browser extension.
+        Copy any contract address below and import it manually in your wallet.
+      </p>
+      <!-- Populated by JS: buildOtherWalletsPanel() -->
+      <div id="other-wallets-addresses"></div>
+    </div>
+
+  </div>
+</section>
 
 <section class="card" id="rpc">
 <h2>Switch Binance Smart Chain RPC</h2>
@@ -1165,8 +1273,8 @@ pageSelector.addEventListener("change", e => {
 
       const tokens = [
         { address: CONFIG.tokens.USDT.address, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
-        { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
         { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
+        { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
         { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
@@ -1895,13 +2003,101 @@ if (donateJOYBtn) {
 
 fetchPrices();
 
+/* =============================================
+   WALLET TABS — Add Tokens card
+   Switches between the MetaMask panel and the
+   Other Wallets address list. Desktop only;
+   mobile users hit the showMobileFallback() path.
+   ============================================= */
+
+function initWalletTabs() {
+  const tabMetaMask = document.getElementById("tab-btn-metamask");
+  const tabOther    = document.getElementById("tab-btn-other");
+  const panelMM     = document.getElementById("tab-panel-metamask");
+  const panelOther  = document.getElementById("tab-panel-other");
+
+  function selectTab(selected, deselected, showPanel, hidePanel) {
+    selected.setAttribute("aria-selected", "true");
+    deselected.setAttribute("aria-selected", "false");
+    showPanel.removeAttribute("hidden");
+    hidePanel.setAttribute("hidden", "");
+  }
+
+  tabMetaMask.addEventListener("click", () => {
+    selectTab(tabMetaMask, tabOther, panelMM, panelOther);
+  });
+
+  tabOther.addEventListener("click", () => {
+    selectTab(tabOther, tabMetaMask, panelOther, panelMM);
+  });
+
+  // Keyboard nav: left/right arrows move between tabs
+  [tabMetaMask, tabOther].forEach(btn => {
+    btn.addEventListener("keydown", e => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        const next = btn === tabMetaMask ? tabOther : tabMetaMask;
+        next.focus();
+        next.click();
+      }
+    });
+  });
+}
+
+/* =============================================
+   OTHER WALLETS PANEL — Token address list
+   Builds a row per token with a copy button.
+   Sourced from the tokens array so it stays
+   in sync automatically if tokens change.
+   ============================================= */
+
+function buildOtherWalletsPanel() {
+  const container = document.getElementById("other-wallets-addresses");
+  if (!container) return;
+
+  tokens.forEach(token => {
+    const row = document.createElement("div");
+    row.className = "token-address-row";
+
+    const symbol = document.createElement("span");
+    symbol.className = "token-address-symbol";
+    symbol.textContent = token.symbol;
+
+    const addr = document.createElement("span");
+    addr.className = "token-address-value";
+    addr.textContent = token.address;
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "token-copy-btn";
+    copyBtn.textContent = "Copy";
+    copyBtn.setAttribute("aria-label", "Copy " + token.symbol + " contract address");
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(token.address);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => { copyBtn.textContent = "Copy"; }, 2000);
+        notify(token.symbol + " address copied");
+      } catch (err) {
+        notify("Copy failed — please copy manually");
+        console.error("Clipboard write failed:", err);
+      }
+    });
+
+    row.appendChild(symbol);
+    row.appendChild(addr);
+    row.appendChild(copyBtn);
+    container.appendChild(row);
+  });
+}
+
 /* ===== MOBILE FALLBACK ===== */
 
 function showMobileFallback() {
-  const section = document.getElementById("add-tokens");
-  const btn = document.getElementById("addTokens");
+  // Hide the entire desktop tab UI — mobile users get their own layout below
+  const desktopWrapper = document.getElementById("add-tokens-desktop");
+  if (desktopWrapper) desktopWrapper.style.display = "none";
 
-  btn.style.display = "none";
+  const section = document.getElementById("add-tokens");
 
   const container = document.createElement("div");
   container.style.marginTop = "1rem";
@@ -1987,6 +2183,8 @@ if (isMobileBrowser()) {
   showMobileFallback();
 } else {
   document.getElementById("addTokens").style.display = "inline-block";
+  initWalletTabs();
+  buildOtherWalletsPanel();
 }
 
 /* ===== END MOBILE FALLBACK ===== */
