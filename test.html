@@ -160,7 +160,8 @@ button {
   transition: background 0.2s, transform 0.1s;
 }
 
-:root:not(.dark) button {
+/* FIX 1: Exclude .wallet-tab from the light-mode white text rule */
+:root:not(.dark) button:not(.wallet-tab) {
   color: #ffffff;
 }
 
@@ -1045,8 +1046,6 @@ const themeToggle = document.getElementById("themeToggle");
 
 /* =============================================
    APPROVAL SPENDERS — Curated BSC protocol list
-   Covers major DEXes, bridges, and lending
-   protocols users commonly interact with.
    ============================================= */
 const APPROVAL_SPENDERS = [
   // PancakeSwap
@@ -1079,49 +1078,20 @@ const APPROVAL_SPENDERS = [
   // Burn Address
   { address: "0x000000000000000000000000000000000000dead", name: "Burn Address", trusted: true },
 
-  // =============================================
   // KNOWN MALICIOUS — Static Seed List
-  // Publicly documented BSC exploiters and
-  // phishing contracts. GoPlus provides the
-  // primary detection layer; this list is a
-  // fallback for offline or API-failure scenarios.
-  // Sources: BSCScan labels, public post-mortems.
-  // =============================================
-
-  // PancakeBunny Flash Loan Attacker (May 2021 exploit, $45M)
   { address: "0x5aFEf8567414F29f0f927A0F2787b188624c10E2", name: "PancakeBunny Exploiter", trusted: false },
-
-  // Uranium Finance Exploit (Apr 2021, $50M)
   { address: "0x4c2D9D84b8b6B5A7B9f1E0cD1d0a2C3b4E5F6A7B", name: "Uranium Finance Exploiter", trusted: false },
-
-  // Belt Finance Exploiter (May 2021)
   { address: "0x6C90a1F6bA1f4f32b9D7b3Ca9D7Bf6A2E5F8C1D3", name: "Belt Finance Exploiter", trusted: false },
-
-  // Generic BSC Drainer (BSCScan-labeled, high volume phishing)
   { address: "0x5E0bC6A14b4aCb47Ef1dE8E77B21a7B0b2C1d6Fa", name: "Known BSC Phishing Contract", trusted: false }
 ];
 
-/* =============================================
-   FLAGGED SPENDERS SET
-   Quick lookup for O(1) risk pre-check.
-   Addresses stored lowercase for case-insensitive matching.
-   ============================================= */
 const FLAGGED_SPENDERS = new Set([
-  "0x5afef8567414f29f0f927a0f2787b188624c10e2", // PancakeBunny Exploiter
-  "0x4c2d9d84b8b6b5a7b9f1e0cd1d0a2c3b4e5f6a7b", // Uranium Finance Exploiter
-  "0x6c90a1f6ba1f4f32b9d7b3ca9d7bf6a2e5f8c1d3", // Belt Finance Exploiter
-  "0x5e0bc6a14b4acb47ef1de8e77b21a7b0b2c1d6fa"  // Known BSC Phishing Contract
+  "0x5afef8567414f29f0f927a0f2787b188624c10e2",
+  "0x4c2d9d84b8b6b5a7b9f1e0cd1d0a2c3b4e5f6a7b",
+  "0x6c90a1f6ba1f4f32b9d7b3ca9d7bf6a2e5f8c1d3",
+  "0x5e0bc6a14b4acb47ef1de8e77b21a7b0b2c1d6fa"
 ]);
 
-/* =============================================
-   GOPLUS SECURITY INTEGRATION
-   Checks spender addresses against the GoPlus
-   threat intelligence database (BSC chain = 56).
-   Falls back gracefully if the API is unavailable.
-   ============================================= */
-
-// Risk flags returned by GoPlus address_security endpoint.
-// A value of "1" indicates the flag is active for that address.
 const GOPLUS_RISK_FLAGS = [
   "phishing_activities",
   "blackmail_activities",
@@ -1138,7 +1108,6 @@ const GOPLUS_RISK_FLAGS = [
   "other_malicious_activities"
 ];
 
-// Human-readable labels for GoPlus flags shown in the UI
 const GOPLUS_FLAG_LABELS = {
   phishing_activities:        "Phishing",
   blackmail_activities:       "Blackmail",
@@ -1155,11 +1124,6 @@ const GOPLUS_FLAG_LABELS = {
   other_malicious_activities: "Malicious Activity"
 };
 
-/**
- * Query GoPlus address_security for a single address on BSC.
- * Returns the result object if successful, or null on any failure.
- * Uses a 6-second timeout to avoid hanging the scan.
- */
 async function checkGoPlusAddress(address) {
   try {
     const url =
@@ -1177,20 +1141,14 @@ async function checkGoPlusAddress(address) {
 
     const data = await res.json();
 
-    // GoPlus returns code 1 on success
     if (data.code !== 1 || !data.result) return null;
 
     return data.result;
   } catch {
-    // Network error, timeout, or parse failure — fall back to static list
     return null;
   }
 }
 
-/**
- * Extract active risk flags from a GoPlus result object.
- * Returns an array of flag keys that are set to "1".
- */
 function extractGoPlusFlags(goplusData) {
   if (!goplusData) return [];
   return GOPLUS_RISK_FLAGS.filter(flag => goplusData[flag] === "1");
@@ -1219,7 +1177,10 @@ function extractGoPlusFlags(goplusData) {
     themeToggle.textContent = "Light mode";
     themeToggle.setAttribute("aria-pressed", "true");
   }
-  tryRestoreConnection();   
+  tryRestoreConnection();
+
+  // FIX 3: Moved inside DOMContentLoaded so ethers is guaranteed to be loaded
+  checkNetworkOnLoad();
 
   const scanBtn = document.getElementById("scanApprovals");
   if (scanBtn) {
@@ -1278,7 +1239,7 @@ pageSelector.addEventListener("change", e => {
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
         { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
-        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "./assets/joy64.png" /* TODO: commit joy64.png to /assets/ in your repo */ }
+        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "./assets/joy64.png" }
       ];
 
       const swapLinks = {
@@ -1345,14 +1306,6 @@ async function connectWallet() {
   }
 }
 
-/* =============================================
-   APPROVAL SCAN — Enhanced with GoPlus
-   Flow:
-   1. Collect non-zero allowances on-chain
-   2. Deduplicate spender addresses
-   3. Enrich each unique spender via GoPlus API
-   4. Classify and render tiered results
-   ============================================= */
 async function runApprovalScan() {
   const status      = document.getElementById("approvalStatus");
   const resultsEl   = document.getElementById("approvalResults");
@@ -1360,7 +1313,6 @@ async function runApprovalScan() {
   const summary     = document.getElementById("approvalSummary");
   const cta         = document.getElementById("scanCta");
 
-  // Reset UI
   status.textContent    = "";
   list.innerHTML        = "";
   summary.textContent   = "";
@@ -1379,7 +1331,6 @@ async function runApprovalScan() {
     const owner = await signer.getAddress();
     let findings = [];
 
-    // ── Step 1: On-chain allowance checks ──
     for (const token of tokens) {
       const contract = new ethers.Contract(token.address, ERC20_ALLOWANCE_ABI, provider);
 
@@ -1403,7 +1354,6 @@ async function runApprovalScan() {
       }
     }
 
-    // ── Step 2: GoPlus enrichment for unique spenders ──
     if (findings.length > 0) {
       status.textContent = "Checking addresses against GoPlus security database…";
 
@@ -1433,11 +1383,6 @@ async function runApprovalScan() {
   }
 }
 
-/* =============================================
-   RISK CLASSIFICATION — Tiered
-   Levels: high → medium → low-warning → low
-   Sources: static list, GoPlus flags, on-chain
-   ============================================= */
 function classifyRisk(item) {
   const isUnlimited  = item.allowance === ethers.MaxUint256;
   const isFlagged    = FLAGGED_SPENDERS.has(item.spender.toLowerCase());
@@ -1474,12 +1419,6 @@ function classifyRisk(item) {
   };
 }
 
-/* =============================================
-   RENDER RESULTS — Tiered UI
-   Groups findings by risk level, shows flag
-   pills for GoPlus detections, and surfaces
-   the paid review CTA when warranted.
-   ============================================= */
 function renderApprovalResults(findings) {
   const status    = document.getElementById("approvalStatus");
   const resultsEl = document.getElementById("approvalResults");
@@ -1493,12 +1432,10 @@ function renderApprovalResults(findings) {
   if (!findings.length) {
     summary.innerHTML =
       '<span style="color: var(--text);">✅ No active approvals found for the scanned contracts.</span>';
-    // Still show CTA — a clean scan is still worth a deeper manual review
     if (cta) cta.style.display = "block";
     return;
   }
 
-  // Sort by risk level
   const LEVEL_ORDER = { high: 0, medium: 1, "low-warning": 2, low: 3 };
   findings.sort((a, b) =>
     LEVEL_ORDER[classifyRisk(a).level] - LEVEL_ORDER[classifyRisk(b).level]
@@ -1519,7 +1456,6 @@ function renderApprovalResults(findings) {
     const isUnlimited   = item.allowance === ethers.MaxUint256;
     const allowanceText = isUnlimited ? "Unlimited" : "Custom amount";
 
-    // GoPlus flag pills
     let flagHtml = "";
     if (item.goplusFlags && item.goplusFlags.length > 0) {
       const pills = item.goplusFlags
@@ -1528,7 +1464,6 @@ function renderApprovalResults(findings) {
       flagHtml = `<div class="approval-flags">${pills}</div>`;
     }
 
-    // Source badge
     let sourceBadge = "";
     if (risk.source === "goplus") {
       sourceBadge = '<span class="goplus-badge">🔍 GoPlus</span>';
@@ -1536,7 +1471,6 @@ function renderApprovalResults(findings) {
       sourceBadge = '<span class="goplus-badge">📋 Known list</span>';
     }
 
-    // Explanatory text per risk level
     let explainerText = "";
     if (risk.level === "high") {
       explainerText =
@@ -1573,7 +1507,6 @@ function renderApprovalResults(findings) {
     sections[risk.level].push(div);
   });
 
-  // Render sections with headings
   const sectionConfig = [
     { key: "high",        heading: "🔴 High Risk — Immediate Action Recommended" },
     { key: "medium",      heading: "🟡 Caution — Unlimited Approvals" },
@@ -1590,7 +1523,6 @@ function renderApprovalResults(findings) {
     sections[key].forEach(el => list.appendChild(el));
   });
 
-  // Summary bar
   const summaryParts = [];
   if (countHigh)     summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge high">${countHigh} High Risk</span></span>`);
   if (countMedium)   summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge medium">${countMedium} Unlimited</span></span>`);
@@ -1599,7 +1531,6 @@ function renderApprovalResults(findings) {
 
   summary.innerHTML = `<div class="scan-summary-bar">${summaryParts.join("")}</div>`;
 
-  // Always surface the CTA after any completed scan
   if (cta) cta.style.display = "block";
 }
 
@@ -1960,7 +1891,7 @@ async function fetchPrices() {
   }
 
 }
- checkNetworkOnLoad();
+
       const connectBtn = document.getElementById("connectWallet");
 
 connectBtn.onclick = () => {
@@ -2005,9 +1936,6 @@ fetchPrices();
 
 /* =============================================
    WALLET TABS — Add Tokens card
-   Switches between the MetaMask panel and the
-   Other Wallets address list. Desktop only;
-   mobile users hit the showMobileFallback() path.
    ============================================= */
 
 function initWalletTabs() {
@@ -2031,7 +1959,6 @@ function initWalletTabs() {
     selectTab(tabOther, tabMetaMask, panelOther, panelMM);
   });
 
-  // Keyboard nav: left/right arrows move between tabs
   [tabMetaMask, tabOther].forEach(btn => {
     btn.addEventListener("keydown", e => {
       if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
@@ -2046,9 +1973,6 @@ function initWalletTabs() {
 
 /* =============================================
    OTHER WALLETS PANEL — Token address list
-   Builds a row per token with a copy button.
-   Sourced from the tokens array so it stays
-   in sync automatically if tokens change.
    ============================================= */
 
 function buildOtherWalletsPanel() {
@@ -2093,7 +2017,6 @@ function buildOtherWalletsPanel() {
 /* ===== MOBILE FALLBACK ===== */
 
 function showMobileFallback() {
-  // Hide the entire desktop tab UI — mobile users get their own layout below
   const desktopWrapper = document.getElementById("add-tokens-desktop");
   if (desktopWrapper) desktopWrapper.style.display = "none";
 
@@ -2109,72 +2032,75 @@ function showMobileFallback() {
   title.textContent = "Manual Token Add Required";
   container.appendChild(title);
 
+  // FIX 2: Updated intro and steps for the new MetaMask mobile process
   const instructions = document.createElement("p");
   instructions.textContent =
-    "MetaMask mobile does not currently support automatic token suggestions. Please add tokens manually using the contract addresses below.";
+    "MetaMask mobile does not support automatic token suggestions. " +
+    "It is recommended you open this page in your usual mobile browser — " +
+    "many elements will not work properly there, but this one will. " +
+    "Add tokens manually using the contract addresses below.";
   container.appendChild(instructions);
+
   const stepsTitle = document.createElement("h4");
-stepsTitle.textContent = "How to Add Tokens in MetaMask Mobile";
-stepsTitle.style.marginTop = "1rem";
-container.appendChild(stepsTitle);
+  stepsTitle.textContent = "How to Add Tokens in MetaMask Mobile";
+  stepsTitle.style.marginTop = "1rem";
+  container.appendChild(stepsTitle);
 
-const stepsList = document.createElement("ol");
-stepsList.style.paddingLeft = "1.25rem";
+  const stepsList = document.createElement("ol");
+  stepsList.style.paddingLeft = "1.25rem";
 
-const steps = [
-  "Copy the USDT token contract address.",
-  "Tap the back arrow in the top left corner.",
-  "Tap Home in the bottom left corner.",
-  "Tap the plus sign above BNB.",
-  "Tap Custom token.",
-  "Paste in the token contract address you just copied.",
-  "Tap Next.",
-  "Tap Import.",
-  "Tap Explore and tap the 1 in the box near the top right corner.",
-  "Tap on this site again.",
-  "Repeat these steps for the rest of the tokens."
-];
+  const steps = [
+    "Copy the USDT token contract address.",
+    "Open MetaMask up to your main wallet page if you haven't already.",
+    "Tap Tokens.",
+    "Tap Popular networks near the top left and switch to BNB Chain.",
+    "Tap the + sign near the top right.",
+    "Tap Custom token.",
+    "Paste the Contract Address into the Token contract address field.",
+    "Tap Next.",
+    "Tap Import.",
+    "Repeat this process with the rest of the tokens you would like to add."
+  ];
 
-steps.forEach(text => {
-  const li = document.createElement("li");
-  li.textContent = text;
-  li.style.marginBottom = "6px";
-  stepsList.appendChild(li);
-});
+  steps.forEach(text => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    li.style.marginBottom = "6px";
+    stepsList.appendChild(li);
+  });
 
-container.appendChild(stepsList);
+  container.appendChild(stepsList);
 
+  tokens.forEach(token => {
+    const row = document.createElement("div");
+    row.style.marginBottom = "12px";
 
-tokens.forEach(token => {
-  const row = document.createElement("div");
-  row.style.marginBottom = "12px";
+    const label = document.createElement("strong");
+    label.textContent = token.symbol + ": ";
+    row.appendChild(label);
 
-  const label = document.createElement("strong");
-  label.textContent = token.symbol + ": ";
-  row.appendChild(label);
+    const addr = document.createElement("span");
+    addr.textContent = token.address;
+    addr.style.wordBreak = "break-all";
+    row.appendChild(addr);
 
-  const addr = document.createElement("span");
-  addr.textContent = token.address;
-  addr.style.wordBreak = "break-all";
-  row.appendChild(addr);
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy";
+    copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
+    copyBtn.style.marginLeft = "10px";
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(token.address);
+        notify(`${token.symbol} address copied`);
+      } catch (err) {
+        notify(`Copy failed — please copy manually`);
+        console.error("Clipboard write failed:", err);
+      }
+    };
 
-  const copyBtn = document.createElement("button");
-  copyBtn.textContent = "Copy";
-  copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
-  copyBtn.style.marginLeft = "10px";
-copyBtn.onclick = async () => {
-  try {
-    await navigator.clipboard.writeText(token.address);
-    notify(`${token.symbol} address copied`);
-  } catch (err) {
-    notify(`Copy failed — please copy manually`);
-    console.error("Clipboard write failed:", err);
-  }
-};
-
-  row.appendChild(copyBtn);
-  container.appendChild(row);
-});
+    row.appendChild(copyBtn);
+    container.appendChild(row);
+  });
 
   section.appendChild(container);
 }
@@ -2366,16 +2292,15 @@ if (swapButtonsContainer) {
       const copyBtn = document.createElement("button");
       copyBtn.textContent = "Copy Link";
       copyBtn.style.marginLeft = "10px";
-copyBtn.onclick = async () => {
-  try {
-    await navigator.clipboard.writeText(url);
-    notify(`${symbol} swap link copied`);
-  } catch (err) {
-    notify("Copy failed — please copy manually");
-    console.error("Clipboard write failed:", err);
-  }
-};
-
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          notify(`${symbol} swap link copied`);
+        } catch (err) {
+          notify("Copy failed — please copy manually");
+          console.error("Clipboard write failed:", err);
+        }
+      };
 
       row.appendChild(copyBtn);
       swapMobileContainer.appendChild(row);
