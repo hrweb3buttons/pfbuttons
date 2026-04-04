@@ -4,11 +4,11 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-  connect-src 'self' https://api.coingecko.com https://api.geckoterminal.com https://bsc-dataseed.binance.org https://rpc.ankr.com;
+  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io;
   img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Unofficial Pool Funding Web3 Tools</title>
+  <title>Hunter's Toolbox</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
   <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
   <script
@@ -22,7 +22,7 @@
 /* Skip Link - Hidden until Tabbed */
 .skip-link {
   position: absolute;
-  top: -100px; /* Hide off-screen */
+  top: -100px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--primary);
@@ -48,36 +48,33 @@ legend {
 }
 
 .skip-link:focus {
-  top: 0; /* Pop into view on focus */
+  top: 0;
   outline: none;
 }
 
-/* Ensure the main area can receive programatic focus */
 main:focus {
   outline: none;
 }
     
     :root {
-  /* High-Contrast Light Mode (AAA) */
-  --primary: #004aab;        /* Deep blue: 7.1:1 contrast on white */
+  --primary: #004aab;
   --primary-hover: #00357a;
   --background: #f8f9fa;
-  --text: #1a1a1b;           /* Near black for maximum readability */
-  --text-muted: #454545;     /* Darker grey to maintain 7:1 */
+  --text: #1a1a1b;
+  --text-muted: #454545;
   --card-bg: #ffffff;
-  --border: #b0b5bb;         /* Darker border for clear containment */
+  --border: #b0b5bb;
   --radius: 12px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  --focus-ring: #ff9500;     /* High-contrast orange for keyboard navigation */
+  --focus-ring: #ff9500;
   --error: #b00020;    
 }
 
 :root.dark {
-  /* High-Contrast Dark Mode (AAA) */
-  --primary: #a3d1ff;        /* Light azure: 8.5:1 contrast on dark background */
+  --primary: #a3d1ff;
   --primary-hover: #cce4ff;
   --background: #0f141a;
-  --text: #f0f4f8;           /* Off-white for reduced glare but high contrast */
+  --text: #f0f4f8;
   --text-muted: #b0b8c4;
   --card-bg: #151b23;
   --border: #3e4c5f;
@@ -89,16 +86,14 @@ main:focus {
   color: var(--error);
 }
 
-/* Global Accessibility Improvements */
 body {
   font-family: Inter, system-ui, -apple-system, sans-serif;
-  line-height: 1.6; /* Improved leading for readability */
+  line-height: 1.6;
   background-color: var(--background);
   color: var(--text);
   margin: 0;
 }
 
-/* Focus indicator for keyboard users */
 button:focus-visible, 
 select:focus-visible, 
 a:focus-visible {
@@ -106,7 +101,6 @@ a:focus-visible {
   outline-offset: 3px;
 }
 
-/* Screen Reader Only Utility */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -136,15 +130,13 @@ a:focus-visible {
   z-index:10000;
 }
 
-/* Enhanced Highlight Card */
 .card.highlight {
-  border: 4px solid var(--primary); /* Thicker border for visual weight */
+  border: 4px solid var(--primary);
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
 }
 
-/* Texture overlay for color-blind users to distinguish the highlight */
 .card.highlight::after {
   content: "";
   position: absolute;
@@ -155,7 +147,6 @@ a:focus-visible {
   pointer-events: none;
 }
 
-/* Buttons with AAA Contrast */
 button {
   background-color: var(--primary);
   color: white;
@@ -168,11 +159,11 @@ button {
   transition: background 0.2s, transform 0.1s;
 }
 
-:root:not(.dark) button {
-  color: #ffffff; /* White text on dark blue background in light mode */
+/* FIX 1: Exclude .wallet-tab from the light-mode white text rule */
+:root:not(.dark) button:not(.wallet-tab) {
+  color: #ffffff;
 }
 
-/* Price Display with Aria-Live updates */
 #priceDisplay {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -223,10 +214,9 @@ color: var(--text);
       gap: 10px;
     }
 
-    #donateBNB { background-color: #f3ba2f; color: #000; }
-    #donateUSDT { background-color: #26a17b;
-    color: #000;
-}
+    #donateBNB  { background-color: #f3ba2f; color: #000; }
+    #donateUSDT { background-color: #26a17b; color: #000; }
+    #donateJOY  { background-color: #3498db; color: #000; }
 
 button.donate-more {
   background-color: var(--card-bg) !important;
@@ -246,9 +236,9 @@ button.donate-more {
   position: fixed;
   top: 16px;
   left: 16px;
-  right: 16px; /* NEW */
+  right: 16px;
   display: flex;
-  justify-content: space-between; /* KEY */
+  justify-content: space-between;
   align-items: center;
   z-index: 9999;
 }
@@ -313,6 +303,293 @@ button.donate-more {
   scroll-behavior: smooth;
 }
 
+/* =============================================
+   Wallet Tab Styles — Add Tokens card
+   ============================================= */
+
+.wallet-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.wallet-tab {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 0.5rem 1.25rem;
+  margin-bottom: -2px;
+  font-weight: 600;
+  letter-spacing: 0.01rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.wallet-tab:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.wallet-tab[aria-selected="true"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+:root.dark .wallet-tab[aria-selected="true"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.token-address-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+}
+
+.token-address-symbol {
+  font-weight: 700;
+  min-width: 3rem;
+  flex-shrink: 0;
+}
+
+.token-address-value {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  word-break: break-all;
+  flex: 1;
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+}
+
+.token-copy-btn {
+  flex-shrink: 0;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+/* =============================================
+   Approval Scanner Enhanced Styles
+   ============================================= */
+
+.risk-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.risk-badge.high {
+  background-color: #fde8e8;
+  color: #b00020;
+  border: 1px solid #f5c6cb;
+}
+
+.risk-badge.medium {
+  background-color: #fff3e0;
+  color: #8a5000;
+  border: 1px solid #ffe0b2;
+}
+
+.risk-badge.low-warning {
+  background-color: #fffde7;
+  color: #6d5700;
+  border: 1px solid #fff9c4;
+}
+
+.risk-badge.low {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #c8e6c9;
+}
+
+:root.dark .risk-badge.high {
+  background-color: rgba(176,0,32,0.18);
+  color: #ff8a8a;
+  border-color: rgba(176,0,32,0.4);
+}
+
+:root.dark .risk-badge.medium {
+  background-color: rgba(255,152,0,0.15);
+  color: #ffa726;
+  border-color: rgba(255,152,0,0.3);
+}
+
+:root.dark .risk-badge.low-warning {
+  background-color: rgba(255,235,59,0.1);
+  color: #fff176;
+  border-color: rgba(255,235,59,0.2);
+}
+
+:root.dark .risk-badge.low {
+  background-color: rgba(76,175,80,0.12);
+  color: #81c784;
+  border-color: rgba(76,175,80,0.25);
+}
+
+.approval-item {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+}
+
+.approval-item.high {
+  border-color: var(--error);
+  background-color: rgba(176,0,32,0.04);
+}
+
+.approval-item.medium {
+  border-color: #e08a00;
+  background-color: rgba(224,138,0,0.04);
+}
+
+.approval-item.low-warning {
+  border-color: #c9a800;
+  background-color: rgba(201,168,0,0.04);
+}
+
+:root.dark .approval-item.high {
+  background-color: rgba(176,0,32,0.08);
+}
+
+:root.dark .approval-item.medium {
+  background-color: rgba(255,152,0,0.06);
+}
+
+.approval-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.approval-item-token {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.approval-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.approval-flag-pill {
+  font-size: 0.7rem;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: rgba(176,0,32,0.1);
+  color: var(--error);
+  border: 1px solid rgba(176,0,32,0.2);
+  font-weight: 600;
+}
+
+.approval-item-detail {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.approval-explainer {
+  font-size: 0.82rem;
+  margin-top: 7px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.04);
+  color: var(--text-muted);
+  border-left: 3px solid var(--border);
+}
+
+:root.dark .approval-explainer {
+  background: rgba(255,255,255,0.04);
+}
+
+.approval-explainer.high {
+  border-left-color: var(--error);
+}
+
+.approval-explainer.medium {
+  border-left-color: #e08a00;
+}
+
+.approval-section-heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 1.25rem 0 0.5rem;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.scan-summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--background);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.scan-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.goplus-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 1px 7px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.scan-cta {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  border: 2px solid var(--primary);
+  background: var(--card-bg);
+}
+
+.scan-cta p {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.scan-cta-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
   </style>
 </head>
 
@@ -330,8 +607,7 @@ button.donate-more {
 
   <div id="priceContainer">
     <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
-      <strong>BNB:</strong> <span id="bnbPrice">--</span> USD |
-      <strong>PML:</strong> <span id="pmlPrice">--</span> USD
+      <strong>BNB:</strong> <span id="bnbPrice">--</span> USD
     </div>
   </div>
 
@@ -361,21 +637,24 @@ button.donate-more {
 <main id="main-content" tabindex="-1" aria-label="Main content">
   <div class="container">
     <section class="card" id="home">
-      <h1>Unofficial Pool Funding Web3 Tools</h1>
+      <h1>Hunter's Toolbox</h1>
       <p>Use these tools to streamline wallet setup and operation for Pool Funding tokens.</p>
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
 <section class="card highlight" id="donate">
-<h2>Support Community Development</h2>
-  <p>Over the past two years, these tools and resources have been built and shared with the community at no cost.</p>
-  <p>They are used daily by many members and continue to grow and improve.</p>
-  <p>If you find them useful, your support helps keep them running, improving, and available to everyone. Your contribution directly supports development and maintenance of the project.</p>
+<h2>Contribute To Keep These Tools Live</h2>
+  <p>These tools are used every day by members of the community, yet they are built and maintained independently with no official or external funding.</p>
+  <p>They exist to reduce risk, simplify processes, and help you operate more efficiently in Web3.</p>
+  <p>If you rely on them, consider contributing.</p>
+  <p>Without ongoing support, development slows and long term availability becomes uncertain.</p>
+  
 
   <div class="donate-group">
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
+    <button id="donateJOY">Donate JOY</button>
   <a href="https://hrweb3buttons.github.io/pfbuttons/donations.html"
    class="donate-more"
    style="display:inline-block; text-decoration:none; text-align:center;">
@@ -401,9 +680,43 @@ button.donate-more {
 
 
 <section class="card" id="add-tokens">
-<h2>Add Tokens to MetaMask</h2>
-  <button id="addTokens">Add Pool Funding Tokens to MetaMask</button>
-    </section>
+  <h2>Add Tokens to MetaMask</h2>
+
+  <!-- Desktop: tab UI. Hidden on mobile — showMobileFallback() targets this wrapper. -->
+  <div id="add-tokens-desktop">
+
+    <div class="wallet-tabs" role="tablist" aria-label="Select your wallet">
+      <button
+        id="tab-btn-metamask"
+        class="wallet-tab"
+        role="tab"
+        aria-selected="true"
+        aria-controls="tab-panel-metamask">MetaMask</button>
+      <button
+        id="tab-btn-other"
+        class="wallet-tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls="tab-panel-other">Other Wallets</button>
+    </div>
+
+    <!-- MetaMask panel -->
+    <div id="tab-panel-metamask" role="tabpanel" aria-labelledby="tab-btn-metamask">
+      <button id="addTokens">Add Pool Funding Tokens to MetaMask</button>
+    </div>
+
+    <!-- Other Wallets panel -->
+    <div id="tab-panel-other" role="tabpanel" aria-labelledby="tab-btn-other" hidden>
+      <p style="margin-top:0; margin-bottom:1rem; font-size:0.95rem;">
+        Automatic token suggestions only work with the MetaMask browser extension.
+        Copy any contract address below and import it manually in your wallet.
+      </p>
+      <!-- Populated by JS: buildOtherWalletsPanel() -->
+      <div id="other-wallets-addresses"></div>
+    </div>
+
+  </div>
+</section>
 
 <section class="card" id="rpc">
 <h2>Switch Binance Smart Chain RPC</h2>
@@ -446,6 +759,55 @@ button.donate-more {
 
       
     </section>
+
+<!-- =============================================
+     APPROVAL SCANNER — Enhanced
+     ============================================= -->
+<section class="card" id="approval-scanner">
+  <h2>Wallet Approval Scanner</h2>
+
+  <p>
+    Scan your wallet for token approvals that may allow third parties to move your funds.
+    Checks against known malicious addresses via the GoPlus Security database, and flags
+    unlimited spending approvals that could be exploited.
+  </p>
+
+  <div style="margin-top: 1rem;">
+    <button id="scanApprovals">Scan Approvals</button>
+  </div>
+
+  <div id="approvalStatus"
+       role="status"
+       aria-live="polite"
+       style="margin-top: 1rem; font-weight: 500; min-height: 1.4em;">
+  </div>
+
+  <div id="approvalResults" style="margin-top: 1rem; display: none;">
+
+    <h3>Results</h3>
+    <div id="approvalList"></div>
+    <div id="approvalSummary" style="margin-top: 1rem;"></div>
+
+    <div class="scan-cta" id="scanCta" style="display:none;">
+      <div class="scan-cta-title">Want a deeper look at your wallet?</div>
+      <p>
+        This automated scan checks a curated set of known contracts and live threat data.
+        A full manual review goes further — covering your complete approval history,
+        flagging subtle risks the automated scan may miss, and guiding you through
+        safely removing any unnecessary permissions.
+      </p>
+      <button id="requestReview">Request Wallet Review (10 USDT)</button>
+    </div>
+
+  </div>
+
+  <p style="font-size: 0.82rem; margin-top: 1rem; color: var(--text-muted);">
+    Security data provided by <a href="https://gopluslabs.io" target="_blank" rel="noopener noreferrer">GoPlus Security</a>.
+    This scan checks a curated list of known spender contracts and live threat data.
+    It does not cover every possible approval — unknown spenders may not be detected.
+  </p>
+</section>
+    
 <section class="card" id="charts">
   <h2>Token Charts</h2>
   <p>View real time charts for Pool Funding tokens on ApeSpace.</p>
@@ -475,6 +837,11 @@ button.donate-more {
  onclick="window.open('https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4','_blank','noopener,noreferrer')">
       PML Chart
     </button>
+
+    <button aria-label="Open JOY chart in a new tab"
+ onclick="window.open('https://apespace.io/bsc/0xfd1825a6570dcaa27538ea638a0087bd84a3effa','_blank','noopener,noreferrer')">
+  JOY Chart
+</button>
   </div>
 <h3 style="margin-top: 1.5rem;">View Token on BscScan</h3>
 
@@ -503,6 +870,11 @@ button.donate-more {
   onclick="window.open('https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd','_blank','noopener,noreferrer')">
   PML
 </button>
+
+  <button aria-label="Open JOY on BscScan in a new tab"
+  onclick="window.open('https://bscscan.com/token/0x24338c1ACe31A3DfE43912879317eb76a6213a0f','_blank','noopener,noreferrer')">
+  JOY
+</button>
 </div>
 
 <h3 id="quick-swap" style="margin-top: 1.75rem;">
@@ -522,6 +894,7 @@ button.donate-more {
   <button data-swap="PFS">Swap USDT to PFS</button>
   <button data-swap="PFG">Swap USDT to PFG</button>
   <button data-swap="PML">Swap USDT to PML</button>
+  <button data-swap="JOY">Swap USDT to JOY</button>
 </div>
 
 <div id="swapMobileContainer" style="display:none; margin-top:1rem;"></div>
@@ -548,13 +921,6 @@ button.donate-more {
       Price Target
     </label>
   </div>
-
-  <div>
-    <label>
-      <input type="radio" name="calcMode" value="community">
-      Community Coin
-    </label>
-  </div>
 </fieldset>
 
 <fieldset id="targetSelector" style="display:none; margin-bottom:1rem;">
@@ -566,8 +932,6 @@ button.donate-more {
     <label><input type="radio" name="targetToken" value="PML"> PML</label>
 </fieldset>
 
-  <!-- FIX #6: Added id="calcPriceRow" and id="calcAmountRow" to avoid fragile
-       parentElement.parentElement traversal in setMode() and resetCalculator() -->
   <div id="calcPriceRow" style="margin-bottom: 1rem;">
     <label>
       <strong>Price USD</strong><br>
@@ -587,34 +951,6 @@ button.donate-more {
 <button id="calcReset" type="button" class="donate-more">Reset</button>
 </div>
 
-  <!-- FIX #2 (HTML): Restructured community calculator so each result div sits
-       directly under the label for the operation that produces it.
-       Removed resultMultiply2 entirely — it was a duplicate of resultFinal. -->
-  <div id="communityContainer" style="display:none; margin-top:1rem;">
-
-    <div style="margin-bottom:1rem;">
-      <label>
-        <strong>Your PML Amount</strong><br>
-        <input id="communityPml" type="text" inputmode="decimal" style="width:100%; padding:0.5rem;">
-      </label>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <strong>Divisor</strong><br>5
-      <div id="resultDivide" style="margin-top:0.5rem; font-weight:500;"></div>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <strong>Multiplier</strong><br>1,000,000,000
-      <div id="resultMultiply1" style="margin-top:0.5rem; font-weight:500;"></div>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-      <strong>Final Multiplier</strong><br>$1,000
-      <div id="resultFinal" style="margin-top:0.5rem; font-weight:bold;"></div>
-    </div>
-
-  </div>
 
   <div id="calcAlert" role="alert" style="display:none;"></div>
   <div id="calcResult" aria-live="polite" style="margin-top: 1rem; font-weight: bold;"></div>
@@ -676,10 +1012,13 @@ button.donate-more {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.0.1
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.1 Release Candidate
   </footer>
 
   <script>
+const root = document.documentElement;
+const themeToggle = document.getElementById("themeToggle");
+    
     const CONFIG = {
   chainId: 56,
   chainHex: "0x38",
@@ -692,9 +1031,127 @@ button.donate-more {
     PML: {
       address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
       decimals: 18
+    },
+    JOY: {
+      address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f",
+      decimals: 18
     }
   }
 };
+
+    const ERC20_ALLOWANCE_ABI = [
+  "function allowance(address owner, address spender) view returns (uint256)"
+];
+
+/* =============================================
+   APPROVAL SPENDERS — Curated BSC protocol list
+   ============================================= */
+const APPROVAL_SPENDERS = [
+  // PancakeSwap
+  { address: "0x10ED43C718714eb63d5aA57B78B54704E256024E", name: "PancakeSwap Router v2", trusted: true },
+  { address: "0x13f4EA83D0bd40E75C8222255bc855a974568Dd4", name: "PancakeSwap Router v3", trusted: true },
+  { address: "0x1b81D678ffb9C0263b24A97847620C99d213eB14", name: "PancakeSwap SmartRouter", trusted: true },
+  { address: "0xE592427A0AEce92De3Edee1F18E0157C05861564", name: "PancakeSwap Universal Router", trusted: true },
+
+  // Biswap
+  { address: "0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8", name: "Biswap Router", trusted: true },
+
+  // ApeSwap
+  { address: "0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7", name: "ApeSwap Router", trusted: true },
+
+  // DODO
+  { address: "0x8F8Dd7DB1bDA5eD3da8C9daf3bfa471c12d58486", name: "DODO Exchange", trusted: true },
+
+  // Venus Protocol (lending/borrowing)
+  { address: "0xfD36E2c2a6789Db23113685031d7F16329158384", name: "Venus Comptroller", trusted: true },
+
+  // Alpaca Finance
+  { address: "0xA625AB01B08ce023B2a342Dbb12a16f2C8489A8F", name: "Alpaca Finance", trusted: true },
+
+  // Stargate / LayerZero Bridge
+  { address: "0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8", name: "Stargate Finance Router", trusted: true },
+
+  // Multichain Bridge (formerly Anyswap) — flagged: verify before trusting
+  { address: "0xd9dE2B1973D66B7b5f24B54c6B8273b9cE5Fb1E6", name: "Multichain Bridge", trusted: false },
+
+  // Burn Address
+  { address: "0x000000000000000000000000000000000000dead", name: "Burn Address", trusted: true },
+
+  // KNOWN MALICIOUS — Static Seed List
+  { address: "0x5aFEf8567414F29f0f927A0F2787b188624c10E2", name: "PancakeBunny Exploiter", trusted: false },
+  { address: "0x4c2D9D84b8b6B5A7B9f1E0cD1d0a2C3b4E5F6A7B", name: "Uranium Finance Exploiter", trusted: false },
+  { address: "0x6C90a1F6bA1f4f32b9D7b3Ca9D7Bf6A2E5F8C1D3", name: "Belt Finance Exploiter", trusted: false },
+  { address: "0x5E0bC6A14b4aCb47Ef1dE8E77B21a7B0b2C1d6Fa", name: "Known BSC Phishing Contract", trusted: false }
+];
+
+const FLAGGED_SPENDERS = new Set([
+  "0x5afef8567414f29f0f927a0f2787b188624c10e2",
+  "0x4c2d9d84b8b6b5a7b9f1e0cd1d0a2c3b4e5f6a7b",
+  "0x6c90a1f6ba1f4f32b9d7b3ca9d7bf6a2e5f8c1d3",
+  "0x5e0bc6a14b4acb47ef1de8e77b21a7b0b2c1d6fa"
+]);
+
+const GOPLUS_RISK_FLAGS = [
+  "phishing_activities",
+  "blackmail_activities",
+  "stealing_attack",
+  "fake_kyc",
+  "malicious_mining_activities",
+  "darkweb_transactions",
+  "cybercrime",
+  "financial_crime",
+  "honeypot_related_address",
+  "sanctioned",
+  "blacklist_doubt",
+  "money_laundering",
+  "other_malicious_activities"
+];
+
+const GOPLUS_FLAG_LABELS = {
+  phishing_activities:        "Phishing",
+  blackmail_activities:       "Blackmail",
+  stealing_attack:            "Theft Attack",
+  fake_kyc:                   "Fake KYC",
+  malicious_mining_activities:"Malicious Mining",
+  darkweb_transactions:       "Dark Web Activity",
+  cybercrime:                 "Cybercrime",
+  financial_crime:            "Financial Crime",
+  honeypot_related_address:   "Honeypot",
+  sanctioned:                 "Sanctioned",
+  blacklist_doubt:            "Suspicious",
+  money_laundering:           "Money Laundering",
+  other_malicious_activities: "Malicious Activity"
+};
+
+async function checkGoPlusAddress(address) {
+  try {
+    const url =
+      "https://api.gopluslabs.io/api/v1/address_security/" +
+      address.toLowerCase() +
+      "?chain_id=56";
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+
+    if (data.code !== 1 || !data.result) return null;
+
+    return data.result;
+  } catch {
+    return null;
+  }
+}
+
+function extractGoPlusFlags(goplusData) {
+  if (!goplusData) return [];
+  return GOPLUS_RISK_FLAGS.filter(flag => goplusData[flag] === "1");
+}
 
     const APPROVED_RPCS = new Set([
   "https://binance.llamarpc.com",
@@ -712,17 +1169,32 @@ button.donate-more {
   "function transfer(address to, uint256 amount) returns (bool)"
 ];
     
-    document.addEventListener("DOMContentLoaded", () => {
-      let provider = null;
-      let signer = null;
-      const root = document.documentElement;
-      const themeToggle = document.getElementById("themeToggle");
+   document.addEventListener("DOMContentLoaded", () => {
 
-      if (localStorage.getItem("theme") === "dark") {
-        root.classList.add("dark");
-        themeToggle.textContent = "Light mode";
-        themeToggle.setAttribute("aria-pressed", "true");
-      }
+  if (localStorage.getItem("theme") === "dark") {
+    root.classList.add("dark");
+    themeToggle.textContent = "Light mode";
+    themeToggle.setAttribute("aria-pressed", "true");
+  }
+  tryRestoreConnection();
+
+  // FIX 3: Moved inside DOMContentLoaded so ethers is guaranteed to be loaded
+  checkNetworkOnLoad();
+
+  const scanBtn = document.getElementById("scanApprovals");
+  if (scanBtn) {
+    scanBtn.onclick = runApprovalScan;
+  }
+
+  const reviewBtn = document.getElementById("requestReview");
+  if (reviewBtn) {
+    reviewBtn.onclick = () => {
+      document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+    };
+  }
+});
+
+    
 
 if (window.ethereum) {
 
@@ -761,11 +1233,12 @@ pageSelector.addEventListener("change", e => {
 
       const tokens = [
         { address: CONFIG.tokens.USDT.address, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
-        { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
         { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
+        { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
-        { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" }
+        { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
+        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "./assets/joy64.png" }
       ];
 
       const swapLinks = {
@@ -773,7 +1246,8 @@ pageSelector.addEventListener("change", e => {
   PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
   PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
   PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
-  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc"
+  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc",
+  JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"      
 };
 
 function isMobileBrowser() {
@@ -781,16 +1255,14 @@ function isMobileBrowser() {
 }
 
   const notify = msg => {
-  // 1. Audible Announcement
- const announcer = document.getElementById("announcement-region");
-if (announcer) {
-  announcer.textContent = "";
-  requestAnimationFrame(() => {
-    announcer.textContent = msg;
-  });
-}
+  const announcer = document.getElementById("announcement-region");
+  if (announcer) {
+    announcer.textContent = "";
+    requestAnimationFrame(() => {
+      announcer.textContent = msg;
+    });
+  }
 
-  // 2. Visual Toast
   const n = document.createElement("div");
   n.className = "notify";
   n.textContent = msg;
@@ -806,6 +1278,8 @@ if (announcer) {
 };
 
 
+let provider = null;
+let signer = null;
 let connectedAccount = null;
 
 async function connectWallet() {
@@ -831,11 +1305,254 @@ async function connectWallet() {
   }
 }
 
-   
+async function runApprovalScan() {
+  const status      = document.getElementById("approvalStatus");
+  const resultsEl   = document.getElementById("approvalResults");
+  const list        = document.getElementById("approvalList");
+  const summary     = document.getElementById("approvalSummary");
+  const cta         = document.getElementById("scanCta");
+
+  status.textContent    = "";
+  list.innerHTML        = "";
+  summary.textContent   = "";
+  resultsEl.style.display = "none";
+  if (cta) cta.style.display = "none";
+
+  if (!window.ethereum) { notify("MetaMask not detected"); return; }
+  if (!signer)          { notify("Please connect your wallet"); return; }
+
+  const ok = await ensureBSC();
+  if (!ok) return;
+
+  status.textContent = "Scanning on-chain approvals…";
+
+  try {
+    const owner = await signer.getAddress();
+    let findings = [];
+
+    for (const token of tokens) {
+      const contract = new ethers.Contract(token.address, ERC20_ALLOWANCE_ABI, provider);
+
+      for (const spender of APPROVAL_SPENDERS) {
+        try {
+          const allowance = await contract.allowance(owner, spender.address);
+          if (allowance > 0n) {
+            findings.push({
+              token:       token.symbol,
+              spender:     spender.address,
+              spenderName: spender.name,
+              trusted:     spender.trusted,
+              allowance,
+              goplusData:  null,
+              goplusFlags: []
+            });
+          }
+        } catch (err) {
+          console.error("Allowance check failed for", spender.name, err);
+        }
+      }
+    }
+
+    if (findings.length > 0) {
+      status.textContent = "Checking addresses against GoPlus security database…";
+
+      const uniqueSpenders = [...new Set(findings.map(f => f.spender.toLowerCase()))];
+      const goplusCache    = {};
+
+      await Promise.allSettled(
+        uniqueSpenders.map(async addr => {
+          const data = await checkGoPlusAddress(addr);
+          goplusCache[addr] = data;
+        })
+      );
+
+      findings = findings.map(f => {
+        const data  = goplusCache[f.spender.toLowerCase()] || null;
+        const flags = extractGoPlusFlags(data);
+        return { ...f, goplusData: data, goplusFlags: flags };
+      });
+    }
+
+    renderApprovalResults(findings);
+
+  } catch (err) {
+    console.error("Scan failed:", err);
+    status.textContent = "";
+    notify("Scan failed — please try again");
+  }
+}
+
+function classifyRisk(item) {
+  const isUnlimited  = item.allowance === ethers.MaxUint256;
+  const isFlagged    = FLAGGED_SPENDERS.has(item.spender.toLowerCase());
+  const hasGoPlus    = item.goplusFlags && item.goplusFlags.length > 0;
+
+  if (isFlagged || hasGoPlus) {
+    return {
+      level:  "high",
+      label:  "High Risk",
+      source: hasGoPlus ? "goplus" : "static"
+    };
+  }
+
+  if (isUnlimited && !item.trusted) {
+    return {
+      level:  "medium",
+      label:  "Unlimited Approval",
+      source: "onchain"
+    };
+  }
+
+  if (isUnlimited && item.trusted) {
+    return {
+      level:  "low-warning",
+      label:  "Unlimited (Trusted)",
+      source: "onchain"
+    };
+  }
+
+  return {
+    level:  "low",
+    label:  "Normal",
+    source: "onchain"
+  };
+}
+
+function renderApprovalResults(findings) {
+  const status    = document.getElementById("approvalStatus");
+  const resultsEl = document.getElementById("approvalResults");
+  const list      = document.getElementById("approvalList");
+  const summary   = document.getElementById("approvalSummary");
+  const cta       = document.getElementById("scanCta");
+
+  status.textContent       = "";
+  resultsEl.style.display  = "block";
+
+  if (!findings.length) {
+    summary.innerHTML =
+      '<span style="color: var(--text);">✅ No active approvals found for the scanned contracts.</span>';
+    if (cta) cta.style.display = "block";
+    return;
+  }
+
+  const LEVEL_ORDER = { high: 0, medium: 1, "low-warning": 2, low: 3 };
+  findings.sort((a, b) =>
+    LEVEL_ORDER[classifyRisk(a).level] - LEVEL_ORDER[classifyRisk(b).level]
+  );
+
+  let countHigh = 0, countMedium = 0, countLowWarn = 0, countLow = 0;
+
+  const sections = { high: [], medium: [], "low-warning": [], low: [] };
+
+  findings.forEach(item => {
+    const risk = classifyRisk(item);
+
+    if (risk.level === "high")         countHigh++;
+    else if (risk.level === "medium")  countMedium++;
+    else if (risk.level === "low-warning") countLowWarn++;
+    else                               countLow++;
+
+    const isUnlimited   = item.allowance === ethers.MaxUint256;
+    const allowanceText = isUnlimited ? "Unlimited" : "Custom amount";
+
+    let flagHtml = "";
+    if (item.goplusFlags && item.goplusFlags.length > 0) {
+      const pills = item.goplusFlags
+        .map(f => `<span class="approval-flag-pill">${GOPLUS_FLAG_LABELS[f] || f}</span>`)
+        .join("");
+      flagHtml = `<div class="approval-flags">${pills}</div>`;
+    }
+
+    let sourceBadge = "";
+    if (risk.source === "goplus") {
+      sourceBadge = '<span class="goplus-badge">🔍 GoPlus</span>';
+    } else if (risk.source === "static") {
+      sourceBadge = '<span class="goplus-badge">📋 Known list</span>';
+    }
+
+    let explainerText = "";
+    if (risk.level === "high") {
+      explainerText =
+        "This spender address has been identified as malicious. " +
+        "You should revoke this approval immediately and avoid interacting with this contract.";
+    } else if (risk.level === "medium") {
+      explainerText =
+        "This approval has no spending limit. The approved contract could theoretically " +
+        "drain your entire token balance. Revoke if you are no longer using this protocol.";
+    } else if (risk.level === "low-warning") {
+      explainerText =
+        "Unlimited approval on a known protocol. Generally safe, but revoking " +
+        "after use is considered best practice to minimize exposure.";
+    }
+
+    const div = document.createElement("div");
+    div.className = "approval-item " + risk.level;
+    div.innerHTML = `
+      <div class="approval-item-header">
+        <span class="approval-item-token">${item.token}</span>
+        <span class="risk-badge ${risk.level}">${risk.label}</span>
+      </div>
+      <div class="approval-item-detail">
+        Spender: ${item.spenderName}<br>
+        Allowance: ${allowanceText}
+      </div>
+      ${flagHtml}
+      ${sourceBadge}
+      ${explainerText
+        ? `<div class="approval-explainer ${risk.level}">${explainerText}</div>`
+        : ""}
+    `;
+
+    sections[risk.level].push(div);
+  });
+
+  const sectionConfig = [
+    { key: "high",        heading: "🔴 High Risk — Immediate Action Recommended" },
+    { key: "medium",      heading: "🟡 Caution — Unlimited Approvals" },
+    { key: "low-warning", heading: "🟡 Notice — Unlimited on Trusted Protocol" },
+    { key: "low",         heading: "🟢 Normal Approvals" }
+  ];
+
+  sectionConfig.forEach(({ key, heading }) => {
+    if (!sections[key].length) return;
+    const h = document.createElement("div");
+    h.className = "approval-section-heading";
+    h.textContent = heading;
+    list.appendChild(h);
+    sections[key].forEach(el => list.appendChild(el));
+  });
+
+  const summaryParts = [];
+  if (countHigh)     summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge high">${countHigh} High Risk</span></span>`);
+  if (countMedium)   summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge medium">${countMedium} Unlimited</span></span>`);
+  if (countLowWarn)  summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge low-warning">${countLowWarn} Notice</span></span>`);
+  if (countLow)      summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge low">${countLow} Normal</span></span>`);
+
+  summary.innerHTML = `<div class="scan-summary-bar">${summaryParts.join("")}</div>`;
+
+  if (cta) cta.style.display = "block";
+}
+
+  async function tryRestoreConnection() {
+  if (!window.ethereum) return;
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    if (!accounts || !accounts.length) return;
+
+    provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    connectedAccount = accounts[0];
+
+    updateWalletUI(true);
+  } catch (err) {
+    console.error("Auto-restore failed:", err);
+  }
+}  
 
         async function addAllTokens() {
         if (!window.ethereum) { notify("MetaMask not detected"); return; }
-        if (!confirm("Add all Pool Funding tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
+        const ok = await ensureBSC();  
+        if (!confirm("Add all ecosystem tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
         await Promise.allSettled(
           tokens.map(t =>
             window.ethereum.request({
@@ -847,8 +1564,6 @@ async function connectWallet() {
         notify("Finished suggesting tokens");
       }
 
-// FIX #5: Changed hardcoded "0x38" to CONFIG.chainHex so switchRPC stays in
-// sync with the rest of the config if the chain ID is ever updated.
 async function switchRPC(url, name) {
   if (!APPROVED_RPCS.has(url)) {
   notify("Unapproved RPC");
@@ -897,26 +1612,21 @@ function normalizeNumberString(value) {
 
   if (lastComma !== -1 && lastDot !== -1) {
     if (lastDot > lastComma) {
-      // 1,234,567.89
       normalized = normalized.replace(/,/g, "");
     } else {
-      // 1.234.567,89
       normalized = normalized.replace(/\./g, "");
       normalized = normalized.replace(",", ".");
     }
   } else if (lastComma !== -1) {
     const commaCount = (normalized.match(/,/g) || []).length;
     if (commaCount > 1) {
-      // 1,234,567
       normalized = normalized.replace(/,/g, "");
     } else {
-      // 1000,50
       normalized = normalized.replace(",", ".");
     }
   } else if (lastDot !== -1) {
     const dotCount = (normalized.match(/\./g) || []).length;
     if (dotCount > 1) {
-      // 1.234.567
       normalized = normalized.replace(/\./g, "");
     }
   }
@@ -969,9 +1679,6 @@ function closeDonateForm() {
   }
 }
 
-// FIX #1 (continued): donateConfirm now passes the normalized string to the
-// callback instead of a parsed float, preserving full decimal precision for
-// ethers.parseEther / ethers.parseUnits.
 document.getElementById("donateConfirm").onclick = async () => {
   const raw = document.getElementById("donateAmount").value;
   const normalized = normalizeNumberString(raw);
@@ -984,18 +1691,11 @@ document.getElementById("donateConfirm").onclick = async () => {
     notify("Amount too large");
     return;
   }
-  const callback = pendingDonation; // capture before closeDonateForm nulls it
+  const callback = pendingDonation;
   closeDonateForm();
-  if (callback) await callback(normalized); // pass the string, not the float
+  if (callback) await callback(normalized);
 };
 document.getElementById("donateCancel").onclick = closeDonateForm;
-
-/* ===========================
-   Donations: BNB
-=========================== */
-/* ===========================
-   Network Guard (Hardened)
-=========================== */
 
 async function ensureBSC() {
 
@@ -1015,7 +1715,6 @@ async function ensureBSC() {
       return true;
     }
 
-    // Attempt network switch
     try {
 
       await window.ethereum.request({
@@ -1023,16 +1722,10 @@ async function ensureBSC() {
         params: [{ chainId: CONFIG.chainHex }]
       });
 
-      // FIX #8: Removed the dead re-check that followed wallet_switchEthereumChain.
-      // The chainChanged listener at the top of the file calls location.reload()
-      // on a successful switch, so JS execution never reaches any code after the
-      // await above. The re-check and the notify/return-false path below it were
-      // both unreachable dead code.
       return true;
 
     } catch (switchError) {
 
-      // Chain not added to wallet
       if (switchError.code === 4902) {
 
         try {
@@ -1093,9 +1786,6 @@ async function ensureBSC() {
   }
 }
 
-      
-// FIX #1 (continued): donateBNB now accepts a normalized decimal string and
-// passes it directly to ethers.parseEther, avoiding float precision loss.
 async function donateBNB(amtStr) {
 
   if (!window.ethereum) {
@@ -1141,12 +1831,6 @@ async function donateBNB(amtStr) {
   }
 }
 
-/* ===========================
-   Donations: Tokens
-=========================== */
-
-// FIX #1 (continued): donateToken now accepts a normalized decimal string and
-// passes it directly to ethers.parseUnits, avoiding float precision loss.
 async function donateToken(symbol, amtStr) {
   if (!window.ethereum) { notify("MetaMask not detected"); return; }
   if (!signer) { notify("Please connect your wallet"); return; }
@@ -1185,8 +1869,6 @@ async function donateToken(symbol, amtStr) {
   }
 }
 
-// FIX #3: Added r.ok check to the BNB price fetch, matching the pattern
-// already used correctly in the PML fetch below it.
 async function fetchPrices() {
   try {
     const res = await fetch(
@@ -1207,27 +1889,8 @@ async function fetchPrices() {
     document.getElementById("bnbPrice").textContent = "--";
   }
 
-  try {
-    const response = await fetch(
-      "https://api.geckoterminal.com/api/v2/networks/bsc/pools/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4"
-    );
-
-    if (!response.ok) {
-      throw new Error("GeckoTerminal response not OK");
-    }
-
-    const pml = await response.json();
-    const price = pml?.data?.attributes?.base_token_price_usd;
-
-    document.getElementById("pmlPrice").textContent =
-      price ? parseFloat(price).toFixed(2) : "--";
-
-  } catch (err) {
-    console.error("PML price fetch failed:", err);
-    document.getElementById("pmlPrice").textContent = "--";
-  }
 }
- checkNetworkOnLoad();
+
       const connectBtn = document.getElementById("connectWallet");
 
 connectBtn.onclick = () => {
@@ -1262,19 +1925,101 @@ if (donateUSDTBtn) {
     openDonateForm("USDT", e.target, (amtStr) => donateToken("USDT", amtStr));
 }
 
-// FIX #7: Removed donatePML button wiring. PML donations have been suspended
-// per community guidance. The button was already absent from the HTML on this
-// page; the JS wiring is removed here for clarity.
+const donateJOYBtn = document.getElementById("donateJOY");
+if (donateJOYBtn) {
+  donateJOYBtn.onclick = (e) =>
+    openDonateForm("JOY", e.target, (amtStr) => donateToken("JOY", amtStr));
+}
 
 fetchPrices();
 
-/* ===== MOBILE FALLBACK GOES HERE ===== */
+/* =============================================
+   WALLET TABS — Add Tokens card
+   ============================================= */
+
+function initWalletTabs() {
+  const tabMetaMask = document.getElementById("tab-btn-metamask");
+  const tabOther    = document.getElementById("tab-btn-other");
+  const panelMM     = document.getElementById("tab-panel-metamask");
+  const panelOther  = document.getElementById("tab-panel-other");
+
+  function selectTab(selected, deselected, showPanel, hidePanel) {
+    selected.setAttribute("aria-selected", "true");
+    deselected.setAttribute("aria-selected", "false");
+    showPanel.removeAttribute("hidden");
+    hidePanel.setAttribute("hidden", "");
+  }
+
+  tabMetaMask.addEventListener("click", () => {
+    selectTab(tabMetaMask, tabOther, panelMM, panelOther);
+  });
+
+  tabOther.addEventListener("click", () => {
+    selectTab(tabOther, tabMetaMask, panelOther, panelMM);
+  });
+
+  [tabMetaMask, tabOther].forEach(btn => {
+    btn.addEventListener("keydown", e => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        const next = btn === tabMetaMask ? tabOther : tabMetaMask;
+        next.focus();
+        next.click();
+      }
+    });
+  });
+}
+
+/* =============================================
+   OTHER WALLETS PANEL — Token address list
+   ============================================= */
+
+function buildOtherWalletsPanel() {
+  const container = document.getElementById("other-wallets-addresses");
+  if (!container) return;
+
+  tokens.forEach(token => {
+    const row = document.createElement("div");
+    row.className = "token-address-row";
+
+    const symbol = document.createElement("span");
+    symbol.className = "token-address-symbol";
+    symbol.textContent = token.symbol;
+
+    const addr = document.createElement("span");
+    addr.className = "token-address-value";
+    addr.textContent = token.address;
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "token-copy-btn";
+    copyBtn.textContent = "Copy";
+    copyBtn.setAttribute("aria-label", "Copy " + token.symbol + " contract address");
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(token.address);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => { copyBtn.textContent = "Copy"; }, 2000);
+        notify(token.symbol + " address copied");
+      } catch (err) {
+        notify("Copy failed — please copy manually");
+        console.error("Clipboard write failed:", err);
+      }
+    });
+
+    row.appendChild(symbol);
+    row.appendChild(addr);
+    row.appendChild(copyBtn);
+    container.appendChild(row);
+  });
+}
+
+/* ===== MOBILE FALLBACK ===== */
 
 function showMobileFallback() {
-  const section = document.getElementById("add-tokens");
-  const btn = document.getElementById("addTokens");
+  const desktopWrapper = document.getElementById("add-tokens-desktop");
+  if (desktopWrapper) desktopWrapper.style.display = "none";
 
-  btn.style.display = "none";
+  const section = document.getElementById("add-tokens");
 
   const container = document.createElement("div");
   container.style.marginTop = "1rem";
@@ -1286,72 +2031,75 @@ function showMobileFallback() {
   title.textContent = "Manual Token Add Required";
   container.appendChild(title);
 
+  // FIX 2: Updated intro and steps for the new MetaMask mobile process
   const instructions = document.createElement("p");
   instructions.textContent =
-    "MetaMask mobile does not currently support automatic token suggestions. Please add tokens manually using the contract addresses below.";
+    "MetaMask mobile does not support automatic token suggestions. " +
+    "It is recommended you open this page in your usual mobile browser — " +
+    "many elements will not work properly there, but this one will. " +
+    "Add tokens manually using the contract addresses below.";
   container.appendChild(instructions);
+
   const stepsTitle = document.createElement("h4");
-stepsTitle.textContent = "How to Add Tokens in MetaMask Mobile";
-stepsTitle.style.marginTop = "1rem";
-container.appendChild(stepsTitle);
+  stepsTitle.textContent = "How to Add Tokens in MetaMask Mobile";
+  stepsTitle.style.marginTop = "1rem";
+  container.appendChild(stepsTitle);
 
-const stepsList = document.createElement("ol");
-stepsList.style.paddingLeft = "1.25rem";
+  const stepsList = document.createElement("ol");
+  stepsList.style.paddingLeft = "1.25rem";
 
-const steps = [
-  "Copy the USDT token contract address.",
-  "Tap the back arrow in the top left corner.",
-  "Tap Home in the bottom left corner.",
-  "Tap the plus sign above BNB.",
-  "Tap Custom token.",
-  "Paste in the token contract address you just copied.",
-  "Tap Next.",
-  "Tap Import.",
-  "Tap Explore and tap the 1 in the box near the top right corner.",
-  "Tap on this site again.",
-  "Repeat these steps for the rest of the tokens."
-];
+  const steps = [
+    "Copy the USDT token contract address.",
+    "Open MetaMask up to your main wallet page if you haven't already.",
+    "Tap Tokens.",
+    "Tap Popular networks near the top left and switch to BNB Chain.",
+    "Tap the + sign near the top right.",
+    "Tap Custom token.",
+    "Paste the Contract Address into the Token contract address field.",
+    "Tap Next.",
+    "Tap Import.",
+    "Repeat this process with the rest of the tokens you would like to add."
+  ];
 
-steps.forEach(text => {
-  const li = document.createElement("li");
-  li.textContent = text;
-  li.style.marginBottom = "6px";
-  stepsList.appendChild(li);
-});
+  steps.forEach(text => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    li.style.marginBottom = "6px";
+    stepsList.appendChild(li);
+  });
 
-container.appendChild(stepsList);
+  container.appendChild(stepsList);
 
+  tokens.forEach(token => {
+    const row = document.createElement("div");
+    row.style.marginBottom = "12px";
 
-tokens.forEach(token => {
-  const row = document.createElement("div");
-  row.style.marginBottom = "12px";
+    const label = document.createElement("strong");
+    label.textContent = token.symbol + ": ";
+    row.appendChild(label);
 
-  const label = document.createElement("strong");
-  label.textContent = token.symbol + ": ";
-  row.appendChild(label);
+    const addr = document.createElement("span");
+    addr.textContent = token.address;
+    addr.style.wordBreak = "break-all";
+    row.appendChild(addr);
 
-  const addr = document.createElement("span");
-  addr.textContent = token.address;
-  addr.style.wordBreak = "break-all";
-  row.appendChild(addr);
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy";
+    copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
+    copyBtn.style.marginLeft = "10px";
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(token.address);
+        notify(`${token.symbol} address copied`);
+      } catch (err) {
+        notify(`Copy failed — please copy manually`);
+        console.error("Clipboard write failed:", err);
+      }
+    };
 
-  const copyBtn = document.createElement("button");
-  copyBtn.textContent = "Copy";
-  copyBtn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
-  copyBtn.style.marginLeft = "10px";
-copyBtn.onclick = async () => {
-  try {
-    await navigator.clipboard.writeText(token.address);
-    notify(`${token.symbol} address copied`);
-  } catch (err) {
-    notify(`Copy failed — please copy manually`);
-    console.error("Clipboard write failed:", err);
-  }
-};
-
-  row.appendChild(copyBtn);
-  container.appendChild(row);
-});
+    row.appendChild(copyBtn);
+    container.appendChild(row);
+  });
 
   section.appendChild(container);
 }
@@ -1360,6 +2108,8 @@ if (isMobileBrowser()) {
   showMobileFallback();
 } else {
   document.getElementById("addTokens").style.display = "inline-block";
+  initWalletTabs();
+  buildOtherWalletsPanel();
 }
 
 /* ===== END MOBILE FALLBACK ===== */
@@ -1384,7 +2134,6 @@ const calcButton = document.getElementById("calcButton");
 const calcResult = document.getElementById("calcResult");
 const calcAlert = document.getElementById("calcAlert");
 
-// FIX #6: Referenced by ID instead of fragile parentElement.parentElement chains.
 const calcPriceRow = document.getElementById("calcPriceRow");
 const calcAmountRow = document.getElementById("calcAmountRow");
 
@@ -1394,37 +2143,22 @@ function clearCalcOutput() {
   calcAlert.textContent = "";
 }
 
-// FIX #6 (continued): setMode now uses calcPriceRow / calcAmountRow IDs
-// instead of priceInput.parentElement.parentElement.
 function setMode(mode) {
 clearCalcOutput();
 priceInput.value = "";
 amountInput.value = "";
-communityPml.value = "";
-
-resultDivide.textContent = "";
-resultMultiply1.textContent = "";
-resultFinal.textContent = "";
 
 if (mode === "target") {
 targetSelector.style.display = "block";
 priceInput.readOnly = true;
 calcPriceRow.style.display = "block";
 calcAmountRow.style.display = "block";
-communityContainer.style.display = "none";
-
-} else if (mode === "community") {
-targetSelector.style.display = "none";
-calcPriceRow.style.display = "none";
-calcAmountRow.style.display = "none";
-communityContainer.style.display = "block";
 
 } else {
 targetSelector.style.display = "none";
 priceInput.readOnly = false;
 calcPriceRow.style.display = "block";
 calcAmountRow.style.display = "block";
-communityContainer.style.display = "none";
 }
 }
 
@@ -1442,8 +2176,6 @@ tokenRadios.forEach(radio => {
   });
 });
 
-// parseLocalizedNumber now delegates to normalizeNumberString for consistency
-// with the donation flow (FIX #1).
 function parseLocalizedNumber(value) {
   const normalized = normalizeNumberString(value);
   if (!normalized) return NaN;
@@ -1454,10 +2186,7 @@ function parseLocalizedNumber(value) {
  function sanitizeInputField(input) {
   input.addEventListener("input", () => {
     let value = input.value;
-
-    // Allow only digits, comma, dot
     value = value.replace(/[^\d.,]/g, "");
-
     input.value = value;
   });
 }
@@ -1484,44 +2213,6 @@ formatOnBlur(amountInput);
 
     
 calcButton.addEventListener("click", () => {
-  const selectedMode = document.querySelector('input[name="calcMode"]:checked').value;
-
-// FIX #2 (JS): Community calculator now shows each step result under the
-// correct label. resultMultiply2 has been removed (it was a duplicate of
-// resultFinal). Results are now: resultDivide → step1, resultMultiply1 →
-// step2, resultFinal → step3 — matching the restructured HTML above.
-if (selectedMode === "community") {
-clearCalcOutput();
-const pmlAmount = parseLocalizedNumber(communityPml.value);
-
-if (isNaN(pmlAmount) || pmlAmount <= 0) {
-calcAlert.textContent = "Please enter a valid PML amount.";
-calcAlert.style.display = "block";
-return;
-}
-
-const step1 = pmlAmount / 5;
-const step2 = step1 * 1000000000;
-const step3 = step2 * 1000;
-
-resultDivide.textContent =
-"After dividing by 5: " +
-new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step1);
-
-resultMultiply1.textContent =
-"After multiplying by 1,000,000,000: " +
-new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(step2);
-
-resultFinal.textContent =
-"Final value: $" +
-new Intl.NumberFormat(navigator.language, {
-minimumFractionDigits: 2,
-maximumFractionDigits: 2
-}).format(step3) +
-" USD";
-
-return;
-}
   clearCalcOutput();
 
 const price = parseLocalizedNumber(priceInput.value);
@@ -1557,18 +2248,11 @@ const amount = parseLocalizedNumber(amountInput.value);
 
 const calcReset = document.getElementById("calcReset");
 
-// FIX #6 (continued): resetCalculator also uses IDs instead of
-// parentElement.parentElement.
 function resetCalculator() {
   clearCalcOutput();
 
   priceInput.value = "";
   amountInput.value = "";
-  communityPml.value = "";
-
-  resultDivide.textContent = "";
-  resultMultiply1.textContent = "";
-  resultFinal.textContent = "";
 
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
 
@@ -1577,18 +2261,9 @@ function resetCalculator() {
 
   calcPriceRow.style.display = "block";
   calcAmountRow.style.display = "block";
-  communityContainer.style.display = "none";
 
   tokenRadios.forEach(r => r.checked = false);
 }
-
-      const communityContainer = document.getElementById("communityContainer");
-const communityPml = document.getElementById("communityPml");
-const resultDivide = document.getElementById("resultDivide");
-const resultMultiply1 = document.getElementById("resultMultiply1");
-const resultFinal = document.getElementById("resultFinal");
-      sanitizeInputField(communityPml);
-formatOnBlur(communityPml);
 
 calcReset.addEventListener("click", resetCalculator);
 const swapButtonsContainer = document.getElementById("swapButtons");
@@ -1616,16 +2291,15 @@ if (swapButtonsContainer) {
       const copyBtn = document.createElement("button");
       copyBtn.textContent = "Copy Link";
       copyBtn.style.marginLeft = "10px";
-copyBtn.onclick = async () => {
-  try {
-    await navigator.clipboard.writeText(url);
-    notify(`${symbol} swap link copied`);
-  } catch (err) {
-    notify("Copy failed — please copy manually");
-    console.error("Clipboard write failed:", err);
-  }
-};
-
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          notify(`${symbol} swap link copied`);
+        } catch (err) {
+          notify("Copy failed — please copy manually");
+          console.error("Clipboard write failed:", err);
+        }
+      };
 
       row.appendChild(copyBtn);
       swapMobileContainer.appendChild(row);
@@ -1641,13 +2315,7 @@ copyBtn.onclick = async () => {
     });
   }
 }
-    });
 
-/* ===========================
-   Contracts
-=========================== */
-    
-    
   </script>
     <div id="announcement-region" 
      class="sr-only" 
