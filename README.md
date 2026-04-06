@@ -1012,7 +1012,7 @@ button.donate-more {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.1 Release Candidate
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.1
   </footer>
 
   <script>
