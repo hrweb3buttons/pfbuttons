@@ -20,7 +20,24 @@
 </script>
 
   <style>
-/* Skip Link - Hidden until Tabbed */
+nav[aria-label="Page sections"] a {
+  text-decoration: none;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+nav[aria-label="Page sections"] a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+nav[aria-label="Page sections"] a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+    
 .skip-link {
   position: absolute;
   top: -100px;
@@ -643,6 +660,19 @@ button.donate-more {
       <p>Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.</p>
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
+
+    <nav aria-label="Page sections" style="margin-bottom: 1.5rem;">
+  <ul style="display:flex; flex-wrap:wrap; gap:0.5rem 0.9rem; padding:0; margin:0; list-style:none;">
+    <li><a href="#donate">Donate</a></li>
+    <li><a href="#add-tokens">Add Tokens</a></li>
+    <li><a href="#rpc">Switch RPC</a></li>
+    <li><a href="#approval-scanner">Approval Scanner</a></li>
+    <li><a href="#charts">Charts &amp; Swap</a></li>
+    <li><a href="#calculator">Calculator</a></li>
+    <li><a href="#documents">Documents</a></li>
+    <li><a href="#services">Services</a></li>
+  </ul>
+</nav>
 
 <section class="card highlight" id="donate">
 <h2>Contribute To Keep These Tools Live</h2>
