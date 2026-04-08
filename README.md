@@ -1238,7 +1238,7 @@ pageSelector.addEventListener("change", e => {
         { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
         { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
         { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
-        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "./assets/joy64.png" }
+        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "./joy64.jpg" }
       ];
 
       const swapLinks = {
