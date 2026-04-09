@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  img-src 'self' data:;
+  style-src 'self' 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Toolbox Sponsors — Hunter's Toolbox</title>
+<meta name="description" content="Community members who sponsor Hunter's Toolbox, keeping free Web3 tools available for the Pool Funding community.">
+
+<style>
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: #fff;
+  padding: 1rem 2rem;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: top 0.2s ease;
+  border: 2px solid var(--focus-ring);
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: none;
+}
+
+main:focus {
+  outline: none;
+}
+
+:root {
+  --primary: #004aab;
+  --primary-hover: #00357a;
+  --background: #f8f9fa;
+  --text: #1a1a1b;
+  --text-muted: #454545;
+  --card-bg: #ffffff;
+  --border: #b0b5bb;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --focus-ring: #ff9500;
+  --error: #b00020;
+}
+
+:root.dark {
+  --primary: #a3d1ff;
+  --primary-hover: #cce4ff;
+  --background: #0f141a;
+  --text: #f0f4f8;
+  --text-muted: #b0b8c4;
+  --card-bg: #151b23;
+  --border: #3e4c5f;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --error: #ff6b6b;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  background-color: var(--background);
+  color: var(--text);
+  margin: 0;
+}
+
+button:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+h1, h2 {
+  color: var(--text);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.card.highlight {
+  border: 4px solid var(--primary);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.card.highlight::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(var(--primary) 0.5px, transparent 0.5px);
+  background-size: 10px 10px;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+button {
+  background-color: var(--primary);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+:root:not(.dark) button {
+  color: #ffffff;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+#wallet-connect {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 9999;
+}
+
+#controlButtons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#site-nav {
+  position: fixed;
+  top: 90px;
+  left: 16px;
+  z-index: 9999;
+}
+
+#pageSelector {
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+main {
+  width: 100%;
+  max-width: 720px;
+  margin: 2rem auto;
+}
+
+footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 2rem 0;
+}
+
+.notify {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 99999;
+  text-align: center;
+  max-width: 90vw;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* =============================================
+   Sponsor grid
+   ============================================= */
+
+.sponsor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.sponsor-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.sponsor-card .sponsor-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.sponsor-card .sponsor-since {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.sponsor-card .sponsor-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+/* Empty state */
+.sponsors-empty {
+  margin-top: 1.25rem;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.sponsors-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.sponsors-empty-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.sponsors-empty-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Joy badge */
+.joy-badge {
+  display: inline-block;
+  background-color: rgba(52, 152, 219, 0.12);
+  color: #1a6fa8;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  border-radius: 20px;
+  padding: 2px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+:root.dark .joy-badge {
+  background-color: rgba(52, 152, 219, 0.18);
+  color: #7ec8f5;
+  border-color: rgba(52, 152, 219, 0.35);
+}
+
+/* Benefit list */
+.benefit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+.benefit-list li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.benefit-list li:last-child {
+  border-bottom: none;
+}
+
+.benefit-check {
+  color: #4caf50;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+:root.dark .benefit-check {
+  color: #81c784;
+}
+</style>
+</head>
+
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header id="wallet-connect" aria-label="Site controls">
+  <div></div>
+  <div id="controlButtons">
+    <button id="themeToggle">Dark mode</button>
+  </div>
+</header>
+
+<nav id="site-nav" aria-label="Site navigation">
+  <label for="pageSelector" class="sr-only">Page navigation</label>
+  <select id="pageSelector">
+    <option value="">Navigate</option>
+    <option value="index.html">Main Tools</option>
+    <option value="donations.html">Donation Options</option>
+    <option value="cryptodirectory.html">Crypto Directory</option>
+    <option value="lite.html">Lite Version</option>
+    <option value="sponsors.html" selected>Toolbox Sponsors</option>
+    <option value="terms.html">Terms of Use</option>
+    <option value="privacy.html">Privacy Policy</option>
+  </select>
+</nav>
+
+<main id="main-content" tabindex="-1" aria-label="Main content">
+  <div class="container">
+
+    <section class="card" id="home">
+      <h1>Toolbox Sponsors</h1>
+      <p>Hunter's Toolbox is built and maintained independently, with no official or external funding. It exists to reduce risk, simplify processes, and help the Pool Funding community operate more effectively in Web3.</p>
+      <p>Sponsorship is how community members can help keep it sustainable. Every sponsor listed here has chosen to invest directly in the tools this community depends on.</p>
+    </section>
+
+    <section class="card" id="sponsors" aria-labelledby="sponsors-heading">
+      <h2 id="sponsors-heading">Current Sponsors</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Sponsorships are denominated in <span class="joy-badge">JOY</span></p>
+
+      <div class="sponsors-empty" role="status" aria-label="No sponsors yet">
+        <div class="sponsors-empty-icon" aria-hidden="true">&#9733;</div>
+        <div class="sponsors-empty-title">No sponsors yet — be the first</div>
+        <div class="sponsors-empty-sub">Your name or handle will appear here once you sponsor the Toolbox.</div>
+      </div>
+
+      <!--
+        To add a sponsor, replace the empty state above with a .sponsor-grid
+        and add .sponsor-card elements like this:
+
+        <div class="sponsor-grid">
+          <div class="sponsor-card">
+            <div class="sponsor-name">Handle or Name</div>
+            <div class="sponsor-since">Sponsor since Month YYYY</div>
+            <div class="sponsor-note">Optional short note</div>
+          </div>
+        </div>
+      -->
+    </section>
+
+    <section class="card highlight" id="become-a-sponsor" aria-labelledby="cta-heading">
+      <h2 id="cta-heading">Become a Sponsor</h2>
+      <p>
+        Sponsoring the Toolbox is a direct contribution to the infrastructure many in this community rely on — wallet setup guides, the approval scanner, the calculator, the RPC switcher, and more. All of it is built and maintained by one person, independently.
+      </p>
+      <p>
+        Sponsorships are paid in <span class="joy-badge">JOY</span>, one of our community tokens. This is a deliberate choice — it keeps sponsorship native to the ecosystem and creates another use case for JOY as the marketplace launches.
+      </p>
+
+      <h3 style="margin-top: 1.5rem;">What sponsors receive</h3>
+      <ul class="benefit-list" aria-label="Sponsorship benefits">
+        <li><span class="benefit-check" aria-hidden="true">&#10003;</span> Your name or handle displayed permanently on this page</li>
+        <li><span class="benefit-check" aria-hidden="true">&#10003;</span> Recognition in the Pool Funding community as a Toolbox supporter</li>
+        <li><span class="benefit-check" aria-hidden="true">&#10003;</span> The knowledge that the tools you rely on stay live and actively maintained</li>
+        <li><span class="benefit-check" aria-hidden="true">&#10003;</span> Optional short note or tagline alongside your listing (your choice)</li>
+      </ul>
+
+      <div style="margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+        <p style="margin-bottom: 0.5rem;">
+          If you are interested in sponsoring the Toolbox, reach out to me directly and we can coordinate the details.
+        </p>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">
+          Sponsorship is voluntary and does not confer any ownership, governance rights, or official affiliation with Pool Funding.
+        </p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer aria-label="Site footer">
+  &copy; 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
+  <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+  &nbsp;|&nbsp;
+  <a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a>
+</footer>
+
+<div id="announcement-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+const root = document.documentElement;
+const themeToggle = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+  root.classList.add("dark");
+  themeToggle.textContent = "Light mode";
+  themeToggle.setAttribute("aria-pressed", "true");
+}
+
+themeToggle.onclick = () => {
+  root.classList.toggle("dark");
+  const dark = root.classList.contains("dark");
+  localStorage.setItem("theme", dark ? "dark" : "light");
+  themeToggle.textContent = dark ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-pressed", String(dark));
+};
+
+const pageSelector = document.getElementById("pageSelector");
+const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html", "sponsors.html"]);
+
+pageSelector.addEventListener("change", e => {
+  const page = e.target.value;
+  if (!page || !ALLOWED_PAGES.has(page)) return;
+  window.location.href = page;
+});
+</script>
+</body>
+</html>
