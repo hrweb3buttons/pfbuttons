@@ -1409,7 +1409,7 @@ if (window.ethereum) {
 
 const pageSelector = document.getElementById("pageSelector");
 
-const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html"]);
+const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html", "sponsors.html"]);
 pageSelector.addEventListener("change", e => {
   const page = e.target.value;
   if (!page || !ALLOWED_PAGES.has(page)) return;
