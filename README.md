@@ -655,6 +655,7 @@ button.donate-more {
     <button id="donateBNB">Donate BNB</button>
     <button id="donateUSDT">Donate USDT</button>
     <button id="donateJOY">Donate JOY</button>
+    <button onclick="window.open('https://myjoy.market/product/hunter-rodriguez/sponsor-hunters-toolbox','_blank','noopener,noreferrer')">Sponsor the Toolbox</button>
   <a href="https://hrweb3buttons.github.io/pfbuttons/donations.html"
    class="donate-more"
    style="display:inline-block; text-decoration:none; text-align:center;">
