@@ -768,6 +768,7 @@ button.rpc-active {
 <option value="">Navigate</option>
 <option value="index.html">Main Tools</option>
 <option value="donations.html">Donation Options</option>
+<option value="story.html">Story</option>  
 <option value="sponsors.html">Toolbox Sponsors</option>  
 <option value="cryptodirectory.html">Crypto Directory</option>
 <option value="lite.html">Lite Version</option>  
@@ -1457,7 +1458,7 @@ if (window.ethereum) {
 
 const pageSelector = document.getElementById("pageSelector");
 
-const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html", "sponsors.html"]);
+const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html", "sponsors.html", "story.html"]);
 pageSelector.addEventListener("change", e => {
   const page = e.target.value;
   if (!page || !ALLOWED_PAGES.has(page)) return;
