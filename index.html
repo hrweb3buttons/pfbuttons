@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io;
+  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io https://binance.llamarpc.com https://bsc-rpc.publicnode.com https://bsc.blockrazor.xyz https://bsc.rpc.blxrbdn.com https://bsc.drpc.org https://binance-smart-chain-public.nodies.app https://1rpc.io https://bnb.rpc.subquery.network https://public-bsc.nownodes.io;
   img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,7 +20,24 @@
 </script>
 
   <style>
-/* Skip Link - Hidden until Tabbed */
+nav[aria-label="Page sections"] a {
+  text-decoration: none;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+nav[aria-label="Page sections"] a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+nav[aria-label="Page sections"] a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+    
 .skip-link {
   position: absolute;
   top: -100px;
@@ -159,7 +177,7 @@ button {
   transition: background 0.2s, transform 0.1s;
 }
 
-/* FIX 1: Exclude .wallet-tab from the light-mode white text rule */
+/* Exclude .wallet-tab from the light-mode white text rule */
 :root:not(.dark) button:not(.wallet-tab) {
   color: #ffffff;
 }
@@ -264,6 +282,8 @@ button.donate-more {
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       z-index: 99999;
+      text-align: center;
+      max-width: 90vw;
     }
 
     #site-nav {
@@ -590,6 +610,260 @@ button.donate-more {
   margin-bottom: 0.5rem;
 }
 
+/* =============================================
+   Donate preset buttons — NEW
+   ============================================= */
+
+.donate-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.donate-preset-btn {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  background: var(--background) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0;
+}
+
+.donate-preset-btn:hover {
+  background: var(--border) !important;
+}
+
+:root.dark .donate-preset-btn:hover {
+  background: rgba(255,255,255,0.08) !important;
+}
+
+/* =============================================
+   RPC Latency display — NEW
+   ============================================= */
+
+.rpc-btn-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.rpc-latency {
+  font-size: 0.68rem;
+  font-weight: 600;
+  margin-top: 3px;
+  letter-spacing: 0.02em;
+  min-height: 1em;
+  text-align: center;
+}
+
+.rpc-latency.testing  { color: var(--text-muted); }
+.rpc-latency.fast     { color: #4caf50; }
+.rpc-latency.medium   { color: #ff9800; }
+.rpc-latency.slow     { color: #f44336; }
+.rpc-latency.timeout  { color: var(--text-muted); }
+
+:root.dark .rpc-latency.fast   { color: #81c784; }
+:root.dark .rpc-latency.medium { color: #ffb74d; }
+:root.dark .rpc-latency.slow   { color: #e57373; }
+
+/* =============================================
+   Active RPC highlight — NEW
+   ============================================= */
+
+button.rpc-active {
+  outline: 2px solid #4caf50 !important;
+  outline-offset: 2px;
+}
+
+:root.dark button.rpc-active {
+  outline-color: #81c784 !important;
+}
+
+@media (max-width: 768px) {
+  #wallet-connect {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    z-index: 9999;
+  }
+
+  #priceDisplay {
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #controlButtons {
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  #controlButtons button {
+    flex: 1;
+  }
+
+  #site-nav {
+    position: static;
+    padding: 10px 16px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  #pageSelector {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  main {
+    margin-top: 1rem;
+  }
+}    
+
+/* =============================================
+   FUNDING GOAL BAR — Desktop sidebar
+   ============================================= */
+
+#funding-goal-bar {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9000;
+}
+
+.funding-goal-widget {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+}
+
+.fg-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.fg-goal-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fg-track-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 180px;
+}
+
+.fg-track {
+  width: 16px;
+  height: 180px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fg-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5%; /* $10 of $200 */
+  background: var(--primary);
+  border-radius: 0 0 8px 8px;
+}
+
+.fg-tick-panel {
+  position: relative;
+  flex: 1;
+  height: 180px;
+}
+
+.fg-tick {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(50%);
+}
+
+.fg-tick::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 1px;
+  background: var(--border);
+  margin-right: 3px;
+  flex-shrink: 0;
+}
+
+.fg-tick-label {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.fg-raised-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+}
+
+/* Mobile: hide the bar */
+@media (max-width: 768px) {
+  #funding-goal-bar {
+    display: none;
+  }
+}
+
+/* =============================================
+   FUNDING GOAL — Mobile inline (donate card)
+   ============================================= */
+
+.fg-mobile-inline {
+  display: none;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .fg-mobile-inline {
+    display: block;
+  }
+}    
   </style>
 </head>
 
@@ -626,6 +900,8 @@ button.donate-more {
 <option value="">Navigate</option>
 <option value="index.html">Main Tools</option>
 <option value="donations.html">Donation Options</option>
+<option value="story.html">Story</option>  
+<option value="sponsors.html">Toolbox Sponsors</option>  
 <option value="cryptodirectory.html">Crypto Directory</option>
 <option value="lite.html">Lite Version</option>  
 <option value="terms.html">Terms of Use</option>
@@ -643,8 +919,22 @@ button.donate-more {
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
+    <nav aria-label="Page sections" style="margin-bottom: 1.5rem;">
+  <ul style="display:flex; flex-wrap:wrap; gap:0.5rem 0.9rem; padding:0; margin:0; list-style:none;">
+    <li><a href="#donate">Donate</a></li>
+    <li><a href="#add-tokens">Add Tokens</a></li>
+    <li><a href="#rpc">Switch RPC</a></li>
+    <li><a href="#approval-scanner">Approval Scanner</a></li>
+    <li><a href="#charts">Charts &amp; Swap</a></li>
+    <li><a href="#calculator">Calculator</a></li>
+    <li><a href="#documents">Documents</a></li>
+    <li><a href="#services">Services</a></li>
+  </ul>
+</nav>
+
 <section class="card highlight" id="donate">
 <h2>Contribute To Keep These Tools Live</h2>
+  <p class="fg-mobile-inline"><strong>Monthly Funding Goal:</strong> $10 / $200</p>
   <p>These tools are used every day by members of the community, yet they are built and maintained independently with no official or external funding.</p>
   <p>They exist to reduce risk, simplify processes, and help you operate more efficiently in Web3.</p>
   <p>If you rely on them, consider contributing.</p>
@@ -664,6 +954,10 @@ button.donate-more {
   </div>
   
   <div id="donateForm" style="display:none; margin-top:1rem;">
+
+  <!-- Preset amount buttons — populated by JS -->
+  <div id="donatePresets" class="donate-presets"></div>
+
   <label for="donateAmount">
     <strong id="donateFormLabel">Amount</strong>
   </label>
@@ -731,35 +1025,63 @@ button.donate-more {
   Step 2: Open MetaMask's home screen, tap BNB Chain under Tokens, tap the RPC dropdown under BNB Chain, and select the new RPC you just added.
 </div>
 
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem;">
+        Response times are tested automatically when you scroll to this section. 
+        A green outline indicates your last used RPC.
+      </p>
 
       <h3>Standard RPC Options</h3>
       <div class="rpc-buttons">
-        <button id="rpcLlamarpc">Llamarpc</button>
-        <button id="rpcPublicNode">PublicNode</button>
-        <button id="rpcBlockrazor">Blockrazor</button>
+        <div class="rpc-btn-wrap">
+          <button id="rpcLlamarpc" data-rpc-url="https://binance.llamarpc.com">Llamarpc</button>
+          <span class="rpc-latency" id="lat-rpcLlamarpc"></span>
+        </div>
+        <div class="rpc-btn-wrap">
+          <button id="rpcPublicNode" data-rpc-url="https://bsc-rpc.publicnode.com">PublicNode</button>
+          <span class="rpc-latency" id="lat-rpcPublicNode"></span>
+        </div>
+        <div class="rpc-btn-wrap">
+          <button id="rpcBlockrazor" data-rpc-url="https://bsc.blockrazor.xyz">Blockrazor</button>
+          <span class="rpc-latency" id="lat-rpcBlockrazor"></span>
+        </div>
       </div>
 
       <h3>Cloudflare Free RPC Options</h3>
       <div class="rpc-buttons">
-        <button id="rpcBLXR">BLXR</button>
-        <button id="rpcDRPC">dRPC</button>
+        <div class="rpc-btn-wrap">
+          <button id="rpcBLXR" data-rpc-url="https://bsc.rpc.blxrbdn.com">BLXR</button>
+          <span class="rpc-latency" id="lat-rpcBLXR"></span>
+        </div>
+        <div class="rpc-btn-wrap">
+          <button id="rpcDRPC" data-rpc-url="https://bsc.drpc.org">dRPC</button>
+          <span class="rpc-latency" id="lat-rpcDRPC"></span>
+        </div>
       </div>
 
       <h3>AWS Free RPC Options</h3>
       <div class="rpc-buttons">
-        <button id="rpcPublicNodies">PublicNodies</button>
+        <div class="rpc-btn-wrap">
+          <button id="rpcPublicNodies" data-rpc-url="https://binance-smart-chain-public.nodies.app">PublicNodies</button>
+          <span class="rpc-latency" id="lat-rpcPublicNodies"></span>
+        </div>
       </div>
 
-            <h3>Azure Free RPC Options</h3>
+      <h3>Azure Free RPC Options</h3>
       <div class="rpc-buttons">
-        <button id="rpc1rpc">1rpc</button>
-        <button id="rpcSubQuery">SubQuery</button>
-        <button id="rpcNowNodes">NowNodes</button>
+        <div class="rpc-btn-wrap">
+          <button id="rpc1rpc" data-rpc-url="https://1rpc.io/bnb">1rpc</button>
+          <span class="rpc-latency" id="lat-rpc1rpc"></span>
+        </div>
+        <div class="rpc-btn-wrap">
+          <button id="rpcSubQuery" data-rpc-url="https://bnb.rpc.subquery.network/public">SubQuery</button>
+          <span class="rpc-latency" id="lat-rpcSubQuery"></span>
+        </div>
+        <div class="rpc-btn-wrap">
+          <button id="rpcNowNodes" data-rpc-url="https://public-bsc.nownodes.io">NowNodes</button>
+          <span class="rpc-latency" id="lat-rpcNowNodes"></span>
+        </div>
       </div>
-
-
-      
-    </section>
+</section>
 
 <!-- =============================================
      APPROVAL SCANNER — Enhanced
@@ -1013,14 +1335,14 @@ button.donate-more {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.1.2
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.2
   </footer>
 
   <script>
 const root = document.documentElement;
 const themeToggle = document.getElementById("themeToggle");
     
-    const CONFIG = {
+const CONFIG = {
   chainId: 56,
   chainHex: "0x38",
   donationWallet: "0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795",
@@ -1040,49 +1362,99 @@ const themeToggle = document.getElementById("themeToggle");
   }
 };
 
-    const ERC20_ALLOWANCE_ABI = [
+/* =============================================
+   DONATE PRESETS — NEW
+   ============================================= */
+const DONATE_PRESETS = {
+  BNB:  [0.01, 0.05, 0.1],
+  USDT: [1, 5, 10, 25],
+  JOY:  [0.00001, 0.00005, 0.0001]
+};
+
+const ERC20_ALLOWANCE_ABI = [
   "function allowance(address owner, address spender) view returns (uint256)"
 ];
 
 /* =============================================
-   APPROVAL SPENDERS — Curated BSC protocol list
+   APPROVAL SPENDERS — Expanded BSC protocol list
    ============================================= */
 const APPROVAL_SPENDERS = [
   // PancakeSwap
-  { address: "0x10ED43C718714eb63d5aA57B78B54704E256024E", name: "PancakeSwap Router v2", trusted: true },
-  { address: "0x13f4EA83D0bd40E75C8222255bc855a974568Dd4", name: "PancakeSwap Router v3", trusted: true },
-  { address: "0x1b81D678ffb9C0263b24A97847620C99d213eB14", name: "PancakeSwap SmartRouter", trusted: true },
-  { address: "0xE592427A0AEce92De3Edee1F18E0157C05861564", name: "PancakeSwap Universal Router", trusted: true },
+  { address: "0x10ED43C718714eb63d5aA57B78B54704E256024E", name: "PancakeSwap Router v2",        trusted: true  },
+  { address: "0x13f4EA83D0bd40E75C8222255bc855a974568Dd4", name: "PancakeSwap Router v3",        trusted: true  },
+  { address: "0x1b81D678ffb9C0263b24A97847620C99d213eB14", name: "PancakeSwap SmartRouter",      trusted: true  },
+  { address: "0xE592427A0AEce92De3Edee1F18E0157C05861564", name: "PancakeSwap Universal Router", trusted: true  },
+
+  // 1inch
+  { address: "0x1111111254EEB25477B68fb85Ed929f73A960582", name: "1inch Router v5",              trusted: true  },
+  { address: "0x111111125421cA6dc452d289314280a0f8842A65", name: "1inch Router v6",              trusted: true  },
+
+  // SushiSwap
+  { address: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", name: "SushiSwap Router",            trusted: true  },
+
+  // OpenOcean
+  { address: "0x6352a56caadC4F1E25CD6c75970Fa768A3304e64", name: "OpenOcean Exchange",           trusted: true  },
+
+  // MDEX
+  { address: "0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8", name: "MDEX Router",                 trusted: true  },
 
   // Biswap
-  { address: "0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8", name: "Biswap Router", trusted: true },
+  { address: "0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8", name: "Biswap Router",               trusted: true  },
 
   // ApeSwap
-  { address: "0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7", name: "ApeSwap Router", trusted: true },
+  { address: "0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7", name: "ApeSwap Router",              trusted: true  },
+
+  // BabySwap
+  { address: "0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd", name: "BabySwap Router",             trusted: true  },
+
+  // Thena
+  { address: "0xd4ae6eCA985340Dd434D38F470aCCce4DC78d109", name: "Thena Router",                trusted: true  },
+
+  // Wombat Exchange
+  { address: "0xc37b4b2A659cB81F55B0B4eE44AfB77D73773b34", name: "Wombat Exchange",             trusted: true  },
 
   // DODO
-  { address: "0x8F8Dd7DB1bDA5eD3da8C9daf3bfa471c12d58486", name: "DODO Exchange", trusted: true },
+  { address: "0x8F8Dd7DB1bDA5eD3da8C9daf3bfa471c12d58486", name: "DODO Exchange",               trusted: true  },
 
-  // Venus Protocol (lending/borrowing)
-  { address: "0xfD36E2c2a6789Db23113685031d7F16329158384", name: "Venus Comptroller", trusted: true },
+  // Venus Protocol
+  { address: "0xfD36E2c2a6789Db23113685031d7F16329158384", name: "Venus Comptroller",           trusted: true  },
+  { address: "0xfD5840Cd36d94D7229439859C0112a4185BC0255", name: "Venus vUSDT",                 trusted: true  },
 
   // Alpaca Finance
-  { address: "0xA625AB01B08ce023B2a342Dbb12a16f2C8489A8F", name: "Alpaca Finance", trusted: true },
+  { address: "0xA625AB01B08ce023B2a342Dbb12a16f2C8489A8F", name: "Alpaca Finance",              trusted: true  },
+
+  // Radiant Capital
+  { address: "0xd50Cf00b6e600Dd036Ba8eF475677d816d6c4281", name: "Radiant Capital",             trusted: true  },
+
+  // Beefy Finance
+  { address: "0x65f1A0A28699AdC7b7B3f5B8E8f30e37B9d3E29E", name: "Beefy Finance",              trusted: true  },
+
+  // Ellipsis Finance
+  { address: "0x160CAed03795365F3A589f10C379FfA7d75d4E76", name: "Ellipsis Finance",            trusted: true  },
+
+  // Celer cBridge v2
+  { address: "0xBB79B046Db5F52Ee50e6B7e054e6BaFab9cBBeB8", name: "Celer cBridge",              trusted: true  },
+
+  // Synapse Bridge
+  { address: "0xd123f70AE324d34A9E76b67a27bf77593bA8749f", name: "Synapse Bridge",              trusted: true  },
+
+  // Wormhole Token Bridge
+  { address: "0xB6F6D86a8f9879A9c87f643768d9efc38c1Da6E7", name: "Wormhole Token Bridge",      trusted: true  },
 
   // Stargate / LayerZero Bridge
-  { address: "0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8", name: "Stargate Finance Router", trusted: true },
+  { address: "0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8", name: "Stargate Finance Router",    trusted: true  },
 
-  // Multichain Bridge (formerly Anyswap) — flagged: verify before trusting
-  { address: "0xd9dE2B1973D66B7b5f24B54c6B8273b9cE5Fb1E6", name: "Multichain Bridge", trusted: false },
+  // Multichain Bridge — flag for scrutiny; verify before trusting
+  { address: "0xd9dE2B1973D66B7b5f24B54c6B8273b9cE5Fb1E6", name: "Multichain Bridge",          trusted: false },
 
   // Burn Address
-  { address: "0x000000000000000000000000000000000000dead", name: "Burn Address", trusted: true },
+  { address: "0x000000000000000000000000000000000000dead", name: "Burn Address",                trusted: true  },
 
   // KNOWN MALICIOUS — Static Seed List
-  { address: "0x5aFEf8567414F29f0f927A0F2787b188624c10E2", name: "PancakeBunny Exploiter", trusted: false },
-  { address: "0x4c2D9D84b8b6B5A7B9f1E0cD1d0a2C3b4E5F6A7B", name: "Uranium Finance Exploiter", trusted: false },
-  { address: "0x6C90a1F6bA1f4f32b9D7b3Ca9D7Bf6A2E5F8C1D3", name: "Belt Finance Exploiter", trusted: false },
-  { address: "0x5E0bC6A14b4aCb47Ef1dE8E77B21a7B0b2C1d6Fa", name: "Known BSC Phishing Contract", trusted: false }
+  { address: "0x5aFEf8567414F29f0f927A0F2787b188624c10E2", name: "PancakeBunny Exploiter",      trusted: false },
+  { address: "0x4c2D9D84b8b6B5A7B9f1E0cD1d0a2C3b4E5F6A7B", name: "Uranium Finance Exploiter",  trusted: false },
+  { address: "0x6C90a1F6bA1f4f32b9D7b3Ca9D7Bf6A2E5F8C1D3", name: "Belt Finance Exploiter",     trusted: false },
+  { address: "0x5E0bC6A14b4aCb47Ef1dE8E77B21a7B0b2C1d6Fa", name: "Known BSC Phishing Contract",trusted: false }
 ];
 
 const FLAGGED_SPENDERS = new Set([
@@ -1154,7 +1526,7 @@ function extractGoPlusFlags(goplusData) {
   return GOPLUS_RISK_FLAGS.filter(flag => goplusData[flag] === "1");
 }
 
-    const APPROVED_RPCS = new Set([
+const APPROVED_RPCS = new Set([
   "https://binance.llamarpc.com",
   "https://bsc-rpc.publicnode.com",
   "https://bsc.blockrazor.xyz",
@@ -1166,11 +1538,11 @@ function extractGoPlusFlags(goplusData) {
   "https://public-bsc.nownodes.io"
 ]);
 
-    const ERC20_ABI = [
+const ERC20_ABI = [
   "function transfer(address to, uint256 amount) returns (bool)"
 ];
     
-   document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
   if (localStorage.getItem("theme") === "dark") {
     root.classList.add("dark");
@@ -1178,9 +1550,14 @@ function extractGoPlusFlags(goplusData) {
     themeToggle.setAttribute("aria-pressed", "true");
   }
   tryRestoreConnection();
-
-  // FIX 3: Moved inside DOMContentLoaded so ethers is guaranteed to be loaded
   checkNetworkOnLoad();
+
+  // Restore active RPC highlight from last session
+  const savedRPC = localStorage.getItem("activeRPC");
+  if (savedRPC) highlightActiveRPC(savedRPC);
+
+  // Start latency observer
+  initRPCLatencyObserver();
 
   const scanBtn = document.getElementById("scanApprovals");
   if (scanBtn) {
@@ -1194,8 +1571,6 @@ function extractGoPlusFlags(goplusData) {
     };
   }
 });
-
-    
 
 if (window.ethereum) {
 
@@ -1214,48 +1589,50 @@ if (window.ethereum) {
 
 }
 
-      const pageSelector = document.getElementById("pageSelector");
+const pageSelector = document.getElementById("pageSelector");
 
-const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html"]);
+const ALLOWED_PAGES = new Set(["index.html", "donations.html", "cryptodirectory.html", "terms.html", "privacy.html", "lite.html", "sponsors.html", "story.html"]);
 pageSelector.addEventListener("change", e => {
   const page = e.target.value;
   if (!page || !ALLOWED_PAGES.has(page)) return;
   window.location.href = page;
 });
 
-      themeToggle.onclick = () => {
-        root.classList.toggle("dark");
-        const dark = root.classList.contains("dark");
-        localStorage.setItem("theme", dark ? "dark" : "light");
-        themeToggle.textContent = dark ? "Light mode" : "Dark mode";
-        themeToggle.setAttribute("aria-pressed", String(dark));
-        };
+themeToggle.onclick = () => {
+  root.classList.toggle("dark");
+  const dark = root.classList.contains("dark");
+  localStorage.setItem("theme", dark ? "dark" : "light");
+  themeToggle.textContent = dark ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-pressed", String(dark));
+};
 
+const tokens = [
+  { address: CONFIG.tokens.USDT.address, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
+  { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
+  { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
+  { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
+  { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
+  { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
+  { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "https://hrweb3buttons.github.io/pfbuttons/Joy64.jpg" }
+];
 
-      const tokens = [
-        { address: CONFIG.tokens.USDT.address, symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
-        { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI", decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
-        { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB", decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
-        { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS", decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
-        { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG", decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
-        { address: CONFIG.tokens.PML.address, symbol: "PML", decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
-        { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "https://hrweb3buttons.github.io/pfbuttons/Joy64.jpg" }
-      ];
-
-      const swapLinks = {
+const swapLinks = {
   PFI: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF&chain=bsc",
   PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
   PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
   PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
   PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc",
-  JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"      
+  JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"
 };
 
 function isMobileBrowser() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 }
 
-  const notify = msg => {
+/* =============================================
+   NOTIFY — updated to support duration + link
+   ============================================= */
+const notify = (msg, duration = 5000, linkUrl = null, linkText = null) => {
   const announcer = document.getElementById("announcement-region");
   if (announcer) {
     announcer.textContent = "";
@@ -1266,18 +1643,32 @@ function isMobileBrowser() {
 
   const n = document.createElement("div");
   n.className = "notify";
-  n.textContent = msg;
-  n.setAttribute("role", "alert"); 
-  
+  n.setAttribute("role", "alert");
+
+  const msgSpan = document.createElement("span");
+  msgSpan.textContent = msg;
+  n.appendChild(msgSpan);
+
+  if (linkUrl && linkText) {
+    const br = document.createElement("br");
+    n.appendChild(br);
+    const a = document.createElement("a");
+    a.href = linkUrl;
+    a.textContent = linkText;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.style.cssText = "color: var(--primary); display: inline-block; margin-top: 4px; font-weight: 600;";
+    n.appendChild(a);
+  }
+
   document.body.appendChild(n);
-  
+
   setTimeout(() => {
     n.style.opacity = "0";
     n.style.transition = "opacity 0.5s ease";
     setTimeout(() => n.remove(), 500);
-  }, 5000);
+  }, duration);
 };
-
 
 let provider = null;
 let signer = null;
@@ -1448,10 +1839,10 @@ function renderApprovalResults(findings) {
   findings.forEach(item => {
     const risk = classifyRisk(item);
 
-    if (risk.level === "high")         countHigh++;
-    else if (risk.level === "medium")  countMedium++;
+    if (risk.level === "high")             countHigh++;
+    else if (risk.level === "medium")      countMedium++;
     else if (risk.level === "low-warning") countLowWarn++;
-    else                               countLow++;
+    else                                   countLow++;
 
     const isUnlimited   = item.allowance === ethers.MaxUint256;
     const allowanceText = isUnlimited ? "Unlimited" : "Custom amount";
@@ -1524,17 +1915,17 @@ function renderApprovalResults(findings) {
   });
 
   const summaryParts = [];
-  if (countHigh)     summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge high">${countHigh} High Risk</span></span>`);
-  if (countMedium)   summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge medium">${countMedium} Unlimited</span></span>`);
-  if (countLowWarn)  summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge low-warning">${countLowWarn} Notice</span></span>`);
-  if (countLow)      summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge low">${countLow} Normal</span></span>`);
+  if (countHigh)    summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge high">${countHigh} High Risk</span></span>`);
+  if (countMedium)  summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge medium">${countMedium} Unlimited</span></span>`);
+  if (countLowWarn) summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge low-warning">${countLowWarn} Notice</span></span>`);
+  if (countLow)     summaryParts.push(`<span class="scan-summary-item"><span class="risk-badge low">${countLow} Normal</span></span>`);
 
   summary.innerHTML = `<div class="scan-summary-bar">${summaryParts.join("")}</div>`;
 
   if (cta) cta.style.display = "block";
 }
 
-  async function tryRestoreConnection() {
+async function tryRestoreConnection() {
   if (!window.ethereum) return;
   try {
     const accounts = await window.ethereum.request({ method: "eth_accounts" });
@@ -1548,29 +1939,43 @@ function renderApprovalResults(findings) {
   } catch (err) {
     console.error("Auto-restore failed:", err);
   }
-}  
+}
 
-        async function addAllTokens() {
-        if (!window.ethereum) { notify("MetaMask not detected"); return; }
-        const ok = await ensureBSC();  
-        if (!confirm("Add all ecosystem tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
-        await Promise.allSettled(
-          tokens.map(t =>
-            window.ethereum.request({
-              method: "wallet_watchAsset",
-              params: { type: "ERC20", options: t }
-            })
-          )
-        );
-        notify("Finished suggesting tokens");
-      }
+async function addAllTokens() {
+  if (!window.ethereum) { notify("MetaMask not detected"); return; }
+  const ok = await ensureBSC();
+  if (!confirm("Add all ecosystem tokens to MetaMask? Tap Add Token when MetaMask appears.")) return;
+  await Promise.allSettled(
+    tokens.map(t =>
+      window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: { type: "ERC20", options: t }
+      })
+    )
+  );
+  notify("Finished suggesting tokens");
+}
+
+/* =============================================
+   RPC — with active highlight + latency
+   ============================================= */
+
+function highlightActiveRPC(url) {
+  document.querySelectorAll("button[data-rpc-url]").forEach(btn => {
+    if (btn.getAttribute("data-rpc-url") === url) {
+      btn.classList.add("rpc-active");
+    } else {
+      btn.classList.remove("rpc-active");
+    }
+  });
+}
 
 async function switchRPC(url, name) {
   if (!APPROVED_RPCS.has(url)) {
-  notify("Unapproved RPC");
-  return;
-}
-  
+    notify("Unapproved RPC");
+    return;
+  }
+
   if (!window.ethereum) {
     notify("MetaMask not detected");
     return;
@@ -1595,13 +2000,95 @@ async function switchRPC(url, name) {
       params: [{ chainId }]
     });
 
+    // Persist and highlight on success
+    localStorage.setItem("activeRPC", url);
+    highlightActiveRPC(url);
+
     notify("RPC switched to " + name);
   } catch (e) {
     notify("RPC change rejected");
   }
 }
 
+/* =============================================
+   RPC LATENCY TESTER — NEW
+   ============================================= */
 
+async function testRPCLatency(url) {
+  const start = performance.now();
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 })
+    });
+    clearTimeout(timeout);
+    await res.json();
+    return Math.round(performance.now() - start);
+  } catch {
+    return null;
+  }
+}
+
+async function runRPCLatencyTests() {
+  const buttons = document.querySelectorAll("button[data-rpc-url]");
+
+  // Show "testing…" state on all
+  buttons.forEach(btn => {
+    const latEl = document.getElementById("lat-" + btn.id);
+    if (latEl) {
+      latEl.textContent = "testing…";
+      latEl.className = "rpc-latency testing";
+    }
+  });
+
+  // Test all in parallel
+  await Promise.allSettled(
+    Array.from(buttons).map(async btn => {
+      const url   = btn.getAttribute("data-rpc-url");
+      const latEl = document.getElementById("lat-" + btn.id);
+      if (!latEl) return;
+
+      const ms = await testRPCLatency(url);
+
+      if (ms === null) {
+        latEl.textContent = "timeout";
+        latEl.className   = "rpc-latency timeout";
+      } else if (ms < 300) {
+        latEl.textContent = ms + " ms";
+        latEl.className   = "rpc-latency fast";
+      } else if (ms < 800) {
+        latEl.textContent = ms + " ms";
+        latEl.className   = "rpc-latency medium";
+      } else {
+        latEl.textContent = ms + " ms";
+        latEl.className   = "rpc-latency slow";
+      }
+    })
+  );
+}
+
+function initRPCLatencyObserver() {
+  const rpcSection = document.getElementById("rpc");
+  if (!rpcSection || !("IntersectionObserver" in window)) return;
+
+  let tested = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !tested) {
+      tested = true;
+      runRPCLatencyTests();
+    }
+  }, { threshold: 0.1 });
+
+  observer.observe(rpcSection);
+}
+
+/* =============================================
+   NUMBER NORMALIZATION
+   ============================================= */
 
 function normalizeNumberString(value) {
   if (!value) return null;
@@ -1635,6 +2122,10 @@ function normalizeNumberString(value) {
   return normalized;
 }
 
+/* =============================================
+   DONATE FORM — with presets
+   ============================================= */
+
 let pendingDonation = null;
 let donateCallerBtn = null;
 
@@ -1643,6 +2134,29 @@ function openDonateForm(label, btn, onConfirm) {
   pendingDonation = onConfirm;
   document.getElementById("donateFormLabel").textContent = "Amount (" + label + ")";
   document.getElementById("donateAmount").value = "";
+
+  // Populate preset buttons
+  const presetsContainer = document.getElementById("donatePresets");
+  presetsContainer.innerHTML = "";
+  const presets = DONATE_PRESETS[label];
+
+  if (presets && presets.length) {
+    presets.forEach(amount => {
+      const presetBtn = document.createElement("button");
+      presetBtn.type = "button";
+      presetBtn.className = "donate-preset-btn";
+      presetBtn.textContent = amount + " " + label;
+      presetBtn.addEventListener("click", () => {
+        document.getElementById("donateAmount").value = String(amount);
+        document.getElementById("donateAmount").focus();
+      });
+      presetsContainer.appendChild(presetBtn);
+    });
+    presetsContainer.style.display = "flex";
+  } else {
+    presetsContainer.style.display = "none";
+  }
+
   const form = document.getElementById("donateForm");
   form.style.display = "block";
   document.getElementById("donateAmount").focus();
@@ -1669,7 +2183,7 @@ function disconnectWallet() {
 
   updateWalletUI(false);
   notify("Wallet disconnected");
-}      
+}
 
 function closeDonateForm() {
   document.getElementById("donateForm").style.display = "none";
@@ -1708,8 +2222,8 @@ async function ensureBSC() {
   try {
 
     if (!provider) {
-  provider = new ethers.BrowserProvider(window.ethereum);
-}
+      provider = new ethers.BrowserProvider(window.ethereum);
+    }
     const network = await provider.getNetwork();
 
     if (Number(network.chainId) === CONFIG.chainId) {
@@ -1772,7 +2286,7 @@ async function ensureBSC() {
   }
 }
 
-      async function checkNetworkOnLoad() {
+async function checkNetworkOnLoad() {
   if (!window.ethereum) return;
   try {
     if (!provider) {
@@ -1786,6 +2300,10 @@ async function ensureBSC() {
     console.error("Initial network check failed:", err);
   }
 }
+
+/* =============================================
+   DONATE BNB — with tx confirmation link
+   ============================================= */
 
 async function donateBNB(amtStr) {
 
@@ -1816,13 +2334,17 @@ async function donateBNB(amtStr) {
   try {
 
     const value = ethers.parseEther(amtStr);
-
-    await signer.sendTransaction({
+    const tx = await signer.sendTransaction({
       to: CONFIG.donationWallet,
       value: value
     });
 
-    notify("BNB donation sent");
+    notify(
+      "BNB donation sent — thank you!",
+      10000,
+      "https://bscscan.com/tx/" + tx.hash,
+      "View on BscScan →"
+    );
 
   } catch (err) {
 
@@ -1831,6 +2353,10 @@ async function donateBNB(amtStr) {
 
   }
 }
+
+/* =============================================
+   DONATE TOKEN — with tx confirmation link
+   ============================================= */
 
 async function donateToken(symbol, amtStr) {
   if (!window.ethereum) { notify("MetaMask not detected"); return; }
@@ -1854,13 +2380,17 @@ async function donateToken(symbol, amtStr) {
     );
 
     const value = ethers.parseUnits(amtStr, token.decimals);
-
-    await contract.transfer(
+    const tx = await contract.transfer(
       CONFIG.donationWallet,
       value
     );
 
-    notify(symbol + " donation sent");
+    notify(
+      symbol + " donation sent — thank you!",
+      10000,
+      "https://bscscan.com/tx/" + tx.hash,
+      "View on BscScan →"
+    );
 
   } catch (err) {
 
@@ -1889,10 +2419,9 @@ async function fetchPrices() {
     console.error("BNB price fetch failed:", err);
     document.getElementById("bnbPrice").textContent = "--";
   }
-
 }
 
-      const connectBtn = document.getElementById("connectWallet");
+const connectBtn = document.getElementById("connectWallet");
 
 connectBtn.onclick = () => {
   if (connectBtn.dataset.connected === "true") {
@@ -1901,35 +2430,35 @@ connectBtn.onclick = () => {
     connectWallet();
   }
 };
-      document.getElementById("addTokens").onclick = addAllTokens;
 
-document.getElementById("rpcLlamarpc").onclick = () => switchRPC("https://binance.llamarpc.com", "LlamaRPC");
-document.getElementById("rpcPublicNode").onclick = () => switchRPC("https://bsc-rpc.publicnode.com", "PublicNode");
-document.getElementById("rpcBlockrazor").onclick = () => switchRPC("https://bsc.blockrazor.xyz", "Blockrazor");
-document.getElementById("rpcBLXR").onclick = () => switchRPC("https://bsc.rpc.blxrbdn.com", "BLXR");
-document.getElementById("rpcDRPC").onclick = () => switchRPC("https://bsc.drpc.org", "dRPC");
-document.getElementById("rpcPublicNodies").onclick = () => switchRPC("https://binance-smart-chain-public.nodies.app", "PublicNodies");
-document.getElementById("rpc1rpc").onclick = () => switchRPC("https://1rpc.io/bnb", "1RPC");
-document.getElementById("rpcSubQuery").onclick = () => switchRPC("https://bnb.rpc.subquery.network/public", "SubQuery");
-document.getElementById("rpcNowNodes").onclick = () => switchRPC("https://public-bsc.nownodes.io", "NowNodes");
+document.getElementById("addTokens").onclick = addAllTokens;
 
+document.getElementById("rpcLlamarpc").onclick   = () => switchRPC("https://binance.llamarpc.com",                  "LlamaRPC");
+document.getElementById("rpcPublicNode").onclick  = () => switchRPC("https://bsc-rpc.publicnode.com",                "PublicNode");
+document.getElementById("rpcBlockrazor").onclick  = () => switchRPC("https://bsc.blockrazor.xyz",                    "Blockrazor");
+document.getElementById("rpcBLXR").onclick        = () => switchRPC("https://bsc.rpc.blxrbdn.com",                   "BLXR");
+document.getElementById("rpcDRPC").onclick        = () => switchRPC("https://bsc.drpc.org",                          "dRPC");
+document.getElementById("rpcPublicNodies").onclick= () => switchRPC("https://binance-smart-chain-public.nodies.app", "PublicNodies");
+document.getElementById("rpc1rpc").onclick        = () => switchRPC("https://1rpc.io/bnb",                           "1RPC");
+document.getElementById("rpcSubQuery").onclick    = () => switchRPC("https://bnb.rpc.subquery.network/public",       "SubQuery");
+document.getElementById("rpcNowNodes").onclick    = () => switchRPC("https://public-bsc.nownodes.io",                "NowNodes");
 
 const donateBNBBtn = document.getElementById("donateBNB");
 if (donateBNBBtn) {
   donateBNBBtn.onclick = (e) =>
-    openDonateForm("BNB", e.target, donateBNB);
+    openDonateForm("BNB", e.currentTarget, donateBNB);
 }
 
 const donateUSDTBtn = document.getElementById("donateUSDT");
 if (donateUSDTBtn) {
   donateUSDTBtn.onclick = (e) =>
-    openDonateForm("USDT", e.target, (amtStr) => donateToken("USDT", amtStr));
+    openDonateForm("USDT", e.currentTarget, (amtStr) => donateToken("USDT", amtStr));
 }
 
 const donateJOYBtn = document.getElementById("donateJOY");
 if (donateJOYBtn) {
   donateJOYBtn.onclick = (e) =>
-    openDonateForm("JOY", e.target, (amtStr) => donateToken("JOY", amtStr));
+    openDonateForm("JOY", e.currentTarget, (amtStr) => donateToken("JOY", amtStr));
 }
 
 fetchPrices();
@@ -2032,7 +2561,6 @@ function showMobileFallback() {
   title.textContent = "Manual Token Add Required";
   container.appendChild(title);
 
-  // FIX 2: Updated intro and steps for the new MetaMask mobile process
   const instructions = document.createElement("p");
   instructions.textContent =
     "MetaMask mobile does not support automatic token suggestions. " +
@@ -2115,7 +2643,7 @@ if (isMobileBrowser()) {
 
 /* ===== END MOBILE FALLBACK ===== */
 
-    const priceTargets = {
+const priceTargets = {
   PFI: 500000,
   PFB: 1000000,
   PFS: 2000000,
@@ -2145,22 +2673,21 @@ function clearCalcOutput() {
 }
 
 function setMode(mode) {
-clearCalcOutput();
-priceInput.value = "";
-amountInput.value = "";
+  clearCalcOutput();
+  priceInput.value = "";
+  amountInput.value = "";
 
-if (mode === "target") {
-targetSelector.style.display = "block";
-priceInput.readOnly = true;
-calcPriceRow.style.display = "block";
-calcAmountRow.style.display = "block";
-
-} else {
-targetSelector.style.display = "none";
-priceInput.readOnly = false;
-calcPriceRow.style.display = "block";
-calcAmountRow.style.display = "block";
-}
+  if (mode === "target") {
+    targetSelector.style.display = "block";
+    priceInput.readOnly = true;
+    calcPriceRow.style.display = "block";
+    calcAmountRow.style.display = "block";
+  } else {
+    targetSelector.style.display = "none";
+    priceInput.readOnly = false;
+    calcPriceRow.style.display = "block";
+    calcAmountRow.style.display = "block";
+  }
 }
 
 modeRadios.forEach(radio => {
@@ -2183,15 +2710,13 @@ function parseLocalizedNumber(value) {
   return parseFloat(normalized);
 }
 
-
- function sanitizeInputField(input) {
+function sanitizeInputField(input) {
   input.addEventListener("input", () => {
     let value = input.value;
     value = value.replace(/[^\d.,]/g, "");
     input.value = value;
   });
 }
-
 
 function formatOnBlur(input) {
   input.addEventListener("blur", () => {
@@ -2210,26 +2735,19 @@ sanitizeInputField(amountInput);
 formatOnBlur(priceInput);
 formatOnBlur(amountInput);
 
-
-
-    
 calcButton.addEventListener("click", () => {
   clearCalcOutput();
 
-const price = parseLocalizedNumber(priceInput.value);
-const amount = parseLocalizedNumber(amountInput.value);
+  const price = parseLocalizedNumber(priceInput.value);
+  const amount = parseLocalizedNumber(amountInput.value);
 
-
- if (isNaN(price) || price <= 0)
- {
+  if (isNaN(price) || price <= 0) {
     calcAlert.textContent = "Please enter a valid price.";
     calcAlert.style.display = "block";
     return;
   }
 
- if (isNaN(amount) || amount <= 0)
-
- {
+  if (isNaN(amount) || amount <= 0) {
     calcAlert.textContent = "Please enter a valid token amount.";
     calcAlert.style.display = "block";
     return;
@@ -2239,11 +2757,10 @@ const amount = parseLocalizedNumber(amountInput.value);
 
   calcResult.textContent =
     "Estimated value: $" +
-   new Intl.NumberFormat(navigator.language, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-}).format(total)
- +
+    new Intl.NumberFormat(navigator.language, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(total) +
     " USD";
 });
 
@@ -2267,6 +2784,7 @@ function resetCalculator() {
 }
 
 calcReset.addEventListener("click", resetCalculator);
+
 const swapButtonsContainer = document.getElementById("swapButtons");
 const swapMobileContainer = document.getElementById("swapMobileContainer");
 
@@ -2312,7 +2830,7 @@ if (swapButtonsContainer) {
 
       const symbol = button.getAttribute("data-swap");
       const url = swapLinks[symbol];
-      window.open(url, "_blank", 'noopener,noreferrer');
+      window.open(url, "_blank", "noopener,noreferrer");
     });
   }
 }
@@ -2324,5 +2842,23 @@ if (swapButtonsContainer) {
      aria-live="polite" 
      aria-atomic="true">
 </div>
+<div id="funding-goal-bar" aria-label="Toolbox monthly funding goal: $10 raised of $200" role="img">
+  <div class="funding-goal-widget">
+    <div class="fg-title">Monthly<br>Funding<br>Goal</div>
+    <div class="fg-goal-label">$200</div>
+    <div class="fg-track-wrap">
+      <div class="fg-track">
+        <div class="fg-fill"></div>
+      </div>
+      <div class="fg-tick-panel">
+        <div class="fg-tick" style="bottom:75%"><span class="fg-tick-label">$150</span></div>
+        <div class="fg-tick" style="bottom:50%"><span class="fg-tick-label">$100</span></div>
+        <div class="fg-tick" style="bottom:25%"><span class="fg-tick-label">$50</span></div>
+      </div>
+    </div>
+    <div class="fg-raised-label">$10 raised</div>
+  </div>
+</div>
+  
 </body>
 </html>
