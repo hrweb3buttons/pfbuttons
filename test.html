@@ -732,6 +732,138 @@ button.rpc-active {
     margin-top: 1rem;
   }
 }    
+
+/* =============================================
+   FUNDING GOAL BAR — Desktop sidebar
+   ============================================= */
+
+#funding-goal-bar {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9000;
+}
+
+.funding-goal-widget {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+}
+
+.fg-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.fg-goal-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fg-track-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 180px;
+}
+
+.fg-track {
+  width: 16px;
+  height: 180px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fg-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5%; /* $10 of $200 */
+  background: var(--primary);
+  border-radius: 0 0 8px 8px;
+}
+
+.fg-tick-panel {
+  position: relative;
+  flex: 1;
+  height: 180px;
+}
+
+.fg-tick {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(50%);
+}
+
+.fg-tick::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 1px;
+  background: var(--border);
+  margin-right: 3px;
+  flex-shrink: 0;
+}
+
+.fg-tick-label {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.fg-raised-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+}
+
+/* Mobile: hide the bar */
+@media (max-width: 768px) {
+  #funding-goal-bar {
+    display: none;
+  }
+}
+
+/* =============================================
+   FUNDING GOAL — Mobile inline (donate card)
+   ============================================= */
+
+.fg-mobile-inline {
+  display: none;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .fg-mobile-inline {
+    display: block;
+  }
+}    
   </style>
 </head>
 
@@ -802,6 +934,7 @@ button.rpc-active {
 
 <section class="card highlight" id="donate">
 <h2>Contribute To Keep These Tools Live</h2>
+  <p class="fg-mobile-inline"><strong>Funding Goal:</strong> $10 / $200</p>
   <p>These tools are used every day by members of the community, yet they are built and maintained independently with no official or external funding.</p>
   <p>They exist to reduce risk, simplify processes, and help you operate more efficiently in Web3.</p>
   <p>If you rely on them, consider contributing.</p>
@@ -2709,5 +2842,23 @@ if (swapButtonsContainer) {
      aria-live="polite" 
      aria-atomic="true">
 </div>
+<div id="funding-goal-bar" aria-label="Toolbox funding goal: $10 raised of $200" role="img">
+  <div class="funding-goal-widget">
+    <div class="fg-title">Funding<br>Goal</div>
+    <div class="fg-goal-label">$200</div>
+    <div class="fg-track-wrap">
+      <div class="fg-track">
+        <div class="fg-fill"></div>
+      </div>
+      <div class="fg-tick-panel">
+        <div class="fg-tick" style="bottom:75%"><span class="fg-tick-label">$150</span></div>
+        <div class="fg-tick" style="bottom:50%"><span class="fg-tick-label">$100</span></div>
+        <div class="fg-tick" style="bottom:25%"><span class="fg-tick-label">$50</span></div>
+      </div>
+    </div>
+    <div class="fg-raised-label">$10 raised</div>
+  </div>
+</div>
+  
 </body>
 </html>
