@@ -885,6 +885,7 @@ button.rpc-active {
             aria-label="Select token to display price"
             style="padding:4px 8px; border-radius:20px; border:1px solid var(--border);
                    background:var(--card-bg); color:var(--text); font-size:0.85rem; cursor:pointer;">
+      <option value="BNB">BNB</option>
       <option value="PFI">PFI</option>
       <option value="PFB">PFB</option>
       <option value="PFS">PFS</option>
@@ -1410,14 +1411,16 @@ button.rpc-active {
   </footer>
 
   <script>
-const DEXSCREENER_TOKENS = {
+const DEX_TOKENS = {
   PFI: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
   PFB: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
+  PFS: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
+  PFG: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
   PML: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
   JOY: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f"
 };
 
-const tokenPrices  = { BNB: null, PFI: null, PFB: null, PML: null, JOY: null };
+const tokenPrices  = { BNB: null, PFI: null, PFB: null, PFS: null, PFG: null, PML: null, JOY: null };
 const portfolioData = {};
 
 const ERC20_BALANCE_ABI = ["function balanceOf(address owner) view returns (uint256)"];
@@ -2138,7 +2141,9 @@ async function addAllTokens() {
    RPC — with active highlight + latency
    ============================================= */
 
-function highlightActiveRPC(url) {
+
+    
+  function highlightActiveRPC(url) {
   document.querySelectorAll("button[data-rpc-url]").forEach(btn => {
     if (btn.getAttribute("data-rpc-url") === url) {
       btn.classList.add("rpc-active");
@@ -2153,9 +2158,8 @@ async function switchRPC(url, name) {
     notify("Unapproved RPC");
     return;
   }
-
   async function addFastestRPC() {
-  const statusEl = document.getElementById("fastestRPCStatus");
+  const statusEl  = document.getElementById("fastestRPCStatus");
   const triggerBtn = document.getElementById("addFastestRPC");
   if (statusEl)    statusEl.textContent = "Testing all nodes…";
   if (triggerBtn)  triggerBtn.disabled  = true;
