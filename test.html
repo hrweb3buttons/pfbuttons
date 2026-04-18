@@ -1279,6 +1279,8 @@ button.rpc-active {
     <option value="">Select token…</option>
     <option value="PFI">PFI</option>
     <option value="PFB">PFB</option>
+    <option value="PFS">PFS</option>
+    <option value="PFG">PFG</option>
     <option value="PML">PML</option>
     <option value="JOY">JOY</option>
   </select>
@@ -1332,6 +1334,8 @@ button.rpc-active {
       <option value="">Select token…</option>
       <option value="PFI">PFI</option>
       <option value="PFB">PFB</option>
+      <option value="PFS">PFS</option>
+      <option value="PFG">PFG</option>
       <option value="PML">PML</option>
       <option value="JOY">JOY</option>
     </select>
@@ -3206,9 +3210,12 @@ if (priceTokenSelect) {
 document.getElementById("calcFillPrice")?.addEventListener("click", () => {
   const symbol = document.getElementById("calcTokenSelect").value;
   if (!symbol)          { notify("Please select a token first"); return; }
-  const price = tokenPrices[symbol];
+   const price = tokenPrices[symbol];
   if (price == null)    { notify("Price for " + symbol + " not available yet"); return; }
-  priceInput.value = price;
+  priceInput.value = new Intl.NumberFormat(navigator.language, {
+    maximumFractionDigits: 20,
+    useGrouping: false
+  }).format(price);
   clearCalcOutput();
 });
 
