@@ -1481,9 +1481,9 @@ async function loadPortfolio() {
             maximumFractionDigits: d
           }).format(n);
 
-    const rows = [
-      { symbol: "BNB", bal: portfolioData["BNB"], d: 5 },
-      ...tokenList.map(t => ({ symbol: t.symbol, bal: portfolioData[t.symbol], d: 2 }))
+const rows = [
+      { symbol: "BNB", bal: portfolioData["BNB"], d: 8 },
+      ...tokenList.map(t => ({ symbol: t.symbol, bal: portfolioData[t.symbol], d: 8 }))
     ];
 
     content.innerHTML = `
@@ -2676,7 +2676,22 @@ async function fetchDexPrices() {
         clearTimeout(timeout);
         if (!res.ok) return;
         const data = await res.json();
-        const price = parseFloat(data?.pairs?.[0]?.priceUsd);
+
+        const pairs = data?.pairs;
+        if (!Array.isArray(pairs) || !pairs.length) return;
+
+        // Prefer PancakeSwap V3; fall back to any pair with a valid priceUsd
+        const preferred = pairs.find(p =>
+          typeof p.dexId === "string" &&
+          p.dexId.toLowerCase().includes("pancakeswap") &&
+          p.dexId.toLowerCase().includes("v3") &&
+          parseFloat(p.priceUsd) > 0
+        );
+        const fallback = pairs.find(p => parseFloat(p.priceUsd) > 0);
+        const chosen = preferred || fallback;
+
+        if (!chosen) return;
+        const price = parseFloat(chosen.priceUsd);
         if (!isNaN(price) && price > 0) tokenPrices[symbol] = price;
       } catch (err) {
         console.error("DexScreener fetch failed for", symbol, err);
