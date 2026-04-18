@@ -885,9 +885,10 @@ button.rpc-active {
             aria-label="Select token to display price"
             style="padding:4px 8px; border-radius:20px; border:1px solid var(--border);
                    background:var(--card-bg); color:var(--text); font-size:0.85rem; cursor:pointer;">
-      <option value="BNB">BNB</option>
       <option value="PFI">PFI</option>
       <option value="PFB">PFB</option>
+      <option value="PFS">PFS</option>
+      <option value="PFG">PFG</option>
       <option value="PML">PML</option>
       <option value="JOY">JOY</option>
     </select>
@@ -2665,40 +2666,40 @@ async function fetchPrices() {
 
 async function fetchDexPrices() {
   await Promise.allSettled(
-    Object.entries(DEXSCREENER_TOKENS).map(async ([symbol, tokenAddress]) => {
+    Object.entries(DEX_TOKENS).map(async ([symbol, tokenAddress]) => {
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 7000);
         const res = await fetch(
-          "https://api.dexscreener.com/latest/dex/tokens/" + tokenAddress,
-          { signal: controller.signal }
+          "https://api.geckoterminal.com/api/v2/networks/bsc/tokens/" + tokenAddress,
+          {
+            signal: controller.signal,
+            headers: { "Accept": "application/json" }
+          }
         );
         clearTimeout(timeout);
-        if (!res.ok) return;
+
+        if (!res.ok) {
+          console.warn("GeckoTerminal non-OK for", symbol, res.status);
+          return;
+        }
+
         const data = await res.json();
+        const priceStr = data?.data?.attributes?.price_usd;
 
-        const pairs = data?.pairs;
-        if (!Array.isArray(pairs) || !pairs.length) return;
+        if (!priceStr) {
+          console.warn("GeckoTerminal: no price_usd for", symbol);
+          return;
+        }
 
-        // Prefer PancakeSwap V3 on BSC; fall back to any BSC pair with a valid priceUsd
-        const preferred = pairs.find(p =>
-          p.chainId === "bsc" &&
-          typeof p.dexId === "string" &&
-          p.dexId.toLowerCase().includes("pancakeswap") &&
-          p.dexId.toLowerCase().includes("v3") &&
-          parseFloat(p.priceUsd) > 0
-        );
-        const fallback = pairs.find(p =>
-          p.chainId === "bsc" &&
-          parseFloat(p.priceUsd) > 0
-        );
-        const chosen = preferred || fallback;
-
-        if (!chosen) return;
-        const price = parseFloat(chosen.priceUsd);
-        if (!isNaN(price) && price > 0) tokenPrices[symbol] = price;
+        const price = parseFloat(priceStr);
+        if (!isNaN(price) && price > 0) {
+          tokenPrices[symbol] = price;
+        } else {
+          console.warn("GeckoTerminal: invalid price for", symbol, priceStr);
+        }
       } catch (err) {
-        console.error("DexScreener fetch failed for", symbol, err);
+        console.error("GeckoTerminal fetch failed for", symbol, err);
       }
     })
   );
