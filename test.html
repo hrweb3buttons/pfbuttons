@@ -2158,8 +2158,44 @@ async function switchRPC(url, name) {
     notify("Unapproved RPC");
     return;
   }
-  async function addFastestRPC() {
-  const statusEl  = document.getElementById("fastestRPCStatus");
+
+
+  if (!window.ethereum) {
+    notify("MetaMask not detected");
+    return;
+  }
+
+  const chainId = CONFIG.chainHex;
+
+  try {
+    await window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: chainId,
+        chainName: "Binance Smart Chain (" + name + ")",
+        nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+        rpcUrls: [url],
+        blockExplorerUrls: ["https://bscscan.com"]
+      }]
+    });
+
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId }]
+    });
+
+    // Persist and highlight on success
+    localStorage.setItem("activeRPC", url);
+    highlightActiveRPC(url);
+
+    notify("RPC switched to " + name);
+  } catch (e) {
+    notify("RPC change rejected");
+  }
+}
+
+async function addFastestRPC() {
+  const statusEl   = document.getElementById("fastestRPCStatus");
   const triggerBtn = document.getElementById("addFastestRPC");
   if (statusEl)    statusEl.textContent = "Testing all nodes…";
   if (triggerBtn)  triggerBtn.disabled  = true;
@@ -2204,40 +2240,6 @@ async function switchRPC(url, name) {
   if (statusEl) statusEl.textContent = "Fastest: " + fastest.name + " (" + fastest.ms + " ms)";
 
   await switchRPC(fastest.url, fastest.name);
-}
-
-  if (!window.ethereum) {
-    notify("MetaMask not detected");
-    return;
-  }
-
-  const chainId = CONFIG.chainHex;
-
-  try {
-    await window.ethereum.request({
-      method: "wallet_addEthereumChain",
-      params: [{
-        chainId: chainId,
-        chainName: "Binance Smart Chain (" + name + ")",
-        nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-        rpcUrls: [url],
-        blockExplorerUrls: ["https://bscscan.com"]
-      }]
-    });
-
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId }]
-    });
-
-    // Persist and highlight on success
-    localStorage.setItem("activeRPC", url);
-    highlightActiveRPC(url);
-
-    notify("RPC switched to " + name);
-  } catch (e) {
-    notify("RPC change rejected");
-  }
 }
 
 /* =============================================
