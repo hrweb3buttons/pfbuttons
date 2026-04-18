@@ -2194,7 +2194,7 @@ async function switchRPC(url, name) {
   }
 }
 
-async function addFastestRPC() {
+async function runFastestRPC() {
   const statusEl   = document.getElementById("fastestRPCStatus");
   const triggerBtn = document.getElementById("addFastestRPC");
   if (statusEl)    statusEl.textContent = "Testing all nodes…";
@@ -3234,7 +3234,7 @@ document.getElementById("calcFillBalanceTarget")?.addEventListener("click", () =
 document.getElementById("refreshPortfolio")?.addEventListener("click", loadPortfolio);
 
 // Fastest RPC button
-document.getElementById("addFastestRPC")?.addEventListener("click", addFastestRPC);
+document.getElementById("addFastestRPC")?.addEventListener("click", runFastestRPC);
 
 // USDT amount field — sanitize + format on blur
 const calcUsdtAmtInput = document.getElementById("calcUsdtAmount");
