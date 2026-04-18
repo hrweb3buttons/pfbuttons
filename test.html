@@ -1409,11 +1409,11 @@ button.rpc-active {
   </footer>
 
   <script>
-const DEXSCREENER_PAIRS = {
-  PFI: "0x94af08340ad9817d1e82a24b74fed9ebc87bfb63",
-  PFB: "0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313",
-  PML: "0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4",
-  JOY: "0xfd1825a6570dcaa27538ea638a0087bd84a3effa"
+const DEXSCREENER_TOKENS = {
+  PFI: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
+  PFB: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
+  PML: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+  JOY: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f"
 };
 
 const tokenPrices  = { BNB: null, PFI: null, PFB: null, PML: null, JOY: null };
@@ -2665,12 +2665,12 @@ async function fetchPrices() {
 
 async function fetchDexPrices() {
   await Promise.allSettled(
-    Object.entries(DEXSCREENER_PAIRS).map(async ([symbol, pair]) => {
+    Object.entries(DEXSCREENER_TOKENS).map(async ([symbol, tokenAddress]) => {
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 7000);
         const res = await fetch(
-          "https://api.dexscreener.com/latest/dex/pairs/bsc/" + pair,
+          "https://api.dexscreener.com/latest/dex/tokens/" + tokenAddress,
           { signal: controller.signal }
         );
         clearTimeout(timeout);
@@ -2680,14 +2680,18 @@ async function fetchDexPrices() {
         const pairs = data?.pairs;
         if (!Array.isArray(pairs) || !pairs.length) return;
 
-        // Prefer PancakeSwap V3; fall back to any pair with a valid priceUsd
+        // Prefer PancakeSwap V3 on BSC; fall back to any BSC pair with a valid priceUsd
         const preferred = pairs.find(p =>
+          p.chainId === "bsc" &&
           typeof p.dexId === "string" &&
           p.dexId.toLowerCase().includes("pancakeswap") &&
           p.dexId.toLowerCase().includes("v3") &&
           parseFloat(p.priceUsd) > 0
         );
-        const fallback = pairs.find(p => parseFloat(p.priceUsd) > 0);
+        const fallback = pairs.find(p =>
+          p.chainId === "bsc" &&
+          parseFloat(p.priceUsd) > 0
+        );
         const chosen = preferred || fallback;
 
         if (!chosen) return;
