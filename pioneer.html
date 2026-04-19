@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io https://binance.llamarpc.com https://bsc-rpc.publicnode.com https://bsc.blockrazor.xyz https://bsc.rpc.blxrbdn.com https://bsc.drpc.org https://binance-smart-chain-public.nodies.app https://1rpc.io https://bnb.rpc.subquery.network https://public-bsc.nownodes.io;
+  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io https://binance.llamarpc.com https://bsc-rpc.publicnode.com https://bsc.blockrazor.xyz https://bsc.rpc.blxrbdn.com https://bsc.drpc.org https://binance-smart-chain-public.nodies.app https://1rpc.io https://bnb.rpc.subquery.network https://public-bsc.nownodes.io https://api.dexscreener.com https://api.geckoterminal.com;
   img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -210,7 +210,6 @@
    PIONEER BANNER — shown at top of page content
    ============================================= */
 
-/* Pioneer banner — inline above intro card on desktop */
 #pioneer-banner {
   background: linear-gradient(135deg, #002a66 0%, #004aab 60%, #0059d6 100%);
   color: #fff;
@@ -221,7 +220,7 @@
   letter-spacing: 0.04em;
   border-radius: var(--radius) var(--radius) 0 0;
   border-bottom: none;
-  margin-bottom: -1px; /* tucks flush against the card below */
+  margin-bottom: -1px;
 }
 
 #pioneer-banner span {
@@ -920,6 +919,138 @@ button.rpc-active {
   color: #a3d1ff;
 }
 
+/* =============================================
+   FUNDING GOAL BAR — Desktop sidebar
+   ============================================= */
+
+#funding-goal-bar {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9000;
+}
+
+.funding-goal-widget {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+}
+
+.fg-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.fg-goal-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fg-track-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 180px;
+}
+
+.fg-track {
+  width: 16px;
+  height: 180px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fg-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5%; /* $10 of $200 */
+  background: var(--primary);
+  border-radius: 0 0 8px 8px;
+}
+
+.fg-tick-panel {
+  position: relative;
+  flex: 1;
+  height: 180px;
+}
+
+.fg-tick {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(50%);
+}
+
+.fg-tick::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 1px;
+  background: var(--border);
+  margin-right: 3px;
+  flex-shrink: 0;
+}
+
+.fg-tick-label {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.fg-raised-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+}
+
+/* Mobile: hide the sidebar bar */
+@media (max-width: 768px) {
+  #funding-goal-bar {
+    display: none;
+  }
+}
+
+/* =============================================
+   FUNDING GOAL — Mobile inline (donate card)
+   ============================================= */
+
+.fg-mobile-inline {
+  display: none;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .fg-mobile-inline {
+    display: block;
+  }
+}
+
 @media (max-width: 768px) {
   #wallet-connect {
     position: sticky;
@@ -1030,8 +1161,24 @@ button.rpc-active {
 
   <header id="wallet-connect" aria-label="Site controls">
     <div id="priceContainer">
-      <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true">
-        <strong>BNB:</strong> <span id="bnbPrice">--</span> USD
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+        <select id="priceTokenSelect"
+                aria-label="Select token to display price"
+                style="padding:4px 8px; border-radius:20px; border:1px solid var(--border);
+                       background:var(--card-bg); color:var(--text); font-size:0.85rem; cursor:pointer;">
+          <option value="BNB">BNB</option>
+          <option value="PFI">PFI</option>
+          <option value="PFB">PFB</option>
+          <option value="PFS">PFS</option>
+          <option value="PFG">PFG</option>
+          <option value="PML">PML</option>
+          <option value="JOY">JOY</option>
+        </select>
+        <div id="priceDisplay" role="status" aria-live="polite" aria-atomic="true"
+             style="font-size:0.85rem; color:var(--text-muted); background:var(--card-bg);
+                    padding:4px 12px; border-radius:20px; border:1px solid var(--border);">
+          <span id="priceValue">--</span> USD
+        </div>
       </div>
     </div>
     <div id="controlButtons">
@@ -1072,6 +1219,14 @@ button.rpc-active {
         <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
       </section>
 
+      <section class="card" id="portfolio">
+        <h2>Portfolio Snapshot</h2>
+        <div id="portfolioContent">
+          <p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>
+        </div>
+        <button id="refreshPortfolio" style="display:none; margin-top:0.75rem;" aria-label="Refresh portfolio balances">Refresh Balances</button>
+      </section>
+
       <div class="pioneer-notice">
         <strong>◆ You're viewing Pioneer Preview</strong>
         This version includes updates that haven't been released to the main Toolbox yet. Some features may still be in progress. Your feedback as a Pioneer member is welcome and genuinely helps shape what ships next.
@@ -1079,6 +1234,7 @@ button.rpc-active {
 
       <nav aria-label="Page sections" style="margin-bottom: 1.5rem;">
         <ul style="display:flex; flex-wrap:wrap; gap:0.5rem 0.9rem; padding:0; margin:0; list-style:none;">
+          <li><a href="#portfolio">Portfolio</a></li>
           <li><a href="#donate">Donate</a></li>
           <li><a href="#add-tokens">Add Tokens</a></li>
           <li><a href="#rpc">Switch RPC</a></li>
@@ -1092,6 +1248,7 @@ button.rpc-active {
 
       <section class="card highlight" id="donate">
         <h2>Contribute To Keep These Tools Live</h2>
+        <p class="fg-mobile-inline"><strong>Monthly Funding Goal:</strong> $10 / $200</p>
         <p>These tools are used every day by members of the community, yet they are built and maintained independently with no official or external funding.</p>
         <p>They exist to reduce risk, simplify processes, and help you operate more efficiently in Web3.</p>
         <p>If you rely on them, consider contributing.</p>
@@ -1172,6 +1329,12 @@ button.rpc-active {
           Response times are tested automatically when you scroll to this section.
           A green outline indicates your last used RPC.
         </p>
+
+        <div style="margin: 1rem 0;">
+          <button id="addFastestRPC" type="button">⚡ Add Fastest RPC</button>
+          <span id="fastestRPCStatus"
+                style="font-size:0.85rem; color:var(--text-muted); margin-left:0.75rem; vertical-align:middle;"></span>
+        </div>
 
         <h3>Standard RPC Options</h3>
         <div class="rpc-buttons">
@@ -1306,7 +1469,28 @@ button.rpc-active {
           <legend><strong>Mode</strong></legend>
           <div><label><input type="radio" name="calcMode" value="current" checked> Current Price</label></div>
           <div><label><input type="radio" name="calcMode" value="target"> Price Target</label></div>
+          <div><label><input type="radio" name="calcMode" value="usdt"> USDT → Tokens</label></div>
         </fieldset>
+
+        <!-- Pre-fill controls — shown in Current Price mode only -->
+        <div id="calcPrefillRow" style="margin-bottom:1rem; display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+          <label for="calcTokenSelect" class="sr-only">Token for pre-fill</label>
+          <select id="calcTokenSelect"
+                  style="padding:0.4rem 0.6rem; border-radius:var(--radius); border:1px solid var(--border);
+                         background:var(--card-bg); color:var(--text);">
+            <option value="">Select token…</option>
+            <option value="PFI">PFI</option>
+            <option value="PFB">PFB</option>
+            <option value="PFS">PFS</option>
+            <option value="PFG">PFG</option>
+            <option value="PML">PML</option>
+            <option value="JOY">JOY</option>
+          </select>
+          <button id="calcFillPrice" type="button" class="donate-more"
+                  style="padding:0.4rem 0.8rem; font-size:0.85rem;">Use current price</button>
+          <button id="calcFillBalance" type="button" class="donate-more"
+                  style="padding:0.4rem 0.8rem; font-size:0.85rem;">Use my balance</button>
+        </div>
 
         <fieldset id="targetSelector" style="display:none; margin-bottom:1rem;">
           <legend><strong>Token Price Target</strong></legend>
@@ -1315,6 +1499,10 @@ button.rpc-active {
           <label><input type="radio" name="targetToken" value="PFS"> PFS</label><br>
           <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
           <label><input type="radio" name="targetToken" value="PML"> PML</label>
+          <div style="margin-top:0.75rem;">
+            <button id="calcFillBalanceTarget" type="button" class="donate-more"
+                    style="padding:0.4rem 0.8rem; font-size:0.85rem;">Use my balance</button>
+          </div>
         </fieldset>
 
         <div id="calcPriceRow" style="margin-bottom: 1rem;">
@@ -1327,6 +1515,35 @@ button.rpc-active {
           <label><strong>Token Amount</strong><br>
             <input id="calcAmount" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
           </label>
+        </div>
+
+        <!-- USDT → Token panel -->
+        <div id="calcUsdtPanel" style="display:none; margin-bottom:1rem;">
+          <div style="margin-bottom:0.75rem;">
+            <label>
+              <strong>USDT Amount</strong><br>
+              <input id="calcUsdtAmount" type="text" inputmode="decimal"
+                     style="width:100%; padding:0.5rem; margin-top:0.25rem; box-sizing:border-box;">
+            </label>
+          </div>
+          <div style="margin-bottom:0.75rem;">
+            <label for="calcUsdtToken"><strong>Token</strong></label><br>
+            <select id="calcUsdtToken"
+                    style="width:100%; padding:0.5rem; border-radius:var(--radius);
+                           border:1px solid var(--border); background:var(--card-bg);
+                           color:var(--text); margin-top:0.25rem; box-sizing:border-box;">
+              <option value="">Select token…</option>
+              <option value="PFI">PFI</option>
+              <option value="PFB">PFB</option>
+              <option value="PFS">PFS</option>
+              <option value="PFG">PFG</option>
+              <option value="PML">PML</option>
+              <option value="JOY">JOY</option>
+            </select>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 0.75rem;">
+            Estimates only. Does not account for slippage, price impact, or swap fees.
+          </p>
         </div>
 
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
@@ -1388,6 +1605,24 @@ button.rpc-active {
      role="status"
      aria-live="polite"
      aria-atomic="true">
+</div>
+
+<div id="funding-goal-bar" aria-label="Toolbox monthly funding goal: $10 raised of $200" role="img">
+  <div class="funding-goal-widget">
+    <div class="fg-title">Monthly<br>Funding<br>Goal</div>
+    <div class="fg-goal-label">$200</div>
+    <div class="fg-track-wrap">
+      <div class="fg-track">
+        <div class="fg-fill"></div>
+      </div>
+      <div class="fg-tick-panel">
+        <div class="fg-tick" style="bottom:75%"><span class="fg-tick-label">$150</span></div>
+        <div class="fg-tick" style="bottom:50%"><span class="fg-tick-label">$100</span></div>
+        <div class="fg-tick" style="bottom:25%"><span class="fg-tick-label">$50</span></div>
+      </div>
+    </div>
+    <div class="fg-raised-label">$10 raised</div>
+  </div>
 </div>
 
 <script>
@@ -1482,6 +1717,18 @@ function initPage() {
     }
   };
 
+  const DEX_TOKENS = {
+    PFI: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
+    PFB: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
+    PFS: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
+    PFG: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
+    PML: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+    JOY: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f"
+  };
+
+  const tokenPrices = { BNB: null, PFI: null, PFB: null, PFS: null, PFG: null, PML: null, JOY: null };
+  const portfolioData = {};
+
   const DONATE_PRESETS = {
     BNB:  [0.01, 0.05, 0.1],
     USDT: [1, 5, 10, 25],
@@ -1490,6 +1737,10 @@ function initPage() {
 
   const ERC20_ALLOWANCE_ABI = [
     "function allowance(address owner, address spender) view returns (uint256)"
+  ];
+
+  const ERC20_BALANCE_ABI = [
+    "function balanceOf(address owner) view returns (uint256)"
   ];
 
   const ERC20_ABI = [
@@ -1573,13 +1824,13 @@ function initPage() {
   ]);
 
   const tokens = [
-    { address: CONFIG.tokens.USDT.address,                          symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
-    { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",        symbol: "PFI",  decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
-    { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",        symbol: "PFB",  decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
-    { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",        symbol: "PFS",  decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
-    { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",        symbol: "PFG",  decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
-    { address: CONFIG.tokens.PML.address,                           symbol: "PML",  decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
-    { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f",        symbol: "JOY",  decimals: 18, image: "https://hrweb3buttons.github.io/pfbuttons/Joy64.jpg" }
+    { address: CONFIG.tokens.USDT.address,                   symbol: "USDT", decimals: 18, image: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
+    { address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", symbol: "PFI",  decimals: 18, image: "https://pmlcoin.app/assets/pfi64-Bq4RLVgI.png" },
+    { address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", symbol: "PFB",  decimals: 18, image: "https://pmlcoin.app/assets/pfb64-Boh4Kv01.png" },
+    { address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", symbol: "PFS",  decimals: 18, image: "https://pmlcoin.app/assets/pfs64-Cp73hc2m.png" },
+    { address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", symbol: "PFG",  decimals: 18, image: "https://pmlcoin.app/assets/pfg64-aUOZ9Zqz.png" },
+    { address: CONFIG.tokens.PML.address,                    symbol: "PML",  decimals: 18, image: "https://pmlcoin.app/assets/logo-D04mbZJF.png" },
+    { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY",  decimals: 18, image: "https://hrweb3buttons.github.io/pfbuttons/Joy64.jpg" }
   ];
 
   const swapLinks = {
@@ -1665,6 +1916,7 @@ function initPage() {
       signer = await provider.getSigner();
       connectedAccount = accs[0];
       updateWalletUI(true);
+      loadPortfolio();
     } catch (err) {
       if (err.code === 4001) notify("Connection rejected");
       else notify("Connection failed");
@@ -1687,6 +1939,10 @@ function initPage() {
   function disconnectWallet() {
     connectedAccount = null; signer = null; provider = null;
     updateWalletUI(false);
+    const _pc = document.getElementById("portfolioContent");
+    if (_pc) _pc.innerHTML = '<p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>';
+    const _rb = document.getElementById("refreshPortfolio");
+    if (_rb) _rb.style.display = "none";
     notify("Wallet disconnected");
   }
 
@@ -1699,6 +1955,7 @@ function initPage() {
       signer = await provider.getSigner();
       connectedAccount = accounts[0];
       updateWalletUI(true);
+      loadPortfolio();
     } catch (err) { console.error("Auto-restore failed:", err); }
   }
 
@@ -1950,6 +2207,53 @@ function initPage() {
     observer.observe(rpcSection);
   }
 
+  async function runFastestRPC() {
+    const statusEl   = document.getElementById("fastestRPCStatus");
+    const triggerBtn = document.getElementById("addFastestRPC");
+    if (statusEl)   statusEl.textContent = "Testing all nodes…";
+    if (triggerBtn) triggerBtn.disabled  = true;
+
+    const rpcButtons = document.querySelectorAll("button[data-rpc-url]");
+
+    const results = await Promise.allSettled(
+      Array.from(rpcButtons).map(async btn => {
+        const url   = btn.getAttribute("data-rpc-url");
+        const name  = btn.textContent.trim();
+        const latEl = document.getElementById("lat-" + btn.id);
+
+        if (latEl) { latEl.textContent = "testing…"; latEl.className = "rpc-latency testing"; }
+
+        const ms = await testRPCLatency(url);
+
+        if (latEl) {
+          if (ms === null)   { latEl.textContent = "timeout"; latEl.className = "rpc-latency timeout"; }
+          else if (ms < 300) { latEl.textContent = ms + " ms"; latEl.className = "rpc-latency fast"; }
+          else if (ms < 800) { latEl.textContent = ms + " ms"; latEl.className = "rpc-latency medium"; }
+          else               { latEl.textContent = ms + " ms"; latEl.className = "rpc-latency slow"; }
+        }
+
+        return { url, name, ms };
+      })
+    );
+
+    if (triggerBtn) triggerBtn.disabled = false;
+
+    const valid = results
+      .filter(r => r.status === "fulfilled" && r.value.ms !== null)
+      .map(r => r.value)
+      .sort((a, b) => a.ms - b.ms);
+
+    if (!valid.length) {
+      if (statusEl) statusEl.textContent = "All nodes timed out.";
+      notify("All RPC nodes timed out");
+      return;
+    }
+
+    const fastest = valid[0];
+    if (statusEl) statusEl.textContent = "Fastest: " + fastest.name + " (" + fastest.ms + " ms)";
+    await switchRPC(fastest.url, fastest.name);
+  }
+
   /* --- GoPlus --- */
   async function checkGoPlusAddress(address) {
     try {
@@ -2093,32 +2397,216 @@ function initPage() {
   const reviewBtn = document.getElementById("requestReview");
   if (reviewBtn) reviewBtn.onclick = () => document.getElementById("services")?.scrollIntoView({ behavior:"smooth" });
 
+  /* --- Portfolio --- */
+  function checkBNBGas(bnbBalance) {
+    if (typeof bnbBalance === "number" && bnbBalance < 0.001) {
+      notify(
+        "⚠️ Low BNB balance (" + bnbBalance.toFixed(5) + " BNB). You may not have enough to cover gas fees.",
+        9000
+      );
+    }
+  }
+
+  async function loadPortfolio() {
+    const content    = document.getElementById("portfolioContent");
+    const refreshBtn = document.getElementById("refreshPortfolio");
+    if (!content) return;
+
+    if (!signer) {
+      content.innerHTML = '<p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>';
+      if (refreshBtn) refreshBtn.style.display = "none";
+      return;
+    }
+
+    content.innerHTML = '<p style="color:var(--text-muted);">Loading balances…</p>';
+
+    try {
+      const owner = await signer.getAddress();
+
+      const bnbWei = await provider.getBalance(owner);
+      const bnbBal = parseFloat(ethers.formatEther(bnbWei));
+      portfolioData["BNB"] = bnbBal;
+
+      const tokenList = [
+        { symbol: "PFI", address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", decimals: 18 },
+        { symbol: "PFB", address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", decimals: 18 },
+        { symbol: "PFS", address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", decimals: 18 },
+        { symbol: "PFG", address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", decimals: 18 },
+        { symbol: "PML", address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD", decimals: 18 },
+        { symbol: "JOY", address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", decimals: 18 }
+      ];
+
+      await Promise.allSettled(
+        tokenList.map(async t => {
+          try {
+            const contract = new ethers.Contract(t.address, ERC20_BALANCE_ABI, provider);
+            const raw      = await contract.balanceOf(owner);
+            portfolioData[t.symbol] = parseFloat(ethers.formatUnits(raw, t.decimals));
+          } catch {
+            portfolioData[t.symbol] = null;
+          }
+        })
+      );
+
+      const fmt = (n, d = 4) =>
+        n == null
+          ? "—"
+          : new Intl.NumberFormat(navigator.language, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: d
+            }).format(n);
+
+      const rows = [
+        { symbol: "BNB", bal: portfolioData["BNB"], d: 8 },
+        ...tokenList.map(t => ({ symbol: t.symbol, bal: portfolioData[t.symbol], d: 8 }))
+      ];
+
+      content.innerHTML = `
+        <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left; padding:6px 0; color:var(--text-muted); font-weight:600;">Token</th>
+              <th style="text-align:right; padding:6px 0; color:var(--text-muted); font-weight:600;">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:7px 0; font-weight:600;">${r.symbol}</td>
+                <td style="padding:7px 0; text-align:right;
+                           font-family:ui-monospace,'Cascadia Code',monospace;">${fmt(r.bal, r.d)}</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>`;
+
+      if (refreshBtn) refreshBtn.style.display = "inline-block";
+      checkBNBGas(bnbBal);
+
+    } catch (err) {
+      console.error("Portfolio load failed:", err);
+      content.innerHTML = '<p style="color:var(--error);">Failed to load balances. Please try again.</p>';
+    }
+  }
+
+  /* --- Price display --- */
+  function formatTokenPrice(price, symbol) {
+    if (price == null) return "--";
+    if (symbol === "BNB") return price.toFixed(2);
+    if (price < 0.000001) return price.toExponential(4);
+    if (price < 0.001)    return price.toFixed(8);
+    if (price < 1)        return price.toFixed(6);
+    return price.toFixed(4);
+  }
+
+  function updatePriceDisplay() {
+    const select  = document.getElementById("priceTokenSelect");
+    const display = document.getElementById("priceValue");
+    if (!select || !display) return;
+    const token = select.value || "BNB";
+    const price = tokenPrices[token];
+    display.textContent = formatTokenPrice(price, token);
+  }
+
+  async function fetchPrices() {
+    try {
+      const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd");
+      if (!res.ok) throw new Error("CoinGecko response not OK: "+res.status);
+      const data = await res.json();
+      tokenPrices.BNB = data?.binancecoin?.usd ?? null;
+    } catch (err) { console.error("BNB price fetch failed:", err); tokenPrices.BNB = null; }
+    updatePriceDisplay();
+  }
+
+  async function fetchDexPrices() {
+    await Promise.allSettled(
+      Object.entries(DEX_TOKENS).map(async ([symbol, tokenAddress]) => {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 7000);
+          const res = await fetch(
+            "https://api.geckoterminal.com/api/v2/networks/bsc/tokens/" + tokenAddress,
+            { signal: controller.signal, headers: { "Accept": "application/json" } }
+          );
+          clearTimeout(timeout);
+          if (!res.ok) { console.warn("GeckoTerminal non-OK for", symbol, res.status); return; }
+          const data = await res.json();
+          const priceStr = data?.data?.attributes?.price_usd;
+          if (!priceStr) { console.warn("GeckoTerminal: no price_usd for", symbol); return; }
+          const price = parseFloat(priceStr);
+          if (!isNaN(price) && price > 0) {
+            tokenPrices[symbol] = price;
+          } else {
+            console.warn("GeckoTerminal: invalid price for", symbol, priceStr);
+          }
+        } catch (err) { console.error("GeckoTerminal fetch failed for", symbol, err); }
+      })
+    );
+    updatePriceDisplay();
+  }
+
   /* --- Calculator --- */
-  const priceTargets = { PFI:500000, PFB:1000000, PFS:2000000, PFG:4000000, PML:2000000 };
-  const modeRadios   = document.querySelectorAll('input[name="calcMode"]');
-  const tokenRadios  = document.querySelectorAll('input[name="targetToken"]');
-  const targetSelector = document.getElementById("targetSelector");
-  const priceInput   = document.getElementById("calcPrice");
-  const amountInput  = document.getElementById("calcAmount");
-  const calcButton   = document.getElementById("calcButton");
-  const calcResult   = document.getElementById("calcResult");
-  const calcAlert    = document.getElementById("calcAlert");
-  const calcPriceRow = document.getElementById("calcPriceRow");
-  const calcAmountRow= document.getElementById("calcAmountRow");
+  const priceTargets  = { PFI:500000, PFB:1000000, PFS:2000000, PFG:4000000, PML:2000000 };
+  const modeRadios    = document.querySelectorAll('input[name="calcMode"]');
+  const tokenRadios   = document.querySelectorAll('input[name="targetToken"]');
+  const targetSelector= document.getElementById("targetSelector");
+  const priceInput    = document.getElementById("calcPrice");
+  const amountInput   = document.getElementById("calcAmount");
+  const calcButton    = document.getElementById("calcButton");
+  const calcResult    = document.getElementById("calcResult");
+  const calcAlert     = document.getElementById("calcAlert");
+  const calcPriceRow  = document.getElementById("calcPriceRow");
+  const calcAmountRow = document.getElementById("calcAmountRow");
   const example = (1.1).toLocaleString();
   priceInput.placeholder = example; amountInput.placeholder = example;
 
-  function clearCalcOutput() { calcResult.textContent=""; calcAlert.style.display="none"; calcAlert.textContent=""; }
+  function clearCalcOutput() {
+    calcResult.textContent = "";
+    calcAlert.style.display = "none";
+    calcAlert.textContent = "";
+  }
 
   function setMode(mode) {
-    clearCalcOutput(); priceInput.value=""; amountInput.value="";
-    if (mode==="target") { targetSelector.style.display="block"; priceInput.readOnly=true; }
-    else { targetSelector.style.display="none"; priceInput.readOnly=false; }
-    calcPriceRow.style.display="block"; calcAmountRow.style.display="block";
+    clearCalcOutput();
+    priceInput.value  = "";
+    amountInput.value = "";
+
+    const prefillRow = document.getElementById("calcPrefillRow");
+    const usdtPanel  = document.getElementById("calcUsdtPanel");
+
+    if (mode === "target") {
+      targetSelector.style.display    = "block";
+      priceInput.readOnly             = true;
+      calcPriceRow.style.display      = "block";
+      calcAmountRow.style.display     = "block";
+      if (prefillRow) prefillRow.style.display = "none";
+      if (usdtPanel)  usdtPanel.style.display  = "none";
+    } else if (mode === "usdt") {
+      targetSelector.style.display    = "none";
+      priceInput.readOnly             = false;
+      calcPriceRow.style.display      = "none";
+      calcAmountRow.style.display     = "none";
+      if (prefillRow) prefillRow.style.display = "none";
+      if (usdtPanel)  usdtPanel.style.display  = "block";
+      const usdtAmt = document.getElementById("calcUsdtAmount");
+      if (usdtAmt) usdtAmt.value = "";
+      const usdtTok = document.getElementById("calcUsdtToken");
+      if (usdtTok) usdtTok.value = "";
+    } else {
+      // current price
+      targetSelector.style.display    = "none";
+      priceInput.readOnly             = false;
+      calcPriceRow.style.display      = "block";
+      calcAmountRow.style.display     = "block";
+      if (prefillRow) prefillRow.style.display = "flex";
+      if (usdtPanel)  usdtPanel.style.display  = "none";
+    }
   }
 
   modeRadios.forEach(r => r.addEventListener("change", e => setMode(e.target.value)));
-  tokenRadios.forEach(r => r.addEventListener("change", e => { priceInput.value = priceTargets[e.target.value]; clearCalcOutput(); }));
+  tokenRadios.forEach(r => r.addEventListener("change", e => {
+    priceInput.value = priceTargets[e.target.value];
+    clearCalcOutput();
+  }));
 
   function parseLocalizedNumber(value) {
     const n = normalizeNumberString(value);
@@ -2143,19 +2631,70 @@ function initPage() {
 
   calcButton.addEventListener("click", () => {
     clearCalcOutput();
-    const price = parseLocalizedNumber(priceInput.value);
+    const mode = document.querySelector('input[name="calcMode"]:checked')?.value;
+
+    if (mode === "usdt") {
+      const usdtRaw = document.getElementById("calcUsdtAmount").value;
+      const usdtAmt = parseLocalizedNumber(usdtRaw);
+      const symbol  = document.getElementById("calcUsdtToken").value;
+      if (isNaN(usdtAmt) || usdtAmt <= 0) {
+        calcAlert.textContent = "Please enter a valid USDT amount.";
+        calcAlert.style.display = "block";
+        return;
+      }
+      if (!symbol) {
+        calcAlert.textContent = "Please select a token.";
+        calcAlert.style.display = "block";
+        return;
+      }
+      const price = tokenPrices[symbol];
+      if (!price) {
+        calcAlert.textContent = "Price for " + symbol + " is not yet available. Please wait a moment and try again.";
+        calcAlert.style.display = "block";
+        return;
+      }
+      const estimated = usdtAmt / price;
+      calcResult.textContent =
+        "Estimated: ~" +
+        new Intl.NumberFormat(navigator.language, { minimumFractionDigits:2, maximumFractionDigits:2 }).format(estimated) +
+        " " + symbol +
+        "  (at " + formatTokenPrice(price, symbol) + " USD per " + symbol + ")";
+      return;
+    }
+
+    const price  = parseLocalizedNumber(priceInput.value);
     const amount = parseLocalizedNumber(amountInput.value);
-    if (isNaN(price)||price<=0) { calcAlert.textContent="Please enter a valid price."; calcAlert.style.display="block"; return; }
-    if (isNaN(amount)||amount<=0) { calcAlert.textContent="Please enter a valid token amount."; calcAlert.style.display="block"; return; }
-    calcResult.textContent = "Estimated value: $" + new Intl.NumberFormat(navigator.language,{ minimumFractionDigits:2, maximumFractionDigits:2 }).format(price * amount) + " USD";
+    if (isNaN(price)  || price  <= 0) { calcAlert.textContent = "Please enter a valid price."; calcAlert.style.display = "block"; return; }
+    if (isNaN(amount) || amount <= 0) { calcAlert.textContent = "Please enter a valid token amount."; calcAlert.style.display = "block"; return; }
+    calcResult.textContent =
+      "Estimated value: $" +
+      new Intl.NumberFormat(navigator.language, { minimumFractionDigits:2, maximumFractionDigits:2 }).format(price * amount) +
+      " USD";
   });
 
   document.getElementById("calcReset").addEventListener("click", () => {
-    clearCalcOutput(); priceInput.value=""; amountInput.value="";
-    document.querySelector('input[name="calcMode"][value="current"]').checked=true;
-    targetSelector.style.display="none"; priceInput.readOnly=false;
-    calcPriceRow.style.display="block"; calcAmountRow.style.display="block";
-    tokenRadios.forEach(r => r.checked=false);
+    clearCalcOutput();
+    priceInput.value  = "";
+    amountInput.value = "";
+    document.querySelector('input[name="calcMode"][value="current"]').checked = true;
+    tokenRadios.forEach(r => r.checked = false);
+    targetSelector.style.display = "none";
+    priceInput.readOnly          = false;
+    calcPriceRow.style.display   = "block";
+    calcAmountRow.style.display  = "block";
+
+    const prefillRow = document.getElementById("calcPrefillRow");
+    const usdtPanel  = document.getElementById("calcUsdtPanel");
+    if (prefillRow) prefillRow.style.display = "flex";
+    if (usdtPanel)  usdtPanel.style.display  = "none";
+
+    const usdtAmt = document.getElementById("calcUsdtAmount");
+    if (usdtAmt) usdtAmt.value = "";
+    const usdtTok = document.getElementById("calcUsdtToken");
+    if (usdtTok) usdtTok.value = "";
+
+    const calcTokenSelect = document.getElementById("calcTokenSelect");
+    if (calcTokenSelect) calcTokenSelect.value = "";
   });
 
   /* --- Wallet tabs --- */
@@ -2263,22 +2802,69 @@ function initPage() {
     }
   }
 
-  /* --- BNB price --- */
-  async function fetchPrices() {
-    try {
-      const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd");
-      if (!res.ok) throw new Error("CoinGecko response not OK: "+res.status);
-      const bnb = await res.json();
-      const price = bnb?.binancecoin?.usd;
-      document.getElementById("bnbPrice").textContent = price!=null ? price.toFixed(2) : "--";
-    } catch (err) { console.error("BNB price fetch failed:",err); document.getElementById("bnbPrice").textContent="--"; }
+  /* --- Price token select persistence --- */
+  const priceTokenSelect = document.getElementById("priceTokenSelect");
+  if (priceTokenSelect) {
+    const saved = localStorage.getItem("priceToken");
+    if (saved && priceTokenSelect.querySelector('option[value="' + saved + '"]')) {
+      priceTokenSelect.value = saved;
+    }
+    priceTokenSelect.addEventListener("change", () => {
+      localStorage.setItem("priceToken", priceTokenSelect.value);
+      updatePriceDisplay();
+    });
   }
+
+  /* --- Calculator pre-fill buttons --- */
+  document.getElementById("calcFillPrice")?.addEventListener("click", () => {
+    const symbol = document.getElementById("calcTokenSelect").value;
+    if (!symbol) { notify("Please select a token first"); return; }
+    const price = tokenPrices[symbol];
+    if (price == null) { notify("Price for " + symbol + " not available yet"); return; }
+    priceInput.value = new Intl.NumberFormat(navigator.language, {
+      maximumFractionDigits: 20,
+      useGrouping: false
+    }).format(price);
+    clearCalcOutput();
+  });
+
+  document.getElementById("calcFillBalance")?.addEventListener("click", () => {
+    const symbol = document.getElementById("calcTokenSelect").value;
+    if (!symbol) { notify("Please select a token first"); return; }
+    const bal = portfolioData[symbol];
+    if (bal == null) { notify(connectedAccount ? "Balance not loaded — tap Refresh Balances" : "Connect your wallet first"); return; }
+    amountInput.value = bal;
+    clearCalcOutput();
+  });
+
+  document.getElementById("calcFillBalanceTarget")?.addEventListener("click", () => {
+    const selected = document.querySelector('input[name="targetToken"]:checked')?.value;
+    if (!selected) { notify("Please select a token first"); return; }
+    const bal = portfolioData[selected];
+    if (bal == null) { notify(connectedAccount ? "Balance not loaded — tap Refresh Balances" : "Connect your wallet first"); return; }
+    amountInput.value = bal;
+    clearCalcOutput();
+  });
+
+  /* --- USDT amount field sanitize + format --- */
+  const calcUsdtAmtInput = document.getElementById("calcUsdtAmount");
+  if (calcUsdtAmtInput) {
+    sanitizeInputField(calcUsdtAmtInput);
+    formatOnBlur(calcUsdtAmtInput);
+  }
+
+  /* --- Portfolio refresh button --- */
+  document.getElementById("refreshPortfolio")?.addEventListener("click", loadPortfolio);
+
+  /* --- Fastest RPC button --- */
+  document.getElementById("addFastestRPC")?.addEventListener("click", runFastestRPC);
 
   /* --- Init --- */
   tryRestoreConnection();
   checkNetworkOnLoad();
   initRPCLatencyObserver();
   fetchPrices();
+  fetchDexPrices();
 
 } // end initPage()
 </script>
