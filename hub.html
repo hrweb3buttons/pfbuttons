@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  connect-src 'self'
+    https://api.coingecko.com
+    https://api.geckoterminal.com
+    https://api.gopluslabs.io
+    https://binance.llamarpc.com
+    https://bsc-rpc.publicnode.com
+    https://bsc.blockrazor.xyz
+    https://bsc.rpc.blxrbdn.com
+    https://bsc.drpc.org
+    https://binance-smart-chain-public.nodies.app
+    https://1rpc.io
+    https://bnb.rpc.subquery.network
+    https://public-bsc.nownodes.io;
+  img-src 'self' https://pmlcoin.app data:;
+  style-src 'self' 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#004aab" id="metaThemeColor" />
+<link rel="manifest" id="hubManifest" />
+<title>The HUB — Hunter's Utility Belt</title>
+<meta name="description" content="Web3 community tools for Pool Funding — no wallet required. Prices, token contracts, approval scanner, and calculator.">
+<meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
+
+<style>
+/* ── Design tokens (mirrors the Toolbox) ── */
+:root {
+  --primary:       #004aab;
+  --primary-hover: #00357a;
+  --background:    #f8f9fa;
+  --text:          #1a1a1b;
+  --text-muted:    #454545;
+  --card-bg:       #ffffff;
+  --border:        #b0b5bb;
+  --radius:        12px;
+  --shadow:        0 2px 8px rgba(0,0,0,.12);
+  --focus-ring:    #ff9500;
+  --error:         #b00020;
+}
+
+:root.dark {
+  --primary:       #a3d1ff;
+  --primary-hover: #cce4ff;
+  --background:    #0f141a;
+  --text:          #f0f4f8;
+  --text-muted:    #b0b8c4;
+  --card-bg:       #151b23;
+  --border:        #3e4c5f;
+  --shadow:        0 4px 16px rgba(0,0,0,.6);
+  --error:         #ff6b6b;
+}
+
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  background: var(--background);
+  color: var(--text);
+  margin: 0;
+}
+
+h1, h2, h3 { color: var(--text); }
+
+a { color: var(--primary); }
+a:hover { color: var(--primary-hover); }
+
+button {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .02em;
+  border: none;
+  border-radius: var(--radius);
+  padding: .65rem 1.15rem;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+  font-size: .95rem;
+}
+
+:root:not(.dark) button { color: #fff; }
+button:hover { background: var(--primary-hover); }
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
+}
+
+/* ── Skip link ── */
+.skip-link {
+  position: absolute; top: -100px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary); color: #fff;
+  padding: .9rem 2rem; z-index: 10000;
+  text-decoration: none; font-weight: bold;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: top .2s; border: 2px solid var(--focus-ring);
+}
+.skip-link:focus { top: 0; outline: none; }
+
+/* ── Header ── */
+#hub-header {
+  position: sticky; top: 0; z-index: 9999;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: .75rem;
+  padding: .85rem 1.25rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.header-brand { display: flex; flex-direction: column; line-height: 1.1; }
+.hub-title    { font-size: 1.15rem; font-weight: 800; color: var(--primary); letter-spacing: .03em; }
+.hub-subtitle { font-size: .72rem; color: var(--text-muted); font-weight: 500; }
+
+/* ── In-page nav ── */
+#hub-nav {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: .4rem 1.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#hub-nav ul {
+  display: flex; gap: .25rem; padding: 0; margin: 0;
+  list-style: none; flex-wrap: nowrap;
+}
+
+#hub-nav a {
+  display: inline-block;
+  padding: .3rem .75rem;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+
+#hub-nav a:hover {
+  color: var(--primary);
+  background: var(--background);
+}
+
+/* ── Main layout ── */
+main { width: 100%; max-width: 720px; margin: 1.5rem auto; }
+main:focus { outline: none; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+
+/* ── Cards ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.card.highlight {
+  border: 2px solid var(--primary);
+  position: relative; overflow: hidden;
+}
+
+.card.highlight::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(var(--primary) .5px, transparent .5px);
+  background-size: 10px 10px;
+  opacity: .05; pointer-events: none;
+}
+
+/* ── Ghost / secondary button ── */
+.btn-ghost {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+  font-weight: 600;
+}
+.btn-ghost:hover { background: var(--background) !important; }
+
+/* ── Button rows ── */
+.btn-row {
+  display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .75rem;
+}
+
+/* ── Price grid ── */
+#priceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: .6rem;
+  margin-top: 1rem;
+}
+
+.price-cell {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .6rem .85rem;
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+.price-symbol {
+  font-size: .75rem; font-weight: 700;
+  color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.price-value {
+  font-size: 1rem; font-weight: 700;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  color: var(--text);
+}
+
+.price-cell.loading .price-value { color: var(--text-muted); }
+
+#priceLastUpdated {
+  font-size: .78rem; color: var(--text-muted); margin-top: .75rem;
+}
+
+/* ── Token address rows ── */
+.token-address-row {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: .5rem; margin-bottom: .6rem;
+  padding: .55rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+}
+
+.token-address-symbol {
+  font-weight: 700; min-width: 3rem; flex-shrink: 0;
+}
+
+.token-address-value {
+  font-size: .8rem; color: var(--text-muted);
+  word-break: break-all; flex: 1;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+}
+
+.token-copy-btn {
+  flex-shrink: 0; padding: .3rem .75rem;
+  font-size: .8rem; font-weight: 600; border-radius: 8px;
+}
+
+/* ── Approval scanner ── */
+.scan-input-row {
+  display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem;
+}
+
+.scan-input-row input {
+  flex: 1; min-width: 200px;
+  padding: .55rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--text);
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: .88rem;
+}
+
+.risk-badge {
+  display: inline-block; font-size: .73rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+.risk-badge.high        { background: #fde8e8; color: #b00020; border: 1px solid #f5c6cb; }
+.risk-badge.medium      { background: #fff3e0; color: #8a5000; border: 1px solid #ffe0b2; }
+.risk-badge.low-warning { background: #fffde7; color: #6d5700; border: 1px solid #fff9c4; }
+.risk-badge.low         { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+
+:root.dark .risk-badge.high        { background: rgba(176,0,32,.18); color: #ff8a8a; border-color: rgba(176,0,32,.4); }
+:root.dark .risk-badge.medium      { background: rgba(255,152,0,.15); color: #ffa726; border-color: rgba(255,152,0,.3); }
+:root.dark .risk-badge.low-warning { background: rgba(255,235,59,.1); color: #fff176; border-color: rgba(255,235,59,.2); }
+:root.dark .risk-badge.low         { background: rgba(76,175,80,.12); color: #81c784; border-color: rgba(76,175,80,.25); }
+
+.approval-item {
+  margin-bottom: 10px; padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+}
+
+.approval-item.high        { border-color: var(--error); background: rgba(176,0,32,.04); }
+.approval-item.medium      { border-color: #e08a00; background: rgba(224,138,0,.04); }
+.approval-item.low-warning { border-color: #c9a800; background: rgba(201,168,0,.04); }
+
+:root.dark .approval-item.high   { background: rgba(176,0,32,.08); }
+:root.dark .approval-item.medium { background: rgba(255,152,0,.06); }
+
+.approval-item-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; flex-wrap: wrap; gap: 5px; margin-bottom: 5px;
+}
+
+.approval-item-token  { font-weight: 700; font-size: .97rem; }
+.approval-item-detail { font-size: .86rem; color: var(--text-muted); line-height: 1.5; }
+
+.approval-flags       { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.approval-flag-pill {
+  font-size: .7rem; padding: 1px 7px; border-radius: 10px;
+  background: rgba(176,0,32,.1); color: var(--error);
+  border: 1px solid rgba(176,0,32,.2); font-weight: 600;
+}
+
+.approval-explainer {
+  font-size: .81rem; margin-top: 6px; padding: 6px 10px;
+  border-radius: 8px; background: rgba(0,0,0,.04);
+  color: var(--text-muted); border-left: 3px solid var(--border);
+}
+:root.dark .approval-explainer  { background: rgba(255,255,255,.04); }
+.approval-explainer.high        { border-left-color: var(--error); }
+.approval-explainer.medium      { border-left-color: #e08a00; }
+
+.approval-section-heading {
+  font-size: .78rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin: 1.1rem 0 .45rem;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+
+.scan-summary-bar {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 1rem; padding: 10px 13px;
+  border-radius: var(--radius); background: var(--background);
+  border: 1px solid var(--border); font-size: .88rem;
+}
+
+.scan-source-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .7rem; color: var(--text-muted);
+  padding: 1px 7px; border-radius: 10px;
+  border: 1px solid var(--border); margin-top: 4px;
+}
+
+/* ── Calculator ── */
+#calcAlert { color: var(--error); }
+
+fieldset { border: none; padding: 0; margin: 0; }
+legend   { padding: 0; margin-bottom: .5rem; }
+
+/* ── Notify toast ── */
+.notify {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg); border: 1px solid var(--border);
+  padding: .7rem 1.1rem; border-radius: var(--radius);
+  box-shadow: var(--shadow); z-index: 99999;
+  text-align: center; max-width: 90vw; font-size: .9rem;
+}
+
+/* ── Footer ── */
+footer {
+  text-align: center; color: var(--text-muted);
+  font-size: .87rem; margin: 2rem 0 1.5rem;
+  padding: 0 1rem;
+}
+
+/* ── Install banner ── */
+#installBanner {
+  display: none;
+  align-items: center; justify-content: space-between; gap: .75rem;
+  background: var(--primary); color: #fff;
+  padding: .65rem 1.1rem; font-size: .88rem; font-weight: 600;
+  flex-wrap: wrap;
+}
+
+#installBanner button {
+  background: #fff; color: var(--primary);
+  font-size: .82rem; padding: .35rem .85rem;
+}
+
+#installBanner button:hover { background: rgba(255,255,255,.85); }
+
+#installDismiss {
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,.5);
+  font-size: .82rem; padding: .3rem .7rem;
+  font-weight: 500;
+}
+
+#installDismiss:hover { background: rgba(255,255,255,.15); }
+
+/* ── Mobile tweaks ── */
+@media (max-width: 600px) {
+  #hub-header { padding: .75rem 1rem; }
+  .card       { padding: 1.1rem; }
+  main        { margin-top: 1rem; }
+  #priceGrid  { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- PWA install banner (shown only when installable) -->
+<div id="installBanner" role="region" aria-label="Install app">
+  <span>📲 Add The HUB to your home screen for offline access.</span>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+    <button id="installBtn" type="button">Install</button>
+    <button id="installDismiss" type="button">Not now</button>
+  </div>
+</div>
+
+<!-- ── Header ── -->
+<header id="hub-header" aria-label="Site controls">
+  <div class="header-brand">
+    <span class="hub-title">The HUB</span>
+    <span class="hub-subtitle">Hunter's Utility Belt</span>
+  </div>
+  <button id="themeToggle" aria-pressed="false">Dark mode</button>
+</header>
+
+<!-- ── In-page navigation ── -->
+<nav id="hub-nav" aria-label="Page sections">
+  <ul>
+    <li><a href="#prices">Prices</a></li>
+    <li><a href="#contracts">Contracts</a></li>
+    <li><a href="#charts">Charts</a></li>
+    <li><a href="#scanner">Scanner</a></li>
+    <li><a href="#calculator">Calculator</a></li>
+  </ul>
+</nav>
+
+<!-- ── Main content ── -->
+<main id="main-content" tabindex="-1" aria-label="Main content">
+<div class="container">
+
+  <!-- About -->
+  <section class="card" id="about" style="margin-top:1.25rem;">
+    <h1 style="margin-top:0;">Hunter's Utility Belt</h1>
+    <p>
+      A lightweight, installable companion to <a href="index.html">Hunter's Toolbox</a> —
+      built for quick lookups on the go. No wallet connection required.
+    </p>
+    <p style="margin-bottom:0; font-size:.9rem; color:var(--text-muted);">
+      Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
+      For tools that require a wallet (token transfers, RPC switching, portfolio), visit the main Toolbox.
+    </p>
+  </section>
+
+  <!-- Live Prices -->
+  <section class="card" id="prices">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <h2 style="margin:0;">Live Prices</h2>
+      <button id="refreshPrices" type="button" class="btn-ghost"
+              style="padding:.35rem .85rem; font-size:.82rem;">↻ Refresh</button>
+    </div>
+    <p style="margin:.5rem 0 0; font-size:.88rem; color:var(--text-muted);">
+      Prices update automatically every 60 seconds.
+    </p>
+
+    <div id="priceGrid" role="status" aria-live="polite" aria-label="Token prices">
+      <!-- populated by JS -->
+    </div>
+
+    <p id="priceLastUpdated" aria-live="polite"></p>
+  </section>
+
+  <!-- Token Contracts -->
+  <section class="card" id="contracts">
+    <h2>Token Contract Addresses</h2>
+    <p style="margin-top:0; font-size:.9rem; color:var(--text-muted);">
+      Copy any address below to import a token manually into your wallet.
+    </p>
+    <div id="contractList">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+  <!-- Charts & BscScan -->
+  <section class="card" id="charts">
+    <h2>Token Charts</h2>
+    <p style="margin-top:0; font-size:.9rem; color:var(--text-muted);">
+      Opens on ApeSpace in a new tab.
+    </p>
+    <div class="btn-row" id="chartButtons"><!-- JS --></div>
+
+    <h3 style="margin-top:1.5rem;">View on BscScan</h3>
+    <div class="btn-row" id="bscscanButtons"><!-- JS --></div>
+
+    <h3 style="margin-top:1.5rem;">Quick Swap on PancakeSwap</h3>
+    <p style="font-size:.88rem; color:var(--text-muted); margin-top:0;">
+      Swaps USDT to each token. Desktop MetaMask extension recommended.
+    </p>
+    <div class="btn-row" id="swapButtons"><!-- JS --></div>
+  </section>
+
+  <!-- Approval Scanner -->
+  <section class="card" id="scanner">
+    <h2>Wallet Approval Scanner</h2>
+    <p>
+      Enter any wallet address to scan for token approvals that may allow third parties to move funds.
+      Checks against the GoPlus Security database first, with an on-chain fallback using a curated spender list.
+    </p>
+
+    <div class="scan-input-row">
+      <label for="scanAddress" class="sr-only">Wallet address to scan</label>
+      <input id="scanAddress"
+             type="text"
+             inputmode="text"
+             autocomplete="off"
+             autocorrect="off"
+             autocapitalize="off"
+             spellcheck="false"
+             placeholder="0x… wallet address"
+             aria-describedby="scanHint" />
+      <button id="scanBtn" type="button">Scan</button>
+    </div>
+
+    <p id="scanHint" style="font-size:.8rem; color:var(--text-muted); margin:.5rem 0 0;">
+      You can scan any address — it does not need to be yours.
+    </p>
+
+    <div id="scanStatus"
+         role="status" aria-live="polite"
+         style="margin-top:1rem; font-weight:500; min-height:1.4em;"></div>
+
+    <div id="scanResults" style="display:none; margin-top:1rem;">
+      <div id="scanList"></div>
+      <div id="scanSummary" style="margin-top:1rem;"></div>
+    </div>
+
+    <p style="font-size:.8rem; margin-top:1rem; color:var(--text-muted);">
+      Security data provided by
+      <a href="https://gopluslabs.io" target="_blank" rel="noopener noreferrer">GoPlus Security</a>.
+      On-chain fallback checks a curated list of known spender contracts.
+      Neither method covers every possible approval.
+    </p>
+  </section>
+
+  <!-- Calculator -->
+  <section class="card" id="calculator">
+    <h2>Token Value Calculator</h2>
+    <p>Calculate USD value from a token amount, estimate tokens from USDT, or use community price targets.</p>
+
+    <fieldset style="margin-bottom:1rem;">
+      <legend><strong>Mode</strong></legend>
+      <div><label><input type="radio" name="calcMode" value="current" checked> Current Price</label></div>
+      <div><label><input type="radio" name="calcMode" value="target"> Price Target</label></div>
+      <div><label><input type="radio" name="calcMode" value="usdt"> USDT → Tokens</label></div>
+    </fieldset>
+
+    <!-- Current price — token + prefill button -->
+    <div id="calcPrefillRow" style="margin-bottom:1rem; display:flex; flex-wrap:wrap; align-items:center; gap:.5rem;">
+      <label for="calcTokenSelect" class="sr-only">Token for price prefill</label>
+      <select id="calcTokenSelect"
+              style="padding:.4rem .6rem; border-radius:var(--radius); border:1px solid var(--border);
+                     background:var(--card-bg); color:var(--text);">
+        <option value="">Select token…</option>
+        <option value="PFI">PFI</option>
+        <option value="PFB">PFB</option>
+        <option value="PFS">PFS</option>
+        <option value="PFG">PFG</option>
+        <option value="PML">PML</option>
+        <option value="JOY">JOY</option>
+      </select>
+      <button id="calcFillPrice" type="button" class="btn-ghost"
+              style="padding:.38rem .8rem; font-size:.84rem;">Use current price</button>
+    </div>
+
+    <!-- Price target selector -->
+    <fieldset id="targetSelector" style="display:none; margin-bottom:1rem;">
+      <legend><strong>Token Price Target</strong></legend>
+      <label><input type="radio" name="targetToken" value="PFI"> PFI</label><br>
+      <label><input type="radio" name="targetToken" value="PFB"> PFB</label><br>
+      <label><input type="radio" name="targetToken" value="PFS"> PFS</label><br>
+      <label><input type="radio" name="targetToken" value="PFG"> PFG</label><br>
+      <label><input type="radio" name="targetToken" value="PML"> PML</label>
+    </fieldset>
+
+    <!-- Standard price + amount inputs -->
+    <div id="calcPriceRow" style="margin-bottom:1rem;">
+      <label>
+        <strong>Price USD</strong><br>
+        <input id="calcPrice" type="text" inputmode="decimal"
+               style="width:100%; padding:.5rem; margin-top:.2rem; border:1px solid var(--border);
+                      border-radius:var(--radius); background:var(--card-bg); color:var(--text);">
+      </label>
+    </div>
+
+    <div id="calcAmountRow" style="margin-bottom:1rem;">
+      <label>
+        <strong>Token Amount</strong><br>
+        <input id="calcAmount" type="text" inputmode="decimal"
+               style="width:100%; padding:.5rem; margin-top:.2rem; border:1px solid var(--border);
+                      border-radius:var(--radius); background:var(--card-bg); color:var(--text);">
+      </label>
+    </div>
+
+    <!-- USDT → Tokens panel -->
+    <div id="calcUsdtPanel" style="display:none; margin-bottom:1rem;">
+      <div style="margin-bottom:.75rem;">
+        <label>
+          <strong>USDT Amount</strong><br>
+          <input id="calcUsdtAmount" type="text" inputmode="decimal"
+                 style="width:100%; padding:.5rem; margin-top:.2rem; border:1px solid var(--border);
+                        border-radius:var(--radius); background:var(--card-bg); color:var(--text);">
+        </label>
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <label for="calcUsdtToken"><strong>Token</strong></label><br>
+        <select id="calcUsdtToken"
+                style="width:100%; padding:.5rem; margin-top:.2rem; border-radius:var(--radius);
+                       border:1px solid var(--border); background:var(--card-bg); color:var(--text);">
+          <option value="">Select token…</option>
+          <option value="PFI">PFI</option>
+          <option value="PFB">PFB</option>
+          <option value="PFS">PFS</option>
+          <option value="PFG">PFG</option>
+          <option value="PML">PML</option>
+          <option value="JOY">JOY</option>
+        </select>
+      </div>
+      <p style="font-size:.82rem; color:var(--text-muted); margin:0 0 .75rem;">
+        Estimates only. Does not account for slippage, price impact, or swap fees.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+      <button id="calcButton" type="button">Calculate</button>
+      <button id="calcReset"  type="button" class="btn-ghost">Reset</button>
+    </div>
+
+    <div id="calcAlert" role="alert" style="display:none; margin-top:.75rem; font-weight:600;"></div>
+    <div id="calcResult" aria-live="polite" style="margin-top:1rem; font-weight:bold;"></div>
+  </section>
+
+</div>
+</main>
+
+<footer aria-label="Site footer">
+  © 2026 Hunter Rodriguez · Not affiliated with MetaMask or Binance Smart Chain<br>
+  <a href="index.html">← Back to Hunter's Toolbox</a> ·
+  <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">View on GitHub</a> ·
+  <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a> · HUB v1.0
+</footer>
+
+<!-- Accessible live region for toast announcements -->
+<div id="announceRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║                    JavaScript                          ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════
+   INLINE MANIFEST — injected as a data: URI so no
+   separate hub-manifest.json file is required.
+═══════════════════════════════════════════════════════════ */
+(function () {
+  const manifest = {
+    name: "Hunter's Utility Belt",
+    short_name: "The HUB",
+    description: "Web3 community tools for Pool Funding — no wallet required.",
+    start_url: "./hub.html",
+    scope: "./",
+    display: "standalone",
+    background_color: "#f8f9fa",
+    theme_color: "#004aab",
+    icons: [
+      { src: "https://pmlcoin.app/assets/logo-D04mbZJF.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "https://pmlcoin.app/assets/logo-D04mbZJF.png", sizes: "512x512", type: "image/png", purpose: "any" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+  const link = document.getElementById("hubManifest");
+  if (link) link.href = URL.createObjectURL(blob);
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   INLINE SERVICE WORKER — registered as a blob URL so no
+   separate hub-sw.js file is required.
+═══════════════════════════════════════════════════════════ */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  const swCode = `
+const CACHE_NAME = "hub-v1";
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache =>
+      cache.add(new Request(self.registration.scope + "hub.html")).catch(() => {})
+    )
+  );
+  self.skipWaiting();
+});
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+self.addEventListener("fetch", event => {
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      const networkFetch = fetch(event.request).then(response => {
+        if (response && response.ok) {
+          caches.open(CACHE_NAME).then(c => c.put(event.request, response.clone()));
+        }
+        return response;
+      }).catch(() => {});
+      return cached || networkFetch;
+    })
+  );
+});
+`;
+  const swBlob = new Blob([swCode], { type: "application/javascript" });
+  const swURL  = URL.createObjectURL(swBlob);
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(swURL, { scope: "./" })
+      .catch(err => console.warn("SW registration failed:", err));
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════════════════════ */
+
+const TOKEN_LIST = [
+  { symbol: "USDT", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
+  { symbol: "PFI",  address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", decimals: 18 },
+  { symbol: "PFB",  address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", decimals: 18 },
+  { symbol: "PFS",  address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", decimals: 18 },
+  { symbol: "PFG",  address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", decimals: 18 },
+  { symbol: "PML",  address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD", decimals: 18 },
+  { symbol: "JOY",  address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", decimals: 18 }
+];
+
+/* Tokens for price display (BNB via CoinGecko; rest via GeckoTerminal) */
+const PRICE_SYMBOLS = ["BNB", "PFI", "PFB", "PFS", "PFG", "PML", "JOY"];
+const DEX_TOKENS = {
+  PFI: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF",
+  PFB: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17",
+  PFS: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
+  PFG: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e",
+  PML: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD",
+  JOY: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f"
+};
+const tokenPrices = { BNB: null, PFI: null, PFB: null, PFS: null, PFG: null, PML: null, JOY: null };
+
+const CHART_LINKS = {
+  PFI: "https://apespace.io/bsc/0x94af08340ad9817d1e82a24b74fed9ebc87bfb63",
+  PFB: "https://apespace.io/bsc/0x9e0bdbb2db5a2dc47f7d9db6a58b21d296d44313",
+  PFS: "https://apespace.io/bsc/0xfa01cb55a68380e2d5c66a70e4e728fc6277feb2",
+  PFG: "https://apespace.io/bsc/0xd36fa2412cae6db25dfbc6348d5e4cdd9665ad4b",
+  PML: "https://apespace.io/bsc/0xbc71c602fbf4dc37d5cad1169fb7de494e4d73a4",
+  JOY: "https://apespace.io/bsc/0xfd1825a6570dcaa27538ea638a0087bd84a3effa"
+};
+
+const BSCSCAN_LINKS = {
+  PFI:  "https://bscscan.com/token/0xf623c5aec3abe5bfd1f46c7108faad5a6f1c4eff",
+  PFB:  "https://bscscan.com/token/0xb67a0b57703a43e7e2dc5dbf9754979652916f17",
+  PFS:  "https://bscscan.com/token/0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa",
+  PFG:  "https://bscscan.com/token/0x8024ac11de24abbac2bd860cc59e3b2e940da87e",
+  PML:  "https://bscscan.com/token/0x69dd5e051abb0109a609ee0b78187c3ee0326fbd",
+  JOY:  "https://bscscan.com/token/0x24338c1ACe31A3DfE43912879317eb76a6213a0f",
+  USDT: "https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955"
+};
+
+const SWAP_LINKS = {
+  PFI: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF&chain=bsc",
+  PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
+  PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
+  PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
+  PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc",
+  JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"
+};
+
+/* BSC RPCs for on-chain fallback (no key required) */
+const BSC_RPCS = [
+  "https://binance.llamarpc.com",
+  "https://bsc-rpc.publicnode.com",
+  "https://bsc.drpc.org",
+  "https://binance-smart-chain-public.nodies.app",
+  "https://1rpc.io/bnb"
+];
+
+/* eth_call selector for allowance(address,address) */
+const ALLOWANCE_SEL = "0xdd62ed3e";
+const MAX_UINT256   = BigInt("0x" + "f".repeat(64));
+
+/* Curated spender list — used as on-chain fallback */
+const APPROVAL_SPENDERS = [
+  { address: "0x10ED43C718714eb63d5aA57B78B54704E256024E", name: "PancakeSwap Router v2",        trusted: true  },
+  { address: "0x13f4EA83D0bd40E75C8222255bc855a974568Dd4", name: "PancakeSwap Router v3",        trusted: true  },
+  { address: "0x1b81D678ffb9C0263b24A97847620C99d213eB14", name: "PancakeSwap SmartRouter",      trusted: true  },
+  { address: "0xE592427A0AEce92De3Edee1F18E0157C05861564", name: "PancakeSwap Universal Router", trusted: true  },
+  { address: "0x1111111254EEB25477B68fb85Ed929f73A960582", name: "1inch Router v5",              trusted: true  },
+  { address: "0x111111125421cA6dc452d289314280a0f8842A65", name: "1inch Router v6",              trusted: true  },
+  { address: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", name: "SushiSwap Router",            trusted: true  },
+  { address: "0x6352a56caadC4F1E25CD6c75970Fa768A3304e64", name: "OpenOcean Exchange",           trusted: true  },
+  { address: "0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8", name: "MDEX Router",                 trusted: true  },
+  { address: "0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8", name: "Biswap Router",               trusted: true  },
+  { address: "0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7", name: "ApeSwap Router",              trusted: true  },
+  { address: "0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd", name: "BabySwap Router",             trusted: true  },
+  { address: "0xd4ae6eCA985340Dd434D38F470aCCce4DC78d109", name: "Thena Router",                trusted: true  },
+  { address: "0xc37b4b2A659cB81F55B0B4eE44AfB77D73773b34", name: "Wombat Exchange",             trusted: true  },
+  { address: "0x8F8Dd7DB1bDA5eD3da8C9daf3bfa471c12d58486", name: "DODO Exchange",               trusted: true  },
+  { address: "0xfD36E2c2a6789Db23113685031d7F16329158384", name: "Venus Comptroller",           trusted: true  },
+  { address: "0xfD5840Cd36d94D7229439859C0112a4185BC0255", name: "Venus vUSDT",                 trusted: true  },
+  { address: "0xA625AB01B08ce023B2a342Dbb12a16f2C8489A8F", name: "Alpaca Finance",              trusted: true  },
+  { address: "0xd50Cf00b6e600Dd036Ba8eF475677d816d6c4281", name: "Radiant Capital",             trusted: true  },
+  { address: "0x65f1A0A28699AdC7b7B3f5B8E8f30e37B9d3E29E", name: "Beefy Finance",              trusted: true  },
+  { address: "0x160CAed03795365F3A589f10C379FfA7d75d4E76", name: "Ellipsis Finance",            trusted: true  },
+  { address: "0xBB79B046Db5F52Ee50e6B7e054e6BaFab9cBBeB8", name: "Celer cBridge",              trusted: true  },
+  { address: "0xd123f70AE324d34A9E76b67a27bf77593bA8749f", name: "Synapse Bridge",              trusted: true  },
+  { address: "0xB6F6D86a8f9879A9c87f643768d9efc38c1Da6E7", name: "Wormhole Token Bridge",      trusted: true  },
+  { address: "0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8", name: "Stargate Finance Router",    trusted: true  },
+  { address: "0xd9dE2B1973D66B7b5f24B54c6B8273b9cE5Fb1E6", name: "Multichain Bridge",          trusted: false },
+  { address: "0x000000000000000000000000000000000000dead", name: "Burn Address",                trusted: true  },
+  { address: "0x5aFEf8567414F29f0f927A0F2787b188624c10E2", name: "PancakeBunny Exploiter",      trusted: false },
+  { address: "0x4c2D9D84b8b6B5A7B9f1E0cD1d0a2C3b4E5F6A7B", name: "Uranium Finance Exploiter",  trusted: false },
+  { address: "0x6C90a1F6bA1f4f32b9D7b3Ca9D7Bf6A2E5F8C1D3", name: "Belt Finance Exploiter",     trusted: false },
+  { address: "0x5E0bC6A14b4aCb47Ef1dE8E77B21a7B0b2C1d6Fa", name: "Known BSC Phishing Contract",trusted: false }
+];
+
+const FLAGGED_SPENDERS = new Set([
+  "0x5afef8567414f29f0f927a0f2787b188624c10e2",
+  "0x4c2d9d84b8b6b5a7b9f1e0cd1d0a2c3b4e5f6a7b",
+  "0x6c90a1f6ba1f4f32b9d7b3ca9d7bf6a2e5f8c1d3",
+  "0x5e0bc6a14b4acb47ef1de8e77b21a7b0b2c1d6fa"
+]);
+
+const GOPLUS_RISK_FLAGS = [
+  "phishing_activities", "blackmail_activities", "stealing_attack", "fake_kyc",
+  "malicious_mining_activities", "darkweb_transactions", "cybercrime", "financial_crime",
+  "honeypot_related_address", "sanctioned", "blacklist_doubt",
+  "money_laundering", "other_malicious_activities"
+];
+
+const GOPLUS_FLAG_LABELS = {
+  phishing_activities:         "Phishing",
+  blackmail_activities:        "Blackmail",
+  stealing_attack:             "Theft Attack",
+  fake_kyc:                    "Fake KYC",
+  malicious_mining_activities: "Malicious Mining",
+  darkweb_transactions:        "Dark Web Activity",
+  cybercrime:                  "Cybercrime",
+  financial_crime:             "Financial Crime",
+  honeypot_related_address:    "Honeypot",
+  sanctioned:                  "Sanctioned",
+  blacklist_doubt:             "Suspicious",
+  money_laundering:            "Money Laundering",
+  other_malicious_activities:  "Malicious Activity"
+};
+
+const PRICE_TARGETS = { PFI: 500000, PFB: 1000000, PFS: 2000000, PFG: 4000000, PML: 2000000 };
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════════════════ */
+
+function notify(msg, duration = 5000) {
+  const region = document.getElementById("announceRegion");
+  if (region) { region.textContent = ""; requestAnimationFrame(() => { region.textContent = msg; }); }
+
+  const el = document.createElement("div");
+  el.className = "notify";
+  el.setAttribute("role", "alert");
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = "0"; el.style.transition = "opacity .4s";
+    setTimeout(() => el.remove(), 400);
+  }, duration);
+}
+
+function isValidAddress(addr) {
+  return /^0x[0-9a-fA-F]{40}$/.test(addr.trim());
+}
+
+function normalizeNumberString(value) {
+  if (!value) return null;
+  let n = value.trim().replace(/\s/g, "");
+  const lastComma = n.lastIndexOf(",");
+  const lastDot   = n.lastIndexOf(".");
+  if (lastComma !== -1 && lastDot !== -1) {
+    n = lastDot > lastComma ? n.replace(/,/g, "") : n.replace(/\./g, "").replace(",", ".");
+  } else if (lastComma !== -1) {
+    n = (n.match(/,/g) || []).length > 1 ? n.replace(/,/g, "") : n.replace(",", ".");
+  } else if (lastDot !== -1) {
+    if ((n.match(/\./g) || []).length > 1) n = n.replace(/\./g, "");
+  }
+  return n;
+}
+
+function parseLocalizedNumber(value) {
+  const n = normalizeNumberString(value);
+  return n ? parseFloat(n) : NaN;
+}
+
+function formatPrice(price, symbol) {
+  if (price == null) return "--";
+  if (symbol === "BNB") return "$" + price.toFixed(2);
+  if (price < 0.000001) return "$" + price.toExponential(4);
+  if (price < 0.001)    return "$" + price.toFixed(8);
+  if (price < 1)        return "$" + price.toFixed(6);
+  return "$" + price.toFixed(4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════════════════ */
+
+const root         = document.documentElement;
+const themeToggle  = document.getElementById("themeToggle");
+const metaTheme    = document.getElementById("metaThemeColor");
+
+function applyTheme(dark) {
+  root.classList.toggle("dark", dark);
+  themeToggle.textContent = dark ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-pressed", String(dark));
+  if (metaTheme) metaTheme.content = dark ? "#0f141a" : "#004aab";
+}
+
+themeToggle.onclick = () => {
+  const dark = !root.classList.contains("dark");
+  applyTheme(dark);
+  localStorage.setItem("theme", dark ? "dark" : "light");
+};
+
+/* ═══════════════════════════════════════════════════════════
+   PRICE FETCHING
+═══════════════════════════════════════════════════════════ */
+
+async function fetchBNBPrice() {
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 7000);
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd",
+      { signal: controller.signal }
+    );
+    clearTimeout(id);
+    if (!res.ok) throw new Error("non-OK");
+    const data = await res.json();
+    tokenPrices.BNB = data?.binancecoin?.usd ?? null;
+  } catch { tokenPrices.BNB = null; }
+}
+
+async function fetchDexPrices() {
+  await Promise.allSettled(
+    Object.entries(DEX_TOKENS).map(async ([symbol, addr]) => {
+      try {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/${addr}`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
+        );
+        clearTimeout(id);
+        if (!res.ok) return;
+        const data = await res.json();
+        const p = parseFloat(data?.data?.attributes?.price_usd);
+        if (!isNaN(p) && p > 0) tokenPrices[symbol] = p;
+      } catch { /* silently ignore per token */ }
+    })
+  );
+}
+
+async function refreshAllPrices() {
+  setLoadingPriceGrid();
+  await Promise.allSettled([fetchBNBPrice(), fetchDexPrices()]);
+  renderPriceGrid();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRICE GRID RENDERING
+═══════════════════════════════════════════════════════════ */
+
+function setLoadingPriceGrid() {
+  const grid = document.getElementById("priceGrid");
+  if (!grid) return;
+  grid.innerHTML = PRICE_SYMBOLS.map(s => `
+    <div class="price-cell loading">
+      <span class="price-symbol">${s}</span>
+      <span class="price-value">…</span>
+    </div>`).join("");
+}
+
+function renderPriceGrid() {
+  const grid = document.getElementById("priceGrid");
+  if (!grid) return;
+  grid.innerHTML = PRICE_SYMBOLS.map(s => `
+    <div class="price-cell">
+      <span class="price-symbol">${s}</span>
+      <span class="price-value">${formatPrice(tokenPrices[s], s)}</span>
+    </div>`).join("");
+
+  const ts = document.getElementById("priceLastUpdated");
+  if (ts) ts.textContent = "Last updated: " + new Date().toLocaleTimeString();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONTRACT ADDRESSES
+═══════════════════════════════════════════════════════════ */
+
+function buildContractList() {
+  const container = document.getElementById("contractList");
+  if (!container) return;
+
+  TOKEN_LIST.forEach(token => {
+    const row = document.createElement("div");
+    row.className = "token-address-row";
+
+    const sym = document.createElement("span");
+    sym.className = "token-address-symbol";
+    sym.textContent = token.symbol;
+
+    const addr = document.createElement("span");
+    addr.className = "token-address-value";
+    addr.textContent = token.address;
+
+    const btn = document.createElement("button");
+    btn.className = "token-copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", `Copy ${token.symbol} contract address`);
+    btn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(token.address);
+        btn.textContent = "Copied!";
+        setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+        notify(`${token.symbol} address copied`);
+      } catch {
+        notify("Copy failed — please copy manually");
+      }
+    };
+
+    row.appendChild(sym);
+    row.appendChild(addr);
+    row.appendChild(btn);
+    container.appendChild(row);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CHART / BSCSCAN BUTTONS
+═══════════════════════════════════════════════════════════ */
+
+function buildLinkButtons() {
+  const chartEl   = document.getElementById("chartButtons");
+  const bscEl     = document.getElementById("bscscanButtons");
+  const swapEl    = document.getElementById("swapButtons");
+
+  Object.entries(CHART_LINKS).forEach(([sym, url]) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("aria-label", `Open ${sym} chart in a new tab`);
+    btn.textContent = sym + " Chart";
+    btn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
+    chartEl.appendChild(btn);
+  });
+
+  Object.entries(BSCSCAN_LINKS).forEach(([sym, url]) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("aria-label", `View ${sym} on BscScan in a new tab`);
+    btn.textContent = sym;
+    btn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
+    bscEl.appendChild(btn);
+  });
+
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    /* Mobile: copy swap links instead of opening directly */
+    swapEl.innerHTML = "";
+    const note = document.createElement("p");
+    note.style.cssText = "font-size:.88rem; color:var(--text-muted); margin:0 0 .75rem; width:100%;";
+    note.textContent = "On mobile, copy a link below and paste it into the MetaMask browser.";
+    swapEl.appendChild(note);
+
+    Object.entries(SWAP_LINKS).forEach(([sym, url]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn-ghost";
+      btn.textContent = `Copy USDT → ${sym}`;
+      btn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          notify(`${sym} swap link copied`);
+        } catch { notify("Copy failed — please copy manually"); }
+      };
+      swapEl.appendChild(btn);
+    });
+  } else {
+    Object.entries(SWAP_LINKS).forEach(([sym, url]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.setAttribute("aria-label", `Swap USDT to ${sym} on PancakeSwap`);
+      btn.textContent = `USDT → ${sym}`;
+      btn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
+      swapEl.appendChild(btn);
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   APPROVAL SCANNER — GoPlus-first, on-chain fallback
+═══════════════════════════════════════════════════════════ */
+
+/* --- GoPlus: try comprehensive approval endpoint first --- */
+async function tryGoPlusApprovalScan(address) {
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 10000);
+    const res = await fetch(
+      `https://api.gopluslabs.io/api/v1/token_approval_security/56?address=${address.toLowerCase()}`,
+      { signal: controller.signal }
+    );
+    clearTimeout(id);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.code !== 1 || !data.result) return null;
+
+    /* GoPlus may return an object or array — normalise */
+    const raw = data.result;
+    const list = Array.isArray(raw) ? raw : (raw.approved_list || raw.token_list || null);
+    if (!list) return null;
+    return list; /* array of approval objects from GoPlus */
+  } catch { return null; }
+}
+
+/* --- GoPlus: per-address security check (for on-chain fallback) --- */
+async function checkGoPlusAddress(address) {
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(
+      `https://api.gopluslabs.io/api/v1/address_security/${address.toLowerCase()}?chain_id=56`,
+      { signal: controller.signal }
+    );
+    clearTimeout(id);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.code === 1 && data.result) ? data.result : null;
+  } catch { return null; }
+}
+
+function extractGoPlusFlags(goplusData) {
+  if (!goplusData) return [];
+  return GOPLUS_RISK_FLAGS.filter(f => goplusData[f] === "1");
+}
+
+/* --- On-chain: find a working BSC RPC --- */
+async function getWorkingRPC() {
+  for (const rpc of BSC_RPCS) {
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch(rpc, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
+        signal: controller.signal
+      });
+      clearTimeout(id);
+      const json = await res.json();
+      if (json.result) return rpc;
+    } catch { continue; }
+  }
+  return null;
+}
+
+/* --- On-chain: batch allowance check via raw eth_call --- */
+async function batchAllowances(rpcUrl, ownerAddress, checks) {
+  /* Build a JSON-RPC batch request */
+  const owner = ownerAddress.slice(2).toLowerCase().padStart(64, "0");
+  const batch = checks.map((check, idx) => {
+    const spender = check.spenderAddress.slice(2).toLowerCase().padStart(64, "0");
+    return {
+      jsonrpc: "2.0",
+      method: "eth_call",
+      params: [{ to: check.tokenAddress, data: ALLOWANCE_SEL + owner + spender }, "latest"],
+      id: idx
+    };
+  });
+
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(batch),
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    const results = await res.json();
+
+    const findings = [];
+    (Array.isArray(results) ? results : [results]).forEach(r => {
+      if (r.error || !r.result || r.result === "0x") return;
+      const allowance = BigInt(r.result);
+      if (allowance === 0n) return;
+      const check = checks[r.id];
+      if (check) findings.push({ ...check, allowance });
+    });
+    return findings;
+  } catch { return []; }
+}
+
+/* --- On-chain fallback scan --- */
+async function onChainFallbackScan(address, statusEl) {
+  statusEl.textContent = "GoPlus unavailable — running on-chain fallback scan…";
+
+  const rpc = await getWorkingRPC();
+  if (!rpc) {
+    statusEl.textContent = "Could not reach a BSC node. Please try again.";
+    return null;
+  }
+
+  statusEl.textContent = "Checking on-chain allowances…";
+
+  /* Build all token × spender combinations */
+  const checks = [];
+  TOKEN_LIST.forEach(token => {
+    APPROVAL_SPENDERS.forEach(spender => {
+      checks.push({
+        tokenAddress:   token.address,
+        tokenSymbol:    token.symbol,
+        spenderAddress: spender.address,
+        spenderName:    spender.name,
+        trusted:        spender.trusted
+      });
+    });
+  });
+
+  let findings = await batchAllowances(rpc, address, checks);
+
+  if (findings.length > 0) {
+    statusEl.textContent = "Checking spenders against GoPlus security database…";
+    const uniqueSpenders = [...new Set(findings.map(f => f.spenderAddress.toLowerCase()))];
+    const goplusCache = {};
+    await Promise.allSettled(
+      uniqueSpenders.map(async addr => {
+        goplusCache[addr] = await checkGoPlusAddress(addr);
+      })
+    );
+    findings = findings.map(f => {
+      const gpData  = goplusCache[f.spenderAddress.toLowerCase()] || null;
+      const gpFlags = extractGoPlusFlags(gpData);
+      return { ...f, goplusFlags: gpFlags, source: "onchain" };
+    });
+  }
+
+  return findings;
+}
+
+/* --- Risk classification (works for both GoPlus and on-chain results) --- */
+function classifyRisk(item) {
+  const hasGoPlus = item.goplusFlags && item.goplusFlags.length > 0;
+  const isFlagged = FLAGGED_SPENDERS.has((item.spenderAddress || "").toLowerCase());
+  const isUnlimited = item.allowance === MAX_UINT256 ||
+                      (typeof item.allowance === "string" && item.allowance.toLowerCase() === "unlimited");
+
+  if (hasGoPlus || isFlagged) {
+    return { level: "high",        label: "High Risk",          source: hasGoPlus ? "goplus" : "static" };
+  }
+  if (isUnlimited && item.trusted === false) {
+    return { level: "medium",      label: "Unlimited Approval", source: "onchain" };
+  }
+  if (isUnlimited) {
+    return { level: "low-warning", label: "Unlimited (Trusted)", source: "onchain" };
+  }
+  return { level: "low",           label: "Normal",             source: "onchain" };
+}
+
+/* --- Render scan results --- */
+function renderScanResults(findings, source) {
+  const resultsEl = document.getElementById("scanResults");
+  const list      = document.getElementById("scanList");
+  const summary   = document.getElementById("scanSummary");
+  const status    = document.getElementById("scanStatus");
+
+  status.textContent  = "";
+  list.innerHTML      = "";
+  summary.innerHTML   = "";
+  resultsEl.style.display = "block";
+
+  if (!findings.length) {
+    summary.innerHTML = '<span style="color:var(--text);">✅ No active approvals found for the scanned tokens/contracts.</span>';
+    return;
+  }
+
+  const LEVEL_ORDER = { high: 0, medium: 1, "low-warning": 2, low: 3 };
+  findings.sort((a, b) => LEVEL_ORDER[classifyRisk(a).level] - LEVEL_ORDER[classifyRisk(b).level]);
+
+  let counts = { high: 0, medium: 0, "low-warning": 0, low: 0 };
+  const sections = { high: [], medium: [], "low-warning": [], low: [] };
+
+  findings.forEach(item => {
+    const risk = classifyRisk(item);
+    counts[risk.level]++;
+
+    const isUnlimited   = item.allowance === MAX_UINT256 ||
+                          (typeof item.allowance === "string" && item.allowance.toLowerCase() === "unlimited");
+    const allowanceText = isUnlimited ? "Unlimited" : (item.approvedAmount || "Custom amount");
+    const tokenLabel    = item.tokenSymbol || item.token_symbol || "Unknown token";
+    const spenderLabel  = item.spenderName || item.approved_contract_name || item.spenderAddress || "Unknown";
+
+    const flagHtml = (item.goplusFlags || []).length
+      ? `<div class="approval-flags">${(item.goplusFlags).map(f =>
+          `<span class="approval-flag-pill">${GOPLUS_FLAG_LABELS[f] || f}</span>`).join("")}</div>`
+      : "";
+
+    const sourceBadge = source === "goplus"
+      ? '<span class="scan-source-badge">🔍 GoPlus full scan</span>'
+      : (risk.source === "goplus"
+          ? '<span class="scan-source-badge">🔍 GoPlus address check</span>'
+          : (risk.source === "static"
+              ? '<span class="scan-source-badge">📋 Known list</span>'
+              : ""));
+
+    const explainerMap = {
+      high:        "This spender has been identified as malicious. Revoke this approval immediately.",
+      medium:      "No spending limit set. This contract could theoretically drain your entire balance. Revoke if no longer in use.",
+      "low-warning": "Unlimited approval on a recognised protocol. Generally safe, but revoking after use is best practice."
+    };
+    const explainerText = explainerMap[risk.level] || "";
+
+    const div = document.createElement("div");
+    div.className = `approval-item ${risk.level}`;
+    div.innerHTML = `
+      <div class="approval-item-header">
+        <span class="approval-item-token">${tokenLabel}</span>
+        <span class="risk-badge ${risk.level}">${risk.label}</span>
+      </div>
+      <div class="approval-item-detail">
+        Spender: ${spenderLabel}<br>
+        Allowance: ${allowanceText}
+      </div>
+      ${flagHtml}${sourceBadge}
+      ${explainerText ? `<div class="approval-explainer ${risk.level}">${explainerText}</div>` : ""}
+    `;
+    sections[risk.level].push(div);
+  });
+
+  [
+    { key: "high",        heading: "🔴 High Risk — Immediate Action Recommended" },
+    { key: "medium",      heading: "🟡 Caution — Unlimited Approvals" },
+    { key: "low-warning", heading: "🟡 Notice — Unlimited on Trusted Protocol" },
+    { key: "low",         heading: "🟢 Normal Approvals" }
+  ].forEach(({ key, heading }) => {
+    if (!sections[key].length) return;
+    const h = document.createElement("div");
+    h.className = "approval-section-heading";
+    h.textContent = heading;
+    list.appendChild(h);
+    sections[key].forEach(el => list.appendChild(el));
+  });
+
+  const parts = [];
+  if (counts.high)           parts.push(`<span class="risk-badge high">${counts.high} High Risk</span>`);
+  if (counts.medium)         parts.push(`<span class="risk-badge medium">${counts.medium} Unlimited</span>`);
+  if (counts["low-warning"]) parts.push(`<span class="risk-badge low-warning">${counts["low-warning"]} Notice</span>`);
+  if (counts.low)            parts.push(`<span class="risk-badge low">${counts.low} Normal</span>`);
+
+  summary.innerHTML = `<div class="scan-summary-bar">${parts.join("")}</div>`;
+}
+
+/* --- Parse GoPlus full-scan result into our common shape --- */
+function parseGoPlusApprovalList(list) {
+  const findings = [];
+  list.forEach(item => {
+    /* GoPlus approval items vary in structure; handle common patterns */
+    const tokenSymbol  = item.token_symbol || item.symbol || "?";
+    const approvalList = item.approved_list || (item.approved_contract ? [item] : []);
+
+    approvalList.forEach(approval => {
+      const spenderAddress = (approval.approved_contract || approval.spender || "").toLowerCase();
+      const approvedAmount = approval.approved_amount || approval.amount || "unknown";
+      const isUnlimited    = approvedAmount === "unlimited" || approvedAmount === "Unlimited";
+      const spenderName    = approval.approved_contract_name || approval.spender_name || spenderAddress;
+      const trusted        = approval.is_open_source === 1 || approval.is_open_source === "1";
+
+      /* Check GoPlus risk flags on the contract data */
+      const contractData = approval.approved_contract_data || approval;
+      const goplusFlags  = GOPLUS_RISK_FLAGS.filter(f => contractData[f] === "1" || contractData[f] === 1);
+
+      findings.push({
+        tokenSymbol,
+        spenderAddress,
+        spenderName,
+        allowance:      isUnlimited ? MAX_UINT256 : BigInt(0), /* simplified */
+        approvedAmount,
+        trusted,
+        goplusFlags,
+        source:         "goplus"
+      });
+    });
+  });
+  return findings;
+}
+
+/* --- Main scan entry point --- */
+async function runScan() {
+  const addrInput = document.getElementById("scanAddress");
+  const statusEl  = document.getElementById("scanStatus");
+  const resultsEl = document.getElementById("scanResults");
+  const list      = document.getElementById("scanList");
+  const summary   = document.getElementById("scanSummary");
+
+  const raw = addrInput.value.trim();
+  if (!isValidAddress(raw)) {
+    notify("Please enter a valid 0x wallet address.");
+    addrInput.focus();
+    return;
+  }
+
+  /* Reset UI */
+  statusEl.textContent = "";
+  list.innerHTML = "";
+  summary.innerHTML = "";
+  resultsEl.style.display = "none";
+  document.getElementById("scanBtn").disabled = true;
+
+  try {
+    /* ── Step 1: Try GoPlus comprehensive approval endpoint ── */
+    statusEl.textContent = "Connecting to GoPlus Security…";
+    const goplusList = await tryGoPlusApprovalScan(raw);
+
+    if (goplusList !== null) {
+      /* GoPlus responded */
+      statusEl.textContent = "Processing GoPlus results…";
+      const findings = parseGoPlusApprovalList(goplusList);
+      renderScanResults(findings, "goplus");
+      return;
+    }
+
+    /* ── Step 2: On-chain fallback ── */
+    const findings = await onChainFallbackScan(raw, statusEl);
+    if (findings !== null) {
+      renderScanResults(findings, "onchain");
+    }
+
+  } catch (err) {
+    console.error("Scan error:", err);
+    statusEl.textContent = "";
+    notify("Scan failed — please try again.");
+  } finally {
+    document.getElementById("scanBtn").disabled = false;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CALCULATOR
+═══════════════════════════════════════════════════════════ */
+
+const calcModeRadios = document.querySelectorAll('input[name="calcMode"]');
+const targetRadios   = document.querySelectorAll('input[name="targetToken"]');
+const targetSelector = document.getElementById("targetSelector");
+const priceInput     = document.getElementById("calcPrice");
+const amountInput    = document.getElementById("calcAmount");
+const calcResult     = document.getElementById("calcResult");
+const calcAlert      = document.getElementById("calcAlert");
+const calcPriceRow   = document.getElementById("calcPriceRow");
+const calcAmountRow  = document.getElementById("calcAmountRow");
+
+/* Placeholder hints */
+const sampleNum = (1.1).toLocaleString();
+priceInput.placeholder  = sampleNum;
+amountInput.placeholder = sampleNum;
+
+function clearCalcOutput() {
+  calcResult.textContent = "";
+  calcAlert.style.display = "none";
+  calcAlert.textContent   = "";
+}
+
+function setCalcMode(mode) {
+  clearCalcOutput();
+  priceInput.value  = "";
+  amountInput.value = "";
+
+  const prefillRow = document.getElementById("calcPrefillRow");
+  const usdtPanel  = document.getElementById("calcUsdtPanel");
+
+  if (mode === "target") {
+    targetSelector.style.display = "block";
+    priceInput.readOnly          = true;
+    calcPriceRow.style.display   = "block";
+    calcAmountRow.style.display  = "block";
+    if (prefillRow) prefillRow.style.display = "none";
+    if (usdtPanel)  usdtPanel.style.display  = "none";
+  } else if (mode === "usdt") {
+    targetSelector.style.display = "none";
+    priceInput.readOnly          = false;
+    calcPriceRow.style.display   = "none";
+    calcAmountRow.style.display  = "none";
+    if (prefillRow) prefillRow.style.display = "none";
+    if (usdtPanel)  usdtPanel.style.display  = "block";
+    const ua = document.getElementById("calcUsdtAmount");
+    const ut = document.getElementById("calcUsdtToken");
+    if (ua) ua.value = "";
+    if (ut) ut.value = "";
+  } else {
+    targetSelector.style.display = "none";
+    priceInput.readOnly          = false;
+    calcPriceRow.style.display   = "block";
+    calcAmountRow.style.display  = "block";
+    if (prefillRow) prefillRow.style.display = "flex";
+    if (usdtPanel)  usdtPanel.style.display  = "none";
+  }
+}
+
+function sanitizeDecimalInput(input) {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/[^\d.,]/g, "");
+  });
+}
+
+function formatOnBlur(input) {
+  input.addEventListener("blur", () => {
+    const n = parseLocalizedNumber(input.value);
+    if (!isNaN(n)) {
+      input.value = new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20 }).format(n);
+    }
+  });
+}
+
+sanitizeDecimalInput(priceInput);
+sanitizeDecimalInput(amountInput);
+formatOnBlur(priceInput);
+formatOnBlur(amountInput);
+
+const calcUsdtAmtInput = document.getElementById("calcUsdtAmount");
+if (calcUsdtAmtInput) { sanitizeDecimalInput(calcUsdtAmtInput); formatOnBlur(calcUsdtAmtInput); }
+
+calcModeRadios.forEach(r => r.addEventListener("change", e => setCalcMode(e.target.value)));
+targetRadios.forEach(r => r.addEventListener("change", e => {
+  priceInput.value = String(PRICE_TARGETS[e.target.value] || "");
+  clearCalcOutput();
+}));
+
+document.getElementById("calcFillPrice")?.addEventListener("click", () => {
+  const sym = document.getElementById("calcTokenSelect").value;
+  if (!sym)               { notify("Please select a token first"); return; }
+  const price = tokenPrices[sym];
+  if (price == null)      { notify(`Price for ${sym} not available yet — wait a moment and retry`); return; }
+  priceInput.value = new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 20, useGrouping: false }).format(price);
+  clearCalcOutput();
+});
+
+document.getElementById("calcButton").addEventListener("click", () => {
+  clearCalcOutput();
+  const mode = document.querySelector('input[name="calcMode"]:checked')?.value;
+
+  if (mode === "usdt") {
+    const usdtAmt = parseLocalizedNumber(document.getElementById("calcUsdtAmount").value);
+    const sym     = document.getElementById("calcUsdtToken").value;
+
+    if (isNaN(usdtAmt) || usdtAmt <= 0) {
+      calcAlert.textContent = "Please enter a valid USDT amount."; calcAlert.style.display = "block"; return;
+    }
+    if (!sym) {
+      calcAlert.textContent = "Please select a token."; calcAlert.style.display = "block"; return;
+    }
+    const price = tokenPrices[sym];
+    if (!price) {
+      calcAlert.textContent = `Price for ${sym} is not yet available. Please wait a moment and try again.`;
+      calcAlert.style.display = "block"; return;
+    }
+    const est = usdtAmt / price;
+    calcResult.textContent = `Estimated: ~${new Intl.NumberFormat(navigator.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(est)} ${sym}  (at ${formatPrice(price, sym)} per ${sym})`;
+    return;
+  }
+
+  const price  = parseLocalizedNumber(priceInput.value);
+  const amount = parseLocalizedNumber(amountInput.value);
+
+  if (isNaN(price)  || price  <= 0) { calcAlert.textContent = "Please enter a valid price.";        calcAlert.style.display = "block"; return; }
+  if (isNaN(amount) || amount <= 0) { calcAlert.textContent = "Please enter a valid token amount."; calcAlert.style.display = "block"; return; }
+
+  calcResult.textContent = `Estimated value: $${new Intl.NumberFormat(navigator.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price * amount)} USD`;
+});
+
+document.getElementById("calcReset").addEventListener("click", () => {
+  clearCalcOutput();
+  priceInput.value  = "";
+  amountInput.value = "";
+  document.querySelector('input[name="calcMode"][value="current"]').checked = true;
+  targetRadios.forEach(r => r.checked = false);
+  setCalcMode("current");
+  const ts = document.getElementById("calcTokenSelect");
+  if (ts) ts.value = "";
+});
+
+/* ═══════════════════════════════════════════════════════════
+   PWA INSTALL PROMPT
+═══════════════════════════════════════════════════════════ */
+
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const banner = document.getElementById("installBanner");
+  if (banner) banner.style.display = "flex";
+});
+
+document.getElementById("installBtn")?.addEventListener("click", async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  document.getElementById("installBanner").style.display = "none";
+  if (outcome === "accepted") notify("The HUB has been installed! 🎉");
+});
+
+document.getElementById("installDismiss")?.addEventListener("click", () => {
+  document.getElementById("installBanner").style.display = "none";
+});
+
+window.addEventListener("appinstalled", () => {
+  document.getElementById("installBanner").style.display = "none";
+  deferredInstallPrompt = null;
+});
+
+
+
+/* ═══════════════════════════════════════════════════════════
+   SCAN BUTTON
+═══════════════════════════════════════════════════════════ */
+
+document.getElementById("scanBtn").addEventListener("click", runScan);
+document.getElementById("scanAddress").addEventListener("keydown", e => {
+  if (e.key === "Enter") runScan();
+});
+
+/* ═══════════════════════════════════════════════════════════
+   PRICE AUTO-REFRESH
+═══════════════════════════════════════════════════════════ */
+
+document.getElementById("refreshPrices")?.addEventListener("click", refreshAllPrices);
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  /* Restore theme */
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    applyTheme(true);
+  }
+
+  /* Build static UI */
+  buildContractList();
+  buildLinkButtons();
+  setLoadingPriceGrid();
+
+  /* Fetch live data */
+  refreshAllPrices();
+
+  /* Auto-refresh prices every 60 s */
+  setInterval(refreshAllPrices, 60000);
+});
+</script>
+
+</body>
+</html>
