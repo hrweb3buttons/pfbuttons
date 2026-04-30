@@ -156,7 +156,7 @@
 <main id="main-content" tabindex="-1">
 
   <h1>Privacy Policy</h1>
-  <p style="color:var(--text-muted); font-size:0.9rem;">Version 1.0 &mdash; Last Updated: March 27, 2026</p>
+  <p style="color:var(--text-muted); font-size:0.9rem;">Version 1.1 &mdash; Last Updated: April 29, 2026</p>
 
   <nav aria-labelledby="toc-heading">
     <h2 id="toc-heading">Table of Contents</h2>
@@ -165,6 +165,7 @@
       <li><a href="#controller">Data Controller</a></li>
       <li><a href="#what-we-do-not-collect">What This Site Does Not Collect</a></li>
       <li><a href="#local-storage">Local Browser Storage</a></li>
+      <li><a href="#eprivacy">ePrivacy Directive and Cookie Compliance</a></li>
       <li><a href="#technical-reads">Client-Side Technical Reads</a></li>
       <li><a href="#wallet-data">Wallet Addresses and Blockchain Data</a></li>
       <li><a href="#third-party-data">Third Party Data Processing</a></li>
@@ -183,8 +184,10 @@
   <div class="summary">
     <h2>Plain English Summary</h2>
     <p>This site does not have a backend, does not run a database, and does not receive or store your name, email address, or any other personal information.</p>
-    <p>The only thing stored on your device is your dark mode preference, saved in your browser’s local storage. This stays on your device and is never sent anywhere. No tracking cookies are set by this site..</p>
-    <p>When your browser loads the page, it fetches live token prices from CoinGecko and GeckoTerminal, and loads a JavaScript library from jsDelivr. As part of normal internet operation, those services receive your IP address and basic request information. This happens directly between your browser and those services.</p>
+    <p>Three small pieces of data are stored in your browser's local storage: your dark mode preference, the last RPC endpoint you selected, and the token you chose to display in the price ticker. All three stay on your device and are never sent anywhere. No tracking cookies are set by this site.</p>
+    <p>When your browser loads the page, it automatically fetches live token prices from CoinGecko and GeckoTerminal, and loads a JavaScript library from jsDelivr. As part of normal internet operation, those services receive your IP address and basic request information. This happens directly between your browser and those services.</p>
+    <p>If you scroll to the RPC section, the site automatically tests the response time of each RPC node by sending a small network request directly to each one. Your IP address is briefly exposed to each RPC provider's servers during this test. No personal data is retained by this site as a result.</p>
+    <p>If you use the Wallet Approval Scanner, the site sends the contract addresses being scanned to the GoPlus Security API to check them against a live threat database. Your IP address is exposed to GoPlus's servers as part of that request. This happens only when you initiate a scan — not on page load.</p>
     <p>Wallet interactions, such as connecting MetaMask, approving transactions, or switching networks, happen entirely inside your wallet software. This site never has access to your private keys, seed phrase, or wallet credentials.</p>
     <p>Blockchain transactions you choose to broadcast are public by design and permanently recorded on-chain. This is a property of blockchain networks and not something this site controls.</p>
     <p>This site is hosted on GitHub Pages, which may process technical access data such as IP addresses under its own privacy policy.</p>
@@ -203,7 +206,7 @@
 
   <p>This Site is a static, client-side web application hosted on GitHub Pages. It has no server-side application layer, no database, no user accounts, no registration system, and no backend infrastructure operated by the maintainer.</p>
 
-  <p>The maintainer does not receive, collect, store, or otherwise have access to personal data of users. However, in order for the Site to function, a user’s browser necessarily makes direct requests to third party services (such as content delivery networks and data APIs). As a result, personal data such as IP addresses and request metadata may be processed by those third party services as an inherent part of delivering web content.</p>
+  <p>The maintainer does not receive, collect, store, or otherwise have access to personal data of users. However, in order for the Site to function, a user's browser necessarily makes direct requests to third party services (such as content delivery networks and data APIs). As a result, personal data such as IP addresses and request metadata may be processed by those third party services as an inherent part of delivering web content.</p>
 
   <p>The maintainer does not have access to, and does not retain, any such data processed by third parties.</p>
 
@@ -217,9 +220,9 @@
   Maintainer, Unofficial Pool Funding Web3 Tools<br>
   Contact: Via GitHub repository (see <a href="#contact">Contact</a> section below)</p>
 
-  <p>Because the Site does not operate a backend or directly process personal data, the maintainer’s role is limited to determining the structure and functionality of the Site, including the selection of third party services that are loaded in the user’s browser.</p>
+  <p>Because the Site does not operate a backend or directly process personal data, the maintainer's role is limited to determining the structure and functionality of the Site, including the selection of third party services that are loaded in the user's browser.</p>
 
-  <p>Those third party services process data independently and for their own purposes. To the extent that applicable law may interpret the inclusion of such services as constituting joint participation in processing, such processing is limited to what is strictly necessary to deliver the Site’s functionality, and the maintainer does not control or determine the subsequent use of data by those third parties.</p>
+  <p>Those third party services process data independently and for their own purposes. To the extent that applicable law may interpret the inclusion of such services as constituting joint participation in processing, such processing is limited to what is strictly necessary to deliver the Site's functionality, and the maintainer does not control or determine the subsequent use of data by those third parties.</p>
 
 
   <!-- ═══════════════════════════════════════════════ -->
@@ -243,19 +246,45 @@
   <!-- ═══════════════════════════════════════════════ -->
   <h2 id="local-storage">Local Browser Storage</h2>
 
-  <p>This Site uses your browser's <code>localStorage</code> API for one purpose only: to remember your display preference between visits (light mode or dark mode). This preference is stored under the key <code>theme</code> with the value <code>"light"</code> or <code>"dark"</code>.</p>
+  <p>This Site uses your browser's <code>localStorage</code> API to remember three functional preferences between visits. No other data is written to local storage by this Site. The three keys stored are:</p>
 
-  <p>This data:</p>
   <ul>
-    <li>Remains on your device and is never transmitted to any server by this Site</li>
-    <li>Contains no personally identifiable information</li>
-    <li>Is not used for tracking or analytics of any kind</li>
+    <li><strong><code>theme</code></strong> — Stores your display preference (<code>"light"</code> or <code>"dark"</code>) so the correct mode is applied when you return to the Site.</li>
+    <li><strong><code>activeRPC</code></strong> — Stores the URL of the last RPC endpoint you selected using the RPC switching tool, so that endpoint can be visually highlighted as your active selection on your next visit.</li>
+    <li><strong><code>priceToken</code></strong> — Stores the token you last selected in the price ticker dropdown (for example, <code>"BNB"</code> or <code>"PML"</code>), so the ticker remembers your preferred token between sessions.</li>
+  </ul>
+
+  <p>All three of these stored values:</p>
+  <ul>
+    <li>Remain on your device and are never transmitted to any server by this Site</li>
+    <li>Contain no personally identifiable information</li>
+    <li>Are not used for tracking or analytics of any kind</li>
     <li>Can be cleared at any time through your browser's settings</li>
   </ul>
 
-  <p>This Site does not set HTTP cookies through its own code. To the best of the maintainer’s knowledge, the third party services used by this Site also do not set cookies in connection with the resources loaded by this Site. However, users should be aware that third party services operate independently and may change their behavior over time.</p>
+  <p>This Site does not set HTTP cookies through its own code. To the best of the maintainer's knowledge, the third party services used by this Site also do not set cookies in connection with the resources loaded by this Site. However, users should be aware that third party services operate independently and may change their behavior over time.</p>
 
-  <p>No cookie consent banner is implemented because the Site does not intentionally use cookies or similar technologies for tracking, analytics, or advertising purposes.</p>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="eprivacy">ePrivacy Directive and Cookie Compliance</h2>
+
+  <p>This section addresses compliance with Directive 2002/58/EC (the "ePrivacy Directive"), as amended by Directive 2009/136/EC, which applies to users in the European Economic Area and, by extension, to users in the United Kingdom under equivalent retained legislation.</p>
+
+  <p>Article 5(3) of the ePrivacy Directive requires that storing information on, or accessing information from, a user's terminal equipment is only permitted with the user's consent, or where the storage or access is strictly necessary for the provision of a service explicitly requested by the user.</p>
+
+  <p>This Site does not use HTTP cookies for any purpose. The three <code>localStorage</code> items described in the section above are each strictly necessary for the provision of functionality explicitly requested by the user:</p>
+
+  <ul>
+    <li>The <code>theme</code> key stores a UI display preference that the user sets by interacting with the dark mode toggle. Storing this preference is strictly necessary to honour the user's explicit choice across page loads.</li>
+    <li>The <code>activeRPC</code> key stores the RPC endpoint the user last selected, enabling the interface to correctly indicate the user's active selection on return. This is strictly necessary for the continuity of the RPC management tool.</li>
+    <li>The <code>priceToken</code> key stores the token the user selected in the price ticker. This is strictly necessary to preserve the user's explicit selection between sessions.</li>
+  </ul>
+
+  <p>None of these stored values are used for tracking, analytics, advertising, or any purpose other than restoring the user's own functional preferences. Accordingly, no cookie consent banner is implemented or required for these items under the strictly necessary exemption.</p>
+
+  <p>This Site does not deploy any cookies or similar technologies for analytics, advertising, or cross-site tracking. No consent management platform is used because no consent is required for the limited local storage described above.</p>
+
+  <p>The automatic loading of external resources on page load — specifically the CoinGecko price API, the GeckoTerminal price API, and the jsDelivr CDN — is strictly necessary for the Site to function as a token price display and Web3 tooling interface. These requests are made by the browser directly to the respective third party services; the maintainer does not intercept or receive the data transmitted.</p>
 
 
   <!-- ═══════════════════════════════════════════════ -->
@@ -281,8 +310,12 @@
     <li>This Site does not transmit wallet addresses, private keys, seed phrases, or any wallet credentials to the maintainer or any server controlled by the maintainer.</li>
     <li>When you connect your wallet, your wallet's public address is displayed in the browser interface for your reference. It is not stored by this Site beyond the active browser session.</li>
     <li>All transaction parameters generated by this Site (such as donation amounts or token transfer data) are passed locally to your wallet extension for your review and approval. The Site does not submit or broadcast any transaction on your behalf.</li>
-    <li>When you use the RPC switching tools, this Site calls MetaMask's standard <code>wallet_addEthereumChain</code> and <code>wallet_switchEthereumChain</code> methods. These calls go through your wallet extension. This Site does not communicate directly with RPC nodes during this process.</li>
+    <li>When you use the RPC switching tools, this Site calls MetaMask's standard <code>wallet_addEthereumChain</code> and <code>wallet_switchEthereumChain</code> methods. These calls go through your wallet extension.</li>
   </ul>
+
+  <h3>RPC Latency Testing</h3>
+
+  <p>When you scroll to the RPC section of the Site, the Site's JavaScript automatically sends a small test request (an <code>eth_blockNumber</code> JSON-RPC call) directly to each of the nine available RPC endpoints in order to measure their response time. This is handled by <code>fetch()</code> calls made from your browser to the RPC endpoints themselves — it does not pass through your wallet. As a result of these direct requests, your IP address is briefly exposed to each RPC provider's servers. No personal data is retained by this Site as a result of these latency tests. If you do not wish your browser to contact RPC endpoints directly, you should avoid scrolling to the RPC section or use the Site's Lite Version.</p>
 
   <p><strong>On-Chain Transparency:</strong> Blockchain transactions you approve and broadcast are recorded permanently and publicly on the BNB Smart Chain. This includes transaction amounts, wallet addresses, and timestamps. This is an inherent property of public blockchain networks and is entirely outside the control of this Site or its maintainer. You are solely responsible for understanding the privacy implications of any on-chain activity you initiate.</p>
 
@@ -299,6 +332,7 @@
       <tr>
         <th>Service</th>
         <th>Purpose</th>
+        <th>When Triggered</th>
         <th>What May Be Processed</th>
         <th>Their Privacy Policy</th>
       </tr>
@@ -307,47 +341,67 @@
       <tr>
         <td><strong>GitHub Pages</strong> (GitHub, Inc.)</td>
         <td>Hosts and serves this Site</td>
+        <td>Every page load</td>
         <td>IP address, HTTP request headers, browser type, pages accessed, timestamps</td>
         <td><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a></td>
       </tr>
       <tr>
         <td><strong>CoinGecko API</strong></td>
         <td>Fetches live BNB price data</td>
+        <td>Every page load (automatic)</td>
         <td>IP address, HTTP request metadata</td>
         <td><a href="https://www.coingecko.com/en/privacy" target="_blank" rel="noopener noreferrer">CoinGecko Privacy Policy</a></td>
       </tr>
       <tr>
         <td><strong>GeckoTerminal API</strong></td>
-        <td>Fetches live PML token price data</td>
+        <td>Fetches live price data for PFI, PFB, PFS, PFG, PML, and JOY tokens</td>
+        <td>Every page load (automatic)</td>
         <td>IP address, HTTP request metadata</td>
         <td><a href="https://www.coingecko.com/en/privacy" target="_blank" rel="noopener noreferrer">CoinGecko / GeckoTerminal Privacy Policy</a></td>
       </tr>
       <tr>
         <td><strong>jsDelivr CDN</strong></td>
         <td>Delivers the ethers.js JavaScript library</td>
+        <td>Every page load (automatic)</td>
         <td>IP address, HTTP request metadata, browser type</td>
         <td><a href="https://www.jsdelivr.com/privacy-policy-jsdelivr-net" target="_blank" rel="noopener noreferrer">jsDelivr Privacy Policy</a></td>
       </tr>
       <tr>
+        <td><strong>GoPlus Security API</strong> (gopluslabs.io)</td>
+        <td>Checks contract addresses against a live security threat database as part of the Wallet Approval Scanner</td>
+        <td>Only when you initiate an approval scan — not on page load</td>
+        <td>IP address, HTTP request metadata, the contract addresses submitted for checking (these are public blockchain addresses, not personal data)</td>
+        <td><a href="https://gopluslabs.io" target="_blank" rel="noopener noreferrer">GoPlus Labs</a></td>
+      </tr>
+      <tr>
         <td><strong>pmlcoin.app</strong></td>
-        <td>Serves token logo images displayed in the Site's UI</td>
+        <td>Serves token logo images (PFI, PFB, PFS, PFG, PML) displayed in the Site's UI</td>
+        <td>Every page load (automatic)</td>
         <td>IP address, HTTP request metadata</td>
         <td>Refer to that site's privacy policy if available</td>
       </tr>
       <tr>
+        <td><strong>hrweb3buttons.github.io</strong></td>
+        <td>Serves the JOY token logo image displayed in the Site's UI</td>
+        <td>Every page load (automatic)</td>
+        <td>IP address, HTTP request metadata</td>
+        <td><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a></td>
+      </tr>
+      <tr>
         <td><strong>cryptologos.cc</strong></td>
         <td>Serves the USDT logo image</td>
+        <td>Every page load (automatic)</td>
         <td>IP address, HTTP request metadata</td>
         <td><a href="https://cryptologos.cc" target="_blank" rel="noopener noreferrer">cryptologos.cc</a></td>
       </tr>
     </tbody>
   </table>
 
-  <p>Price data is fetched automatically when the page loads. No user action is required to trigger these requests. This means that simply visiting the Site will result in your browser making requests to CoinGecko's API, GeckoTerminal's API, and jsDelivr's CDN, each of which may log your IP address.</p>
+  <p>Price data and token images are fetched automatically when the page loads. No user action is required to trigger these requests. This means that simply visiting the Site will result in your browser making requests to CoinGecko's API, GeckoTerminal's API, jsDelivr's CDN, pmlcoin.app, hrweb3buttons.github.io, and cryptologos.cc, each of which may log your IP address.</p>
 
   <h3>RPC Providers</h3>
 
-  <p>When you use the RPC switching tool and approve the MetaMask prompt, MetaMask registers a new RPC endpoint with your wallet. Thereafter, when your wallet communicates with the BNB Smart Chain through that endpoint, your IP address and transaction requests will be processed by the RPC provider's infrastructure. This communication occurs between your wallet and the RPC provider directly — it does not pass through this Site. The RPC providers made available through this Site include LlamaRPC, PublicNode, Blockrazor, BLXR, dRPC, PublicNodies, 1RPC, SubQuery, and NowNodes. Each operates independently and is governed by its own terms and privacy policy.</p>
+  <p>When you scroll to the RPC section, the Site's JavaScript sends direct latency test requests to each of the following RPC providers: LlamaRPC, PublicNode, Blockrazor, BLXR, dRPC, PublicNodies, 1RPC, SubQuery, and NowNodes. These requests are made directly from your browser to each provider's servers, and your IP address is exposed to each provider as a result. This is separate from and in addition to any communication that occurs via MetaMask when you choose to add an RPC endpoint to your wallet. Each RPC provider operates independently and is governed by its own terms and privacy policy.</p>
 
   <p>Users who wish to avoid any transmission of technical data to third party services should refrain from using the Site, as the loading of external resources is necessary for its functionality.</p>
 
@@ -355,7 +409,7 @@
   <!-- ═══════════════════════════════════════════════ -->
   <h2 id="external-links">External Links and Redirects</h2>
 
-  <p>This Site contains links and buttons that open external websites in a new tab, including ApeSpace, BscScan, PancakeSwap, Google Drive, and GitHub. When you navigate to these sites, you leave this Site entirely. The maintainer has no control over, and no responsibility for, the data practices of any external site. Your use of those sites is governed solely by their own terms and privacy policies.</p>
+  <p>This Site contains links and buttons that open external websites in a new tab, including ApeSpace, BscScan, PancakeSwap, Google Drive, myjoy.market, and GitHub. When you navigate to these sites, you leave this Site entirely. The maintainer has no control over, and no responsibility for, the data practices of any external site. Your use of those sites is governed solely by their own terms and privacy policies.</p>
 
   <p>All external links are opened with <code>noopener noreferrer</code> attributes to prevent the destination site from accessing this page's context and to avoid passing the HTTP referrer header where supported.</p>
 
@@ -371,7 +425,24 @@
 
   <p>This section applies to individuals located in the European Economic Area (EEA), the United Kingdom, and other jurisdictions with comprehensive data protection laws such as Brazil's LGPD, Canada's PIPEDA, and California's CCPA/CPRA.</p>
 
-  <p>Because this Site does not directly collect or store personal data, the maintainer generally cannot fulfill data subject rights requests that presuppose the existence of stored personal data (such as access, correction, or deletion requests) with respect to information this Site itself holds — because no such information exists in the maintainer's possession.</p>
+  <h3>Position Under the GDPR</h3>
+
+  <p>The General Data Protection Regulation (EU) 2016/679 applies to the processing of personal data of individuals in the EEA. The maintainer's position is as follows:</p>
+
+  <ul>
+    <li>The Site operates with no backend, no database, and no server-side infrastructure controlled by the maintainer. No personal data — including IP addresses, wallet addresses, or any other identifying information — is collected, stored, or processed by the maintainer.</li>
+    <li>The Site is hosted on GitHub Pages. GitHub, Inc. processes server access data (including IP addresses) as an independent data controller under its own privacy policy and its obligations as a data processor. The maintainer has no access to this data.</li>
+    <li>Third party APIs and CDNs (CoinGecko, GeckoTerminal, jsDelivr, GoPlus Security) similarly process request data as independent data controllers. The maintainer does not receive or have access to any data those services collect.</li>
+    <li>The three items stored in <code>localStorage</code> — theme preference, active RPC URL, and selected price token — do not constitute personal data within the meaning of Article 4(1) GDPR. They contain no information that identifies or is capable of identifying a natural person.</li>
+  </ul>
+
+  <p>In light of the above, the maintainer does not act as a data controller or data processor with respect to any personal data of EEA users for the purposes of the GDPR. To the extent any residual interpretation of applicable law might conclude otherwise, any processing is strictly limited to what is technically necessary to deliver the Site's functionality, as described in this policy.</p>
+
+  <p>Where the GDPR is considered applicable, the legal basis for the limited technical processing described in this policy is the legitimate interests of the maintainer (Article 6(1)(f) GDPR), namely the provision of a functional, client-side web interface. The maintainer has determined that these interests are not overridden by the rights and freedoms of users, given that no personal data is received, stored, or profiled by the maintainer, and that any incidental processing occurs transiently and directly between the user's browser and independent third party services.</p>
+
+  <h3>Data Subject Rights</h3>
+
+  <p>Because this Site does not directly collect or store personal data, the maintainer generally cannot fulfill data subject rights requests that presuppose the existence of stored personal data — because no such information exists in the maintainer's possession.</p>
 
   <p>For data processed by third party services (such as GitHub, CoinGecko, or jsDelivr), you must submit your request directly to those services, as they are the independent data controllers for that data.</p>
 
@@ -385,12 +456,8 @@
     <li><strong>Right to Data Portability:</strong> The right to receive personal data in a structured, machine-readable format.</li>
     <li><strong>Right to Object:</strong> The right to object to processing based on legitimate interests.</li>
     <li><strong>Right to Withdraw Consent:</strong> Where processing is based on consent, the right to withdraw consent at any time without affecting the lawfulness of prior processing.</li>
-    <li><strong>Right to Lodge a Complaint:</strong> The right to lodge a complaint with your local data protection supervisory authority.</li>
+    <li><strong>Right to Lodge a Complaint:</strong> The right to lodge a complaint with your local data protection supervisory authority. For EEA users, this is the supervisory authority in your Member State. For UK users, this is the Information Commissioner's Office (ICO).</li>
   </ul>
-
-  <p>To the extent that any processing of personal data is considered to occur in connection with the operation of this Site under the General Data Protection Regulation, such processing is limited to what is technically necessary to deliver the Site’s functionality, including the loading of external resources and retrieval of publicly available data.</p>
-
-  <p>The legal basis for this limited processing is the legitimate interests of the maintainer (Article 6(1)(f) GDPR), namely the provision of a functional, client-side web interface. The maintainer has determined that these interests are not overridden by the rights and freedoms of users, given that no personal data is received, stored, or profiled, and that any processing occurs transiently and directly between the user’s browser and third party services.</p>
 
   <p>To exercise any applicable rights, or for questions regarding data protection, please use the contact information in the <a href="#contact">Contact</a> section below.</p>
 
@@ -400,7 +467,7 @@
 
   <p>This Site is hosted by GitHub Pages, a service operated by GitHub, Inc., which is based in the United States. When your browser accesses this Site, your technical data (such as your IP address) may be transferred to and processed in the United States and other countries where GitHub and its infrastructure partners operate.</p>
 
-  <p>Similarly, CoinGecko, GeckoTerminal, and jsDelivr may process requests from their respective infrastructure locations, which may be outside your country of residence.</p>
+  <p>Similarly, CoinGecko, GeckoTerminal, jsDelivr, and GoPlus Security may process requests from their respective infrastructure locations, which may be outside your country of residence.</p>
 
   <p>Such transfers are carried out by the respective third party service providers under their own responsibility. These providers may rely on legally recognized transfer mechanisms, such as Standard Contractual Clauses or other appropriate safeguards where applicable. The maintainer does not control these mechanisms and does not have access to the transferred data.</p>
 
@@ -408,7 +475,7 @@
   <!-- ═══════════════════════════════════════════════ -->
   <h2 id="retention">Data Retention</h2>
 
-  <p>This Site does not retain personal data on behalf of the maintainer. The only data stored on your device is the dark mode preference in <code>localStorage</code>, which persists until you clear your browser data or change the setting.</p>
+  <p>This Site does not retain personal data on behalf of the maintainer. The three items stored on your device in <code>localStorage</code> — theme preference, active RPC URL, and selected price token — persist until you clear your browser data or change the settings within the Site.</p>
 
   <p>Data retained by third party services (such as GitHub server logs) is subject to those services' own retention policies.</p>
 
@@ -434,7 +501,7 @@
 
   <p>This Privacy Policy is governed by and construed in accordance with the laws of the Republic of Panama, without regard to its conflict of law principles, consistent with the governing law provisions of the <a href="terms.html">Terms of Use</a>.</p>
 
-  <p>Nothing in this Privacy Policy limits any rights you may have under mandatory data protection laws applicable in your jurisdiction, including the GDPR where applicable.</p>
+  <p>Nothing in this Privacy Policy limits any rights you may have under mandatory data protection laws applicable in your jurisdiction, including the GDPR and the ePrivacy Directive where applicable.</p>
 
 
   <!-- ═══════════════════════════════════════════════ -->
