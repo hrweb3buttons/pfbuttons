@@ -81,6 +81,10 @@
       margin: 0 0 12px 0;
     }
 
+    .summary p:last-child {
+      margin-bottom: 0;
+    }
+
     a {
       color: var(--primary);
     }
@@ -93,6 +97,14 @@
     button:focus-visible {
       outline: 3px solid var(--focus-ring);
       outline-offset: 3px;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 6px;
     }
 
     footer {
@@ -119,7 +131,7 @@
 <main id="main-content" tabindex="-1">
 
   <h1>Terms of Use</h1>
-  <p style="color:var(--text-muted); font-size:0.9rem;">Version 1.2 &mdash; Last Updated: March 25 2026</p>
+  <p style="color:var(--text-muted); font-size:0.9rem;">Version 1.3 &mdash; Last Updated: April 29, 2026</p>
 
   <nav aria-labelledby="toc-heading">
     <h2 id="toc-heading">Table of Contents</h2>
@@ -127,6 +139,7 @@
       <li><a href="#eligibility">Eligibility</a></li>
       <li><a href="#ownership">Ownership and Intellectual Property</a></li>
       <li><a href="#nature">Nature of the Tools</a></li>
+      <li><a href="#paid-services">Paid Advisory Services</a></li>
       <li><a href="#license">License to Use</a></li>
       <li><a href="#prohibited-uses">Prohibited Uses</a></li>
       <li><a href="#no-community-ownership">No Community Ownership or Governance</a></li>
@@ -158,11 +171,12 @@
     <p>I decide what exists on this site, how it works, and whether it continues to exist at all.</p>
     <p>I can change, restrict, or shut down any part of the site or tools at any time.</p>
     <p>You may not copy, rehost, fork, rebrand, or present these tools as community property without my explicit permission.</p>
+    <p>If you pay for one of the advisory services, that payment is an on-chain crypto transfer and is irreversible by design. The service represents my personal opinion and is not professional financial, legal, or security advice. I make no guarantee of any specific outcome.</p>
     <p>If you do not agree with these boundaries, please do not use the site.</p>
     <p>The full legal terms below explain this in more detail.</p>
   </div>
 
-  <p>These Terms of Use govern your access to and use of the Unofficial Pool Funding Web3 Tools website and any related tools, scripts, interfaces, or documentation provided through it.</p>
+  <p>These Terms of Use govern your access to and use of the Unofficial Pool Funding Web3 Tools website and any related tools, scripts, interfaces, documentation, or paid services provided through it.</p>
 
   <p>By accessing or using this site, you agree to be bound by these Terms of Use. If you do not agree, you must not use the site or any of its tools.</p>
 
@@ -190,9 +204,40 @@
   <!-- ═══════════════════════════════════════════════ -->
   <h2 id="nature">Nature of the Tools</h2>
 
-  <p>The tools provided on this site are independently developed utilities made available to assist users with wallet configuration, token management, network configuration, and related Web3 interactions.</p>
+  <p>The tools provided on this site are independently developed utilities made available to assist users with wallet configuration, token management, network configuration, token approval scanning, and related Web3 interactions. The site also offers paid personal advisory services, which are governed separately under the Paid Advisory Services section below.</p>
+
+  <p>The free tools include, without limitation: a portfolio balance viewer, a token add tool for MetaMask, an RPC switching and latency testing tool, a wallet approval scanner that checks on-chain token allowances against a curated list of known spender contracts and a third party security database, token price charts and swap shortcuts, a token value calculator, and links to community documents.</p>
 
   <p>These tools do not custody funds, do not execute transactions on your behalf without your explicit approval, and do not provide financial, investment, or legal advice.</p>
+
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2 id="paid-services">Paid Advisory Services</h2>
+
+  <p>In addition to the free tools described above, the site offers two paid personal advisory services provided directly by Hunter Rodriguez. These services are described below. By requesting and paying for either service, you agree to the terms of this section in addition to all other terms of this agreement.</p>
+
+  <h3>Program Analysis and Risk Review</h3>
+  <p>For a fee of 10 USDT, the maintainer will personally review a crypto-related investment opportunity, platform, or pitch provided by the user and share an experience-based opinion focused on identifying potential red flags, structural weaknesses, unrealistic promises, or hidden risks.</p>
+
+  <h3>Wallet Permission and Approval Check</h3>
+  <p>For a fee of 10 USDT, the maintainer will personally review the token approvals and permissions connected to a wallet address provided by the user, identify any approvals that may represent risk, and provide guidance on removing unnecessary permissions.</p>
+
+  <h3>Payment</h3>
+  <p>Payment for either service is made by sending USDT on the BNB Smart Chain to the maintainer's published donation wallet address. All payments are on-chain cryptocurrency transfers. By their nature, blockchain transactions are irreversible once submitted and confirmed. <strong>No refunds can be issued under any circumstances.</strong> If a transaction is sent in error, the maintainer has no technical ability to reverse or return it. You are solely responsible for confirming the correct wallet address and amount before approving any payment transaction in your wallet.</p>
+
+  <h3>Nature of the Services</h3>
+  <p>Both services represent the personal opinion of Hunter Rodriguez, formed from individual experience and publicly available information. They do not constitute and must not be relied upon as professional financial advice, investment advice, legal advice, security audit findings, or any other form of regulated professional service. The maintainer is not a licensed financial adviser, securities professional, legal practitioner, or certified security auditor.</p>
+
+  <p>Reviews and assessments provided under these services reflect the maintainer's personal view at the time of delivery, based on the information available and provided. They do not represent the views or opinions of Pool Funding or any affiliated project or organization.</p>
+
+  <h3>No Guarantee of Outcome</h3>
+  <p>The maintainer makes no representation, warranty, or guarantee that any service delivered will identify all risks, produce accurate conclusions, or result in any particular outcome. Crypto markets, protocols, and security landscapes change rapidly. An assessment that appears favorable at the time of delivery may become unfavorable due to subsequent events entirely outside the maintainer's control or knowledge. You remain solely responsible for all investment and security decisions you make.</p>
+
+  <h3>Service Delivery</h3>
+  <p>Delivery of a paid service is at the maintainer's reasonable discretion. The maintainer reserves the right to decline a service request, including after payment, in which case a good-faith effort will be made to return the payment. No specific response timeframe is guaranteed. Coordination of service delivery occurs through direct communication initiated via the contact channels listed in these Terms.</p>
+
+  <h3>Applicability of Other Terms</h3>
+  <p>All other provisions of these Terms of Use — including the No Warranties, Limitation of Liability, Regulatory Disclaimer, Governing Law, and Arbitration sections — apply in full to paid service engagements.</p>
 
 
   <!-- ═══════════════════════════════════════════════ -->
@@ -253,6 +298,8 @@
 
   <p>The tools may contain bugs, errors, or incorrect calculations that could result in incorrect outputs, transaction parameters, or user decisions.</p>
 
+  <p>The Wallet Approval Scanner checks a curated list of known spender contracts and queries a third party security database. It does not scan the complete on-chain approval history of your wallet, does not cover every possible spender address, and may not detect approvals granted to unknown or newly created contracts. A clean scan result does not guarantee that your wallet is free from risk.</p>
+
   <p>The maintainer does not guarantee compatibility with all screen readers, assistive technologies, or accessibility tools. While reasonable efforts are made to support accessible use, no warranty of accessibility compliance is made or implied.</p>
 
 
@@ -261,7 +308,7 @@
 
   <p>To the fullest extent permitted by applicable law, the maintainer of this site shall not be liable for any direct, indirect, incidental, consequential, special, or exemplary damages arising out of or related to your use of, or inability to use, the site or tools, even if the maintainer has been advised of the possibility of such damages.</p>
 
-  <p>This includes but is not limited to loss of funds, loss of access to wallets, failed transactions, network issues, RPC failures, smart contract behavior, third party service outages, or any errors or interruptions affecting the availability or functionality of the site or tools.</p>
+  <p>This includes but is not limited to loss of funds, loss of access to wallets, failed transactions, network issues, RPC failures, smart contract behavior, third party service outages, inaccurate or incomplete approval scan results, security assessments or program reviews that are incomplete or that you relied upon to your detriment, or any errors or interruptions affecting the availability or functionality of the site or tools.</p>
 
   <p>You agree to indemnify, defend, and hold harmless the maintainer from and against any and all claims, damages, obligations, losses, liabilities, costs, debts, and expenses (including but not limited to attorney's fees) arising from: (i) your use of and access to the tools; (ii) your violation of any term of these Terms of Use; (iii) your violation of any third-party right, including without limitation any intellectual property, privacy, or proprietary right; (iv) any claim that your use of the tools caused damage to a third party; or (v) any security breach of your own device, wallet, or network.</p>
 
@@ -271,11 +318,13 @@
   <!-- ═══════════════════════════════════════════════ -->
   <h2 id="third-parties">Third Party Services</h2>
 
-  <p>The site interacts with or links to third party services such as wallet providers, blockchain networks, RPC endpoints, pricing APIs, and external documentation.</p>
+  <p>The site interacts with or links to third party services such as wallet providers, blockchain networks, RPC endpoints, pricing APIs, security data providers, and external documentation.</p>
 
   <p>The maintainer has no control over these services and is not responsible for their availability, accuracy, security, or behavior. Your use of any third party service is governed solely by that service's own terms and policies.</p>
 
-  <p>RPC endpoints made available through the site are third party infrastructure. The maintainer does not operate, control, or audit these endpoints and makes no representations regarding their integrity, accuracy, or security. Use of any RPC endpoint is at your own risk.</p>
+  <p>RPC endpoints made available through the site are third party infrastructure. The maintainer does not operate, control, or audit these endpoints and makes no representations regarding their integrity, accuracy, or security. Use of any RPC endpoint is at your own risk. When you scroll to the RPC section of the site, automated latency tests send small network requests directly from your browser to each RPC endpoint; your IP address is briefly exposed to each provider's servers as a result of these tests.</p>
+
+  <p>The Wallet Approval Scanner uses security threat data provided by GoPlus Security (gopluslabs.io), an independent third party service. The maintainer does not operate or control GoPlus Security, makes no representations regarding the completeness, accuracy, or timeliness of its data, and is not responsible for any failure, inaccuracy, or unavailability of that service. When you initiate a scan, contract addresses are submitted to the GoPlus API directly from your browser. You are encouraged to review GoPlus Security's own terms and privacy policy.</p>
 
 
   <!-- ═══════════════════════════════════════════════ -->
@@ -335,13 +384,13 @@
   <!-- ═══════════════════════════════════════════════ -->
   <h2 id="privacy-notice">Privacy Notice</h2>
 
-  <p>This site does not require account registration and does not intentionally collect personally identifiable information directly from users. However, standard web server logs, analytics tools, or third party services integrated into this site (such as RPC providers or content delivery networks) may automatically collect certain technical data, including IP addresses, browser type, and usage patterns, as part of their normal operation.</p>
+  <p>This site does not require account registration and does not intentionally collect personally identifiable information directly from users. However, standard web server logs or third party services integrated into this site — such as RPC providers, security data APIs, or content delivery networks — may automatically collect certain technical data, including IP addresses and browser type, as part of their normal operation.</p>
 
   <p>Blockchain wallet addresses used in connection with the tools are processed locally within your browser where possible. The maintainer does not store or have access to your private keys, seed phrases, or wallet credentials.</p>
 
   <p>By using this site, you acknowledge that blockchain transactions and addresses are recorded permanently and publicly on-chain. You are solely responsible for understanding the privacy implications of any on-chain activity.</p>
 
-  <p>If you have questions about data handling practices on this site, please use the contact information provided below.</p>
+  <p>For full details of how data is handled in connection with this site, including a description of all third party services that may process your IP address, please read the full <a href="privacy.html">Privacy Policy</a>.</p>
 
 
   <!-- ═══════════════════════════════════════════════ -->
