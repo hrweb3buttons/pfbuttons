@@ -1,0 +1,24 @@
+{
+  "name": "Hunter's Utility Belt",
+  "short_name": "The HUB",
+  "description": "Web3 community tools for Pool Funding — no wallet required. Prices, contracts, approval scanner, and calculator.",
+  "start_url": "./hub.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#004aab",
+  "icons": [
+    {
+      "src": "https://pmlcoin.app/assets/logo-D04mbZJF.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://pmlcoin.app/assets/logo-D04mbZJF.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
