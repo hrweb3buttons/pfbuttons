@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  manifest-src 'self';
   script-src 'self' 'unsafe-inline';
   connect-src 'self'
     https://api.coingecko.com
@@ -22,8 +21,7 @@
   img-src 'self' https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#004aab" id="metaThemeColor" />
-<link rel="manifest" href="hub-manifest.json" />
+<meta name="theme-color" content="#004aab" />
 <title>The HUB — Hunter's Utility Belt</title>
 <meta name="description" content="Web3 community tools for Pool Funding — no wallet required. Prices, token contracts, approval scanner, and calculator.">
 <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
@@ -375,31 +373,6 @@ footer {
   padding: 0 1rem;
 }
 
-/* ── Install banner ── */
-#installBanner {
-  display: none;
-  align-items: center; justify-content: space-between; gap: .75rem;
-  background: var(--primary); color: #fff;
-  padding: .65rem 1.1rem; font-size: .88rem; font-weight: 600;
-  flex-wrap: wrap;
-}
-
-#installBanner button {
-  background: #fff; color: var(--primary);
-  font-size: .82rem; padding: .35rem .85rem;
-}
-
-#installBanner button:hover { background: rgba(255,255,255,.85); }
-
-#installDismiss {
-  background: transparent; color: #fff;
-  border: 1px solid rgba(255,255,255,.5);
-  font-size: .82rem; padding: .3rem .7rem;
-  font-weight: 500;
-}
-
-#installDismiss:hover { background: rgba(255,255,255,.15); }
-
 /* ── Mobile tweaks ── */
 @media (max-width: 600px) {
   #hub-header { padding: .75rem 1rem; }
@@ -412,15 +385,6 @@ footer {
 
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
-
-<!-- PWA install banner (shown only when installable) -->
-<div id="installBanner" role="region" aria-label="Install app">
-  <span>📲 Add The HUB to your home screen for offline access.</span>
-  <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-    <button id="installBtn" type="button">Install</button>
-    <button id="installDismiss" type="button">Not now</button>
-  </div>
-</div>
 
 <!-- ── Header ── -->
 <header id="hub-header" aria-label="Site controls">
@@ -450,13 +414,21 @@ footer {
   <section class="card" id="about" style="margin-top:1.25rem;">
     <h1 style="margin-top:0;">Hunter's Utility Belt</h1>
     <p>
-      A lightweight, installable companion to <a href="index.html">Hunter's Toolbox</a> —
+      A lightweight companion to <a href="index.html">Hunter's Toolbox</a> —
       built for quick lookups on the go. No wallet connection required.
     </p>
-    <p style="margin-bottom:0; font-size:.9rem; color:var(--text-muted);">
+    <p style="margin-bottom:.75rem; font-size:.9rem; color:var(--text-muted);">
       Maintained by <strong>Hunter Rodriguez</strong> for the Pool Funding community.
       For tools that require a wallet (token transfers, RPC switching, portfolio), visit the main Toolbox.
     </p>
+    <details style="font-size:.88rem; color:var(--text-muted);">
+      <summary style="cursor:pointer; font-weight:600; color:var(--primary);">📲 Add to your home screen</summary>
+      <div style="margin-top:.65rem; line-height:1.7;">
+        <strong>Android (Chrome):</strong> tap the ⋮ menu → <em>Add to Home screen</em>.<br>
+        <strong>iPhone / iPad (Safari):</strong> tap the Share icon → <em>Add to Home Screen</em>.<br>
+        <strong>Desktop Chrome / Edge:</strong> click the install icon (⊕) in the address bar, or use the browser menu → <em>Save and share</em> → <em>Install page as app</em>.
+      </div>
+    </details>
   </section>
 
   <!-- Live Prices -->
@@ -857,13 +829,11 @@ function formatPrice(price, symbol) {
 
 const root         = document.documentElement;
 const themeToggle  = document.getElementById("themeToggle");
-const metaTheme    = document.getElementById("metaThemeColor");
 
 function applyTheme(dark) {
   root.classList.toggle("dark", dark);
   themeToggle.textContent = dark ? "Light mode" : "Dark mode";
   themeToggle.setAttribute("aria-pressed", String(dark));
-  if (metaTheme) metaTheme.content = dark ? "#0f141a" : "#004aab";
 }
 
 themeToggle.onclick = () => {
@@ -1538,50 +1508,6 @@ document.getElementById("calcReset").addEventListener("click", () => {
   const ts = document.getElementById("calcTokenSelect");
   if (ts) ts.value = "";
 });
-
-/* ═══════════════════════════════════════════════════════════
-   PWA INSTALL PROMPT
-═══════════════════════════════════════════════════════════ */
-
-let deferredInstallPrompt = null;
-
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  const banner = document.getElementById("installBanner");
-  if (banner) banner.style.display = "flex";
-});
-
-document.getElementById("installBtn")?.addEventListener("click", async () => {
-  if (!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  const { outcome } = await deferredInstallPrompt.userChoice;
-  deferredInstallPrompt = null;
-  document.getElementById("installBanner").style.display = "none";
-  if (outcome === "accepted") notify("The HUB has been installed! 🎉");
-});
-
-document.getElementById("installDismiss")?.addEventListener("click", () => {
-  document.getElementById("installBanner").style.display = "none";
-});
-
-window.addEventListener("appinstalled", () => {
-  document.getElementById("installBanner").style.display = "none";
-  deferredInstallPrompt = null;
-});
-
-
-
-/* ═══════════════════════════════════════════════════════════
-   SERVICE WORKER REGISTRATION
-═══════════════════════════════════════════════════════════ */
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./hub-sw.js", { scope: "./" })
-      .catch(err => console.warn("Service worker registration failed:", err));
-  });
-}
 
 /* ═══════════════════════════════════════════════════════════
    SCAN BUTTON
