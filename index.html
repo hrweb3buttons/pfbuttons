@@ -1411,7 +1411,7 @@ button.rpc-active {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.3.1
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.3.2
   </footer>
 
   <script>
@@ -2675,46 +2675,44 @@ async function fetchPrices() {
 }
 
 async function fetchDexPrices() {
-  await Promise.allSettled(
-    Object.entries(DEX_TOKENS).map(async ([symbol, tokenAddress]) => {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 7000);
-        const res = await fetch(
-          "https://api.geckoterminal.com/api/v2/networks/bsc/tokens/" + tokenAddress,
-          {
-            signal: controller.signal,
-            headers: { "Accept": "application/json" }
-          }
-        );
-        clearTimeout(timeout);
-
-        if (!res.ok) {
-          console.warn("GeckoTerminal non-OK for", symbol, res.status);
-          return;
-        }
-
-        const data = await res.json();
-        const priceStr = data?.data?.attributes?.price_usd;
-
-        if (!priceStr) {
-          console.warn("GeckoTerminal: no price_usd for", symbol);
-          return;
-        }
-
-        const price = parseFloat(priceStr);
-        if (!isNaN(price) && price > 0) {
-          tokenPrices[symbol] = price;
-        } else {
-          console.warn("GeckoTerminal: invalid price for", symbol, priceStr);
-        }
-      } catch (err) {
-        console.error("GeckoTerminal fetch failed for", symbol, err);
+  const addresses = Object.values(DEX_TOKENS).join(",");
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/multi/${addresses}`,
+      {
+        signal: controller.signal,
+        headers: { Accept: "application/json" }
       }
-    })
-  );
-  updatePriceDisplay();
+    );
+    clearTimeout(timeout);
+    if (!res.ok) {
+      console.warn("GeckoTerminal batch fetch failed:", res.status);
+      return;
+    }
+    const data = await res.json();
+    const items = data?.data;
+    if (!Array.isArray(items)) return;
+
+    items.forEach(token => {
+      const addr  = token?.attributes?.address?.toLowerCase();
+      const price = parseFloat(token?.attributes?.price_usd);
+      if (!addr || isNaN(price) || price <= 0) return;
+
+      for (const [symbol, tokenAddr] of Object.entries(DEX_TOKENS)) {
+        if (tokenAddr.toLowerCase() === addr) {
+          tokenPrices[symbol] = price;
+          break;
+        }
+      }
+    });
+  } catch (err) {
+    console.error("GeckoTerminal batch fetch failed:", err);
+  }
 }
+  updatePriceDisplay();
+
 
 const connectBtn = document.getElementById("connectWallet");
 
