@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
+  manifest-src 'self';
   script-src 'self' 'unsafe-inline';
   connect-src 'self'
     https://api.coingecko.com
@@ -22,7 +23,7 @@
   style-src 'self' 'unsafe-inline'">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#004aab" id="metaThemeColor" />
-<link rel="manifest" id="hubManifest" />
+<link rel="manifest" href="hub-manifest.json" />
 <title>The HUB — Hunter's Utility Belt</title>
 <meta name="description" content="Web3 community tools for Pool Funding — no wallet required. Prices, token contracts, approval scanner, and calculator.">
 <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
@@ -663,81 +664,6 @@ footer {
      ╚══════════════════════════════════════════════════════════╝ -->
 <script>
 "use strict";
-
-/* ═══════════════════════════════════════════════════════════
-   INLINE MANIFEST — injected as a data: URI so no
-   separate hub-manifest.json file is required.
-═══════════════════════════════════════════════════════════ */
-(function () {
-  const manifest = {
-    name: "Hunter's Utility Belt",
-    short_name: "The HUB",
-    description: "Web3 community tools for Pool Funding — no wallet required.",
-    start_url: "./hub.html",
-    scope: "./",
-    display: "standalone",
-    background_color: "#f8f9fa",
-    theme_color: "#004aab",
-    icons: [
-      { src: "https://pmlcoin.app/assets/logo-D04mbZJF.png", sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: "https://pmlcoin.app/assets/logo-D04mbZJF.png", sizes: "512x512", type: "image/png", purpose: "any" }
-    ]
-  };
-  const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
-  const link = document.getElementById("hubManifest");
-  if (link) link.href = URL.createObjectURL(blob);
-})();
-
-/* ═══════════════════════════════════════════════════════════
-   INLINE SERVICE WORKER — registered as a blob URL so no
-   separate hub-sw.js file is required.
-═══════════════════════════════════════════════════════════ */
-(function () {
-  if (!("serviceWorker" in navigator)) return;
-  const swCode = `
-const CACHE_NAME = "hub-v1";
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache =>
-      cache.add(new Request(self.registration.scope + "hub.html")).catch(() => {})
-    )
-  );
-  self.skipWaiting();
-});
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
-});
-self.addEventListener("fetch", event => {
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) {
-    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
-    return;
-  }
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      const networkFetch = fetch(event.request).then(response => {
-        if (response && response.ok) {
-          caches.open(CACHE_NAME).then(c => c.put(event.request, response.clone()));
-        }
-        return response;
-      }).catch(() => {});
-      return cached || networkFetch;
-    })
-  );
-});
-`;
-  const swBlob = new Blob([swCode], { type: "application/javascript" });
-  const swURL  = URL.createObjectURL(swBlob);
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register(swURL, { scope: "./" })
-      .catch(err => console.warn("SW registration failed:", err));
-  });
-})();
 
 /* ═══════════════════════════════════════════════════════════
    CONSTANTS
@@ -1645,6 +1571,17 @@ window.addEventListener("appinstalled", () => {
 });
 
 
+
+/* ═══════════════════════════════════════════════════════════
+   SERVICE WORKER REGISTRATION
+═══════════════════════════════════════════════════════════ */
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./hub-sw.js", { scope: "./" })
+      .catch(err => console.warn("Service worker registration failed:", err));
+  });
+}
 
 /* ═══════════════════════════════════════════════════════════
    SCAN BUTTON
