@@ -204,7 +204,7 @@ margin:2rem 0;
 
 </section>
 
-  <section class="card" style="border-left: 4px solid var(--primary);">
+  <section class="card" id="start-here" style="border-left: 4px solid var(--primary);">
 
 <h2>New to Crypto? Start Here</h2>
 
@@ -252,6 +252,18 @@ Binance Academy
 <p style="font-size:.9rem; margin-top:1rem;">These are starting points — the full directory below covers many more options across every category.</p>
 
 </section>
+
+  <div class="card" style="padding:1rem 1.5rem;">
+  <label for="directorySearch"><strong>Search the directory</strong></label>
+  <input
+    type="search"
+    id="directorySearch"
+    placeholder="Type a service name..."
+    aria-label="Search directory services"
+    style="display:block;width:100%;box-sizing:border-box;margin-top:.5rem;padding:.65rem 1rem;font-size:1rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--card-bg);color:var(--text);"
+  />
+  <p id="searchStatus" aria-live="polite" style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem;min-height:1.2em;"></p>
+</div>
 
   <nav aria-label="Directory sections">
   <h2 class="visually-hidden">Directory navigation</h2>
@@ -1262,6 +1274,35 @@ localStorage.setItem("theme",dark?"dark":"light")
 toggle.textContent=dark?"Light mode":"Dark mode"
 toggle.setAttribute("aria-pressed",dark)
 }
+
+const searchInput = document.getElementById('directorySearch');
+const searchStatus = document.getElementById('searchStatus');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.trim().toLowerCase();
+
+  const allItems = Array.from(document.querySelectorAll('#main-content .item'));
+  const directoryItems = allItems.filter(item => !item.closest('#start-here'));
+
+  let visibleCount = 0;
+
+  directoryItems.forEach(item => {
+    const nameEl = item.querySelector('.link-button');
+    if (!nameEl) return;
+    const name = nameEl.textContent.trim().toLowerCase();
+    const match = !query || name.includes(query);
+    item.style.display = match ? '' : 'none';
+    if (match) visibleCount++;
+  });
+
+  if (query) {
+    searchStatus.textContent = visibleCount === 0
+      ? 'No services found.'
+      : `${visibleCount} service${visibleCount !== 1 ? 's' : ''} found.`;
+  } else {
+    searchStatus.textContent = '';
+  }
+});  
 
 </script>
 
