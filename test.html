@@ -2777,9 +2777,6 @@ async function fetchPrices() {
   } catch (err) {
     console.error("BNB price fetch failed:", err);
     tokenPrices.BNB = null;
-    // Fall back to DexScreener for any token GeckoTerminal couldn't price
-  const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
-  if (missing.length) await fetchDexScreenerFallback(missing);
   }
   updatePriceDisplay();
 }
@@ -2830,6 +2827,9 @@ async function fetchDexPrices() {
     if (!res.ok) {
       console.warn("GeckoTerminal batch fetch failed:", res.status);
       return;
+      // Fall back to DexScreener for any token GeckoTerminal couldn't price
+  const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (missing.length) await fetchDexScreenerFallback(missing);
     }
     const data = await res.json();
     const items = data?.data;
@@ -2894,8 +2894,6 @@ if (donateJOYBtn) {
     openDonateForm("JOY", e.currentTarget, (amtStr) => donateToken("JOY", amtStr));
 }
 
-fetchPrices();
-fetchDexPrices();
 fetchPrices();
 fetchDexPrices().then(updatePriceDisplay);
 /* =============================================
