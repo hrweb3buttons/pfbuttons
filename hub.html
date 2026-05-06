@@ -17,6 +17,7 @@
     https://binance-smart-chain-public.nodies.app
     https://1rpc.io
     https://bnb.rpc.subquery.network
+    https://api.dexscreener.com
     https://public-bsc.nownodes.io;
   img-src 'self' https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
@@ -862,21 +863,100 @@ async function fetchBNBPrice() {
 }
 
 async function fetchDexPrices() {
+  const addresses = Object.values(DEX_TOKENS).join(",");
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/multi/${addresses}`,
+      { signal: controller.signal, headers: { Accept: "application/json" } }
+    );
+    clearTimeout(id);
+    if (!res.ok) {
+      console.warn("GeckoTerminal batch fetch failed:", res.status);
+    } else {
+      const data = await res.json();
+      const items = data?.data;
+      if (Array.isArray(items)) {
+        items.forEach(token => {
+          const addr  = token?.attributes?.address?.toLowerCase();
+          const price = parseFloat(token?.attributes?.price_usd);
+          if (!addr || isNaN(price) || price <= 0) return;
+          for (const [symbol, tokenAddr] of Object.entries(DEX_TOKENS)) {
+            if (tokenAddr.toLowerCase() === addr) {
+              tokenPrices[symbol] = price;
+              break;
+            }
+          }
+        });
+      }
+    }
+  } catch (err) {
+    console.error("GeckoTerminal batch fetch failed:", err);
+  }
+
+  // Fallback 1: GeckoTerminal pools endpoint
+  const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (missing.length) await fetchGeckoTerminalPoolsFallback(missing);
+
+  // Fallback 2: DexScreener
+  const stillMissing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (stillMissing.length) await fetchDexScreenerFallback(stillMissing);
+}
+
+async function fetchGeckoTerminalPoolsFallback(missingSymbols) {
   await Promise.allSettled(
-    Object.entries(DEX_TOKENS).map(async ([symbol, addr]) => {
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
       try {
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), 8000);
         const res = await fetch(
-          `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/${addr}`,
+          `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/${address}/pools`,
           { signal: controller.signal, headers: { Accept: "application/json" } }
         );
         clearTimeout(id);
         if (!res.ok) return;
         const data = await res.json();
-        const p = parseFloat(data?.data?.attributes?.price_usd);
-        if (!isNaN(p) && p > 0) tokenPrices[symbol] = p;
-      } catch { /* silently ignore per token */ }
+        const pools = data?.data;
+        if (!Array.isArray(pools) || !pools.length) return;
+        pools.sort((a, b) =>
+          parseFloat(b.attributes?.reserve_in_usd ?? 0) -
+          parseFloat(a.attributes?.reserve_in_usd ?? 0)
+        );
+        const price = parseFloat(pools[0].attributes?.token_price_usd);
+        if (!isNaN(price) && price > 0) tokenPrices[symbol] = price;
+      } catch (err) {
+        console.warn(`GeckoTerminal pools fallback failed for ${symbol}:`, err);
+      }
+    })
+  );
+}
+
+async function fetchDexScreenerFallback(missingSymbols) {
+  await Promise.allSettled(
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
+      try {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://api.dexscreener.com/latest/dex/tokens/${address}`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
+        );
+        clearTimeout(id);
+        if (!res.ok) return;
+        const data = await res.json();
+        const pairs = (data?.pairs || []).filter(p => p.chainId === "bsc");
+        if (!pairs.length) return;
+        pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
+        const price = parseFloat(pairs[0].priceUsd);
+        if (!isNaN(price) && price > 0) tokenPrices[symbol] = price;
+      } catch (err) {
+        console.warn(`DexScreener fallback failed for ${symbol}:`, err);
+      }
     })
   );
 }
