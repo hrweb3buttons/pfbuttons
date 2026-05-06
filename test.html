@@ -2778,7 +2778,6 @@ async function fetchPrices() {
     console.error("BNB price fetch failed:", err);
     tokenPrices.BNB = null;
   }
-  updatePriceDisplay();
 }
 
     async function fetchDexScreenerFallback(missingSymbols) {
