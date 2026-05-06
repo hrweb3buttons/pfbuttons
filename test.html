@@ -2777,8 +2777,41 @@ async function fetchPrices() {
   } catch (err) {
     console.error("BNB price fetch failed:", err);
     tokenPrices.BNB = null;
+    // Fall back to DexScreener for any token GeckoTerminal couldn't price
+  const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (missing.length) await fetchDexScreenerFallback(missing);
   }
   updatePriceDisplay();
+}
+
+    async function fetchDexScreenerFallback(missingSymbols) {
+  await Promise.allSettled(
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://api.dexscreener.com/latest/dex/tokens/${address}`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
+        );
+        clearTimeout(timeout);
+        if (!res.ok) return;
+        const data = await res.json();
+        const pairs = (data?.pairs || []).filter(p => p.chainId === "bsc");
+        if (!pairs.length) return;
+        // Use the pair with the highest liquidity
+        pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
+        const price = parseFloat(pairs[0].priceUsd);
+        if (!isNaN(price) && price > 0) {
+          tokenPrices[symbol] = price;
+        }
+      } catch (err) {
+        console.warn(`DexScreener fallback failed for ${symbol}:`, err);
+      }
+    })
+  );
 }
 
 async function fetchDexPrices() {
@@ -2863,7 +2896,8 @@ if (donateJOYBtn) {
 
 fetchPrices();
 fetchDexPrices();
-
+fetchPrices();
+fetchDexPrices().then(updatePriceDisplay);
 /* =============================================
    WALLET TABS — Add Tokens card
    ============================================= */
