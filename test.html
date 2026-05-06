@@ -2843,9 +2843,46 @@ async function fetchDexPrices() {
     console.error("GeckoTerminal batch fetch failed:", err);
   }
 
-  // Always runs — catches tokens GeckoTerminal returned with null price_usd
+ // Fallback 1: GeckoTerminal pools endpoint
   const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
-  if (missing.length) await fetchDexScreenerFallback(missing);
+  if (missing.length) await fetchGeckoTerminalPoolsFallback(missing);
+
+  // Fallback 2: DexScreener (for anything still missing)
+  const stillMissing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (stillMissing.length) await fetchDexScreenerFallback(stillMissing);
+}
+
+    async function fetchGeckoTerminalPoolsFallback(missingSymbols) {
+  await Promise.allSettled(
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/${address}/pools`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
+        );
+        clearTimeout(timeout);
+        if (!res.ok) return;
+        const data = await res.json();
+        const pools = data?.data;
+        if (!Array.isArray(pools) || !pools.length) return;
+        // Use the pool with the highest liquidity
+        pools.sort((a, b) =>
+          parseFloat(b.attributes?.reserve_in_usd ?? 0) -
+          parseFloat(a.attributes?.reserve_in_usd ?? 0)
+        );
+        const price = parseFloat(pools[0].attributes?.token_price_usd);
+        if (!isNaN(price) && price > 0) {
+          tokenPrices[symbol] = price;
+        }
+      } catch (err) {
+        console.warn(`GeckoTerminal pools fallback failed for ${symbol}:`, err);
+      }
+    })
+  );
 }
 
 
