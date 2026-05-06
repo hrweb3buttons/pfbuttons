@@ -2847,27 +2847,6 @@ async function fetchDexPrices() {
   const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
   if (missing.length) await fetchDexScreenerFallback(missing);
 }
-    const data = await res.json();
-    const items = data?.data;
-    if (!Array.isArray(items)) return;
-
-    items.forEach(token => {
-      const addr  = token?.attributes?.address?.toLowerCase();
-      const price = parseFloat(token?.attributes?.price_usd);
-      if (!addr || isNaN(price) || price <= 0) return;
-
-      for (const [symbol, tokenAddr] of Object.entries(DEX_TOKENS)) {
-        if (tokenAddr.toLowerCase() === addr) {
-          tokenPrices[symbol] = price;
-          break;
-        }
-      }
-    });
-  } catch (err) {
-    console.error("GeckoTerminal batch fetch failed:", err);
-  }
-}
-  updatePriceDisplay();
 
 
 const connectBtn = document.getElementById("connectWallet");
