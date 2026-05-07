@@ -26,6 +26,9 @@
   --warning-bg: #fff8e1;
   --warning-border: #f9a825;
   --warning-text: #5d3a00;
+  --success-bg: #e8f5e9;
+  --success-border: #43a047;
+  --success-text: #1b5e20;
 }
 
 :root.dark {
@@ -41,11 +44,12 @@
   --warning-bg: rgba(249, 168, 37, 0.08);
   --warning-border: #f9a825;
   --warning-text: #ffe082;
+  --success-bg: rgba(67, 160, 71, 0.1);
+  --success-border: #43a047;
+  --success-text: #81c784;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   font-family: Inter, system-ui, -apple-system, sans-serif;
@@ -56,286 +60,155 @@ body {
   padding: 0;
 }
 
-a:focus-visible,
-button:focus-visible {
+a:focus-visible, button:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
 }
 
 .skip-link {
-  position: absolute;
-  top: -100px;
-  left: 50%;
+  position: absolute; top: -100px; left: 50%;
   transform: translateX(-50%);
-  background: var(--primary);
-  color: #fff;
-  padding: 1rem 2rem;
-  z-index: 10000;
-  text-decoration: none;
-  font-weight: bold;
+  background: var(--primary); color: #fff;
+  padding: 1rem 2rem; z-index: 10000;
+  text-decoration: none; font-weight: bold;
   border-radius: 0 0 var(--radius) var(--radius);
   transition: top 0.2s ease;
   border: 2px solid var(--focus-ring);
 }
-
-.skip-link:focus {
-  top: 0;
-  outline: none;
-}
+.skip-link:focus { top: 0; outline: none; }
 
 header {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: fixed; top: 16px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between; align-items: center;
   z-index: 9999;
 }
 
 #themeToggle {
-  background-color: var(--primary);
-  color: white;
-  font-weight: 700;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.75rem 1.25rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  background-color: var(--primary); color: white;
+  font-weight: 700; border: none; border-radius: var(--radius);
+  padding: 0.75rem 1.25rem; cursor: pointer; transition: background 0.2s;
 }
-
-#themeToggle:hover {
-  background-color: var(--primary-hover);
-}
-
-:root:not(.dark) #themeToggle {
-  color: #ffffff;
-}
+#themeToggle:hover { background-color: var(--primary-hover); }
+:root:not(.dark) #themeToggle { color: #ffffff; }
 
 #back-link {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--primary);
-  text-decoration: none;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card-bg);
-  transition: background 0.2s;
+  font-size: 0.9rem; font-weight: 600; color: var(--primary);
+  text-decoration: none; padding: 0.75rem 1.25rem;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--card-bg); transition: background 0.2s;
 }
+#back-link:hover { background: var(--border); }
 
-#back-link:hover {
-  background: var(--border);
-}
-
-main {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 7rem 1rem 4rem;
-}
+main { max-width: 680px; margin: 0 auto; padding: 7rem 1rem 4rem; }
 
 .card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.75rem 2rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow);
+  background-color: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem; box-shadow: var(--shadow);
 }
-
-.card.warning {
-  border-color: var(--warning-border);
-  background-color: var(--warning-bg);
-}
+.card.warning { border-color: var(--warning-border); background-color: var(--warning-bg); }
+.card.success { border-color: var(--success-border); background-color: var(--success-bg); }
 
 .eyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--primary); margin-bottom: 0.5rem;
 }
+.eyebrow.success { color: var(--success-border); }
 
-h1 {
-  font-size: 1.65rem;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--text);
-  margin: 0 0 0.5rem;
-}
-
-.byline {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  margin: 0;
-}
+h1 { font-size: 1.65rem; font-weight: 700; line-height: 1.25; color: var(--text); margin: 0 0 0.5rem; }
+.byline { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
 
 h2 {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0 0 1.1rem;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin: 0 0 1.1rem; padding-bottom: 4px; border-bottom: 1px solid var(--border);
 }
+h2.warning { color: var(--warning-border); border-bottom-color: var(--warning-border); }
+h2.success { color: var(--success-border); border-bottom-color: var(--success-border); }
 
-h2.warning {
-  color: var(--warning-border);
-  border-bottom-color: var(--warning-border);
-}
-
-p {
-  margin: 0 0 1.1rem;
-  color: var(--text);
-  font-size: 0.97rem;
-}
-
-p:last-child {
-  margin-bottom: 0;
-}
+p { margin: 0 0 1.1rem; color: var(--text); font-size: 0.97rem; }
+p:last-child { margin-bottom: 0; }
 
 .callout {
-  border-left: 3px solid var(--primary);
-  margin: 1.25rem 0;
-  padding: 0.85rem 1.1rem;
-  background: var(--background);
+  border-left: 3px solid var(--primary); margin: 1.25rem 0;
+  padding: 0.85rem 1.1rem; background: var(--background);
   border-radius: 0 var(--radius) var(--radius) 0;
-  font-size: 0.95rem;
-  color: var(--text);
-  line-height: 1.65;
+  font-size: 0.95rem; color: var(--text); line-height: 1.65;
 }
-
 .callout.warning {
   border-left-color: var(--warning-border);
-  background: var(--warning-bg);
-  color: var(--warning-text);
+  background: var(--warning-bg); color: var(--warning-text);
 }
+.callout.success {
+  border-left-color: var(--success-border);
+  background: var(--success-bg); color: var(--success-text);
+}
+:root.dark .callout.warning { color: var(--warning-text); }
+:root.dark .callout.success { color: var(--success-text); }
 
-:root.dark .callout.warning {
-  color: var(--warning-text);
-}
-
-.timeline-item {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-  align-items: flex-start;
-}
+.timeline-item { display: flex; gap: 1rem; margin-bottom: 1.25rem; align-items: flex-start; }
 
 .timeline-marker {
-  flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: var(--background);
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-top: 0.2rem;
+  flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
+  background: var(--background); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-top: 0.2rem;
 }
 
-.timeline-content {
-  flex: 1;
+.timeline-content { flex: 1; }
+.timeline-content strong { display: block; margin-bottom: 0.25rem; color: var(--text); font-size: 0.95rem; }
+.timeline-content p { font-size: 0.9rem; color: var(--text-muted); margin: 0 0 0.35rem; }
+.timeline-content a {
+  color: var(--primary); text-decoration: none;
+  font-size: 0.88rem; font-weight: 600;
 }
+.timeline-content a:hover { text-decoration: underline; }
 
-.timeline-content strong {
-  display: block;
-  margin-bottom: 0.25rem;
-  color: var(--text);
-  font-size: 0.95rem;
-}
+.marketplace-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.85rem; }
 
-.timeline-content p {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin: 0;
+.marketplace-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 0.85rem; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--background);
+  text-decoration: none; color: var(--text);
+  font-size: 0.9rem; font-weight: 600;
+  transition: background 0.15s, border-color 0.15s;
 }
+.marketplace-link:hover { background: var(--border); border-color: var(--primary); }
+.marketplace-link-arrow { color: var(--primary); font-size: 0.85rem; flex-shrink: 0; }
+.marketplace-link-cost { font-size: 0.8rem; font-weight: 400; color: var(--text-muted); margin-left: 0.5rem; }
 
-.cta-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-}
+.cta-group { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.25rem; }
 
 .cta-primary {
-  display: block;
-  width: 100%;
-  padding: 0.9rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-  border-radius: var(--radius);
-  background: var(--primary);
-  color: #fff !important;
-  text-decoration: none;
-  transition: background 0.2s;
-  box-sizing: border-box;
+  display: block; width: 100%; padding: 0.9rem 1.25rem;
+  font-size: 1rem; font-weight: 700; text-align: center;
+  border-radius: var(--radius); background: var(--primary);
+  color: #fff !important; text-decoration: none;
+  transition: background 0.2s; box-sizing: border-box;
 }
-
-.cta-primary:hover {
-  background: var(--primary-hover);
-}
+.cta-primary:hover { background: var(--primary-hover); }
 
 .cta-secondary {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.92rem;
-  font-weight: 600;
-  text-align: center;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  color: var(--text);
-  text-decoration: none;
-  background: transparent;
-  transition: background 0.2s;
-  box-sizing: border-box;
+  display: block; width: 100%; padding: 0.75rem 1.25rem;
+  font-size: 0.92rem; font-weight: 600; text-align: center;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  color: var(--text); text-decoration: none; background: transparent;
+  transition: background 0.2s; box-sizing: border-box;
 }
+.cta-secondary:hover { background: var(--border); }
 
-.cta-secondary:hover {
-  background: var(--border);
-}
+footer { text-align: center; color: var(--text-muted); font-size: 0.88rem; padding: 0 1rem 2rem; }
+footer a { color: var(--primary); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
 
-footer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  padding: 0 1rem 2rem;
-}
-
-footer a {
-  color: var(--primary);
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 </style>
 </head>
 
@@ -360,8 +233,34 @@ html {
       are, what I've done to try to change them, and what I'm considering if they don't.
     </p>
     <p>
-      I'll be direct with you. Because that's how I've always tried to operate with
+      I'll be direct with you — because that's how I've always tried to operate with
       this community, and this moment doesn't call for anything different.
+    </p>
+  </div>
+
+  <!-- ── Social proof ── -->
+  <div class="card success">
+    <div class="eyebrow success">A reason for optimism</div>
+    <h2 class="success">Someone stepped up</h2>
+    <p>
+      During a recent community call, a member did something that hadn't happened
+      before in the entire history of this sustainability effort. She said — publicly,
+      in front of the community — that she didn't understand why others hadn't stepped
+      up. That she finds the Toolbox essential to the project as a whole. And then she
+      committed to sponsoring it through the marketplace at $10 a month.
+    </p>
+    <div class="callout success">
+      $10 a month is a start. More than that, it is proof that the ask is reasonable,
+      that the tools are worth supporting, and that someone in this community is willing
+      to act on that belief rather than assume someone else will handle it.
+    </div>
+    <p>
+      If one person can see it clearly enough to act, others can too. This section
+      exists because social proof matters — and because that moment deserves to be
+      acknowledged rather than quietly absorbed and forgotten.
+    </p>
+    <p>
+      Thank you. You know who you are.
     </p>
   </div>
 
@@ -369,22 +268,22 @@ html {
   <div class="card">
     <h2>What I built, and why I built it</h2>
     <p>
-      Hunter's Toolbox started in June of last year as a single tool: A token importer
-      I built for the executive team because watching people struggle through a tedious
+      Hunter's Toolbox started in June of last year as a single tool — a token importer
+      I built for the support team because watching people struggle through a tedious
       manual process during onboarding felt like a problem I could actually fix. I built
       it quietly, without being asked, and shared it with a handful of people I trusted.
     </p>
     <p>
       It spread on its own from there. People shared it. More people started using it.
-      Eventually I announced it because the community had already found it. And shortly after, 
-      what had started as one widget on a Blogspot sidebar had grown into something
+      Eventually I made it official because the community had already found it — and by
+      then, what had started as one widget on a Blogspot sidebar had grown into something
       worth giving a proper home.
     </p>
     <p>
       I moved it to GitHub Pages, rebuilt it from scratch, and kept adding. The RPC
       switcher came next, battle tested during a real network outage that left members
-      unable to transact. Then the charts, the swap shortcuts, the calculator, the approval scanner, 
-      the mobile fallbacks. The weekly community calls. The guides.
+      unable to transact. Then the approval scanner, the calculator, the charts, the
+      swap shortcuts, the mobile fallbacks. The weekly community calls. The guides.
       All of it built independently, on my own time, out of a genuine belief that this
       community deserves tools built with real care.
     </p>
@@ -399,9 +298,9 @@ html {
   <div class="card">
     <h2>What I've tried</h2>
     <p>
-      I want to be transparent about the fact that this is not the first time I've raised
-      this issue. I've made the case for sustainability in every way I could think of,
-      over an extended period of time. Here is what that has actually looked like:
+      This is not the first time I've raised this issue. I've made the case for
+      sustainability in every way I could think of, over an extended period of time.
+      Here is what that has actually looked like:
     </p>
 
     <div class="timeline-item">
@@ -426,10 +325,10 @@ html {
       <div class="timeline-marker">3</div>
       <div class="timeline-content">
         <strong>Weekly community calls</strong>
-        <p>Hosted every week over Zoom covering community updates, how to use the tools, what has
-        changed, and on multiple occasions, the sustainability issue directly. I
-        walked the community through real world examples of what happens when free
-        infrastructure goes unsupported. I made the stakes as clear as I could.</p>
+        <p>Hosted every week over Zoom — covering how to use the tools, what has
+        changed, and on multiple occasions the sustainability issue directly. I walked
+        the community through real world examples of what happens when free
+        infrastructure goes unsupported.</p>
       </div>
     </div>
 
@@ -437,8 +336,8 @@ html {
       <div class="timeline-marker">4</div>
       <div class="timeline-content">
         <strong>Premium services</strong>
-        <p>I made paid one-on-one support available: Program Analysis and Wallet
-        Security Reviews, as another way for the community to support the work
+        <p>Paid one-on-one support made available — program analysis and wallet
+        security reviews — as another way for the community to support the work
         while getting something specific in return.</p>
       </div>
     </div>
@@ -446,43 +345,66 @@ html {
     <div class="timeline-item">
       <div class="timeline-marker">5</div>
       <div class="timeline-content">
-        <strong>The story page</strong>
-        <p>A dedicated page on this site telling the full origin of the Toolbox,
-        where it came from, how it grew, and what it means to me, so that the
-        people using it every day could understand the human story behind it.</p>
+        <strong>The Crypto Services Directory</strong>
+        <p>A dedicated page on the Toolbox site containing 18 sections of curated
+        links and resources across the crypto and Web3 space — built and maintained
+        alongside everything else, with some affiliate links to help offset costs.</p>
+        <a href="https://hrweb3buttons.github.io/pfbuttons/cryptodirectory.html"
+           target="_blank" rel="noopener noreferrer">
+          View the Crypto Directory →
+        </a>
       </div>
     </div>
 
     <div class="timeline-item">
       <div class="timeline-marker">6</div>
       <div class="timeline-content">
-        <strong>The Public Goods Campaign</strong>
-        <p>A structured series of posts in the Wall of Joy, making the case
-        through analogy, lighthouses, roads, libraries, gardens, bridges, for
-        why free community infrastructure needs more than appreciation to survive.
-        Fourteen posts across three sets, written carefully and spaced deliberately.</p>
+        <strong>The story page</strong>
+        <p>A dedicated page telling the full origin of the Toolbox — where it came
+        from, how it grew, and what it means to me — so that the people using it
+        every day could understand the human story behind it.</p>
       </div>
     </div>
 
     <div class="timeline-item">
       <div class="timeline-marker">7</div>
       <div class="timeline-content">
+        <strong>The Public Goods Campaign</strong>
+        <p>A structured series of posts in the community Telegram making the case
+        through analogy — lighthouses, roads, libraries, gardens, bridges — for
+        why free community infrastructure needs more than appreciation to survive.
+        Fourteen posts across three sets, written carefully and spaced deliberately.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-marker">8</div>
+      <div class="timeline-content">
         <strong>Marketplace listings</strong>
-        <p>Individual sponsorship listings on the community marketplace, breaking
-        the proposed infrastructure costs into specific, reachable monthly asks, the domain,
-        the VPS, the RPC node, the Zoom license, as well as a Cornerstone
-        Sponsorship for anyone wanting to cover everything at once.</p>
+        <p>Individual sponsorship listings on the community marketplace breaking
+        the infrastructure costs into specific, reachable monthly asks — as well
+        as a Cornerstone Sponsorship for anyone wanting to cover everything at once.</p>
+        <a href="https://myjoy.market/product/hunter-rodriguez/fund-the-toolbox-domain"
+           target="_blank" rel="noopener noreferrer">Fund the Toolbox Domain</a><br>
+        <a href="https://myjoy.market/product/hunter-rodriguez/fund-the-toolbox-vps"
+           target="_blank" rel="noopener noreferrer">Fund the Toolbox VPS</a><br>
+        <a href="https://myjoy.market/product/hunter-rodriguez/fund-the-toolbox-rpc-node"
+           target="_blank" rel="noopener noreferrer">Fund the Private RPC Node</a><br>
+        <a href="https://myjoy.market/product/hunter-rodriguez/fund-the-community-zoom-license"
+           target="_blank" rel="noopener noreferrer">Fund the Community Zoom License</a><br>
+        <a href="https://myjoy.market/product/hunter-rodriguez/become-a-toolbox-cornerstone-sponsor"
+           target="_blank" rel="noopener noreferrer">Become a Cornerstone Sponsor</a>
       </div>
     </div>
 
     <p style="margin-top:1.25rem;">
       I've done all of this because I believe the community deserves every opportunity
-      to respond before anything changes. I still believe that. But I want to be
-      honest: The financial response to everything above has been $0. Not a small
-      amount. Nothing.
+      to respond before anything changes. I still believe that. But beyond the recent
+      $10 monthly commitment — which is genuinely appreciated and a meaningful start —
+      the financial response to everything above has been $0.
     </p>
     <p>
-      I'm telling you that not to shame anyone, and not out of bitterness. I'm telling
+      I'm not telling you that to shame anyone, and not out of bitterness. I'm telling
       you because you deserve to know the full picture.
     </p>
   </div>
@@ -509,7 +431,7 @@ html {
     </p>
     <div class="callout">
       I am not at the end of my patience. But I am closer to it than I have ever
-      been, and I think you should know that before you find out in a way that
+      been — and I think you should know that before you find out in a way that
       is less easy to respond to.
     </div>
   </div>
@@ -520,7 +442,7 @@ html {
     <p>
       I want to be careful here, because I am not writing this to be dramatic or to
       issue ultimatums. What I am doing is being honest about where a sustained lack
-      of response leads. Because I think you deserve that honesty now, while there
+      of response leads — because I think you deserve that honesty now, while there
       is still time to change the outcome.
     </p>
     <p>
@@ -530,21 +452,22 @@ html {
       point where I have to make decisions about what I can continue to justify.
     </p>
     <p>
-      I don't want to be the next left-pad, a maintainer who disappears one day
+      I don't want to be the next left-pad — a maintainer who disappears one day
       and leaves the community scrambling. I have been explicit about the risk
       precisely because I want to avoid that outcome. A controlled, communicated
       change is better than a sudden one. But a controlled change may still be
       coming if nothing shifts.
     </p>
     <div class="callout warning">
-      There is more I intend to say on this subject, and I will be saying it soon,
+      There is more I intend to say on this subject, and I will be saying it soon —
       here, on the Toolbox itself, in a way that is harder to miss than anything
       I have done so far. Consider this a heads up.
     </div>
     <p style="margin-top:1.1rem;">
-      If you have been meaning to do something and haven't yet, now is a good time.
+      If you have been meaning to do something and haven't yet — now is a good time.
       Not because of what might happen, but because the tools are worth supporting,
-      and because the window where that support makes the most difference is open right now.
+      and because the window where that support makes the most difference is open
+      right now.
     </p>
   </div>
 
@@ -553,7 +476,7 @@ html {
     <h2>What you can do right now</h2>
     <p>
       If this page has landed with you and you want to do something, here is exactly
-      where to go. I've made it as direct as I can. No hunting around, no ambiguity
+      where to go. I've made it as direct as I can — no hunting around, no ambiguity
       about where contributions end up.
     </p>
 
