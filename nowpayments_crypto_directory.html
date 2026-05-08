@@ -1,0 +1,401 @@
+
+<h2 class="sr-only">NowPayments supported cryptocurrencies grouped by category — searchable reference</h2>
+<style>
+*{box-sizing:border-box;margin:0}
+.top{display:flex;gap:10px;align-items:center;padding:14px 0 10px;flex-wrap:wrap}
+#search{flex:1;min-width:180px}
+.cnt{font-size:13px;color:var(--color-text-secondary);white-space:nowrap}
+.tabs{display:flex;flex-wrap:wrap;gap:5px;padding:0 0 14px}
+.tab{font-size:12px;padding:4px 10px;border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);line-height:1.5}
+.tab.on{background:var(--color-background-primary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:7px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:9px 11px}
+.tk{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.tn{font-size:11px;color:var(--color-text-secondary);margin:2px 0 5px;line-height:1.35}
+.badges{display:flex;flex-wrap:wrap;gap:3px}
+.b{font-size:10px;padding:1px 5px;border-radius:3px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.be{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent}
+.bb{background:var(--color-background-warning);color:var(--color-text-warning);border-color:transparent}
+.bt{background:var(--color-background-danger);color:var(--color-text-danger);border-color:transparent}
+.bs{background:var(--color-background-success);color:var(--color-text-success);border-color:transparent}
+.none{padding:2.5rem;text-align:center;color:var(--color-text-tertiary);font-size:14px}
+.sh{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;padding:14px 0 7px}
+</style>
+
+<div class="top">
+  <input type="text" id="search" placeholder="Search by name or ticker…" oninput="render()">
+  <span class="cnt" id="cnt"></span>
+</div>
+<div class="tabs" id="tabs"></div>
+<div id="out"></div>
+
+<script>
+const G=[
+  {id:'all',label:'All'},
+  {id:'major',label:'Major coins'},
+  {id:'privacy',label:'Privacy'},
+  {id:'stables',label:'Stablecoins'},
+  {id:'layer1',label:'Layer 1'},
+  {id:'layer2',label:'Layer 2 & Scaling'},
+  {id:'defi',label:'DeFi'},
+  {id:'exchange',label:'Exchange tokens'},
+  {id:'gaming',label:'Gaming & NFT'},
+  {id:'meme',label:'Meme coins'},
+  {id:'ai',label:'AI & tech'},
+  {id:'ton',label:'TON ecosystem'},
+  {id:'infra',label:'Other'},
+];
+
+const NC={ETH:'be',BSC:'bb',TRX:'bt',Tron:'bt',Solana:'bs',SOLANA:'bs'};
+function bc(n){return NC[n]||''}
+
+const T=[
+  // MAJOR
+  {n:'Bitcoin',t:'BTC',nets:['Bitcoin'],g:'major'},
+  {n:'Ethereum',t:'ETH',nets:['Ethereum','Linea','ZkSync Era','Arbitrum','Base','BSC'],g:'major'},
+  {n:'Litecoin',t:'LTC',nets:['Litecoin'],g:'major'},
+  {n:'Bitcoin Cash',t:'BCH',nets:['Bitcoin Cash'],g:'major'},
+  {n:'Ripple',t:'XRP',nets:['Ripple'],g:'major'},
+  {n:'Dogecoin',t:'DOGE',nets:['Dogecoin'],g:'major'},
+  {n:'Cardano',t:'ADA',nets:['Cardano'],g:'major'},
+  {n:'Solana',t:'SOL',nets:['Solana'],g:'major'},
+  {n:'Toncoin',t:'TON',nets:['TON'],g:'major'},
+  {n:'Polkadot',t:'DOT',nets:['Polkadot'],g:'major'},
+  {n:'Tron',t:'TRX',nets:['Tron'],g:'major'},
+  {n:'Ethereum Classic',t:'ETC',nets:['ETH Classic'],g:'major'},
+  {n:'EthereumPoW',t:'ETHW',nets:['EthereumPoW'],g:'major'},
+  {n:'Bitcoin SV',t:'BSV',nets:['Bitcoin SV'],g:'major'},
+  {n:'Bitcoin Gold',t:'BTG',nets:['Bitcoin Gold'],g:'major'},
+  {n:'Bitcoin Diamond',t:'BCD',nets:['Bitcoin Diamond'],g:'major'},
+  {n:'Nano',t:'XNO',nets:['Nano'],g:'major'},
+  {n:'Decred',t:'DCR',nets:['Decred'],g:'major'},
+  {n:'Komodo',t:'KMD',nets:['Komodo'],g:'major'},
+  {n:'Groestlcoin',t:'GRS',nets:['Groestlcoin'],g:'major'},
+  {n:'DigiByte',t:'DGB',nets:['DigiByte'],g:'major'},
+  {n:'Lisk',t:'LSK',nets:['Lisk'],g:'major'},
+  {n:'Ark',t:'ARK',nets:['Ark'],g:'major'},
+  {n:'Ravencoin',t:'RVN',nets:['Ravencoin'],g:'major'},
+  {n:'Stratis',t:'STRAX',nets:['Stratis'],g:'major'},
+  {n:'Divi',t:'DIVI',nets:['Divi'],g:'major'},
+  {n:'Kaspa',t:'KAS',nets:['Kaspa'],g:'major'},
+  {n:'eCash',t:'XEC',nets:['eCash'],g:'major'},
+  {n:'Stacks',t:'STX',nets:['Stacks'],g:'major'},
+  {n:'Qtum',t:'QTUM',nets:['Qtum'],g:'major'},
+  {n:'NEO',t:'NEO',nets:['NEO'],g:'major'},
+  {n:'NeoGas',t:'GAS',nets:['NEO'],g:'major'},
+  // PRIVACY
+  {n:'Monero',t:'XMR',nets:['Monero'],g:'privacy'},
+  {n:'Zcash',t:'ZEC',nets:['Zcash'],g:'privacy'},
+  {n:'Dash',t:'DASH',nets:['Dash'],g:'privacy'},
+  {n:'Verge',t:'XVG',nets:['Verge'],g:'privacy'},
+  {n:'Zcoin',t:'XZC',nets:['Zcoin'],g:'privacy'},
+  {n:'Horizen',t:'ZEN',nets:['Horizen'],g:'privacy'},
+  {n:'Pivx',t:'PIVX',nets:['Pivx'],g:'privacy'},
+  {n:'EpicCash',t:'EPIC',nets:['EpicCash'],g:'privacy'},
+  // STABLECOINS
+  {n:'Tether USD',t:'USDT',nets:['ETH','TRX','BSC','Polygon','Solana','TON','AVAX C','NEAR','Algorand','KAVA','Polkadot','Optimism','Arbitrum','opBNB','CELO','Tezos','EOS'],g:'stables'},
+  {n:'USD Coin',t:'USDC',nets:['ETH','KuCoin','Polygon','Solana','BSC','AVAX C','Arbitrum','Optimism','Algorand','Stellar','Base'],g:'stables'},
+  {n:'Binance USD',t:'BUSD',nets:['ETH','BSC','Polygon'],g:'stables'},
+  {n:'DAI',t:'DAI',nets:['ETH','Arbitrum'],g:'stables'},
+  {n:'TrueUSD',t:'TUSD',nets:['ETH','TRX'],g:'stables'},
+  {n:'Paxos Standard',t:'PAX',nets:['ETH'],g:'stables'},
+  {n:'Pax Dollar',t:'USDP',nets:['ETH'],g:'stables'},
+  {n:'Gemini Dollar',t:'GUSD',nets:['ETH'],g:'stables'},
+  {n:'USDD',t:'USDD',nets:['TRX','BSC'],g:'stables'},
+  {n:'USDJ',t:'USDJ',nets:['TRX'],g:'stables'},
+  {n:'TerraUSD',t:'UST',nets:['LUNA'],g:'stables'},
+  {n:'Tether Gold',t:'XAUT',nets:['ETH'],g:'stables'},
+  {n:'EURO Tether',t:'EURT',nets:['ETH'],g:'stables'},
+  {n:'StablR USD',t:'USDR',nets:['ETH'],g:'stables'},
+  {n:'StablR Euro',t:'EURR',nets:['ETH'],g:'stables'},
+  {n:'Ethena USDe',t:'USDE',nets:['ETH'],g:'stables'},
+  {n:'First Digital USD',t:'FDUSD',nets:['ETH','BSC'],g:'stables'},
+  {n:'PayPal USD',t:'PYUSD',nets:['ETH'],g:'stables'},
+  {n:'Celo Dollar',t:'CUSD',nets:['CELO'],g:'stables'},
+  {n:'USDS',t:'USDS',nets:['ETH','Solana'],g:'stables'},
+  {n:'USD Coin Bridged',t:'OPUSDCE',nets:['Optimism'],g:'stables'},
+  {n:'USD Coin Bridged',t:'MATICUSDCE',nets:['Polygon'],g:'stables'},
+  // LAYER 1
+  {n:'Algorand',t:'ALGO',nets:['Algorand'],g:'layer1'},
+  {n:'Cosmos',t:'ATOM',nets:['Cosmos'],g:'layer1'},
+  {n:'Avalanche',t:'AVAX',nets:['AVAX X','AVAX C'],g:'layer1'},
+  {n:'Fantom',t:'FTM',nets:['Fantom','ETH'],g:'layer1'},
+  {n:'Hedera Hashgraph',t:'HBAR',nets:['Hedera'],g:'layer1'},
+  {n:'ICON',t:'ICX',nets:['ICON'],g:'layer1'},
+  {n:'MultiversX',t:'EGLD',nets:['MultiversX','BSC'],g:'layer1'},
+  {n:'Near',t:'NEAR',nets:['Near'],g:'layer1'},
+  {n:'NEM',t:'XEM',nets:['NEM'],g:'layer1'},
+  {n:'Symbol',t:'XYM',nets:['XYM'],g:'layer1'},
+  {n:'Ontology',t:'ONT',nets:['Ontology'],g:'layer1'},
+  {n:'Stellar',t:'XLM',nets:['Stellar'],g:'layer1'},
+  {n:'Tezos',t:'XTZ',nets:['Tezos'],g:'layer1'},
+  {n:'Waves',t:'WAVES',nets:['Waves'],g:'layer1'},
+  {n:'EOS',t:'EOS',nets:['EOS'],g:'layer1'},
+  {n:'VeChain',t:'VET',nets:['VeChain'],g:'layer1'},
+  {n:'Harmony',t:'ONE',nets:['Harmony'],g:'layer1'},
+  {n:'Zilliqa',t:'ZIL',nets:['Zilliqa'],g:'layer1'},
+  {n:'Aptos',t:'APT',nets:['Aptos'],g:'layer1'},
+  {n:'Sui',t:'SUI',nets:['Sui'],g:'layer1'},
+  {n:'Sei',t:'SEI',nets:['Sei'],g:'layer1'},
+  {n:'Berachain',t:'BERA',nets:['Berachain'],g:'layer1'},
+  {n:'Kaia',t:'KAIA',nets:['Kaia'],g:'layer1'},
+  {n:'Sonic',t:'S',nets:['Sonic'],g:'layer1'},
+  {n:'Conflux',t:'CFX',nets:['Conflux','BSC'],g:'layer1'},
+  {n:'Casper',t:'CSPR',nets:['Casper'],g:'layer1'},
+  {n:'Starknet',t:'STRK',nets:['Starknet'],g:'layer1'},
+  {n:'Injective',t:'INJ',nets:['Injective','ETH','BSC'],g:'layer1'},
+  {n:'XDC Network',t:'XDC',nets:['XDC'],g:'layer1'},
+  {n:'IoTeX',t:'IOTX',nets:['IoTeX'],g:'layer1'},
+  {n:'Theta Network',t:'THETA',nets:['Theta'],g:'layer1'},
+  {n:'Theta Fuel',t:'TFUEL',nets:['Theta'],g:'layer1'},
+  {n:'IOTA',t:'IOTA',nets:['IOTA'],g:'layer1'},
+  {n:'Klaytn',t:'KLAY',nets:['Klaytn'],g:'layer1'},
+  {n:'Terra Classic',t:'LUNC',nets:['Terra Classic'],g:'layer1'},
+  {n:'Terra',t:'LUNA',nets:['Terra'],g:'layer1'},
+  {n:'Aeternity',t:'AE',nets:['Aeternity'],g:'layer1'},
+  {n:'TomoChain',t:'TOMO',nets:['ETH'],g:'layer1'},
+  {n:'Velas',t:'VLX',nets:['Velas','BSC'],g:'layer1'},
+  {n:'Fasttoken',t:'FTN',nets:['Bahamut'],g:'layer1'},
+  {n:'WEMIX',t:'WEMIX',nets:['WEMIX'],g:'layer1'},
+  {n:'Syscoin EVM',t:'SYS',nets:['Syscoin'],g:'layer1'},
+  {n:'Bitgert',t:'BRISE',nets:['Bitgert','BSC'],g:'layer1'},
+  {n:'Solar Network',t:'SXP',nets:['Solar'],g:'layer1'},
+  {n:'QIE Blockchain',t:'QIE',nets:['QIE'],g:'layer1'},
+  // LAYER 2
+  {n:'Polygon',t:'MATIC',nets:['ETH','Polygon'],g:'layer2'},
+  {n:'Arbitrum',t:'ARB',nets:['Arbitrum'],g:'layer2'},
+  {n:'zkSync',t:'ZK',nets:['zkSync Era'],g:'layer2'},
+  {n:'Boba Network',t:'BOBA',nets:['ETH'],g:'layer2'},
+  {n:'Pulsechain',t:'PLS',nets:['Pulse'],g:'layer2'},
+  // DEFI
+  {n:'Uniswap',t:'UNI',nets:['ETH'],g:'defi'},
+  {n:'Chainlink',t:'LINK',nets:['ETH'],g:'defi'},
+  {n:'Aave',t:'AAVE',nets:['ETH'],g:'defi'},
+  {n:'yearn.finance',t:'YFI',nets:['ETH'],g:'defi'},
+  {n:'The Graph',t:'GRT',nets:['ETH'],g:'defi'},
+  {n:'1inch Network',t:'1INCH',nets:['ETH','BSC'],g:'defi'},
+  {n:'Kyber Network Crystal',t:'KNC',nets:['ETH'],g:'defi'},
+  {n:'Ocean Protocol',t:'OCEAN',nets:['ETH'],g:'defi'},
+  {n:'Augur',t:'REP',nets:['ETH'],g:'defi'},
+  {n:'DAO Maker',t:'DAO',nets:['ETH'],g:'defi'},
+  {n:'THORChain',t:'RUNE',nets:['THORChain'],g:'defi'},
+  {n:'GMX',t:'GMX',nets:['Arbitrum','AVAX C'],g:'defi'},
+  {n:'Bone ShibaSwap',t:'BONE',nets:['ETH'],g:'defi'},
+  {n:'Cult DAO',t:'CULT',nets:['ETH'],g:'defi'},
+  {n:'Basic Attention Token',t:'BAT',nets:['ETH'],g:'defi'},
+  {n:'LayerZero',t:'ZRO',nets:['ETH','Arbitrum'],g:'defi'},
+  {n:'Cartesi',t:'CTSI',nets:['ETH'],g:'defi'},
+  {n:'Banana Gun',t:'BANANA',nets:['ETH'],g:'defi'},
+  {n:'Frontier',t:'FRONT',nets:['ETH'],g:'defi'},
+  {n:'Hyperliquid',t:'HYPE',nets:['HyperEVM'],g:'defi'},
+  {n:'Beefy',t:'BIFI',nets:['ETH'],g:'defi'},
+  {n:'OMG Network',t:'OMG',nets:['ETH'],g:'defi'},
+  // EXCHANGE
+  {n:'Binance Coin',t:'BNB',nets:['BSC'],g:'exchange'},
+  {n:'OKB',t:'OKB',nets:['ETH'],g:'exchange'},
+  {n:'Huobi Token',t:'HT',nets:['ETH'],g:'exchange'},
+  {n:'Gatechain Token',t:'GT',nets:['ETH'],g:'exchange'},
+  {n:'PancakeSwap',t:'CAKE',nets:['BSC'],g:'exchange'},
+  {n:'MXC Exchange',t:'MX',nets:['ETH'],g:'exchange'},
+  {n:'FTX Token',t:'FTT',nets:['ETH'],g:'exchange'},
+  {n:'Klever',t:'KLV',nets:['KLV','TRX'],g:'exchange'},
+  {n:'Cronos',t:'CRO',nets:['ETH','Cosmos'],g:'exchange'},
+  // GAMING
+  {n:'Axie Infinity',t:'AXS',nets:['ETH'],g:'gaming'},
+  {n:'The Sandbox',t:'SAND',nets:['ETH'],g:'gaming'},
+  {n:'Decentraland',t:'MANA',nets:['ETH'],g:'gaming'},
+  {n:'Enjin Coin',t:'ENJ',nets:['ETH'],g:'gaming'},
+  {n:'GALA',t:'GALA',nets:['ETH'],g:'gaming'},
+  {n:'Illuvium',t:'ILV',nets:['ETH'],g:'gaming'},
+  {n:'Star Atlas',t:'ATLAS',nets:['Solana'],g:'gaming'},
+  {n:'Sidus',t:'SIDUS',nets:['ETH'],g:'gaming'},
+  {n:'DGI Game',t:'DGI',nets:['ETH'],g:'gaming'},
+  {n:'Bazed Games',t:'BAZED',nets:['ETH'],g:'gaming'},
+  {n:'RXCGames',t:'RXCG',nets:['BSC'],g:'gaming'},
+  {n:'NFTb',t:'NFTB',nets:['BSC'],g:'gaming'},
+  {n:'GG Token',t:'GGTKN',nets:['BSC'],g:'gaming'},
+  {n:'Radio Caca',t:'RACA',nets:['BSC'],g:'gaming'},
+  {n:'DTravel',t:'TRVL',nets:['ETH'],g:'gaming'},
+  {n:'FUNToken',t:'FUN',nets:['ETH'],g:'gaming'},
+  {n:'Netvrk',t:'NETVR',nets:['ETH'],g:'gaming'},
+  {n:'JetTon Games',t:'JETTON',nets:['TON'],g:'gaming'},
+  {n:'OM',t:'OM',nets:['ETH'],g:'gaming'},
+  {n:'SUPER',t:'SUPER',nets:['ETH'],g:'gaming'},
+  {n:'Chiliz',t:'CHZ',nets:['ETH'],g:'gaming'},
+  {n:'Tokocrypto',t:'TKO',nets:['BSC'],g:'gaming'},
+  {n:'ApeCoin',t:'APE',nets:['ETH'],g:'gaming'},
+  {n:'Step App',t:'FITFI',nets:['AVAX C'],g:'gaming'},
+  // MEME
+  {n:'Shiba Inu',t:'SHIB',nets:['ETH','BSC'],g:'meme'},
+  {n:'Floki',t:'FLOKI',nets:['ETH','BSC'],g:'meme'},
+  {n:'Pepe',t:'PEPE',nets:['ETH'],g:'meme'},
+  {n:'Baby Doge Coin',t:'BABYDOGE',nets:['BSC'],g:'meme'},
+  {n:'Doge Killer',t:'LEASH',nets:['ETH'],g:'meme'},
+  {n:'HOGE Finance',t:'HOGE',nets:['ETH'],g:'meme'},
+  {n:'Kishu Inu',t:'KISHU',nets:['ETH'],g:'meme'},
+  {n:'Keanu Inu',t:'KEANU',nets:['ETH'],g:'meme'},
+  {n:'Kiba Inu',t:'KIBA',nets:['ETH','BSC'],g:'meme'},
+  {n:'RichQuack',t:'QUACK',nets:['BSC'],g:'meme'},
+  {n:'Volt Inu V3',t:'VOLT',nets:['BSC'],g:'meme'},
+  {n:'Poodl Token',t:'POODL',nets:['BSC'],g:'meme'},
+  {n:'Pika',t:'PIKA',nets:['ETH'],g:'meme'},
+  {n:'PITBULL',t:'PIT',nets:['BSC'],g:'meme'},
+  {n:'Mog Coin',t:'MOG',nets:['ETH','Base'],g:'meme'},
+  {n:'cat in a dogs world',t:'MEW',nets:['Solana'],g:'meme'},
+  {n:'Ponke',t:'PONKE',nets:['Solana'],g:'meme'},
+  {n:'Scrat',t:'SCRAT',nets:['Solana'],g:'meme'},
+  {n:'Peng',t:'PENG',nets:['Solana'],g:'meme'},
+  {n:'Dogs',t:'DOGS',nets:['TON'],g:'meme'},
+  {n:'Cats',t:'CATS',nets:['TON'],g:'meme'},
+  {n:'Snek',t:'SNEK',nets:['Cardano'],g:'meme'},
+  {n:'Banana Task Force Ape',t:'BTFA',nets:['ETH'],g:'meme'},
+  {n:'Landwolf',t:'WOLF',nets:['ETH'],g:'meme'},
+  {n:'DogeMoon',t:'DGMOON',nets:['BSC'],g:'meme'},
+  {n:'Neiro Ethereum',t:'NEIROETH',nets:['ETH'],g:'meme'},
+  {n:'PeiPei',t:'PEIPEI',nets:['ETH'],g:'meme'},
+  {n:'pepe in a memes world',t:'PEW',nets:['ETH'],g:'meme'},
+  {n:'Robo Inu Finance',t:'RBIF',nets:['ETH'],g:'meme'},
+  {n:'FEG Token',t:'FEG',nets:['ETH'],g:'meme'},
+  {n:'OFFICIAL TRUMP',t:'TRUMP',nets:['Solana'],g:'meme'},
+  {n:'Daddy Tate',t:'DADDY',nets:['Solana'],g:'meme'},
+  {n:'Myro',t:'MYRO',nets:['Solana'],g:'meme'},
+  {n:'NEVER',t:'NEVER',nets:['Solana'],g:'meme'},
+  {n:'DinoLFG',t:'DINO',nets:['ETH'],g:'meme'},
+  {n:'Buff Doge Coin',t:'DOGECOIN',nets:['BSC'],g:'meme'},
+  // AI
+  {n:'Solidus Ai Tech',t:'AITECH',nets:['BSC'],g:'ai'},
+  {n:'ChainGPT',t:'CGPT',nets:['ETH','BSC'],g:'ai'},
+  {n:'LinqAI',t:'LNQ',nets:['ETH'],g:'ai'},
+  {n:'Bad Idea AI',t:'BAD',nets:['ETH'],g:'ai'},
+  {n:'VPS AI',t:'VPS',nets:['ETH'],g:'ai'},
+  {n:'Not Financial Advice',t:'NFAI',nets:['ETH'],g:'ai'},
+  {n:'Sensay',t:'SNSY',nets:['ETH'],g:'ai'},
+  {n:'Rejuve.AI',t:'RJV',nets:['ETH','BSC'],g:'ai'},
+  {n:'Newton Network',t:'NEWT',nets:['ETH'],g:'ai'},
+  // TON
+  {n:'X Empire',t:'X',nets:['TON'],g:'ton'},
+  {n:'Memhash',t:'MEMHASH',nets:['TON'],g:'ton'},
+  {n:'Major',t:'MAJOR',nets:['TON'],g:'ton'},
+  {n:'Hamster Combat',t:'HMSTR',nets:['TON'],g:'ton'},
+  {n:'Notcoin',t:'NOT',nets:['TON'],g:'ton'},
+  {n:'TON Station',t:'SOON',nets:['TON'],g:'ton'},
+  {n:'Catizen',t:'CATI',nets:['TON'],g:'ton'},
+  {n:'NikolAI',t:'NIKO',nets:['TON'],g:'ton'},
+  // OTHER / INFRA
+  {n:'XYO Network',t:'XYO',nets:['ETH'],g:'infra'},
+  {n:'Unmarshal',t:'MARSH',nets:['BSC'],g:'infra'},
+  {n:'ARPA Chain',t:'ARPA',nets:['ETH','BSC'],g:'infra'},
+  {n:'ChainSwap',t:'CSWAP',nets:['ETH'],g:'infra'},
+  {n:'Bridge Oracle',t:'BRG',nets:['BSC'],g:'infra'},
+  {n:'Seedify.fund',t:'SFUND',nets:['BSC'],g:'infra'},
+  {n:'STP Network',t:'STPT',nets:['ETH'],g:'infra'},
+  {n:'Space ID',t:'SPACE-ID',nets:['ETH','BSC'],g:'infra'},
+  {n:'Civic',t:'CVC',nets:['ETH'],g:'infra'},
+  {n:'XCAD Network',t:'XCAD',nets:['ETH'],g:'infra'},
+  {n:'AVNRich',t:'AVN',nets:['BSC'],g:'infra'},
+  {n:'Streakk',t:'STKK',nets:['BSC'],g:'infra'},
+  {n:'Zentry',t:'ZENT',nets:['ETH'],g:'infra'},
+  {n:'stZENT',t:'STZENT',nets:['ETH'],g:'infra'},
+  {n:'AWE Network',t:'AWE',nets:['Base'],g:'infra'},
+  {n:'BeFi Labs',t:'BEFI',nets:['ETH'],g:'infra'},
+  {n:'Launchblock.com',t:'LBP',nets:['ETH'],g:'infra'},
+  {n:'Pullix',t:'PLX',nets:['ETH'],g:'infra'},
+  {n:'Lingo',t:'LINGO',nets:['Base'],g:'infra'},
+  {n:'Keeta',t:'KTA',nets:['Base'],g:'infra'},
+  {n:'IPMB Token',t:'IPMB',nets:['Polygon'],g:'infra'},
+  {n:'Velo',t:'VELO',nets:['BSC'],g:'infra'},
+  {n:'AVA',t:'AVA2',nets:['ETH','BSC'],g:'infra'},
+  {n:'Aster',t:'ASTER',nets:['BSC'],g:'infra'},
+  {n:'Galaxy Heroes Coin',t:'GHC',nets:['BSC'],g:'infra'},
+  {n:'Gafa',t:'GAFA',nets:['BSC'],g:'infra'},
+  {n:'XCUR',t:'XCUR',nets:['ETH'],g:'infra'},
+  {n:'VIB',t:'VIB',nets:['ETH'],g:'infra'},
+  {n:'SRK',t:'SRK',nets:['ETH'],g:'infra'},
+  {n:'CHR',t:'CHR',nets:['ETH'],g:'infra'},
+  {n:'TenUp',t:'TUP',nets:['ETH'],g:'infra'},
+  {n:'Telos',t:'TLOS',nets:['ETH','BSC'],g:'infra'},
+  {n:'Gari',t:'GARI',nets:['Solana'],g:'infra'},
+  {n:'Onigiri Neko',t:'ONIGI',nets:['ETH'],g:'infra'},
+  {n:'LGCY Network',t:'LGCY',nets:['ETH'],g:'infra'},
+  {n:'Pundi-X',t:'NPXS',nets:['ETH'],g:'infra'},
+  {n:'WinLink',t:'WIN',nets:['TRX'],g:'infra'},
+  {n:'Sun',t:'SUN',nets:['TRX'],g:'infra'},
+  {n:'SUNDOG',t:'SUNDOG',nets:['TRX'],g:'infra'},
+  {n:'Just',t:'JST',nets:['TRX'],g:'infra'},
+  {n:'JasmyCoin',t:'JASMY',nets:['ETH'],g:'infra'},
+  {n:'CentricSwap',t:'CNS',nets:['BSC'],g:'infra'},
+  {n:'Shopping.io',t:'SPI',nets:['ETH'],g:'infra'},
+  {n:'Shopping.io Gov.',t:'GSPI',nets:['BSC'],g:'infra'},
+  {n:'Poolz Finance',t:'POOLZ',nets:['BSC'],g:'infra'},
+  {n:'Poolz Finance',t:'POOLX',nets:['BSC'],g:'infra'},
+  {n:'Fluffy Coin',t:'FLUF',nets:['BSC'],g:'infra'},
+  {n:'NWC',t:'NWC',nets:['ETH'],g:'infra'},
+  {n:'Bella Protocol',t:'BEL',nets:['ETH','BSC'],g:'infra'},
+  {n:'Coin98',t:'C98',nets:['BSC'],g:'infra'},
+  {n:'MCO',t:'MCO',nets:['ETH'],g:'infra'},
+  {n:'DigixDAO',t:'DGD',nets:['ETH'],g:'infra'},
+  {n:'Tael',t:'WABI',nets:['ETH'],g:'infra'},
+  {n:'Project Galaxy',t:'GAL',nets:['BSC'],g:'infra'},
+  {n:'Rain Coin',t:'RAINCOIN',nets:['Polygon'],g:'infra'},
+  {n:'Somnia',t:'SOMI',nets:['BSC'],g:'infra'},
+  {n:'Gravity',t:'G',nets:['ETH','BSC'],g:'infra'},
+  {n:'TechTrees',t:'TTC',nets:['BSC'],g:'infra'},
+  {n:'Ariva',t:'ARV',nets:['BSC'],g:'infra'},
+  {n:'Hot Cross',t:'HOTCROSS',nets:['BSC'],g:'infra'},
+  {n:'Zebec Protocol',t:'ZBC',nets:['Solana'],g:'infra'},
+  {n:'Verse',t:'VERSE',nets:['ETH'],g:'infra'},
+  {n:'Wrapped Bitcoin',t:'WBTC',nets:['Polygon'],g:'infra'},
+  {n:'GrapeCoin',t:'GRAPE',nets:['BSC'],g:'infra'},
+  {n:'Coin98',t:'C98',nets:['BSC'],g:'infra'},
+  {n:'USD.AI',t:'CHIP',nets:['Arbitrum'],g:'infra'},
+];
+
+// dedupe
+const seen=new Set();
+const TOKENS=T.filter(x=>{const k=x.t+x.g;if(seen.has(k))return false;seen.add(k);return true});
+
+let active='all';
+
+function render(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const filtered=TOKENS.filter(x=>{
+    const gOk=active==='all'||x.g===active;
+    const sOk=!q||x.n.toLowerCase().includes(q)||x.t.toLowerCase().includes(q);
+    return gOk&&sOk;
+  });
+  document.getElementById('cnt').textContent=filtered.length+' tokens';
+
+  if(!filtered.length){document.getElementById('out').innerHTML='<div class="none">No tokens found</div>';return}
+
+  if(active==='all'&&!q){
+    let html='';
+    G.slice(1).forEach(grp=>{
+      const items=filtered.filter(x=>x.g===grp.id);
+      if(!items.length)return;
+      html+=`<div class="sh">${grp.label} <span style="font-weight:400;color:var(--color-text-tertiary)">(${items.length})</span></div>`;
+      html+='<div class="grid">'+items.map(card).join('')+'</div>';
+    });
+    document.getElementById('out').innerHTML=html;
+  } else {
+    document.getElementById('out').innerHTML='<div class="grid">'+filtered.map(card).join('')+'</div>';
+  }
+}
+
+function card(x){
+  const badges=x.nets.map(n=>`<span class="b ${bc(n)}">${n}</span>`).join('');
+  return `<div class="card"><div class="tk">${x.t}</div><div class="tn">${x.n}</div><div class="badges">${badges}</div></div>`;
+}
+
+function buildTabs(){
+  const counts={};
+  TOKENS.forEach(x=>{counts[x.g]=(counts[x.g]||0)+1});
+  const el=document.getElementById('tabs');
+  el.innerHTML=G.map(g=>{
+    const c=g.id==='all'?TOKENS.length:(counts[g.id]||0);
+    return `<button class="tab${g.id===active?' on':''}" onclick="setG('${g.id}')">${g.label} <span style="opacity:.6">${c}</span></button>`;
+  }).join('');
+}
+
+function setG(id){active=id;buildTabs();render()}
+buildTabs();render();
+</script>
