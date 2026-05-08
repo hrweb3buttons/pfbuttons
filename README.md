@@ -864,10 +864,117 @@ button.rpc-active {
     display: block;
   }
 }    
+
+    /* ── Sustainability Banner ── */
+ 
+#sustainability-banner {
+  width: 100%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 1.25rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10001;
+}
+ 
+:root.dark #sustainability-banner {
+  background: #0a2a5e;
+  border-bottom: 1px solid var(--border);
+}
+ 
+#sustainability-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+ 
+#sustainability-banner-text::before {
+  content: "⚠";
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+ 
+#sustainability-banner-link {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+ 
+#sustainability-banner-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+ 
+#sustainability-banner-link:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+ 
+#sustainability-banner-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+ 
+#sustainability-banner-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+ 
+#sustainability-banner-close:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+ 
+/* Push the fixed header down to account for banner height */
+#wallet-connect {
+  top: calc(16px + var(--banner-height, 0px));
+  transition: top 0.2s ease;
+}
+ 
+#site-nav {
+  top: calc(90px + var(--banner-height, 0px));
+  transition: top 0.2s ease;
+}
   </style>
 </head>
 
 <body>
+  <div id="sustainability-banner" role="alert" aria-label="Important message about the Toolbox">
+  <span id="sustainability-banner-text">
+    A message about the future of these tools
+  </span>
+  <a id="sustainability-banner-link"
+     href="where-things-stand.html">
+    Read more
+  </a>
+  <button id="sustainability-banner-close"
+          type="button"
+          aria-label="Dismiss banner">✕</button>
+</div>
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
 <nav class="skip-nav sr-only-focusable" aria-label="Quick navigation" role="navigation">
@@ -1411,7 +1518,7 @@ button.rpc-active {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.3.1
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.3.3
   </footer>
 
   <script>
@@ -2671,50 +2778,113 @@ async function fetchPrices() {
     console.error("BNB price fetch failed:", err);
     tokenPrices.BNB = null;
   }
-  updatePriceDisplay();
 }
 
-async function fetchDexPrices() {
+    async function fetchDexScreenerFallback(missingSymbols) {
   await Promise.allSettled(
-    Object.entries(DEX_TOKENS).map(async ([symbol, tokenAddress]) => {
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 7000);
+        const timeout = setTimeout(() => controller.abort(), 8000);
         const res = await fetch(
-          "https://api.geckoterminal.com/api/v2/networks/bsc/tokens/" + tokenAddress,
-          {
-            signal: controller.signal,
-            headers: { "Accept": "application/json" }
-          }
+          `https://api.dexscreener.com/latest/dex/tokens/${address}`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
         );
         clearTimeout(timeout);
-
-        if (!res.ok) {
-          console.warn("GeckoTerminal non-OK for", symbol, res.status);
-          return;
-        }
-
+        if (!res.ok) return;
         const data = await res.json();
-        const priceStr = data?.data?.attributes?.price_usd;
-
-        if (!priceStr) {
-          console.warn("GeckoTerminal: no price_usd for", symbol);
-          return;
-        }
-
-        const price = parseFloat(priceStr);
+        const pairs = (data?.pairs || []).filter(p => p.chainId === "bsc");
+        if (!pairs.length) return;
+        // Use the pair with the highest liquidity
+        pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
+        const price = parseFloat(pairs[0].priceUsd);
         if (!isNaN(price) && price > 0) {
           tokenPrices[symbol] = price;
-        } else {
-          console.warn("GeckoTerminal: invalid price for", symbol, priceStr);
         }
       } catch (err) {
-        console.error("GeckoTerminal fetch failed for", symbol, err);
+        console.warn(`DexScreener fallback failed for ${symbol}:`, err);
       }
     })
   );
-  updatePriceDisplay();
 }
+
+async function fetchDexPrices() {
+  const addresses = Object.values(DEX_TOKENS).join(",");
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/multi/${addresses}`,
+      { signal: controller.signal, headers: { Accept: "application/json" } }
+    );
+    clearTimeout(timeout);
+    if (!res.ok) {
+      console.warn("GeckoTerminal batch fetch failed:", res.status);
+    } else {
+      const data = await res.json();
+      const items = data?.data;
+      if (Array.isArray(items)) {
+        items.forEach(token => {
+          const addr  = token?.attributes?.address?.toLowerCase();
+          const price = parseFloat(token?.attributes?.price_usd);
+          if (!addr || isNaN(price) || price <= 0) return;
+          for (const [symbol, tokenAddr] of Object.entries(DEX_TOKENS)) {
+            if (tokenAddr.toLowerCase() === addr) {
+              tokenPrices[symbol] = price;
+              break;
+            }
+          }
+        });
+      }
+    }
+  } catch (err) {
+    console.error("GeckoTerminal batch fetch failed:", err);
+  }
+
+ // Fallback 1: GeckoTerminal pools endpoint
+  const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (missing.length) await fetchGeckoTerminalPoolsFallback(missing);
+
+  // Fallback 2: DexScreener (for anything still missing)
+  const stillMissing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
+  if (stillMissing.length) await fetchDexScreenerFallback(stillMissing);
+}
+
+    async function fetchGeckoTerminalPoolsFallback(missingSymbols) {
+  await Promise.allSettled(
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/${address}/pools`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
+        );
+        clearTimeout(timeout);
+        if (!res.ok) return;
+        const data = await res.json();
+        const pools = data?.data;
+        if (!Array.isArray(pools) || !pools.length) return;
+        // Use the pool with the highest liquidity
+        pools.sort((a, b) =>
+          parseFloat(b.attributes?.reserve_in_usd ?? 0) -
+          parseFloat(a.attributes?.reserve_in_usd ?? 0)
+        );
+        const price = parseFloat(pools[0].attributes?.token_price_usd);
+        if (!isNaN(price) && price > 0) {
+          tokenPrices[symbol] = price;
+        }
+      } catch (err) {
+        console.warn(`GeckoTerminal pools fallback failed for ${symbol}:`, err);
+      }
+    })
+  );
+}
+
 
 const connectBtn = document.getElementById("connectWallet");
 
@@ -2757,8 +2927,7 @@ if (donateJOYBtn) {
 }
 
 fetchPrices();
-fetchDexPrices();
-
+fetchDexPrices().then(updatePriceDisplay);
 /* =============================================
    WALLET TABS — Add Tokens card
    ============================================= */
@@ -3249,7 +3418,49 @@ if (calcUsdtAmtInput) {
   sanitizeInputField(calcUsdtAmtInput);
   formatOnBlur(calcUsdtAmtInput);
 }
-    
+
+    (function () {
+  const BANNER_VERSION = "v1";
+  const STORAGE_KEY    = "ht_banner_dismissed_" + BANNER_VERSION;
+  const DISMISS_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+ 
+  const banner    = document.getElementById("sustainability-banner");
+  const closeBtn  = document.getElementById("sustainability-banner-close");
+ 
+  if (!banner) return;
+ 
+  function isDismissed() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return false;
+    return (Date.now() - parseInt(stored, 10)) < DISMISS_DURATION_MS;
+  }
+ 
+  function updateHeaderOffset() {
+    const height = banner.hasAttribute("hidden") ? 0 : banner.offsetHeight;
+    document.documentElement.style.setProperty("--banner-height", height + "px");
+  }
+ 
+  function closeBanner() {
+    localStorage.setItem(STORAGE_KEY, String(Date.now()));
+    banner.setAttribute("hidden", "");
+    banner.style.display = "none";
+    document.documentElement.style.setProperty("--banner-height", "0px");
+  }
+ 
+  if (isDismissed()) {
+    banner.setAttribute("hidden", "");
+    banner.style.display = "none";
+  } else {
+    updateHeaderOffset();
+  }
+ 
+  closeBtn.addEventListener("click", closeBanner);
+ 
+  // Recalculate offset if window resizes and banner wraps
+  window.addEventListener("resize", () => {
+    if (!banner.hasAttribute("hidden")) updateHeaderOffset();
+  });
+})();
   </script>
     <div id="announcement-region" 
      class="sr-only" 
