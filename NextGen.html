@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline';
+    connect-src 'self' https://bsc-testnet-dataseed.bnbchain.org;
+    img-src 'self' data:;
+    style-src 'self' 'unsafe-inline'">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NextGen Testnet Setup — Hunter's Toolbox</title>
+  <meta name="description" content="Set up your MetaMask wallet to interact with the NextGen token on the BNB Smart Chain Testnet.">
+
+  <style>
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      z-index: 10000;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 0 0 var(--radius) var(--radius);
+      transition: top 0.2s ease;
+      border: 2px solid var(--focus-ring);
+    }
+
+    .skip-link:focus {
+      top: 0;
+      outline: none;
+    }
+
+    main:focus {
+      outline: none;
+    }
+
+    :root {
+      --primary: #004aab;
+      --primary-hover: #00357a;
+      --background: #f8f9fa;
+      --text: #1a1a1b;
+      --text-muted: #454545;
+      --card-bg: #ffffff;
+      --border: #b0b5bb;
+      --radius: 12px;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      --focus-ring: #ff9500;
+      --error: #b00020;
+    }
+
+    :root.dark {
+      --primary: #a3d1ff;
+      --primary-hover: #cce4ff;
+      --background: #0f141a;
+      --text: #f0f4f8;
+      --text-muted: #b0b8c4;
+      --card-bg: #151b23;
+      --border: #3e4c5f;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      --error: #ff6b6b;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    h1, h2 {
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.02rem;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    :root:not(.dark) button {
+      color: #ffffff;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    main {
+      width: 100%;
+      max-width: 720px;
+      margin: 2rem auto;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 2rem 0;
+    }
+
+    .notify {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 99999;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    #wallet-connect {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #site-nav {
+      position: fixed;
+      top: 90px;
+      left: 16px;
+      z-index: 9999;
+    }
+
+    #pageSelector {
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: var(--card-bg);
+      color: var(--text);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* ── Sustainability Banner ── */
+    #sustainability-banner {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.65rem 1.25rem;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 10001;
+    }
+
+    :root.dark #sustainability-banner {
+      background: #0a2a5e;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #sustainability-banner-text {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      flex: 1;
+      min-width: 0;
+    }
+
+    #sustainability-banner-text::before {
+      content: "⚠";
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    #sustainability-banner-link {
+      color: #fff;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    #sustainability-banner-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    #sustainability-banner-link:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    #sustainability-banner-close {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0.2rem 0.4rem;
+      cursor: pointer;
+      border-radius: 6px;
+      flex-shrink: 0;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    #sustainability-banner-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    #sustainability-banner-close:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    #wallet-connect {
+      top: calc(16px + var(--banner-height, 0px));
+      transition: top 0.2s ease;
+    }
+
+    #site-nav {
+      top: calc(90px + var(--banner-height, 0px));
+      transition: top 0.2s ease;
+    }
+
+    /* ── Network detail box ── */
+    .network-detail-box {
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    .network-detail-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .network-detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .network-detail-label {
+      font-weight: 700;
+      min-width: 9rem;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .network-detail-value {
+      flex: 1;
+      font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+    }
+
+    .copy-inline-btn {
+      flex-shrink: 0;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 8px;
+      background: var(--card-bg) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border);
+    }
+
+    .copy-inline-btn:hover {
+      background: var(--border) !important;
+    }
+
+    :root.dark .copy-inline-btn:hover {
+      background: rgba(255,255,255,0.08) !important;
+    }
+
+    /* ── Step list ── */
+    .step-list {
+      padding-left: 1.25rem;
+      margin: 0.75rem 0 0;
+    }
+
+    .step-list li {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    /* ── Info note box ── */
+    .info-note {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      background: var(--background);
+      color: var(--text-muted);
+    }
+
+    /* ── Section divider ── */
+    .section-action {
+      margin-top: 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      #wallet-connect {
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 16px;
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        z-index: 9999;
+      }
+
+      #site-nav {
+        position: static;
+        padding: 10px 16px;
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+      }
+
+      #pageSelector {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      main {
+        margin-top: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sustainability-banner" role="alert" aria-label="Important message about the Toolbox">
+    <span id="sustainability-banner-text">
+      A message about the future of these tools
+    </span>
+    <a id="sustainability-banner-link" href="where-things-stand.html">Read more</a>
+    <button id="sustainability-banner-close" type="button" aria-label="Dismiss banner">✕</button>
+  </div>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header id="wallet-connect" aria-label="Site controls">
+    <div id="controlButtons">
+      <button id="themeToggle">Dark mode</button>
+    </div>
+  </header>
+
+  <nav id="site-nav" aria-label="Site navigation">
+    <label for="pageSelector" class="sr-only">Page navigation</label>
+    <select id="pageSelector">
+      <option value="">Navigate</option>
+      <option value="index.html">Main Tools</option>
+      <option value="donations.html">Donation Options</option>
+      <option value="story.html">Story</option>
+      <option value="sponsors.html">Toolbox Sponsors</option>
+      <option value="cryptodirectory.html">Crypto Directory</option>
+      <option value="lite.html">Lite Version</option>
+      <option value="terms.html">Terms of Use</option>
+      <option value="privacy.html">Privacy Policy</option>
+    </select>
+  </nav>
+
+  <main id="main-content" tabindex="-1" aria-label="Main content">
+    <div class="container">
+
+      <!-- Intro -->
+      <section class="card" id="home">
+        <h1>NextGen Testnet Setup</h1>
+        <p>Use these tools to add the BNB Smart Chain Testnet to your MetaMask wallet and import the NextGen (<strong>PFNG</strong>) test token.</p>
+        <p>The testnet is a safe environment where you can experiment without using real funds. The PFNG token here has no real monetary value.</p>
+      </section>
+
+      <!-- Step 1: Add Testnet Network -->
+      <section class="card" id="add-testnet">
+        <h2>Step 1 — Add BNB Smart Chain Testnet</h2>
+        <p>This will add the BNB Smart Chain Testnet network to your MetaMask. You will need it before you can interact with the NextGen token.</p>
+
+        <!-- Desktop view -->
+        <div id="testnet-desktop">
+          <div class="section-action">
+            <button id="addTestnetBtn" type="button">Add BNB Smart Chain Testnet</button>
+          </div>
+          <div class="info-note">
+            MetaMask will prompt you to approve adding the network. Once added, you may need to switch to it manually from MetaMask's network selector.
+          </div>
+        </div>
+
+        <!-- Mobile view (hidden by default, shown by JS) -->
+        <div id="testnet-mobile" style="display:none;">
+          <p style="margin-top:0;">Follow these steps to add the testnet manually in MetaMask mobile:</p>
+
+          <ol class="step-list">
+            <li>Open MetaMask and tap the <strong>menu icon</strong> (☰) at the top left.</li>
+            <li>Tap <strong>Settings</strong>.</li>
+            <li>Tap <strong>Networks</strong>.</li>
+            <li>Tap <strong>Add a network</strong>.</li>
+            <li>Tap <strong>Add a network manually</strong> at the bottom.</li>
+            <li>Enter the network details below, then tap <strong>Save</strong>.</li>
+          </ol>
+
+          <div class="network-detail-box" role="table" aria-label="Testnet network details">
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Network Name</span>
+              <span class="network-detail-value" role="cell">BNB Smart Chain Testnet</span>
+            </div>
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">RPC URL</span>
+              <span class="network-detail-value" role="cell" id="rpc-value">https://bsc-testnet-dataseed.bnbchain.org</span>
+              <button class="copy-inline-btn" type="button" data-copy="https://bsc-testnet-dataseed.bnbchain.org" aria-label="Copy RPC URL">Copy</button>
+            </div>
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Chain ID</span>
+              <span class="network-detail-value" role="cell">97</span>
+              <button class="copy-inline-btn" type="button" data-copy="97" aria-label="Copy Chain ID">Copy</button>
+            </div>
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Currency Symbol</span>
+              <span class="network-detail-value" role="cell">tBNB</span>
+            </div>
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Block Explorer</span>
+              <span class="network-detail-value" role="cell">https://testnet.bscscan.com</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Add PFNG Token -->
+      <section class="card" id="add-token">
+        <h2>Step 2 — Add NextGen (PFNG) Token</h2>
+        <p>Once you are on the BNB Smart Chain Testnet, use this to import the NextGen token into your wallet so your balance is visible.</p>
+
+        <!-- Desktop view -->
+        <div id="token-desktop">
+          <div class="section-action">
+            <button id="addTokenBtn" type="button">Add NextGen (PFNG) to MetaMask</button>
+          </div>
+          <div class="info-note">
+            MetaMask will ask you to confirm adding the token. Make sure you are connected to the BNB Smart Chain Testnet before importing.
+          </div>
+        </div>
+
+        <!-- Mobile view (hidden by default, shown by JS) -->
+        <div id="token-mobile" style="display:none;">
+          <p style="margin-top:0;">Follow these steps to import the PFNG token in MetaMask mobile:</p>
+
+          <ol class="step-list">
+            <li>Make sure you are switched to the <strong>BNB Smart Chain Testnet</strong> network you just added.</li>
+            <li>Tap <strong>Tokens</strong> on the main wallet screen.</li>
+            <li>Tap the <strong>+</strong> icon near the top right.</li>
+            <li>Tap <strong>Custom token</strong>.</li>
+            <li>Paste the contract address below into the <strong>Token contract address</strong> field.</li>
+            <li>The symbol and decimals should fill in automatically. Tap <strong>Import</strong>.</li>
+          </ol>
+
+          <div class="network-detail-box">
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Contract Address</span>
+              <span class="network-detail-value" role="cell" style="word-break:break-all;">0xe2948C5EC1dF3617Ca42F3Adcd86bF3f982A69F1</span>
+              <button class="copy-inline-btn" type="button" data-copy="0xe2948C5EC1dF3617Ca42F3Adcd86bF3f982A69F1" aria-label="Copy PFNG contract address">Copy</button>
+            </div>
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Token Symbol</span>
+              <span class="network-detail-value" role="cell">PFNG</span>
+            </div>
+            <div class="network-detail-row" role="row">
+              <span class="network-detail-label" role="rowheader">Decimals</span>
+              <span class="network-detail-value" role="cell">18</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer aria-label="Site footer">
+    © 2026 Hunter Rodriguez, not affiliated with MetaMask or Binance Smart Chain.<br>
+    <a href="https://github.com/hrweb3buttons/pfbuttons" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+    |
+    <a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a>
+  </footer>
+
+  <div id="announcement-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    const TESTNET = {
+      chainId: "0x61",
+      chainName: "BNB Smart Chain Testnet",
+      nativeCurrency: { name: "tBNB", symbol: "tBNB", decimals: 18 },
+      rpcUrls: ["https://bsc-testnet-dataseed.bnbchain.org"],
+      blockExplorerUrls: ["https://testnet.bscscan.com"]
+    };
+
+    const PFNG_TOKEN = {
+      address: "0xe2948C5EC1dF3617Ca42F3Adcd86bF3f982A69F1",
+      symbol: "PFNG",
+      decimals: 18
+    };
+
+    /* ── Theme ── */
+    const root = document.documentElement;
+    const themeToggle = document.getElementById("themeToggle");
+
+    if (localStorage.getItem("theme") === "dark") {
+      root.classList.add("dark");
+      themeToggle.textContent = "Light mode";
+      themeToggle.setAttribute("aria-pressed", "true");
+    }
+
+    themeToggle.onclick = () => {
+      root.classList.toggle("dark");
+      const dark = root.classList.contains("dark");
+      localStorage.setItem("theme", dark ? "dark" : "light");
+      themeToggle.textContent = dark ? "Light mode" : "Dark mode";
+      themeToggle.setAttribute("aria-pressed", String(dark));
+    };
+
+    /* ── Page selector ── */
+    const pageSelector = document.getElementById("pageSelector");
+    const ALLOWED_PAGES = new Set([
+      "index.html", "donations.html", "cryptodirectory.html",
+      "terms.html", "privacy.html", "lite.html", "sponsors.html", "story.html"
+    ]);
+    pageSelector.addEventListener("change", e => {
+      const page = e.target.value;
+      if (!page || !ALLOWED_PAGES.has(page)) return;
+      window.location.href = page;
+    });
+
+    /* ── Notify ── */
+    function notify(msg, duration = 5000) {
+      const announcer = document.getElementById("announcement-region");
+      if (announcer) {
+        announcer.textContent = "";
+        requestAnimationFrame(() => { announcer.textContent = msg; });
+      }
+      const n = document.createElement("div");
+      n.className = "notify";
+      n.setAttribute("role", "alert");
+      n.textContent = msg;
+      document.body.appendChild(n);
+      setTimeout(() => {
+        n.style.opacity = "0";
+        n.style.transition = "opacity 0.5s ease";
+        setTimeout(() => n.remove(), 500);
+      }, duration);
+    }
+
+    /* ── Mobile detection ── */
+    function isMobileBrowser() {
+      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+    }
+
+    /* ── Add Testnet ── */
+    async function addTestnet() {
+      if (!window.ethereum) {
+        notify("MetaMask not detected");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [TESTNET]
+        });
+        notify("BNB Smart Chain Testnet added successfully");
+      } catch (err) {
+        if (err.code === 4001) {
+          notify("Request cancelled");
+        } else {
+          notify("Failed to add network — please try again");
+          console.error(err);
+        }
+      }
+    }
+
+    /* ── Add PFNG Token ── */
+    async function addPFNGToken() {
+      if (!window.ethereum) {
+        notify("MetaMask not detected");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: PFNG_TOKEN
+          }
+        });
+        notify("PFNG token import requested");
+      } catch (err) {
+        if (err.code === 4001) {
+          notify("Request cancelled");
+        } else {
+          notify("Failed to add token — please try again");
+          console.error(err);
+        }
+      }
+    }
+
+    /* ── Wire up desktop buttons ── */
+    document.getElementById("addTestnetBtn").addEventListener("click", addTestnet);
+    document.getElementById("addTokenBtn").addEventListener("click", addPFNGToken);
+
+    /* ── Mobile: swap to instruction view ── */
+    if (isMobileBrowser()) {
+      document.getElementById("testnet-desktop").style.display = "none";
+      document.getElementById("testnet-mobile").style.display = "block";
+      document.getElementById("token-desktop").style.display = "none";
+      document.getElementById("token-mobile").style.display = "block";
+    }
+
+    /* ── Copy buttons (mobile detail rows) ── */
+    document.querySelectorAll(".copy-inline-btn[data-copy]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const value = btn.getAttribute("data-copy");
+        try {
+          await navigator.clipboard.writeText(value);
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => { btn.textContent = original; }, 2000);
+          notify("Copied to clipboard");
+        } catch {
+          notify("Copy failed — please copy manually");
+        }
+      });
+    });
+
+    /* ── Sustainability banner ── */
+    (function () {
+      const BANNER_VERSION = "v1";
+      const STORAGE_KEY = "ht_banner_dismissed_" + BANNER_VERSION;
+      const DISMISS_DURATION_MS = 3 * 24 * 60 * 60 * 1000;
+
+      const banner = document.getElementById("sustainability-banner");
+      const closeBtn = document.getElementById("sustainability-banner-close");
+      if (!banner) return;
+
+      function isDismissed() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return false;
+        return (Date.now() - parseInt(stored, 10)) < DISMISS_DURATION_MS;
+      }
+
+      function updateHeaderOffset() {
+        const height = banner.hasAttribute("hidden") ? 0 : banner.offsetHeight;
+        document.documentElement.style.setProperty("--banner-height", height + "px");
+      }
+
+      function closeBanner() {
+        localStorage.setItem(STORAGE_KEY, String(Date.now()));
+        banner.setAttribute("hidden", "");
+        banner.style.display = "none";
+        document.documentElement.style.setProperty("--banner-height", "0px");
+      }
+
+      if (isDismissed()) {
+        banner.setAttribute("hidden", "");
+        banner.style.display = "none";
+      } else {
+        updateHeaderOffset();
+      }
+
+      closeBtn.addEventListener("click", closeBanner);
+      window.addEventListener("resize", () => {
+        if (!banner.hasAttribute("hidden")) updateHeaderOffset();
+      });
+    })();
+  </script>
+</body>
+</html>
