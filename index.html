@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hunter's Toolbox</title>
   <meta name="description" content="Community built Web3 tools to streamline Pool Funding wallet setup and management.">
-  <meta property="og:image" content="https://pmlcoin.app/assets/logo-D04mbZJF.png">
+  <meta property="og:image" content="https://hrweb3buttons.github.io/pfbuttons/WF-Toolbox.png">
   <script
   defer
   src="https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.umd.min.js"
