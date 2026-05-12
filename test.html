@@ -611,7 +611,7 @@ button.donate-more {
 }
 
 /* =============================================
-   Donate preset buttons — NEW
+   Donate preset buttons
    ============================================= */
 
 .donate-presets {
@@ -643,7 +643,7 @@ button.donate-more {
 }
 
 /* =============================================
-   RPC Latency display — NEW
+   RPC Latency display
    ============================================= */
 
 .rpc-btn-wrap {
@@ -673,7 +673,7 @@ button.donate-more {
 :root.dark .rpc-latency.slow   { color: #e57373; }
 
 /* =============================================
-   Active RPC highlight — NEW
+   Active RPC highlight
    ============================================= */
 
 button.rpc-active {
@@ -683,6 +683,17 @@ button.rpc-active {
 
 :root.dark button.rpc-active {
   outline-color: #81c784 !important;
+}
+
+/* =============================================
+   Streamer Mode
+   ============================================= */
+
+.streamer-blur {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.25s ease;
 }
 
 @media (max-width: 768px) {
@@ -1042,13 +1053,25 @@ button.rpc-active {
       <p>This page and the supporting documents are the result of many hours of independent effort. If you believe in the value of community built tools, consider supporting upkeep through a small donation.</p>
     </section>
 
+    <!-- =============================================
+         PORTFOLIO SNAPSHOT — with Streamer Mode + USDT
+         ============================================= -->
     <section class="card" id="portfolio">
-  <h2>Portfolio Snapshot</h2>
-  <div id="portfolioContent">
-    <p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>
-  </div>
-  <button id="refreshPortfolio" style="display:none; margin-top:0.75rem;" aria-label="Refresh portfolio balances">Refresh Balances</button>
-</section>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.25rem;">
+        <h2 style="margin:0;">Portfolio Snapshot</h2>
+        <button id="streamerToggle"
+                type="button"
+                class="donate-more"
+                aria-pressed="false"
+                style="padding:0.35rem 0.85rem; font-size:0.82rem; font-weight:600;">
+          👁 Streamer Mode
+        </button>
+      </div>
+      <div id="portfolioContent">
+        <p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>
+      </div>
+      <button id="refreshPortfolio" style="display:none; margin-top:0.75rem;" aria-label="Refresh portfolio balances">Refresh Balances</button>
+    </section>
 
     <nav aria-label="Page sections" style="margin-bottom: 1.5rem;">
   <ul style="display:flex; flex-wrap:wrap; gap:0.5rem 0.9rem; padding:0; margin:0; list-style:none;">
@@ -1220,7 +1243,7 @@ button.rpc-active {
 </section>
 
 <!-- =============================================
-     APPROVAL SCANNER — Enhanced
+     APPROVAL SCANNER — with manual address input
      ============================================= -->
 <section class="card" id="approval-scanner">
   <h2>Wallet Approval Scanner</h2>
@@ -1232,7 +1255,24 @@ button.rpc-active {
   </p>
 
   <div style="margin-top: 1rem;">
-    <button id="scanApprovals">Scan Approvals</button>
+    <label for="manualScanAddress" style="font-weight:600; display:block; margin-bottom:0.4rem;">
+      Wallet address to scan
+    </label>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin:0 0 0.5rem;">
+      Enter any BSC wallet address below, or leave blank to scan your connected wallet.
+    </p>
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:stretch;">
+      <input id="manualScanAddress"
+             type="text"
+             inputmode="text"
+             autocomplete="off"
+             spellcheck="false"
+             placeholder="0x… (leave blank to scan connected wallet)"
+             style="flex:1; min-width:0; padding:0.5rem 0.75rem; border-radius:var(--radius);
+                    border:1px solid var(--border); background:var(--card-bg); color:var(--text);
+                    font-family:ui-monospace,'Cascadia Code',monospace; font-size:0.88rem;">
+      <button id="scanApprovals">Scan Approvals</button>
+    </div>
   </div>
 
   <div id="approvalStatus"
@@ -1338,16 +1378,18 @@ button.rpc-active {
 
 <h3 id="quick-swap" style="margin-top: 1.75rem;">
   <a href="#quick-swap" style="text-decoration:none; color:inherit;">
-    Quick Swap USDT to PF Tokens
+    Quick Swap
   </a>
 </h3>
 
 <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">
-  Opens PancakeSwap with USDT preselected for swapping.
+  Opens PancakeSwap with the selected pair preloaded.
   Desktop extension recommended for best results.
 </p>
 
+<!-- CHANGE 1: BNB→USDT swap button added first -->
 <div id="swapButtons" class="doc-buttons">
+  <button data-swap="BNB_USDT">Swap BNB to USDT</button>
   <button data-swap="PFI">Swap USDT to PFI</button>
   <button data-swap="PFB">Swap USDT to PFB</button>
   <button data-swap="PFS">Swap USDT to PFS</button>
@@ -1362,7 +1404,7 @@ button.rpc-active {
 
       <section class="card" id="calculator">
   <h2>Token Value Calculator</h2>
-  <p>Calculate the USD value of an amount of our tokens using either the current price or their price target. You can also calculate the amount of a token you'll get for your USDT.</p>
+  <p>Calculate the USD value of an amount of our tokens using either the current price or their price target. You can also calculate the amount of a token you'll get for your USDT, or how much USDT you'd need to reach a target holding.</p>
 
 <fieldset style="margin-bottom:1rem;">
   <legend><strong>Mode</strong></legend>
@@ -1374,6 +1416,10 @@ button.rpc-active {
   </div>
   <div>
     <label><input type="radio" name="calcMode" value="usdt"> USDT → Tokens</label>
+  </div>
+  <!-- CHANGE 5: New calculator mode -->
+  <div>
+    <label><input type="radio" name="calcMode" value="needed"> USDT Needed for Target</label>
   </div>
 </fieldset>
 
@@ -1423,6 +1469,7 @@ button.rpc-active {
       <input id="calcAmount" type="text" inputmode="decimal" style="width: 100%; padding: 0.5rem;">
     </label>
   </div>
+
   <!-- USDT → Token panel -->
 <div id="calcUsdtPanel" style="display:none; margin-bottom:1rem;">
   <div style="margin-bottom:0.75rem;">
@@ -1450,7 +1497,44 @@ button.rpc-active {
   <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 0.75rem;">
     Estimates only. Does not account for slippage, price impact, or swap fees.
   </p>
-</div>      
+</div>
+
+<!-- CHANGE 5: USDT Needed panel -->
+<div id="calcNeededPanel" style="display:none; margin-bottom:1rem;">
+  <div style="margin-bottom:0.75rem;">
+    <label for="calcNeededToken"><strong>Token</strong></label><br>
+    <select id="calcNeededToken"
+            style="width:100%; padding:0.5rem; border-radius:var(--radius);
+                   border:1px solid var(--border); background:var(--card-bg);
+                   color:var(--text); margin-top:0.25rem; box-sizing:border-box;">
+      <option value="">Select token…</option>
+      <option value="PFI">PFI</option>
+      <option value="PFB">PFB</option>
+      <option value="PFS">PFS</option>
+      <option value="PFG">PFG</option>
+      <option value="PML">PML</option>
+      <option value="JOY">JOY</option>
+    </select>
+  </div>
+  <div style="margin-bottom:0.75rem;">
+    <label>
+      <strong>Target Token Amount</strong><br>
+      <input id="calcNeededAmount" type="text" inputmode="decimal"
+             style="width:100%; padding:0.5rem; margin-top:0.25rem; box-sizing:border-box;">
+    </label>
+  </div>
+  <div style="margin-bottom:0.75rem;">
+    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-weight:600;">
+      <input type="checkbox" id="calcNeededSubtract" style="width:16px; height:16px; cursor:pointer;">
+      <span>Subtract my current holdings in this token</span>
+    </label>
+    <p id="calcNeededHoldingsNote"
+       style="font-size:0.82rem; color:var(--text-muted); margin:0.3rem 0 0 1.6rem; display:none;"></p>
+  </div>
+  <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 0.75rem;">
+    Estimates only. Does not account for slippage, price impact, or swap fees.
+  </p>
+</div>
 
 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
 <button id="calcButton" type="button">Calculate</button>
@@ -1472,7 +1556,9 @@ button.rpc-active {
       </div>
     </section>
 
-<section class="card highlight" id="services">  <h2>
+<!-- CHANGE 3: MyJoy Marketplace storefront button added -->
+<section class="card highlight" id="services">
+  <h2>
     <a href="#services" style="text-decoration:none; color:inherit;">
       Premium Web3 Support Services
     </a>
@@ -1506,7 +1592,13 @@ button.rpc-active {
   <div style="margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--border);">
     <p>
       If you are interested in either service, reach out to me directly and we can coordinate next steps.
+      You can also browse my full MyJoy Marketplace storefront below.
     </p>
+    <button
+      onclick="window.open('https://myjoy.market/vendor/hunter-rodriguez','_blank','noopener,noreferrer')"
+      aria-label="View Hunter Rodriguez's MyJoy Marketplace storefront in a new tab">
+      View My MyJoy Storefront
+    </button>
   </div>
 </section>
   </div>
@@ -1518,7 +1610,7 @@ button.rpc-active {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.3.3
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.3.4
   </footer>
 
   <script>
@@ -1534,7 +1626,11 @@ const DEX_TOKENS = {
 const tokenPrices  = { BNB: null, PFI: null, PFB: null, PFS: null, PFG: null, PML: null, JOY: null };
 const portfolioData = {};
 
+// CHANGE 4: Streamer mode state
+let streamerMode = false;
+
 const ERC20_BALANCE_ABI = ["function balanceOf(address owner) view returns (uint256)"];
+
 function checkBNBGas(bnbBalance) {
   if (typeof bnbBalance === "number" && bnbBalance < 0.001) {
     notify(
@@ -1542,6 +1638,53 @@ function checkBNBGas(bnbBalance) {
       9000
     );
   }
+}
+
+// CHANGE 4: Split portfolio loading from rendering so streamer toggle can re-render without RPC calls
+function renderPortfolioTable() {
+  const content    = document.getElementById("portfolioContent");
+  const refreshBtn = document.getElementById("refreshPortfolio");
+  if (!content) return;
+
+  const fmt = (n, d = 4) => {
+    if (n == null) return "—";
+    if (streamerMode) return "••••••";
+    return new Intl.NumberFormat(navigator.language, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: d
+    }).format(n);
+  };
+
+  const tokenList = [
+    { symbol: "BNB",  d: 8 },
+    { symbol: "USDT", d: 4 },
+    { symbol: "PFI",  d: 8 },
+    { symbol: "PFB",  d: 8 },
+    { symbol: "PFS",  d: 8 },
+    { symbol: "PFG",  d: 8 },
+    { symbol: "PML",  d: 8 },
+    { symbol: "JOY",  d: 8 }
+  ];
+
+  content.innerHTML = `
+    <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="text-align:left; padding:6px 0; color:var(--text-muted); font-weight:600;">Token</th>
+          <th style="text-align:right; padding:6px 0; color:var(--text-muted); font-weight:600;">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tokenList.map(r => `
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:7px 0; font-weight:600;">${r.symbol}</td>
+            <td style="padding:7px 0; text-align:right;
+                       font-family:ui-monospace,'Cascadia Code',monospace;">${fmt(portfolioData[r.symbol], r.d)}</td>
+          </tr>`).join("")}
+      </tbody>
+    </table>`;
+
+  if (refreshBtn) refreshBtn.style.display = "inline-block";
 }
 
 async function loadPortfolio() {
@@ -1566,14 +1709,15 @@ async function loadPortfolio() {
     const bnbBal = parseFloat(ethers.formatEther(bnbWei));
     portfolioData["BNB"] = bnbBal;
 
-    // Tokens
+    // Tokens — now includes USDT (BSC)
     const tokenList = [
-      { symbol: "PFI", address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", decimals: 18 },
-      { symbol: "PFB", address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", decimals: 18 },
-      { symbol: "PFS", address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", decimals: 18 },
-      { symbol: "PFG", address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", decimals: 18 },
-      { symbol: "PML", address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD", decimals: 18 },
-      { symbol: "JOY", address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", decimals: 18 }
+      { symbol: "USDT", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
+      { symbol: "PFI",  address: "0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF", decimals: 18 },
+      { symbol: "PFB",  address: "0xB67a0b57703a43E7e2dC5dBf9754979652916F17", decimals: 18 },
+      { symbol: "PFS",  address: "0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa", decimals: 18 },
+      { symbol: "PFG",  address: "0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e", decimals: 18 },
+      { symbol: "PML",  address: "0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD", decimals: 18 },
+      { symbol: "JOY",  address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", decimals: 18 }
     ];
 
     await Promise.allSettled(
@@ -1588,39 +1732,7 @@ async function loadPortfolio() {
       })
     );
 
-    const fmt = (n, d = 4) =>
-      n == null
-        ? "—"
-        : new Intl.NumberFormat(navigator.language, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: d
-          }).format(n);
-
-const rows = [
-      { symbol: "BNB", bal: portfolioData["BNB"], d: 8 },
-      ...tokenList.map(t => ({ symbol: t.symbol, bal: portfolioData[t.symbol], d: 8 }))
-    ];
-
-    content.innerHTML = `
-      <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border);">
-            <th style="text-align:left; padding:6px 0; color:var(--text-muted); font-weight:600;">Token</th>
-            <th style="text-align:right; padding:6px 0; color:var(--text-muted); font-weight:600;">Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(r => `
-            <tr style="border-bottom:1px solid var(--border);">
-              <td style="padding:7px 0; font-weight:600;">${r.symbol}</td>
-              <td style="padding:7px 0; text-align:right;
-                         font-family:ui-monospace,'Cascadia Code',monospace;">${fmt(r.bal, r.d)}</td>
-            </tr>`).join("")}
-        </tbody>
-      </table>`;
-
-    if (refreshBtn) refreshBtn.style.display = "inline-block";
-
+    renderPortfolioTable();
     checkBNBGas(bnbBal);
 
   } catch (err) {
@@ -1629,6 +1741,7 @@ const rows = [
       '<p style="color:var(--error);">Failed to load balances. Please try again.</p>';
   }
 }
+
 const root = document.documentElement;
 const themeToggle = document.getElementById("themeToggle");
     
@@ -1653,7 +1766,7 @@ const CONFIG = {
 };
 
 /* =============================================
-   DONATE PRESETS — NEW
+   DONATE PRESETS
    ============================================= */
 const DONATE_PRESETS = {
   BNB:  [0.01, 0.05, 0.1],
@@ -1860,6 +1973,24 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
     };
   }
+
+  // CHANGE 4: Streamer Mode toggle
+  const streamerToggle = document.getElementById("streamerToggle");
+  if (streamerToggle) {
+    streamerToggle.addEventListener("click", () => {
+      streamerMode = !streamerMode;
+      streamerToggle.setAttribute("aria-pressed", String(streamerMode));
+      streamerToggle.textContent = streamerMode ? "👁 Hide Off" : "👁 Streamer Mode";
+      // Re-render table from cached data (no RPC calls needed)
+      if (signer && Object.keys(portfolioData).length > 0) {
+        renderPortfolioTable();
+      }
+    });
+  }
+
+  // CHANGE 5: Update holdings note when "needed" token or subtract checkbox changes
+  document.getElementById("calcNeededToken")?.addEventListener("change", updateNeededHoldingsNote);
+  document.getElementById("calcNeededSubtract")?.addEventListener("change", updateNeededHoldingsNote);
 });
 
 if (window.ethereum) {
@@ -1906,13 +2037,26 @@ const tokens = [
   { address: "0x24338c1ACe31A3DfE43912879317eb76a6213a0f", symbol: "JOY", decimals: 18, image: "https://hrweb3buttons.github.io/pfbuttons/Joy64.jpg" }
 ];
 
+// CHANGE 1: Added BNB_USDT swap link
 const swapLinks = {
+  BNB_USDT: "https://pancakeswap.finance/swap?chain=bsc&outputCurrency=0x55d398326f99059fF775485246999027B3197955",
   PFI: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xf623C5aec3ABE5BFd1F46C7108FaAd5a6F1C4efF&chain=bsc",
   PFB: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0xB67a0b57703a43E7e2dC5dBf9754979652916F17&chain=bsc",
   PFS: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x25895B6DfD4FBcfCb8aD9b4cB9d9C25d7397ccDa&chain=bsc",
   PFG: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x8024aC11de24aBBaC2bD860CC59E3b2E940dA87e&chain=bsc",
   PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc",
   JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"
+};
+
+// Friendly labels for mobile swap copy-link list
+const swapLabels = {
+  BNB_USDT: "BNB to USDT",
+  PFI: "USDT to PFI",
+  PFB: "USDT to PFB",
+  PFS: "USDT to PFS",
+  PFG: "USDT to PFG",
+  PML: "USDT to PML",
+  JOY: "USDT to JOY"
 };
 
 function isMobileBrowser() {
@@ -1988,6 +2132,7 @@ async function connectWallet() {
   }
 }
 
+// CHANGE 2: runApprovalScan now supports manual address input and works without a connected wallet
 async function runApprovalScan() {
   const status      = document.getElementById("approvalStatus");
   const resultsEl   = document.getElementById("approvalResults");
@@ -2001,20 +2146,44 @@ async function runApprovalScan() {
   resultsEl.style.display = "none";
   if (cta) cta.style.display = "none";
 
-  if (!window.ethereum) { notify("MetaMask not detected"); return; }
-  if (!signer)          { notify("Please connect your wallet"); return; }
+  // Determine which address to scan
+  const manualInput   = document.getElementById("manualScanAddress");
+  const manualAddress = manualInput ? manualInput.value.trim() : "";
 
-  const ok = await ensureBSC();
-  if (!ok) return;
+  let owner;
+  let readProvider;
+
+  if (manualAddress) {
+    // Validate the manual address
+    if (!ethers.isAddress(manualAddress)) {
+      notify("Please enter a valid wallet address (0x…)");
+      return;
+    }
+    owner = manualAddress;
+    // Use connected provider if available, otherwise fall back to a public RPC
+    readProvider = provider || new ethers.JsonRpcProvider("https://binance.llamarpc.com");
+  } else {
+    // Fall back to connected wallet
+    if (!window.ethereum) { notify("MetaMask not detected — enter an address above or connect your wallet"); return; }
+    if (!signer)          { notify("Please connect your wallet or enter a wallet address to scan"); return; }
+
+    const ok = await ensureBSC();
+    if (!ok) return;
+
+    owner        = await signer.getAddress();
+    readProvider = provider;
+  }
 
   status.textContent = "Scanning on-chain approvals…";
+  if (manualAddress) {
+    status.textContent += " (address: " + owner.slice(0, 6) + "…" + owner.slice(-4) + ")";
+  }
 
   try {
-    const owner = await signer.getAddress();
     let findings = [];
 
     for (const token of tokens) {
-      const contract = new ethers.Contract(token.address, ERC20_ALLOWANCE_ABI, provider);
+      const contract = new ethers.Contract(token.address, ERC20_ALLOWANCE_ABI, readProvider);
 
       for (const spender of APPROVAL_SPENDERS) {
         try {
@@ -2252,8 +2421,6 @@ async function addAllTokens() {
    RPC — with active highlight + latency
    ============================================= */
 
-
-    
   function highlightActiveRPC(url) {
   document.querySelectorAll("button[data-rpc-url]").forEach(btn => {
     if (btn.getAttribute("data-rpc-url") === url) {
@@ -2269,7 +2436,6 @@ async function switchRPC(url, name) {
     notify("Unapproved RPC");
     return;
   }
-
 
   if (!window.ethereum) {
     notify("MetaMask not detected");
@@ -2354,7 +2520,7 @@ async function runFastestRPC() {
 }
 
 /* =============================================
-   RPC LATENCY TESTER — NEW
+   RPC LATENCY TESTER
    ============================================= */
 
 async function testRPCLatency(url) {
@@ -2378,7 +2544,6 @@ async function testRPCLatency(url) {
 async function runRPCLatencyTests() {
   const buttons = document.querySelectorAll("button[data-rpc-url]");
 
-  // Show "testing…" state on all
   buttons.forEach(btn => {
     const latEl = document.getElementById("lat-" + btn.id);
     if (latEl) {
@@ -2387,7 +2552,6 @@ async function runRPCLatencyTests() {
     }
   });
 
-  // Test all in parallel
   await Promise.allSettled(
     Array.from(buttons).map(async btn => {
       const url   = btn.getAttribute("data-rpc-url");
@@ -2478,7 +2642,6 @@ function openDonateForm(label, btn, onConfirm) {
   document.getElementById("donateFormLabel").textContent = "Amount (" + label + ")";
   document.getElementById("donateAmount").value = "";
 
-  // Populate preset buttons
   const presetsContainer = document.getElementById("donatePresets");
   presetsContainer.innerHTML = "";
   const presets = DONATE_PRESETS[label];
@@ -2525,11 +2688,10 @@ function disconnectWallet() {
   provider = null;
 
   updateWalletUI(false);
-  // Clear portfolio on disconnect
-const _pc = document.getElementById("portfolioContent");
-if (_pc) _pc.innerHTML = '<p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>';
-const _rb = document.getElementById("refreshPortfolio");
-if (_rb) _rb.style.display = "none";
+  const _pc = document.getElementById("portfolioContent");
+  if (_pc) _pc.innerHTML = '<p style="color:var(--text-muted); font-size:0.95rem;">Connect your wallet to see your token balances.</p>';
+  const _rb = document.getElementById("refreshPortfolio");
+  if (_rb) _rb.style.display = "none";
   notify("Wallet disconnected");
 }
 
@@ -2780,7 +2942,7 @@ async function fetchPrices() {
   }
 }
 
-    async function fetchDexScreenerFallback(missingSymbols) {
+async function fetchDexScreenerFallback(missingSymbols) {
   await Promise.allSettled(
     missingSymbols.map(async symbol => {
       const address = DEX_TOKENS[symbol];
@@ -2797,7 +2959,6 @@ async function fetchPrices() {
         const data = await res.json();
         const pairs = (data?.pairs || []).filter(p => p.chainId === "bsc");
         if (!pairs.length) return;
-        // Use the pair with the highest liquidity
         pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
         const price = parseFloat(pairs[0].priceUsd);
         if (!isNaN(price) && price > 0) {
@@ -2843,16 +3004,14 @@ async function fetchDexPrices() {
     console.error("GeckoTerminal batch fetch failed:", err);
   }
 
- // Fallback 1: GeckoTerminal pools endpoint
   const missing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
   if (missing.length) await fetchGeckoTerminalPoolsFallback(missing);
 
-  // Fallback 2: DexScreener (for anything still missing)
   const stillMissing = Object.keys(DEX_TOKENS).filter(s => !tokenPrices[s]);
   if (stillMissing.length) await fetchDexScreenerFallback(stillMissing);
 }
 
-    async function fetchGeckoTerminalPoolsFallback(missingSymbols) {
+async function fetchGeckoTerminalPoolsFallback(missingSymbols) {
   await Promise.allSettled(
     missingSymbols.map(async symbol => {
       const address = DEX_TOKENS[symbol];
@@ -2869,7 +3028,6 @@ async function fetchDexPrices() {
         const data = await res.json();
         const pools = data?.data;
         if (!Array.isArray(pools) || !pools.length) return;
-        // Use the pool with the highest liquidity
         pools.sort((a, b) =>
           parseFloat(b.attributes?.reserve_in_usd ?? 0) -
           parseFloat(a.attributes?.reserve_in_usd ?? 0)
@@ -2928,6 +3086,7 @@ if (donateJOYBtn) {
 
 fetchPrices();
 fetchDexPrices().then(updatePriceDisplay);
+
 /* =============================================
    WALLET TABS — Add Tokens card
    ============================================= */
@@ -3137,13 +3296,44 @@ function clearCalcOutput() {
   calcAlert.textContent = "";
 }
 
+// CHANGE 5: updateNeededHoldingsNote — shows current holdings when subtract checkbox is relevant
+function updateNeededHoldingsNote() {
+  const note      = document.getElementById("calcNeededHoldingsNote");
+  const checkbox  = document.getElementById("calcNeededSubtract");
+  const symbol    = document.getElementById("calcNeededToken").value;
+  if (!note || !checkbox) return;
+
+  if (!checkbox.checked || !symbol) {
+    note.style.display = "none";
+    return;
+  }
+
+  const bal = portfolioData[symbol];
+  if (bal == null) {
+    note.textContent = connectedAccount
+      ? "Balance not loaded yet — tap Refresh Balances in the Portfolio section."
+      : "Connect your wallet to use this option.";
+    note.style.display = "block";
+  } else {
+    note.textContent = "Current holdings: " +
+      new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 8 }).format(bal) +
+      " " + symbol;
+    note.style.display = "block";
+  }
+}
+
 function setMode(mode) {
   clearCalcOutput();
   priceInput.value  = "";
   amountInput.value = "";
 
-  const prefillRow = document.getElementById("calcPrefillRow");
-  const usdtPanel  = document.getElementById("calcUsdtPanel");
+  const prefillRow  = document.getElementById("calcPrefillRow");
+  const usdtPanel   = document.getElementById("calcUsdtPanel");
+  const neededPanel = document.getElementById("calcNeededPanel");
+
+  // Hide all conditional panels first
+  if (usdtPanel)   usdtPanel.style.display   = "none";
+  if (neededPanel) neededPanel.style.display  = "none";
 
   if (mode === "target") {
     targetSelector.style.display    = "block";
@@ -3151,7 +3341,6 @@ function setMode(mode) {
     calcPriceRow.style.display      = "block";
     calcAmountRow.style.display     = "block";
     if (prefillRow) prefillRow.style.display = "none";
-    if (usdtPanel)  usdtPanel.style.display  = "none";
   } else if (mode === "usdt") {
     targetSelector.style.display    = "none";
     priceInput.readOnly             = false;
@@ -3163,6 +3352,22 @@ function setMode(mode) {
     if (usdtAmt) usdtAmt.value = "";
     const usdtTok = document.getElementById("calcUsdtToken");
     if (usdtTok) usdtTok.value = "";
+  } else if (mode === "needed") {
+    // CHANGE 5: USDT Needed mode
+    targetSelector.style.display    = "none";
+    priceInput.readOnly             = false;
+    calcPriceRow.style.display      = "none";
+    calcAmountRow.style.display     = "none";
+    if (prefillRow)  prefillRow.style.display  = "none";
+    if (neededPanel) neededPanel.style.display  = "block";
+    const neededAmt = document.getElementById("calcNeededAmount");
+    if (neededAmt) neededAmt.value = "";
+    const neededTok = document.getElementById("calcNeededToken");
+    if (neededTok) neededTok.value = "";
+    const neededSub = document.getElementById("calcNeededSubtract");
+    if (neededSub) neededSub.checked = false;
+    const neededNote = document.getElementById("calcNeededHoldingsNote");
+    if (neededNote) neededNote.style.display = "none";
   } else {
     // current price
     targetSelector.style.display    = "none";
@@ -3170,7 +3375,6 @@ function setMode(mode) {
     calcPriceRow.style.display      = "block";
     calcAmountRow.style.display     = "block";
     if (prefillRow) prefillRow.style.display = "flex";
-    if (usdtPanel)  usdtPanel.style.display  = "none";
   }
 }
 
@@ -3258,6 +3462,71 @@ calcButton.addEventListener("click", () => {
     return;
   }
 
+  // CHANGE 5: USDT Needed mode calculation
+  if (mode === "needed") {
+    const symbol     = document.getElementById("calcNeededToken").value;
+    const targetRaw  = document.getElementById("calcNeededAmount").value;
+    const targetAmt  = parseLocalizedNumber(targetRaw);
+    const subtractOn = document.getElementById("calcNeededSubtract").checked;
+
+    if (!symbol) {
+      calcAlert.textContent = "Please select a token.";
+      calcAlert.style.display = "block";
+      return;
+    }
+    if (isNaN(targetAmt) || targetAmt <= 0) {
+      calcAlert.textContent = "Please enter a valid target token amount.";
+      calcAlert.style.display = "block";
+      return;
+    }
+    const price = tokenPrices[symbol];
+    if (!price) {
+      calcAlert.textContent = "Price for " + symbol + " is not yet available. Please wait a moment and try again.";
+      calcAlert.style.display = "block";
+      return;
+    }
+
+    let effectiveTarget = targetAmt;
+    let holdingsNote    = "";
+
+    if (subtractOn) {
+      const holdings = portfolioData[symbol];
+      if (holdings == null) {
+        calcAlert.textContent = connectedAccount
+          ? "Holdings not loaded — tap Refresh Balances in the Portfolio section first."
+          : "Connect your wallet to subtract your current holdings.";
+        calcAlert.style.display = "block";
+        return;
+      }
+      effectiveTarget = Math.max(0, targetAmt - holdings);
+      holdingsNote    = " (after subtracting " +
+        new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 8 }).format(holdings) +
+        " " + symbol + " already held)";
+    }
+
+    if (effectiveTarget === 0) {
+      calcResult.textContent =
+        "You already hold " +
+        new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 8 }).format(portfolioData[symbol]) +
+        " " + symbol + " — no additional USDT needed to reach your target.";
+      return;
+    }
+
+    const usdtNeeded = effectiveTarget * price;
+    calcResult.innerHTML =
+      "Estimated USDT needed: <strong>~$" +
+      new Intl.NumberFormat(navigator.language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(usdtNeeded) +
+      "</strong>" + holdingsNote +
+      "<br><span style='font-size:0.85rem; font-weight:400; color:var(--text-muted);'>at " +
+      formatTokenPrice(price, symbol) + " USD per " + symbol + ", for " +
+      new Intl.NumberFormat(navigator.language, { maximumFractionDigits: 2 }).format(effectiveTarget) +
+      " " + symbol + "</span>";
+    return;
+  }
+
   const price  = parseLocalizedNumber(priceInput.value);
   const amount = parseLocalizedNumber(amountInput.value);
 
@@ -3297,15 +3566,28 @@ function resetCalculator() {
   calcPriceRow.style.display   = "block";
   calcAmountRow.style.display  = "block";
 
-  const prefillRow = document.getElementById("calcPrefillRow");
-  const usdtPanel  = document.getElementById("calcUsdtPanel");
-  if (prefillRow) prefillRow.style.display = "flex";
-  if (usdtPanel)  usdtPanel.style.display  = "none";
+  const prefillRow  = document.getElementById("calcPrefillRow");
+  const usdtPanel   = document.getElementById("calcUsdtPanel");
+  const neededPanel = document.getElementById("calcNeededPanel");
+
+  if (prefillRow)  prefillRow.style.display  = "flex";
+  if (usdtPanel)   usdtPanel.style.display   = "none";
+  if (neededPanel) neededPanel.style.display  = "none";
 
   const usdtAmt = document.getElementById("calcUsdtAmount");
   if (usdtAmt) usdtAmt.value = "";
   const usdtTok = document.getElementById("calcUsdtToken");
   if (usdtTok) usdtTok.value = "";
+
+  // CHANGE 5: Reset needed panel fields
+  const neededAmt  = document.getElementById("calcNeededAmount");
+  if (neededAmt)  neededAmt.value  = "";
+  const neededTok  = document.getElementById("calcNeededToken");
+  if (neededTok)  neededTok.value  = "";
+  const neededSub  = document.getElementById("calcNeededSubtract");
+  if (neededSub)  neededSub.checked = false;
+  const neededNote = document.getElementById("calcNeededHoldingsNote");
+  if (neededNote) neededNote.style.display = "none";
 
   const calcTokenSelect = document.getElementById("calcTokenSelect");
   if (calcTokenSelect) calcTokenSelect.value = "";
@@ -3313,6 +3595,7 @@ function resetCalculator() {
 
 calcReset.addEventListener("click", resetCalculator);
 
+// CHANGE 1: Mobile swap — includes BNB→USDT with label
 const swapButtonsContainer = document.getElementById("swapButtons");
 const swapMobileContainer = document.getElementById("swapMobileContainer");
 
@@ -3327,13 +3610,14 @@ if (swapButtonsContainer) {
       "Mobile wallets may not auto fill swaps. Copy a link below and paste it into the MetaMask browser.";
     swapMobileContainer.appendChild(note);
 
-    Object.entries(swapLinks).forEach(([symbol, url]) => {
+    Object.entries(swapLinks).forEach(([key, url]) => {
+      const label = swapLabels[key] || key;
       const row = document.createElement("div");
       row.style.marginBottom = "10px";
 
-      const label = document.createElement("strong");
-      label.textContent = "USDT to " + symbol + ": ";
-      row.appendChild(label);
+      const lbl = document.createElement("strong");
+      lbl.textContent = label + ": ";
+      row.appendChild(lbl);
 
       const copyBtn = document.createElement("button");
       copyBtn.textContent = "Copy Link";
@@ -3341,7 +3625,7 @@ if (swapButtonsContainer) {
       copyBtn.onclick = async () => {
         try {
           await navigator.clipboard.writeText(url);
-          notify(`${symbol} swap link copied`);
+          notify(label + " swap link copied");
         } catch (err) {
           notify("Copy failed — please copy manually");
           console.error("Clipboard write failed:", err);
@@ -3356,12 +3640,13 @@ if (swapButtonsContainer) {
       const button = e.target.closest("button[data-swap]");
       if (!button) return;
 
-      const symbol = button.getAttribute("data-swap");
-      const url = swapLinks[symbol];
-      window.open(url, "_blank", "noopener,noreferrer");
+      const key = button.getAttribute("data-swap");
+      const url = swapLinks[key];
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
     });
   }
 }
+
 // Price ticker dropdown
 const priceTokenSelect = document.getElementById("priceTokenSelect");
 if (priceTokenSelect) {
@@ -3419,6 +3704,13 @@ if (calcUsdtAmtInput) {
   formatOnBlur(calcUsdtAmtInput);
 }
 
+// CHANGE 5: Needed amount field — sanitize + format on blur
+const calcNeededAmtInput = document.getElementById("calcNeededAmount");
+if (calcNeededAmtInput) {
+  sanitizeInputField(calcNeededAmtInput);
+  formatOnBlur(calcNeededAmtInput);
+}
+
     (function () {
   const BANNER_VERSION = "v1";
   const STORAGE_KEY    = "ht_banner_dismissed_" + BANNER_VERSION;
@@ -3456,7 +3748,6 @@ if (calcUsdtAmtInput) {
  
   closeBtn.addEventListener("click", closeBanner);
  
-  // Recalculate offset if window resizes and banner wraps
   window.addEventListener("resize", () => {
     if (!banner.hasAttribute("hidden")) updateHeaderOffset();
   });
