@@ -380,6 +380,43 @@ body {
   <button class="dark-toggle" id="darkBtn" onclick="toggleDark()" aria-label="Toggle dark mode">🌙 Dark</button>
 </div>
 
+<div class="primers">
+
+  <details class="primer">
+    <summary>🔰 New to crypto? Start here</summary>
+    <div class="primer-body">
+      <p><strong>What is a cryptocurrency?</strong> A cryptocurrency is a form of digital money secured by cryptography and recorded on a <em>blockchain</em> — a public ledger maintained by a worldwide network of computers, with no central bank or single company in control.</p>
+      <p><strong>What is a ticker?</strong> A ticker is the short code used to identify a coin — like BTC for Bitcoin, or ETH for Ethereum. Think of it like a stock symbol on a traditional exchange.</p>
+      <p><strong>What is a stablecoin?</strong> A stablecoin is a cryptocurrency designed to always be worth a fixed amount — usually $1 USD. They let you move dollar-equivalent funds at crypto speed and low cost, without the price swings of coins like Bitcoin. USDT and USDC are the most widely used. See the <em>Stablecoins</em> tab for the full list.</p>
+      <p><strong>Is this list always current?</strong> This page reflects the coins currently accepted via NowPayments. The list may change as new coins are added or removed from the platform.</p>
+    </div>
+  </details>
+
+  <details class="primer">
+    <summary>🌐 What are networks — and why do they matter?</summary>
+    <div class="primer-body">
+      <p><strong>A network (also called a blockchain or chain) is the infrastructure a coin travels on.</strong> Many coins — especially stablecoins like USDT — exist on several networks simultaneously. The coin's value is the same on every network, but fees, speed, and compatibility differ.</p>
+      <p>⚠️ <strong>This is critical when sending crypto:</strong> both the sender and recipient must use the same network. Sending USDT via Tron to an Ethereum-only wallet address, for example, will result in the funds being permanently lost. Always confirm the correct network before sending.</p>
+      <p>The coloured badges on each coin card show which networks that coin is available on. The most common ones are:</p>
+      <table class="net-table">
+        <thead>
+          <tr><th>Badge</th><th>Full name</th><th>Also called</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="b be">ETH</span></td><td>Ethereum</td><td>ERC-20</td><td>Most widely supported; generally higher fees</td></tr>
+          <tr><td><span class="b bb">BSC</span></td><td>BNB Smart Chain</td><td>BEP-20</td><td>Binance's network; lower fees than Ethereum</td></tr>
+          <tr><td><span class="b bt">TRX</span></td><td>Tron</td><td>TRC-20</td><td>Very low fees; extremely popular for USDT</td></tr>
+          <tr><td><span class="b bs">Solana</span></td><td>Solana</td><td>SPL</td><td>Fast and cheap; growing rapidly</td></tr>
+          <tr><td><span class="b">Polygon</span></td><td>Polygon</td><td>MATIC / PoS</td><td>A faster, cheaper sidechain of Ethereum</td></tr>
+          <tr><td><span class="b">TON</span></td><td>TON</td><td>The Open Network</td><td>Telegram's native blockchain</td></tr>
+          <tr><td><span class="b">Arbitrum</span></td><td>Arbitrum One</td><td>ARB / L2</td><td>Ethereum Layer 2 — lower fees, same security</td></tr>
+          <tr><td><span class="b">Base</span></td><td>Base</td><td>Coinbase L2</td><td>Coinbase's Ethereum Layer 2 network</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+</div>   
 <div class="top">
   <input type="text" id="search" placeholder="Search by name, ticker, or common name…" oninput="render()"
          aria-label="Search tokens by name, ticker, or common name">
