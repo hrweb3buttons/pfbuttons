@@ -372,7 +372,13 @@ body {
 </head>
 <body>
 
-<h2 class="sr-only">NowPayments supported cryptocurrencies grouped by category — searchable reference</h2>
+<div class="header-row">
+  <div class="page-header">
+    <h1>Supported Cryptocurrencies</h1>
+    <p>A complete reference of all coins and tokens accepted via NowPayments. Search by name, ticker, or keyword — or browse by category using the tabs below.</p>
+  </div>
+  <button class="dark-toggle" id="darkBtn" onclick="toggleDark()" aria-label="Toggle dark mode">🌙 Dark</button>
+</div>
 
 <div class="top">
   <input type="text" id="search" placeholder="Search by name, ticker, or common name…" oninput="render()"
@@ -383,6 +389,18 @@ body {
 <div id="out" role="region" aria-label="Token results"></div>
 
 <script>
+// ── Dark mode ──────────────────────────────────────────────────────────
+function toggleDark(){
+  const on = document.documentElement.classList.toggle('dark');
+  document.getElementById('darkBtn').textContent = on ? '☀️ Light' : '🌙 Dark';
+  try { localStorage.setItem('np-dark', on ? '1' : '0'); } catch(e) {}
+}
+try {
+  if(localStorage.getItem('np-dark') === '1'){
+    document.documentElement.classList.add('dark');
+    document.getElementById('darkBtn').textContent = '☀️ Light';
+  }
+} catch(e) {}   
 const G=[
   {id:'all',    label:'All'},
   {id:'major',  label:'Major coins'},
