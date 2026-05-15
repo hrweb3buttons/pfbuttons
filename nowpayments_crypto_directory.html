@@ -906,10 +906,17 @@ function render(){
 
   document.getElementById('cnt').textContent=filtered.length+' tokens';
 
-  if(!filtered.length){
-    document.getElementById('out').innerHTML='<div class="none">No tokens found for that search.</div>';
-    return;
-  }
+if(!filtered.length){
+  const msg = active !== 'all'
+    ? `No coins found in <strong>${G.find(g=>g.id===active)?.label||active}</strong> matching that search.`
+    : 'No coins found matching that search.';
+  document.getElementById('out').innerHTML=`
+    <div class="none">
+      🔍 ${msg}
+      <small>Try a different spelling, the coin's ticker symbol, or switch to the <strong>All</strong> tab and search from there.</small>
+    </div>`;
+  return;
+}
 
   if(active==='all' && !q){
     // Grouped view
