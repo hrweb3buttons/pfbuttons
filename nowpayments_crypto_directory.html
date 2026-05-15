@@ -424,6 +424,11 @@ body {
 </div>
 <div class="tabs" id="tabs" role="tablist" aria-label="Token category filter"></div>
 <div id="out" role="region" aria-label="Token results"></div>
+   <div id="stable-tip" style="display:none">
+  <div class="tip">
+    <strong>💡 Stablecoins &amp; networks — what you need to know:</strong> Every stablecoin listed here is worth approximately $1 USD (or €1 EUR where noted), regardless of which network it runs on. However, <strong>you must send on the same network as the receiving address</strong>. For example, USDT on Tron (TRC-20) and USDT on Ethereum (ERC-20) are technically different assets — sending to the wrong network address will result in permanently lost funds. When in doubt, ask your exchange or wallet which network to use before sending.
+  </div>
+</div>
 
 <script>
 // ── Dark mode ──────────────────────────────────────────────────────────
@@ -834,10 +839,16 @@ function buildTabs(){
   }).join('');
 }
 
-function setG(id){active=id;buildTabs();render();}
+function setG(id){
+  active = id;
+  buildTabs();
+  render();
+  document.getElementById('stable-tip').style.display = (id === 'stables') ? 'block' : 'none';
+}
 
 buildTabs();
 render();
+document.getElementById('stable-tip').style.display = (active === 'stables') ? 'block' : 'none';
 </script>
 </body>
 </html>
