@@ -423,6 +423,7 @@ body {
   <span class="cnt" id="cnt" aria-live="polite" aria-atomic="true"></span>
 </div>
 <div class="tabs" id="tabs" role="tablist" aria-label="Token category filter"></div>
+   <div class="cat-desc" id="cat-desc"></div>
 <div id="out" role="region" aria-label="Token results"></div>
    <div id="stable-tip" style="display:none">
   <div class="tip">
@@ -444,19 +445,19 @@ try {
   }
 } catch(e) {}   
 const G=[
-  {id:'all',    label:'All'},
-  {id:'major',  label:'Major coins'},
-  {id:'privacy',label:'Privacy'},
-  {id:'stables',label:'Stablecoins'},
-  {id:'layer1', label:'Layer 1'},
-  {id:'layer2', label:'Layer 2 & Scaling'},
-  {id:'defi',   label:'DeFi'},
-  {id:'exchange',label:'Exchange tokens'},
-  {id:'gaming', label:'Gaming & NFT'},
-  {id:'meme',   label:'Meme coins'},
-  {id:'ai',     label:'AI & tech'},
-  {id:'ton',    label:'TON ecosystem'},
-  {id:'infra',  label:'Other'},
+  {id:'all',     label:'All',               desc:''},
+  {id:'major',   label:'Major coins',       desc:'The most established, widely traded, and recognised cryptocurrencies in the world.'},
+  {id:'privacy', label:'Privacy',           desc:'Coins built to keep transaction details — sender, recipient, and amount — private and difficult to trace.'},
+  {id:'stables', label:'Stablecoins',       desc:'Pegged to real-world assets (usually the US Dollar). Value stays roughly constant — useful for payments without price volatility. The same stablecoin may appear on multiple networks; always confirm the network before sending.'},
+  {id:'layer1',  label:'Layer 1',           desc:'Independent blockchains with their own networks, validators, and native tokens. The foundation layer that everything else is built on top of.'},
+  {id:'layer2',  label:'Layer 2 & Scaling', desc:'Protocols built on top of existing blockchains (usually Ethereum) to make transactions faster and significantly cheaper, without sacrificing security.'},
+  {id:'defi',    label:'DeFi',              desc:'Decentralised Finance — tokens powering lending, trading, yield farming, and financial services that run without banks or intermediaries.'},
+  {id:'exchange',label:'Exchange tokens',   desc:'Issued by crypto exchanges. Holding them often grants fee discounts, voting rights, or other benefits on their native platforms.'},
+  {id:'gaming',  label:'Gaming & NFT',      desc:'Tokens used in blockchain games, NFT platforms, virtual worlds (metaverses), and fan engagement apps.'},
+  {id:'meme',    label:'Meme coins',        desc:'Community-driven tokens inspired by internet culture and humour. Typically highly speculative and volatile — always research carefully before buying.'},
+  {id:'ai',      label:'AI & tech',         desc:'Tokens powering AI tools, decentralised computing, data marketplaces, and other technology-focused blockchain projects.'},
+  {id:'ton',     label:'TON ecosystem',     desc:'Coins and tokens native to the TON blockchain — Telegram\'s own network, home to mini-apps and tap-to-earn games with hundreds of millions of users.'},
+  {id:'infra',   label:'Other',             desc:'Protocols, oracles, bridges, identity tools, and utilities that power the broader crypto ecosystem behind the scenes.'},
 ];
 
 // Network → badge class
@@ -841,9 +842,21 @@ function buildTabs(){
 
 function setG(id){
   active = id;
-  buildTabs();
-  render();
-  document.getElementById('stable-tip').style.display = (id === 'stables') ? 'block' : 'none';
+buildTabs();
+render();
+document.getElementById('stable-tip').style.display = (active === 'stables') ? 'block' : 'none';
+// ADD THESE TWO:
+const _initGrp = G.find(g => g.id === active);
+if(_initGrp && _initGrp.desc){ const _b=document.getElementById('cat-desc'); _b.textContent=_initGrp.desc; _b.classList.add('visible'); }
+  const grp = G.find(g => g.id === id);
+  const bar = document.getElementById('cat-desc');
+  if(grp && grp.desc){
+    bar.textContent = grp.desc;
+    bar.classList.add('visible');
+  } else {
+    bar.textContent = '';
+    bar.classList.remove('visible');
+  }
 }
 
 buildTabs();
