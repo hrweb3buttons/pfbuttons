@@ -181,7 +181,7 @@ body {
 .tn {
   font-size: 0.75rem;
   color: var(--text-muted);
-  margin: 3px 0 8px;
+  margin: 3px 0 3px;
   line-height: 1.35;
 }
 
@@ -195,6 +195,7 @@ body {
   background: var(--background);
   color: var(--text-muted);
   font-weight: 500;
+  cursor: help;
 }
 .be { background: var(--badge-eth-bg);  color: var(--badge-eth-text);  border-color: transparent; }
 .bb { background: var(--badge-bsc-bg);  color: var(--badge-bsc-text);  border-color: transparent; }
@@ -424,12 +425,12 @@ body {
 </div>
 <div class="tabs" id="tabs" role="tablist" aria-label="Token category filter"></div>
    <div class="cat-desc" id="cat-desc"></div>
-<div id="out" role="region" aria-label="Token results"></div>
-   <div id="stable-tip" style="display:none">
+<div id="stable-tip" style="display:none">
   <div class="tip">
     <strong>💡 Stablecoins &amp; networks — what you need to know:</strong> Every stablecoin listed here is worth approximately $1 USD (or €1 EUR where noted), regardless of which network it runs on. However, <strong>you must send on the same network as the receiving address</strong>. For example, USDT on Tron (TRC-20) and USDT on Ethereum (ERC-20) are technically different assets — sending to the wrong network address will result in permanently lost funds. When in doubt, ask your exchange or wallet which network to use before sending.
   </div>
 </div>
+<div id="out" role="region" aria-label="Token results"></div>
 
 <script>
 // ── Dark mode ──────────────────────────────────────────────────────────
@@ -940,17 +941,34 @@ const T=[
    d:'An early Ethereum scaling project (largely superseded by Boba Network). Still actively traded on secondary markets.',
    aka:['omisego','omise go','omg','plasma chain']},
 
-  // ── EXCHANGE TOKENS ────────────────────────────────────────────────────
-  {n:'Binance Coin',    t:'BNB',   nets:['BSC'],                               g:'exchange', aka:['binance','binance smart chain','cz','changpeng zhao','bnb chain']},
-  {n:'OKB',             t:'OKB',   nets:['ETH'],                               g:'exchange', aka:['okx','okex','ok exchange','okb token']},
-  {n:'Huobi Token',     t:'HT',    nets:['ETH'],                               g:'exchange', aka:['huobi','htx','huobi token']},
-  {n:'Gatechain Token', t:'GT',    nets:['ETH'],                               g:'exchange', aka:['gate.io','gate exchange','gatechain','gate token']},
-  {n:'PancakeSwap',     t:'CAKE',  nets:['BSC'],                               g:'exchange', aka:['pancake','pancakeswap dex','bsc dex','amm bsc']},
-  {n:'MXC Exchange',    t:'MX',    nets:['ETH'],                               g:'exchange', aka:['mexc','mxc token','mx token']},
-  {n:'FTX Token',       t:'FTT',   nets:['ETH'],                               g:'exchange', aka:['ftx','ftx exchange','sbf','sam bankman-fried','bankrupt exchange']},
-  {n:'Klever',          t:'KLV',   nets:['KLV','TRX'],                         g:'exchange', aka:['klever wallet','klever exchange','klv']},
-  {n:'Cronos',          t:'CRO',   nets:['ETH','Cosmos'],                      g:'exchange', aka:['crypto.com','crypto dot com','mco','crypto.com chain']},
-
+// ── EXCHANGE TOKENS ────────────────────────────────────────────────────
+  {n:'Binance Coin',    t:'BNB',  nets:['BSC'],          g:'exchange',
+   d:'Binance\'s native token. Used for fee discounts on the world\'s largest crypto exchange and as the gas token on BNB Smart Chain.',
+   aka:['binance','binance smart chain','cz','changpeng zhao','bnb chain']},
+  {n:'OKB',             t:'OKB',  nets:['ETH'],          g:'exchange',
+   d:'OKX exchange\'s utility token. Holders get trading fee discounts, early access to token sales, and governance rights on the OKX platform.',
+   aka:['okx','okex','ok exchange','okb token']},
+  {n:'Huobi Token',     t:'HT',   nets:['ETH'],          g:'exchange',
+   d:'HTX (formerly Huobi) exchange\'s token. Provides fee discounts, staking rewards, and other platform benefits.',
+   aka:['huobi','htx','huobi token']},
+  {n:'Gatechain Token', t:'GT',   nets:['ETH'],          g:'exchange',
+   d:'Gate.io exchange\'s token — used for trading fee discounts, launchpad participation, and on the GateChain network.',
+   aka:['gate.io','gate exchange','gatechain','gate token']},
+  {n:'PancakeSwap',     t:'CAKE', nets:['BSC'],          g:'exchange',
+   d:'The governance and rewards token of PancakeSwap — the leading decentralised exchange on BNB Smart Chain. Stake CAKE to earn more CAKE.',
+   aka:['pancake','pancakeswap dex','bsc dex','amm bsc']},
+  {n:'MXC Exchange',    t:'MX',   nets:['ETH'],          g:'exchange',
+   d:'MEXC exchange\'s utility token. Provides fee discounts and other benefits on the MEXC trading platform.',
+   aka:['mexc','mxc token','mx token']},
+  {n:'FTX Token',       t:'FTT',  nets:['ETH'],          g:'exchange',
+   d:'⚠️ The token of the now-bankrupt FTX exchange, which collapsed in November 2022. Included for reference only — extremely high risk.',
+   aka:['ftx','ftx exchange','sbf','sam bankman-fried','bankrupt exchange']},
+  {n:'Klever',          t:'KLV',  nets:['KLV','TRX'],    g:'exchange',
+   d:'The native token of the Klever ecosystem — powering the Klever wallet, exchange, and its own dedicated blockchain.',
+   aka:['klever wallet','klever exchange','klv']},
+  {n:'Cronos',          t:'CRO',  nets:['ETH','Cosmos'], g:'exchange',
+   d:'Crypto.com\'s token — provides benefits across its exchange, prepaid Visa card programme, and DeFi products on the Cronos chain.',
+   aka:['crypto.com','crypto dot com','mco','crypto.com chain']},
   // ── GAMING & NFT ───────────────────────────────────────────────────────
 {n:'Axie Infinity',  t:'AXS',   nets:['ETH'],         g:'gaming',
    d:'Governance token of Axie Infinity — the game that pioneered "play-to-earn." Players breed, battle, and trade digital creatures called Axies.',
@@ -1346,12 +1364,9 @@ function buildTabs(){
 
 function setG(id){
   active = id;
-buildTabs();
-render();
-document.getElementById('stable-tip').style.display = (active === 'stables') ? 'block' : 'none';
-// ADD THESE TWO:
-const _initGrp = G.find(g => g.id === active);
-if(_initGrp && _initGrp.desc){ const _b=document.getElementById('cat-desc'); _b.textContent=_initGrp.desc; _b.classList.add('visible'); }
+  buildTabs();
+  render();
+  document.getElementById('stable-tip').style.display = (id === 'stables') ? 'block' : 'none';
   const grp = G.find(g => g.id === id);
   const bar = document.getElementById('cat-desc');
   if(grp && grp.desc){
