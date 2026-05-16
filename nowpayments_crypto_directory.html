@@ -463,6 +463,10 @@ const G=[
 // Network → badge class
 const NC={ETH:'be',BSC:'bb',TRX:'bt',Tron:'bt',Solana:'bs',SOLANA:'bs'};
 function bc(n){return NC[n]||''}
+   const FEATURED = new Set([
+  'BTC','ETH','USDT','USDC','BNB','SOL',
+  'DOGE','XRP','ADA','TRX','TON','MATIC'
+]);
    const NET_LABELS={
   'ETH':          'Ethereum (ERC-20) — most widely supported; typically higher fees',
   'BSC':          'BNB Smart Chain (BEP-20) — Binance\'s network; lower fees than Ethereum',
@@ -1290,9 +1294,20 @@ if(!filtered.length){
   return;
 }
 
-  if(active==='all' && !q){
+if(active==='all' && !q){
     // Grouped view
     let html='';
+
+    // Featured spotlight
+    const featuredItems = filtered.filter(x => FEATURED.has(x.t));
+    if(featuredItems.length){
+      html += `<div class="featured-wrap">
+        <div class="featured-label">⭐ Well-known coins — a good place to start</div>
+        <div class="grid">${featuredItems.map(card).join('')}</div>
+      </div>`;
+    }
+
+    // Category groups
     G.slice(1).forEach(grp=>{
       const items=filtered.filter(x=>x.g===grp.id);
       if(!items.length)return;
