@@ -112,7 +112,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
 }
 
 .tab {
@@ -419,8 +419,8 @@ body {
 
 </div>   
 <div class="top">
-  <input type="text" id="search" placeholder="Search by name, ticker, or common name…" oninput="render()"
-         aria-label="Search tokens by name, ticker, or common name">
+<input type="text" id="search" placeholder="Search by name, ticker, or keyword…" oninput="render()"
+         aria-label="Search coins by name, ticker, or keyword">
   <span class="cnt" id="cnt" aria-live="polite" aria-atomic="true"></span>
 </div>
 <div class="tabs" id="tabs" role="tablist" aria-label="Token category filter"></div>
