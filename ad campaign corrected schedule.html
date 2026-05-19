@@ -1,0 +1,149 @@
+
+<style>
+.tbl { border-collapse: collapse; min-width: 700px; width: 100%; font-size: 12px; }
+.tbl th { padding: 8px 10px; text-align: left; font-weight: 500; font-size: 11px; color: var(--color-text-secondary); white-space: nowrap; border-bottom: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); }
+.tbl td { padding: 7px 10px; white-space: nowrap; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.tbl tr:last-child td { border-bottom: none; }
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
+.note-row td { font-size: 11px; font-style: italic; color: var(--color-text-secondary); line-height: 1.55; padding: 4px 10px 10px; white-space: normal; }
+.strike { text-decoration: line-through; opacity: 0.55; }
+.stat { border-radius: var(--border-radius-md); padding: 0.7rem 1rem; }
+.stat-label { font-size: 11px; margin-bottom: 3px; }
+.stat-val { font-size: 19px; font-weight: 500; }
+.wrap { overflow-x: auto; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); }
+</style>
+
+<h2 class="sr-only">Corrected 285-day ad campaign schedule with error annotations</h2>
+
+<div style="padding: 1rem 0">
+  <p style="font-size:18px;font-weight:500;margin:0 0 1rem;color:var(--color-text-primary)">Corrected 285-day campaign schedule</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.25rem">
+    <div class="stat" style="background:var(--color-background-secondary)">
+      <div class="stat-label" style="color:var(--color-text-secondary)">Cycles tracked</div>
+      <div class="stat-val" style="color:var(--color-text-primary)">15</div>
+    </div>
+    <div class="stat" style="background:var(--color-background-danger)">
+      <div class="stat-label" style="color:var(--color-text-danger)">Root error (Day 38)</div>
+      <div class="stat-val" style="color:var(--color-text-danger)">1</div>
+    </div>
+    <div class="stat" style="background:var(--color-background-warning)">
+      <div class="stat-label" style="color:var(--color-text-warning)">Cascade rows</div>
+      <div class="stat-val" style="color:var(--color-text-warning)">11</div>
+    </div>
+    <div class="stat" style="background:var(--color-background-info)">
+      <div class="stat-label" style="color:var(--color-text-info)">Label issues</div>
+      <div class="stat-val" style="color:var(--color-text-info)">2</div>
+    </div>
+    <div class="stat" style="background:var(--color-background-secondary)">
+      <div class="stat-label" style="color:var(--color-text-secondary)">Corrected final balance</div>
+      <div class="stat-val" style="color:var(--color-text-primary)">$64.36</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <table class="tbl" id="main-tbl">
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Income from</th>
+          <th>Income</th>
+          <th>+ Carry-in</th>
+          <th>= Available</th>
+          <th>Purchases</th>
+          <th>Spend</th>
+          <th>Balance ✓</th>
+          <th>Doc had</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:1rem;font-size:11px;color:var(--color-text-secondary);display:flex;flex-wrap:wrap;gap:0.5rem 1.5rem">
+    <span>† one-time activation fee included in first purchase of that level</span>
+    <span>* see expanded note on that row</span>
+    <span>Click any flagged row to expand its note</span>
+  </div>
+</div>
+
+<script>
+const rows = [
+  { day:19,  il:"1×L2",                   inc:101.70,  ci:0,      av:101.70,  pur:"1×L2 ($77) + 1×L1† ($14)",                    sp:91.00,   bal:10.70,  doc:10.70,  err:null,       note:null },
+  { day:38,  il:"1×L2 + 1×L1",            inc:118.87,  ci:10.70,  av:129.57,  pur:"1×L2 ($77) + 2×L1 ($26)",                     sp:103.00,  bal:26.57,  doc:25.94,  err:"arith",    note:"Root error: 15.87 + 10.70 = 26.57, not 25.94. This single addition mistake ripples through every row below." },
+  { day:57,  il:"1×L2 + 2×L1",            inc:136.04,  ci:26.57,  av:162.61,  pur:"2×L2 ($154)",                                  sp:154.00,  bal:8.61,   doc:7.98,   err:"cascade",  note:"Wrong Day 38 balance carried forward ($25.94 instead of $26.57)." },
+  { day:76,  il:"2×L2",                   inc:203.40,  ci:8.61,   av:212.01,  pur:"1×L3† ($165) + 2×L1 ($26)",                   sp:191.00,  bal:21.01,  doc:20.00,  err:"cascade",  note:"Wrong balance carried; doc also rounds $212.01 to $211 before subtracting." },
+  { day:95,  il:"1×L3 + 2×L1",            inc:228.34,  ci:21.01,  av:249.35,  pur:"1×L3 ($150) + 1×L2 ($77) + 1×L1 ($13)",      sp:240.00,  bal:9.35,   doc:8.34,   err:"cascade",  note:"Wrong balance carried forward." },
+  { day:114, il:"1×L3 + 1×L2 + 1×L1",    inc:312.87,  ci:9.35,   av:322.22,  pur:"2×L3 ($300) + 1×L1 ($13)",                    sp:313.00,  bal:9.22,   doc:8.21,   err:"cascade",  note:"Wrong balance carried forward." },
+  { day:133, il:"2×L3 + 1×L1",            inc:405.17,  ci:9.22,   av:414.39,  pur:"2×L3 ($300) + 1×L2 ($77)",                    sp:377.00,  bal:37.39,  doc:36.38,  err:"cascade",  note:"Wrong balance carried forward." },
+  { day:152, il:"2×L3 + 1×L2",            inc:489.70,  ci:37.39,  av:527.09,  pur:"1×L4† ($330) + 1×L3 ($150) + 1×L1* ($13)",   sp:493.00,  bal:34.09,  doc:32.25,  err:"label",    note:"* L1 ($13) is a labeling error — Day 171 shows L2 income ($101.70), meaning a L2 ($77) was the intended purchase. Also carries wrong balance, and doc has two extra arithmetic errors here: 489.70 + 36.38 = 526.08 (not 526.25), and 526.25 − 493 = 33.25 (not 32.25)." },
+  { day:171, il:"1×L4 + 1×L3 + 1×L2*",   inc:684.50,  ci:34.09,  av:718.59,  pur:"2×L4 ($600) + 1×L2 ($77)",                    sp:677.00,  bal:41.59,  doc:39.75,  err:"label",    note:"* Third income stream labeled 'L1 payment = 101.70' — but L1 pays $17.17. This is actually a L2 payout. Doc's stated $101.70 figure used here to stay consistent with its intended plan." },
+  { day:190, il:"2×L4 + 1×L2",            inc:879.30,  ci:41.59,  av:920.89,  pur:"3×L4 ($900) + 1×L1 ($13)",                    sp:913.00,  bal:7.89,   doc:6.05,   err:"cascade",  note:"Wrong balance carried forward." },
+  { day:209, il:"3×L4 + 1×L1",            inc:1183.57, ci:7.89,   av:1191.46, pur:"1×L5† ($660) + 1×L4 ($300) + 1×L3 ($150)",   sp:1110.00, bal:81.46,  doc:80.52,  err:"cascade",  note:"Wrong balance carried forward. Doc also entered carry-in as $6.95 instead of $6.05 from Day 190." },
+  { day:228, il:"1×L5 + 1×L4 + 1×L3",    inc:1360.40, ci:81.46,  av:1441.86, pur:"2×L5 ($1200) + 1×L3 ($150) + 1×L2 ($77)",    sp:1427.00, bal:14.86,  doc:13.92,  err:"cascade",  note:"Wrong balance carried forward." },
+  { day:247, il:"2×L5 + 1×L3 + 1×L2",    inc:1850.90, ci:14.86,  av:1865.76, pur:"3×L5 ($1800)",                                 sp:1800.00, bal:65.76,  doc:64.82,  err:"cascade",  note:"Wrong balance carried forward." },
+  { day:266, il:"3×L5",                   inc:2332.80, ci:65.76,  av:2398.56, pur:"3×L5 ($1800)",                                 sp:1800.00, bal:598.56, doc:597.62, err:"cascade",  note:"Wrong balance carried forward." },
+  { day:285, il:"3×L5",                   inc:2332.80, ci:598.56, av:2931.36, pur:"1×L7† ($2640) + 1×L3 ($150) + 1×L2 ($77)",   sp:2867.00, bal:64.36,  doc:63.42,  err:"cascade",  note:"Wrong balance carried forward." }
+];
+
+const ec = {
+  arith:   { rowBg: "var(--color-background-danger)",  txt: "var(--color-text-danger)",  label: "Root error" },
+  cascade: { rowBg: "var(--color-background-warning)", txt: "var(--color-text-warning)", label: "Cascade" },
+  label:   { rowBg: "var(--color-background-info)",    txt: "var(--color-text-info)",    label: "Label issue" }
+};
+
+const $ = n => "$" + n.toFixed(2);
+let openDay = null;
+
+function render() {
+  const tbody = document.getElementById("tbl-body");
+  tbody.innerHTML = "";
+
+  rows.forEach((r, i) => {
+    const e = r.err ? ec[r.err] : null;
+    const rowBg = e ? e.rowBg : (i % 2 === 1 ? "var(--color-background-secondary)" : "transparent");
+    const diff = r.bal.toFixed(2) !== r.doc.toFixed(2);
+    const isOpen = openDay === r.day;
+
+    const tr = document.createElement("tr");
+    tr.style.background = rowBg;
+    tr.style.cursor = r.note ? "pointer" : "default";
+    if (!isOpen) tr.style.borderBottom = "0.5px solid var(--color-border-tertiary)";
+
+    const balColor = e ? e.txt : "var(--color-text-success)";
+
+    tr.innerHTML = `
+      <td style="font-weight:500">Day ${r.day}</td>
+      <td style="color:var(--color-text-secondary)">${r.il}</td>
+      <td>${$(r.inc)}</td>
+      <td>${$(r.ci)}</td>
+      <td style="font-weight:500">${$(r.av)}</td>
+      <td style="color:var(--color-text-secondary);font-size:11px;white-space:normal;max-width:160px">${r.pur}</td>
+      <td>${$(r.sp)}</td>
+      <td style="font-weight:500;color:${balColor}">${$(r.bal)}</td>
+      <td class="${diff ? 'strike' : ''}" style="color:var(--color-text-secondary)">${$(r.doc)}</td>
+      <td>${e ? `<span class="badge" style="background:${e.rowBg};color:${e.txt}">${e.label} <i class="ti ti-chevron-${isOpen?'up':'down'}" aria-hidden="true"></i></span>` : ''}</td>
+    `;
+
+    if (r.note) {
+      tr.addEventListener("click", () => {
+        openDay = isOpen ? null : r.day;
+        render();
+      });
+    }
+
+    tbody.appendChild(tr);
+
+    if (isOpen && r.note) {
+      const nr = document.createElement("tr");
+      nr.className = "note-row";
+      nr.style.background = rowBg;
+      nr.innerHTML = `<td colspan="10">${r.note}</td>`;
+      tbody.appendChild(nr);
+    }
+  });
+}
+
+render();
+</script>
