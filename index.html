@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-  connect-src 'self' https://api.coingecko.com https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io https://binance.llamarpc.com https://bsc-rpc.publicnode.com https://bsc.blockrazor.xyz https://bsc.rpc.blxrbdn.com https://bsc.drpc.org https://binance-smart-chain-public.nodies.app https://1rpc.io https://bnb.rpc.subquery.network https://public-bsc.nownodes.io https://api.dexscreener.com https://api.geckoterminal.com;
+  connect-src 'self'https://bsc-dataseed.binance.org https://rpc.ankr.com https://api.gopluslabs.io https://binance.llamarpc.com https://bsc-rpc.publicnode.com https://bsc.blockrazor.xyz https://bsc.rpc.blxrbdn.com https://bsc.drpc.org https://binance-smart-chain-public.nodies.app https://1rpc.io https://bnb.rpc.subquery.network https://public-bsc.nownodes.io https://api.dexscreener.com https://api.geckoterminal.com;
   img-src 'self' https://cryptologos.cc https://pmlcoin.app data:;
   style-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -2930,7 +2930,19 @@ function updatePriceDisplay() {
   display.textContent = formatTokenPrice(price, token);
 }
 
-
+async function fetchPrices() {
+  try {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
+    );
+    if (!res.ok) throw new Error("CoinGecko response not OK: " + res.status);
+    const data = await res.json();
+    tokenPrices.BNB = data?.binancecoin?.usd ?? null;
+  } catch (err) {
+    console.error("BNB price fetch failed:", err);
+    tokenPrices.BNB = null;
+  }
+}
 
 async function fetchDexScreenerFallback(missingSymbols) {
   await Promise.allSettled(
@@ -3001,6 +3013,37 @@ async function fetchDexPrices() {
   if (stillMissing.length) await fetchDexScreenerFallback(stillMissing);
 }
 
+async function fetchGeckoTerminalPoolsFallback(missingSymbols) {
+  await Promise.allSettled(
+    missingSymbols.map(async symbol => {
+      const address = DEX_TOKENS[symbol];
+      if (!address) return;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://api.geckoterminal.com/api/v2/networks/bsc/tokens/${address}/pools`,
+          { signal: controller.signal, headers: { Accept: "application/json" } }
+        );
+        clearTimeout(timeout);
+        if (!res.ok) return;
+        const data = await res.json();
+        const pools = data?.data;
+        if (!Array.isArray(pools) || !pools.length) return;
+        pools.sort((a, b) =>
+          parseFloat(b.attributes?.reserve_in_usd ?? 0) -
+          parseFloat(a.attributes?.reserve_in_usd ?? 0)
+        );
+        const price = parseFloat(pools[0].attributes?.token_price_usd);
+        if (!isNaN(price) && price > 0) {
+          tokenPrices[symbol] = price;
+        }
+      } catch (err) {
+        console.warn(`GeckoTerminal pools fallback failed for ${symbol}:`, err);
+      }
+    })
+  );
+}
 
 
 const connectBtn = document.getElementById("connectWallet");
