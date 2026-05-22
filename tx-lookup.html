@@ -1,403 +1,583 @@
-import { useState, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transaction Hash Lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg:       #0d0f14;
+    --bg2:      #13161e;
+    --bg3:      #1a1e2a;
+    --border:   rgba(255,255,255,0.08);
+    --border2:  rgba(255,255,255,0.14);
+    --text:     #e8eaf0;
+    --text2:    #8b8fa8;
+    --text3:    #565970;
+    --accent:   #4f8ef7;
+    --success:  #34c77b;
+    --warning:  #f5a623;
+    --danger:   #f05353;
+    --success-bg: rgba(52,199,123,0.10);
+    --warning-bg: rgba(245,166,35,0.10);
+    --radius:   10px;
+    --radius-lg:14px;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Inter', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 2rem;
+  }
+  .header-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    background: linear-gradient(135deg, #1c2340, #2a3060);
+    border: 1px solid rgba(79,142,247,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: var(--accent);
+    flex-shrink: 0;
+  }
+  .header h1 { font-size: 20px; font-weight: 600; color: var(--text); }
+  .header p  { font-size: 13px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+
+  /* ── Search bar ── */
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .search-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 0 14px;
+    height: 46px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: var(--text3); }
+  .search-input:focus { border-color: var(--accent); }
+
+  .search-btn {
+    height: 46px;
+    padding: 0 22px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .search-btn:hover:not(:disabled) { opacity: 0.88; }
+  .search-btn:active:not(:disabled) { transform: scale(0.97); }
+  .search-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ── Hint pill ── */
+  .hint {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: rgba(79,142,247,0.08);
+    border: 1px solid rgba(79,142,247,0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+  .hint i { color: var(--accent); margin-top: 1px; flex-shrink: 0; }
+  .hint strong { color: var(--text); font-weight: 500; }
+
+  /* ── Chain grid ── */
+  .chain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 7px;
+    margin-bottom: 1.5rem;
+  }
+  .chain-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 11px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .chain-card.found {
+    background: var(--success-bg);
+    border-color: rgba(52,199,123,0.35);
+  }
+  .chain-badge {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; letter-spacing: -0.03em;
+  }
+  .chain-name  { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chain-status { font-size: 11px; display: flex; align-items: center; gap: 3px; margin-top: 1px; }
+  .chain-status.idle     { color: var(--text3); }
+  .chain-status.searching{ color: var(--warning); }
+  .chain-status.found    { color: var(--success); }
+  .chain-status.not_found{ color: var(--text3); }
+  .chain-status.error    { color: var(--warning); }
+
+  /* ── Result cards ── */
+  .results-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--text2);
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 10px;
+  }
+  .results-label i { color: var(--success); }
+
+  .result-card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 10px;
+  }
+  .result-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .result-chain-info { display: flex; align-items: center; gap: 11px; }
+  .result-badge {
+    width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .result-chain-name  { font-size: 15px; font-weight: 600; color: var(--text); }
+  .result-chain-status { font-size: 12px; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .result-chain-status.ok  { color: var(--success); }
+  .result-chain-status.pending { color: var(--warning); }
+
+  .explorer-link {
+    font-size: 12px; color: var(--accent); text-decoration: none;
+    display: flex; align-items: center; gap: 4px;
+    opacity: 0.85; transition: opacity 0.15s;
+  }
+  .explorer-link:hover { opacity: 1; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+  .fields-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px 20px;
+  }
+  .field-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
+  .field-value { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; word-break: break-all; }
+  .field-value.mono { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+
+  .addresses-section { margin-top: 12px; }
+  .address-row { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; align-items: baseline; }
+  .address-tag { font-size: 11px; color: var(--text3); flex-shrink: 0; min-width: 22px; }
+  .address-val { font-size: 12px; font-family: var(--mono); color: var(--text2); word-break: break-all; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .empty-state i { font-size: 42px; color: var(--text3); display: block; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .empty-state p  { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .empty-state small { font-size: 12px; color: var(--text3); display: block; margin-top: 6px; }
+
+  /* ── Spinner ── */
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .spin { display: inline-block; animation: spin 0.9s linear infinite; }
+
+  /* ── Welcome / idle state ── */
+  .welcome {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    color: var(--text3);
+  }
+  .welcome i { font-size: 48px; display: block; margin-bottom: 12px; }
+  .welcome p { font-size: 13px; line-height: 1.7; max-width: 420px; margin: 0 auto; }
+
+  /* ── Chain pills strip ── */
+  .chain-strip {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 1.5rem;
+    padding: 12px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .chain-pill {
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    background: var(--bg3);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 17px; }
+    .chain-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .search-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-icon"><i class="ti ti-topology-ring-3"></i></div>
+    <div>
+      <h1>Transaction Hash Lookup</h1>
+      <p>Search 14 blockchains simultaneously — paste any tx hash to identify its chain.</p>
+    </div>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input" id="hashInput" type="text"
+      placeholder="Paste transaction hash (0x…, 64-char hex, or base58)…"
+      autocomplete="off" autocorrect="off" spellcheck="false" />
+    <button class="search-btn" id="searchBtn" disabled>
+      <i class="ti ti-search"></i>
+      <span>Search</span>
+    </button>
+  </div>
+
+  <div class="hint" id="hintBox" style="display:none">
+    <i class="ti ti-info-circle"></i>
+    <span id="hintText"></span>
+  </div>
+
+  <div id="app"></div>
+
+</div>
+
+<script>
 const CHAINS = [
-  { id: "bitcoin",   name: "Bitcoin",        symbol: "BTC",  color: "#F7931A", type: "bitcoin" },
-  { id: "litecoin",  name: "Litecoin",        symbol: "LTC",  color: "#345D9D", type: "litecoin" },
-  { id: "dogecoin",  name: "Dogecoin",        symbol: "DOGE", color: "#C2A633", type: "dogecoin" },
-  { id: "tron",      name: "Tron",            symbol: "TRX",  color: "#EF0027", type: "tron" },
-  { id: "solana",    name: "Solana",          symbol: "SOL",  color: "#9945FF", type: "solana" },
-  { id: "ethereum",  name: "Ethereum",        symbol: "ETH",  color: "#627EEA", type: "evm", rpc: "https://ethereum.publicnode.com",       explorer: "https://etherscan.io/tx/" },
-  { id: "bsc",       name: "BNB Chain",       symbol: "BNB",  color: "#F0B90B", type: "evm", rpc: "https://bsc.publicnode.com",            explorer: "https://bscscan.com/tx/" },
-  { id: "polygon",   name: "Polygon",         symbol: "POL",  color: "#7B3FE4", type: "evm", rpc: "https://polygon-bor.publicnode.com",    explorer: "https://polygonscan.com/tx/" },
-  { id: "arbitrum",  name: "Arbitrum",        symbol: "ARB",  color: "#28A0F0", type: "evm", rpc: "https://arbitrum-one.publicnode.com",   explorer: "https://arbiscan.io/tx/" },
-  { id: "optimism",  name: "Optimism",        symbol: "OP",   color: "#FF0420", type: "evm", rpc: "https://optimism.publicnode.com",       explorer: "https://optimistic.etherscan.io/tx/" },
-  { id: "base",      name: "Base",            symbol: "BASE", color: "#0052FF", type: "evm", rpc: "https://base.publicnode.com",           explorer: "https://basescan.org/tx/" },
-  { id: "avalanche", name: "Avalanche C",     symbol: "AVAX", color: "#E84142", type: "evm", rpc: "https://avalanche-c-chain.publicnode.com", explorer: "https://snowtrace.io/tx/" },
-  { id: "fantom",    name: "Fantom",          symbol: "FTM",  color: "#1969FF", type: "evm", rpc: "https://rpc.ankr.com/fantom",          explorer: "https://ftmscan.com/tx/" },
-  { id: "cronos",    name: "Cronos",          symbol: "CRO",  color: "#002D74", type: "evm", rpc: "https://evm.cronos.org",               explorer: "https://cronoscan.com/tx/" },
+  { id:"bitcoin",   name:"Bitcoin",      symbol:"BTC",  color:"#F7931A", type:"bitcoin" },
+  { id:"litecoin",  name:"Litecoin",     symbol:"LTC",  color:"#345D9D", type:"litecoin" },
+  { id:"dogecoin",  name:"Dogecoin",     symbol:"DOGE", color:"#C2A633", type:"dogecoin" },
+  { id:"tron",      name:"Tron",         symbol:"TRX",  color:"#EF0027", type:"tron" },
+  { id:"solana",    name:"Solana",       symbol:"SOL",  color:"#9945FF", type:"solana" },
+  { id:"ethereum",  name:"Ethereum",     symbol:"ETH",  color:"#627EEA", type:"evm", rpc:"https://ethereum.publicnode.com",          explorer:"https://etherscan.io/tx/" },
+  { id:"bsc",       name:"BNB Chain",    symbol:"BNB",  color:"#F0B90B", type:"evm", rpc:"https://bsc.publicnode.com",               explorer:"https://bscscan.com/tx/" },
+  { id:"polygon",   name:"Polygon",      symbol:"POL",  color:"#7B3FE4", type:"evm", rpc:"https://polygon-bor.publicnode.com",       explorer:"https://polygonscan.com/tx/" },
+  { id:"arbitrum",  name:"Arbitrum",     symbol:"ARB",  color:"#28A0F0", type:"evm", rpc:"https://arbitrum-one.publicnode.com",      explorer:"https://arbiscan.io/tx/" },
+  { id:"optimism",  name:"Optimism",     symbol:"OP",   color:"#FF0420", type:"evm", rpc:"https://optimism.publicnode.com",          explorer:"https://optimistic.etherscan.io/tx/" },
+  { id:"base",      name:"Base",         symbol:"BASE", color:"#0052FF", type:"evm", rpc:"https://base.publicnode.com",              explorer:"https://basescan.org/tx/" },
+  { id:"avalanche", name:"Avalanche C",  symbol:"AVAX", color:"#E84142", type:"evm", rpc:"https://avalanche-c-chain.publicnode.com", explorer:"https://snowtrace.io/tx/" },
+  { id:"fantom",    name:"Fantom",       symbol:"FTM",  color:"#1969FF", type:"evm", rpc:"https://rpc.ankr.com/fantom",             explorer:"https://ftmscan.com/tx/" },
+  { id:"cronos",    name:"Cronos",       symbol:"CRO",  color:"#002D74", type:"evm", rpc:"https://evm.cronos.org",                  explorer:"https://cronoscan.com/tx/" },
 ];
 
 const FIELD_LABELS = {
-  blockHeight:   "Block height",
-  blockNumber:   "Block number",
-  confirmations: "Confirmations",
-  fee:           "Fee",
-  value:         "Amount",
-  inputs:        "Inputs",
-  outputs:       "Outputs",
-  size:          "Size",
-  slot:          "Slot",
-  blockTime:     "Block time",
-  signers:       "Accounts",
-  status:        "Status",
-  from:          "From",
-  to:            "To",
-  gasLimit:      "Gas limit",
-  gasUsed:       "Gas used",
+  blockHeight:"Block height", blockNumber:"Block number", confirmations:"Confirmations",
+  fee:"Fee", value:"Amount", inputs:"Inputs", outputs:"Outputs", size:"Size",
+  slot:"Slot", blockTime:"Block time", signers:"Accounts", status:"Status",
+  from:"From", to:"To", gasLimit:"Gas limit", gasUsed:"Gas used",
+};
+const MONO_FIELDS = new Set(["from","to"]);
+const HIDE_FIELDS = new Set(["explorerUrl","confirmed"]);
+
+const STATUS_CFG = {
+  idle:      { icon:"ti-circle",       cls:"idle",      label:"Ready" },
+  searching: { icon:"ti-loader-2",     cls:"searching", label:"Searching…" },
+  found:     { icon:"ti-circle-check", cls:"found",     label:"Found" },
+  not_found: { icon:"ti-circle-x",     cls:"not_found", label:"Not found" },
+  error:     { icon:"ti-alert-circle", cls:"error",     label:"Unavailable" },
 };
 
-const MONO_FIELDS = new Set(["from", "to"]);
+let statuses = {}, results = {}, searching = false;
 
-function abortSignal(ms) {
-  const ctrl = new AbortController();
-  setTimeout(() => ctrl.abort(), ms);
-  return ctrl.signal;
+function abortIn(ms) {
+  const c = new AbortController();
+  setTimeout(() => c.abort(), ms);
+  return c.signal;
 }
 
-async function searchBitcoin(hash) {
-  const res = await fetch(`https://blockstream.info/api/tx/${hash}`, { signal: abortSignal(9000) });
-  if (!res.ok) return null;
-  const d = await res.json();
-  const totalOut = d.vout.reduce((s, o) => s + o.value, 0);
-  return {
-    blockHeight:   d.status.block_height ?? "Pending",
-    fee:           `${(d.fee / 1e8).toFixed(8)} BTC`,
-    value:         `${(totalOut / 1e8).toFixed(8)} BTC`,
-    inputs:        d.vin.length,
-    outputs:       d.vout.length,
-    size:          `${d.size} bytes`,
-    explorerUrl:   `https://blockstream.info/tx/${hash}`,
-    confirmed:     d.status.confirmed,
-  };
+async function fetchBitcoin(hash) {
+  const r = await fetch(`https://blockstream.info/api/tx/${hash}`, { signal: abortIn(9000) });
+  if (!r.ok) return null;
+  const d = await r.json();
+  const total = d.vout.reduce((s, o) => s + o.value, 0);
+  return { blockHeight: d.status.block_height ?? "Pending", fee: `${(d.fee/1e8).toFixed(8)} BTC`,
+    value: `${(total/1e8).toFixed(8)} BTC`, inputs: d.vin.length, outputs: d.vout.length,
+    size: `${d.size} bytes`, explorerUrl: `https://blockstream.info/tx/${hash}`, confirmed: d.status.confirmed };
 }
 
-async function searchBlockcypher(hash, coin, symbol, explorerBase) {
-  const res = await fetch(`https://api.blockcypher.com/v1/${coin}/main/txs/${hash}`, { signal: abortSignal(9000) });
-  if (!res.ok) return null;
-  const d = await res.json();
+async function fetchBlockcypher(hash, coin, symbol, base) {
+  const r = await fetch(`https://api.blockcypher.com/v1/${coin}/main/txs/${hash}`, { signal: abortIn(9000) });
+  if (!r.ok) return null;
+  const d = await r.json();
   if (d.error) return null;
-  return {
-    confirmations: d.confirmations ?? 0,
-    blockHeight:   d.block_height ?? "Pending",
-    fee:           `${((d.fees ?? 0) / 1e8).toFixed(8)} ${symbol}`,
-    value:         `${((d.total ?? 0) / 1e8).toFixed(8)} ${symbol}`,
-    explorerUrl:   `${explorerBase}${hash}/`,
-    confirmed:     (d.confirmations ?? 0) > 0,
-  };
+  return { confirmations: d.confirmations ?? 0, blockHeight: d.block_height ?? "Pending",
+    fee: `${((d.fees??0)/1e8).toFixed(8)} ${symbol}`, value: `${((d.total??0)/1e8).toFixed(8)} ${symbol}`,
+    explorerUrl: `${base}${hash}/`, confirmed: (d.confirmations??0) > 0 };
 }
 
-async function searchTron(hash) {
-  const res = await fetch(`https://api.trongrid.io/v1/transactions/${hash}`, {
-    headers: { Accept: "application/json" },
-    signal: abortSignal(9000),
-  });
-  if (!res.ok) return null;
-  const d = await res.json();
-  if (!d.data || d.data.length === 0) return null;
+async function fetchTron(hash) {
+  const r = await fetch(`https://api.trongrid.io/v1/transactions/${hash}`, { headers:{ Accept:"application/json" }, signal: abortIn(9000) });
+  if (!r.ok) return null;
+  const d = await r.json();
+  if (!d.data?.length) return null;
   const tx = d.data[0];
-  const contractRet = tx.ret?.[0]?.contractRet ?? "Unknown";
-  return {
-    status:      contractRet,
-    blockNumber: tx.blockNumber ?? "N/A",
-    fee:         tx.fee != null ? `${(tx.fee / 1e6).toFixed(6)} TRX` : "0 TRX",
-    from:        tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address ?? "N/A",
-    explorerUrl: `https://tronscan.org/#/transaction/${hash}`,
-    confirmed:   contractRet === "SUCCESS",
-  };
+  const ret = tx.ret?.[0]?.contractRet ?? "Unknown";
+  return { status: ret, blockNumber: tx.blockNumber ?? "N/A",
+    fee: tx.fee != null ? `${(tx.fee/1e6).toFixed(6)} TRX` : "0 TRX",
+    from: tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address ?? "N/A",
+    explorerUrl: `https://tronscan.org/#/transaction/${hash}`, confirmed: ret === "SUCCESS" };
 }
 
-async function searchSolana(hash) {
-  const res = await fetch("https://api.mainnet-beta.solana.com", {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransaction", params: [hash, { encoding: "json", maxSupportedTransactionVersion: 0 }] }),
-    signal:  abortSignal(12000),
+async function fetchSolana(hash) {
+  const r = await fetch("https://api.mainnet-beta.solana.com", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"getTransaction", params:[hash,{ encoding:"json", maxSupportedTransactionVersion:0 }] }),
+    signal: abortIn(12000)
   });
-  const d = await res.json();
+  const d = await r.json();
   if (!d.result) return null;
   const tx = d.result;
-  return {
-    slot:        tx.slot,
-    blockTime:   tx.blockTime ? new Date(tx.blockTime * 1000).toLocaleString() : "N/A",
-    fee:         `${((tx.meta?.fee ?? 0) / 1e9).toFixed(6)} SOL`,
-    signers:     tx.transaction?.message?.accountKeys?.length ?? "N/A",
-    explorerUrl: `https://solscan.io/tx/${hash}`,
-    confirmed:   tx.meta?.err === null,
-  };
+  return { slot: tx.slot, blockTime: tx.blockTime ? new Date(tx.blockTime*1000).toLocaleString() : "N/A",
+    fee: `${((tx.meta?.fee??0)/1e9).toFixed(6)} SOL`, signers: tx.transaction?.message?.accountKeys?.length ?? "N/A",
+    explorerUrl: `https://solscan.io/tx/${hash}`, confirmed: tx.meta?.err === null };
 }
 
-async function searchEVM(hash, chain) {
-  const body = (method, params, id) =>
-    JSON.stringify({ jsonrpc: "2.0", id, method, params });
-
-  const [txRes, rcpRes] = await Promise.all([
-    fetch(chain.rpc, { method: "POST", headers: { "Content-Type": "application/json" }, body: body("eth_getTransactionByHash", [hash], 1), signal: abortSignal(9000) }),
-    fetch(chain.rpc, { method: "POST", headers: { "Content-Type": "application/json" }, body: body("eth_getTransactionReceipt", [hash], 2), signal: abortSignal(9000) }),
+async function fetchEVM(hash, chain) {
+  const body = (m, p, i) => JSON.stringify({ jsonrpc:"2.0", id:i, method:m, params:p });
+  const opts = { method:"POST", headers:{"Content-Type":"application/json"}, signal: abortIn(9000) };
+  const [tr, rr] = await Promise.all([
+    fetch(chain.rpc, { ...opts, body: body("eth_getTransactionByHash",[hash],1) }),
+    fetch(chain.rpc, { ...opts, body: body("eth_getTransactionReceipt",[hash],2) }),
   ]);
-
-  const txData  = await txRes.json();
-  const tx      = txData.result;
-  if (!tx) return null;
-
-  const rcpData = await rcpRes.json();
-  const rcp     = rcpData.result;
-
-  const valueEth = parseInt(tx.value ?? "0x0", 16) / 1e18;
+  const td = await tr.json(), rd = await rr.json();
+  const tx = td.result; if (!tx) return null;
+  const rcp = rd.result;
+  const val = parseInt(tx.value??"0x0",16)/1e18;
   let feeStr = "N/A";
   if (rcp?.gasUsed && tx.gasPrice) {
-    const fee = parseInt(rcp.gasUsed, 16) * parseInt(tx.gasPrice, 16);
-    feeStr = `${(fee / 1e18).toFixed(8)} ${chain.symbol}`;
+    const fee = parseInt(rcp.gasUsed,16)*parseInt(tx.gasPrice,16);
+    feeStr = `${(fee/1e18).toFixed(8)} ${chain.symbol}`;
   }
-
-  return {
-    status:      rcp ? (rcp.status === "0x1" ? "Success" : "Failed") : "Pending",
-    blockNumber: tx.blockNumber ? parseInt(tx.blockNumber, 16).toLocaleString() : "Pending",
-    from:        tx.from,
-    to:          tx.to ?? "Contract creation",
-    value:       `${valueEth.toFixed(6)} ${chain.symbol}`,
-    fee:         feeStr,
-    gasLimit:    parseInt(tx.gas, 16).toLocaleString(),
-    gasUsed:     rcp?.gasUsed ? parseInt(rcp.gasUsed, 16).toLocaleString() : "N/A",
-    explorerUrl: chain.explorer + hash,
-    confirmed:   rcp?.status === "0x1",
-  };
+  return { status: rcp?(rcp.status==="0x1"?"Success":"Failed"):"Pending",
+    blockNumber: tx.blockNumber?parseInt(tx.blockNumber,16).toLocaleString():"Pending",
+    from: tx.from, to: tx.to??"Contract creation",
+    value: `${val.toFixed(6)} ${chain.symbol}`, fee: feeStr,
+    gasLimit: parseInt(tx.gas,16).toLocaleString(),
+    gasUsed: rcp?.gasUsed?parseInt(rcp.gasUsed,16).toLocaleString():"N/A",
+    explorerUrl: chain.explorer+hash, confirmed: rcp?.status==="0x1" };
 }
 
-function truncAddr(addr) {
-  if (!addr || addr.length < 20) return addr;
-  return `${addr.slice(0, 10)}...${addr.slice(-8)}`;
-}
-
-function hashHint(hash) {
-  const h = hash.trim();
-  if (h.startsWith("0x") && h.length === 66) return { label: "EVM / Tron format (0x…)", chains: "Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, Tron" };
-  if (/^[0-9a-fA-F]{64}$/.test(h))           return { label: "64-char hex (no 0x prefix)", chains: "Bitcoin, Litecoin, Dogecoin, Tron (some formats)" };
-  if (h.length >= 43 && h.length <= 90 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(h)) return { label: "Base58 format", chains: "Solana" };
+function hashHint(h) {
+  if (h.startsWith("0x") && h.length===66)
+    return { label:"EVM / Tron format (0x…)", chains:"Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, Tron" };
+  if (/^[0-9a-fA-F]{64}$/.test(h))
+    return { label:"64-char hex (no 0x)", chains:"Bitcoin, Litecoin, Dogecoin, Tron" };
+  if (h.length>=43 && h.length<=90 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
+    return { label:"Base58 format", chains:"Solana" };
   return null;
 }
 
-const STATUS = {
-  idle:      { icon: "ti-circle",       color: "var(--color-text-tertiary)",  label: "Ready" },
-  searching: { icon: "ti-loader-2",     color: "var(--color-text-warning)",   label: "Searching…" },
-  found:     { icon: "ti-circle-check", color: "var(--color-text-success)",   label: "Found" },
-  not_found: { icon: "ti-circle-x",     color: "var(--color-text-tertiary)",  label: "Not found" },
-  error:     { icon: "ti-alert-circle", color: "var(--color-text-warning)",   label: "Unavailable" },
-};
+function truncAddr(a) {
+  if (!a || a.length < 20) return a;
+  return `${a.slice(0,10)}…${a.slice(-8)}`;
+}
 
-export default function TxLookup() {
-  const [hash,        setHash]        = useState("");
-  const [statuses,    setStatuses]    = useState({});
-  const [results,     setResults]     = useState({});
-  const [isSearching, setIsSearching] = useState(false);
-  const [lastHash,    setLastHash]    = useState("");
+function hex(color, alpha) {
+  return color + Math.round(alpha * 255).toString(16).padStart(2,'0');
+}
 
-  const updateChain = useCallback((id, status, result) => {
-    setStatuses(prev => ({ ...prev, [id]: status }));
-    if (result) setResults(prev => ({ ...prev, [id]: result }));
-  }, []);
+/* ── Render ── */
+function renderChainGrid() {
+  return `<div class="chain-grid">${CHAINS.map(c => {
+    const s = statuses[c.id] ?? "idle";
+    const cfg = STATUS_CFG[s];
+    const found = s === "found";
+    return `<div class="chain-card${found?" found":""}">
+      <div class="chain-badge" style="background:${hex(c.color,0.1)};border:1.5px solid ${c.color};color:${c.color}">
+        ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
+      </div>
+      <div style="min-width:0">
+        <div class="chain-name">${c.name}</div>
+        <div class="chain-status ${cfg.cls}">
+          <i class="ti ${cfg.icon}${s==='searching'?' spin':''}"></i> ${cfg.label}
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
 
-  const handleSearch = async () => {
-    const trimmed = hash.trim();
-    if (!trimmed || isSearching) return;
-    setIsSearching(true);
-    setResults({});
-    setLastHash(trimmed);
-    const init = {};
-    CHAINS.forEach(c => { init[c.id] = "searching"; });
-    setStatuses(init);
+function renderResultCards() {
+  const found = CHAINS.filter(c => statuses[c.id]==='found');
+  if (!found.length) return '';
+  return `
+    <div class="results-label">
+      <i class="ti ti-circle-check"></i>
+      Match${found.length>1?'es':''} found on ${found.map(c=>c.name).join(' · ')}
+    </div>
+    ${found.map(c => {
+      const r = results[c.id]; if (!r) return '';
+      const fields = Object.entries(r).filter(([k]) => !HIDE_FIELDS.has(k) && !MONO_FIELDS.has(k));
+      const addrFields = Object.entries(r).filter(([k]) => MONO_FIELDS.has(k));
+      return `<div class="result-card">
+        <div class="result-header">
+          <div class="result-chain-info">
+            <div class="result-badge" style="background:${hex(c.color,0.12)};border:2px solid ${c.color};color:${c.color}">
+              ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
+            </div>
+            <div>
+              <div class="result-chain-name">${c.name}</div>
+              <div class="result-chain-status ${r.confirmed?'ok':'pending'}">
+                <i class="ti ${r.confirmed?'ti-circle-check':'ti-clock'}"></i>
+                ${r.confirmed?'Confirmed':'Pending / Unconfirmed'}
+              </div>
+            </div>
+          </div>
+          ${r.explorerUrl?`<a class="explorer-link" href="${r.explorerUrl}" target="_blank" rel="noopener">
+            Explorer <i class="ti ti-external-link"></i>
+          </a>`:''}
+        </div>
+        <hr class="divider" />
+        <div class="fields-grid">
+          ${fields.map(([k,v])=>`<div>
+            <div class="field-label">${FIELD_LABELS[k]??k}</div>
+            <div class="field-value">${String(v)}</div>
+          </div>`).join('')}
+        </div>
+        ${addrFields.length?`
+        <div class="addresses-section">
+          <hr class="divider" />
+          <div class="field-label" style="margin-bottom:8px">Full addresses</div>
+          ${addrFields.map(([k,v])=>`<div class="address-row">
+            <span class="address-tag">${FIELD_LABELS[k]??k}</span>
+            <span class="address-val">${String(v)}</span>
+          </div>`).join('')}
+        </div>`:''}
+      </div>`;
+    }).join('')}`;
+}
 
-    const searches = CHAINS.map(async (chain) => {
-      try {
-        let result = null;
-        if      (chain.type === "bitcoin")  result = await searchBitcoin(trimmed);
-        else if (chain.type === "litecoin") result = await searchBlockcypher(trimmed, "ltc", "LTC", "https://live.blockcypher.com/ltc/tx/");
-        else if (chain.type === "dogecoin") result = await searchBlockcypher(trimmed, "doge", "DOGE", "https://live.blockcypher.com/doge/tx/");
-        else if (chain.type === "tron")     result = await searchTron(trimmed);
-        else if (chain.type === "solana")   result = await searchSolana(trimmed);
-        else if (chain.type === "evm")      result = await searchEVM(trimmed, chain);
-        updateChain(chain.id, result ? "found" : "not_found", result);
-      } catch {
-        updateChain(chain.id, "error");
-      }
-    });
+function renderEmpty() {
+  const allDone = Object.values(statuses).every(s => s !== 'searching');
+  const anyFound = Object.values(statuses).some(s => s === 'found');
+  if (!allDone || anyFound) return '';
+  return `<div class="empty-state">
+    <i class="ti ti-search-off"></i>
+    <h3>No match found</h3>
+    <p>This hash was not found on any of the ${CHAINS.length} supported chains.</p>
+    <small>Some APIs may have been temporarily unavailable — try again if you expected a result.</small>
+  </div>`;
+}
 
-    await Promise.allSettled(searches);
-    setIsSearching(false);
+function renderWelcome() {
+  return `<div class="welcome">
+    <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
+    <p>Paste a transaction hash above to identify which blockchain it belongs to and view its details.</p>
+  </div>
+  <div class="chain-strip">
+    ${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hex(c.color,0.35)};color:${c.color}">${c.name}</span>`).join('')}
+  </div>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const hasSearched = Object.keys(statuses).length > 0;
+  if (!hasSearched) { app.innerHTML = renderWelcome(); return; }
+  app.innerHTML = renderChainGrid() + renderResultCards() + renderEmpty();
+}
+
+/* ── Events ── */
+const hashInput = document.getElementById('hashInput');
+const searchBtn = document.getElementById('searchBtn');
+const hintBox   = document.getElementById('hintBox');
+const hintText  = document.getElementById('hintText');
+
+hashInput.addEventListener('input', () => {
+  const h = hashInput.value.trim();
+  searchBtn.disabled = !h || searching;
+  const hint = h ? hashHint(h) : null;
+  if (hint) {
+    hintText.innerHTML = `<strong>${hint.label}</strong> — likely: ${hint.chains}`;
+    hintBox.style.display = 'flex';
+  } else {
+    hintBox.style.display = 'none';
+  }
+});
+
+hashInput.addEventListener('keydown', e => { if (e.key==='Enter') searchBtn.click(); });
+
+searchBtn.addEventListener('click', async () => {
+  const hash = hashInput.value.trim();
+  if (!hash || searching) return;
+  searching = true;
+  searchBtn.disabled = true;
+  searchBtn.innerHTML = `<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
+  statuses = {}; results = {};
+  CHAINS.forEach(c => { statuses[c.id] = 'searching'; });
+  render();
+
+  const update = (id, status, result) => {
+    statuses[id] = status;
+    if (result) results[id] = result;
+    render();
   };
 
-  const hasSearched   = Object.keys(statuses).length > 0;
-  const foundChains   = CHAINS.filter(c => statuses[c.id] === "found");
-  const allDone       = hasSearched && !isSearching;
-  const noneFound     = allDone && foundChains.length === 0;
-  const hint          = hash.trim() ? hashHint(hash.trim()) : null;
+  const searches = CHAINS.map(async chain => {
+    try {
+      let r = null;
+      if      (chain.type==='bitcoin')  r = await fetchBitcoin(hash);
+      else if (chain.type==='litecoin') r = await fetchBlockcypher(hash,'ltc','LTC','https://live.blockcypher.com/ltc/tx/');
+      else if (chain.type==='dogecoin') r = await fetchBlockcypher(hash,'doge','DOGE','https://live.blockcypher.com/doge/tx/');
+      else if (chain.type==='tron')     r = await fetchTron(hash);
+      else if (chain.type==='solana')   r = await fetchSolana(hash);
+      else if (chain.type==='evm')      r = await fetchEVM(hash, chain);
+      update(chain.id, r ? 'found' : 'not_found', r);
+    } catch { update(chain.id, 'error'); }
+  });
 
-  return (
-    <div style={{ padding: "1rem 0", fontFamily: "var(--font-sans)" }}>
-      <h2 style={{ margin: "0 0 0.25rem", fontSize: 18, fontWeight: 500, color: "var(--color-text-primary)", display: "flex", alignItems: "center", gap: 8 }}>
-        <i className="ti ti-topology-ring-3" style={{ fontSize: 20 }} aria-hidden="true" />
-        Transaction hash lookup
-      </h2>
-      <p style={{ margin: "0 0 1.25rem", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
-        Search {CHAINS.length} blockchains simultaneously — Bitcoin, Litecoin, Dogecoin, Tron, Solana, and all major EVM chains.
-      </p>
+  await Promise.allSettled(searches);
+  searching = false;
+  searchBtn.disabled = false;
+  searchBtn.innerHTML = `<i class="ti ti-search"></i> <span>Search</span>`;
+  render();
+});
 
-      <div style={{ display: "flex", gap: 8, marginBottom: hint ? 8 : "1.25rem" }}>
-        <input
-          type="text"
-          value={hash}
-          onChange={e => setHash(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && handleSearch()}
-          placeholder="Paste transaction hash…"
-          style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 13 }}
-        />
-        <button onClick={handleSearch} disabled={!hash.trim() || isSearching} style={{ minWidth: 110 }}>
-          {isSearching ? "Searching…" : "Search ↗"}
-        </button>
-      </div>
-
-      {hint && (
-        <div style={{ marginBottom: "1.25rem", fontSize: 12, color: "var(--color-text-secondary)", background: "var(--color-background-secondary)", borderRadius: "var(--border-radius-md)", padding: "8px 12px", display: "flex", alignItems: "flex-start", gap: 6 }}>
-          <i className="ti ti-info-circle" style={{ fontSize: 14, marginTop: 1, flexShrink: 0 }} aria-hidden="true" />
-          <span><strong style={{ fontWeight: 500 }}>{hint.label}</strong> — likely: {hint.chains}</span>
-        </div>
-      )}
-
-      {hasSearched && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(145px, 1fr))", gap: 6, marginBottom: "1.5rem" }}>
-          {CHAINS.map(chain => {
-            const status = statuses[chain.id] ?? "idle";
-            const cfg    = STATUS[status];
-            const found  = status === "found";
-            return (
-              <div key={chain.id} style={{
-                background:    found ? "var(--color-background-success)" : "var(--color-background-primary)",
-                border:        `0.5px solid ${found ? "var(--color-border-success)" : "var(--color-border-tertiary)"}`,
-                borderRadius:  "var(--border-radius-md)",
-                padding:       "8px 10px",
-                display:       "flex",
-                alignItems:    "center",
-                gap:           8,
-              }}>
-                <div style={{
-                  width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
-                  background: chain.color + "18",
-                  border: `1.5px solid ${chain.color}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 8, fontWeight: 700, color: chain.color, letterSpacing: "-0.02em",
-                }}>
-                  {chain.symbol.length > 3 ? chain.symbol.slice(0, 4) : chain.symbol}
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--color-text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {chain.name}
-                  </div>
-                  <div style={{ fontSize: 11, color: cfg.color, display: "flex", alignItems: "center", gap: 3 }}>
-                    <i className={`ti ${cfg.icon}${status === "searching" ? " spin" : ""}`} style={{ fontSize: 11 }} aria-hidden="true" />
-                    {cfg.label}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {foundChains.length > 0 && (
-        <>
-          <div style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: 6 }}>
-            <i className="ti ti-circle-check" style={{ color: "var(--color-text-success)", fontSize: 13 }} aria-hidden="true" />
-            Match{foundChains.length > 1 ? "es" : ""} found on {foundChains.map(c => c.name).join(" · ")}
-          </div>
-
-          {foundChains.map(chain => {
-            const result = results[chain.id];
-            if (!result) return null;
-            const detailFields = Object.entries(result).filter(([k]) => k !== "explorerUrl" && k !== "confirmed");
-
-            return (
-              <div key={chain.id} style={{
-                background: "var(--color-background-primary)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                borderRadius: "var(--border-radius-lg)",
-                padding: "1rem 1.25rem",
-                marginBottom: 10,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{
-                      width: 38, height: 38, borderRadius: "50%",
-                      background: chain.color + "18",
-                      border: `2px solid ${chain.color}`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 9, fontWeight: 700, color: chain.color, letterSpacing: "-0.01em",
-                    }}>
-                      {chain.symbol.length > 3 ? chain.symbol.slice(0, 4) : chain.symbol}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 500, fontSize: 15, color: "var(--color-text-primary)" }}>{chain.name}</div>
-                      <div style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 4, color: result.confirmed ? "var(--color-text-success)" : "var(--color-text-warning)" }}>
-                        <i className={`ti ${result.confirmed ? "ti-circle-check" : "ti-clock"}`} style={{ fontSize: 12 }} aria-hidden="true" />
-                        {result.confirmed ? "Confirmed" : "Pending / Unconfirmed"}
-                      </div>
-                    </div>
-                  </div>
-                  {result.explorerUrl && (
-                    <a href={result.explorerUrl} style={{ fontSize: 12, color: "var(--color-text-info)", display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}>
-                      Explorer <i className="ti ti-external-link" style={{ fontSize: 12 }} aria-hidden="true" />
-                    </a>
-                  )}
-                </div>
-
-                <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", paddingTop: 12, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px 20px" }}>
-                  {detailFields.map(([key, value]) => (
-                    <div key={key}>
-                      <div style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginBottom: 2 }}>
-                        {FIELD_LABELS[key] ?? key}
-                      </div>
-                      <div style={{
-                        fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)",
-                        fontFamily: MONO_FIELDS.has(key) ? "var(--font-mono)" : "var(--font-sans)",
-                        wordBreak: "break-all",
-                        lineHeight: 1.4,
-                      }}>
-                        {MONO_FIELDS.has(key) ? truncAddr(String(value)) : String(value)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {(result.from || result.to) && (
-                  <div style={{ marginTop: 12, borderTop: "0.5px solid var(--color-border-tertiary)", paddingTop: 12 }}>
-                    <div style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginBottom: 6 }}>Full addresses</div>
-                    {result.from && (
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>From</span>
-                        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--color-text-secondary)", wordBreak: "break-all" }}>{result.from}</span>
-                      </div>
-                    )}
-                    {result.to && result.to !== "N/A" && (
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0, minWidth: 20 }}>To</span>
-                        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--color-text-secondary)", wordBreak: "break-all" }}>{result.to}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </>
-      )}
-
-      {noneFound && foundChains.length === 0 && (
-        <div style={{
-          textAlign: "center", padding: "2.5rem 1rem",
-          background: "var(--color-background-secondary)",
-          borderRadius: "var(--border-radius-lg)",
-          border: "0.5px solid var(--color-border-tertiary)",
-        }}>
-          <i className="ti ti-search-off" style={{ fontSize: 36, color: "var(--color-text-tertiary)", display: "block", marginBottom: 10 }} aria-hidden="true" />
-          <div style={{ fontWeight: 500, color: "var(--color-text-primary)", marginBottom: 4 }}>No match found</div>
-          <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
-            This hash was not found on any of the {CHAINS.length} supported chains.
-          </div>
-          <div style={{ fontSize: 12, color: "var(--color-text-tertiary)", marginTop: 6 }}>
-            Some explorers may have been temporarily unavailable — try again if you expected a result.
-          </div>
-        </div>
-      )}
-
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.spin{display:inline-block;animation:spin 1s linear infinite}`}</style>
-    </div>
-  );
-}
+render();
+</script>
+</body>
+</html>
