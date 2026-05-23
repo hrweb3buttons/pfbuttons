@@ -536,6 +536,7 @@ footer {
       <div><label><input type="radio" name="calcMode" value="current" checked> Current Price</label></div>
       <div><label><input type="radio" name="calcMode" value="target"> Price Target</label></div>
       <div><label><input type="radio" name="calcMode" value="usdt"> USDT → Tokens</label></div>
+      <div><label><input type="radio" name="calcMode" value="goal"> Token Goal (USDT needed)</label></div>
     </fieldset>
 
     <!-- Current price — token + prefill button -->
@@ -608,6 +609,45 @@ footer {
           <option value="PML">PML</option>
           <option value="JOY">JOY</option>
         </select>
+      </div>
+      <p style="font-size:.82rem; color:var(--text-muted); margin:0 0 .75rem;">
+        Estimates only. Does not account for slippage, price impact, or swap fees.
+      </p>
+    </div>
+
+    <!-- Token Goal panel -->
+    <div id="calcGoalPanel" style="display:none; margin-bottom:1rem;">
+      <div style="margin-bottom:.75rem;">
+        <label for="calcGoalToken"><strong>Token</strong></label><br>
+        <select id="calcGoalToken"
+                style="width:100%; padding:.5rem; margin-top:.2rem; border-radius:var(--radius);
+                       border:1px solid var(--border); background:var(--card-bg); color:var(--text);">
+          <option value="">Select token…</option>
+          <option value="PFI">PFI</option>
+          <option value="PFB">PFB</option>
+          <option value="PFS">PFS</option>
+          <option value="PFG">PFG</option>
+          <option value="PML">PML</option>
+          <option value="JOY">JOY</option>
+        </select>
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <label>
+          <strong>Token Goal</strong><br>
+          <input id="calcGoalAmount" type="text" inputmode="decimal"
+                 placeholder="e.g. 10000"
+                 style="width:100%; padding:.5rem; margin-top:.2rem; border:1px solid var(--border);
+                        border-radius:var(--radius); background:var(--card-bg); color:var(--text);">
+        </label>
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <label>
+          <strong>Current Holdings <span style="font-weight:400; color:var(--text-muted);">(optional)</span></strong><br>
+          <input id="calcGoalHoldings" type="text" inputmode="decimal"
+                 placeholder="e.g. 2500"
+                 style="width:100%; padding:.5rem; margin-top:.2rem; border:1px solid var(--border);
+                        border-radius:var(--radius); background:var(--card-bg); color:var(--text);">
+        </label>
       </div>
       <p style="font-size:.82rem; color:var(--text-muted); margin:0 0 .75rem;">
         Estimates only. Does not account for slippage, price impact, or swap fees.
@@ -695,6 +735,8 @@ const SWAP_LINKS = {
   PML: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x69dD5e051AbB0109A609eE0B78187c3EE0326FbD&chain=bsc",
   JOY: "https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=0x24338c1ACe31A3DfE43912879317eb76a6213a0f&chain=bsc"
 };
+
+const BNB_USDT_SWAP_URL = "https://pancakeswap.finance/swap?chain=bsc&outputCurrency=0x55d398326f99059fF775485246999027B3197955";
 
 /* BSC RPCs for on-chain fallback (no key required) */
 const BSC_RPCS = [
@@ -1013,6 +1055,19 @@ function buildLinkButtons() {
     note.textContent = "On mobile, copy a link below and paste it into the MetaMask browser.";
     swapEl.appendChild(note);
 
+    /* BNB → USDT first */
+    const bnbUsdtBtn = document.createElement("button");
+    bnbUsdtBtn.type = "button";
+    bnbUsdtBtn.className = "btn-ghost";
+    bnbUsdtBtn.textContent = "Copy BNB → USDT";
+    bnbUsdtBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(BNB_USDT_SWAP_URL);
+        notify("BNB → USDT swap link copied");
+      } catch { notify("Copy failed — please copy manually"); }
+    };
+    swapEl.appendChild(bnbUsdtBtn);
+
     Object.entries(SWAP_LINKS).forEach(([sym, url]) => {
       const btn = document.createElement("button");
       btn.type = "button";
@@ -1027,6 +1082,14 @@ function buildLinkButtons() {
       swapEl.appendChild(btn);
     });
   } else {
+    /* Desktop: BNB → USDT first, then USDT → token buttons */
+    const bnbUsdtBtn = document.createElement("button");
+    bnbUsdtBtn.type = "button";
+    bnbUsdtBtn.setAttribute("aria-label", "Swap BNB to USDT on PancakeSwap");
+    bnbUsdtBtn.textContent = "BNB → USDT";
+    bnbUsdtBtn.onclick = () => window.open(BNB_USDT_SWAP_URL, "_blank", "noopener,noreferrer");
+    swapEl.appendChild(bnbUsdtBtn);
+
     Object.entries(SWAP_LINKS).forEach(([sym, url]) => {
       const btn = document.createElement("button");
       btn.type = "button";
@@ -1418,6 +1481,7 @@ function setCalcMode(mode) {
 
   const prefillRow = document.getElementById("calcPrefillRow");
   const usdtPanel  = document.getElementById("calcUsdtPanel");
+  const goalPanel  = document.getElementById("calcGoalPanel");
 
   if (mode === "target") {
     targetSelector.style.display = "block";
@@ -1426,6 +1490,7 @@ function setCalcMode(mode) {
     calcAmountRow.style.display  = "block";
     if (prefillRow) prefillRow.style.display = "none";
     if (usdtPanel)  usdtPanel.style.display  = "none";
+    if (goalPanel)  goalPanel.style.display  = "none";
   } else if (mode === "usdt") {
     targetSelector.style.display = "none";
     priceInput.readOnly          = false;
@@ -1433,17 +1498,34 @@ function setCalcMode(mode) {
     calcAmountRow.style.display  = "none";
     if (prefillRow) prefillRow.style.display = "none";
     if (usdtPanel)  usdtPanel.style.display  = "block";
+    if (goalPanel)  goalPanel.style.display  = "none";
     const ua = document.getElementById("calcUsdtAmount");
     const ut = document.getElementById("calcUsdtToken");
     if (ua) ua.value = "";
     if (ut) ut.value = "";
+  } else if (mode === "goal") {
+    targetSelector.style.display = "none";
+    priceInput.readOnly          = false;
+    calcPriceRow.style.display   = "none";
+    calcAmountRow.style.display  = "none";
+    if (prefillRow) prefillRow.style.display = "none";
+    if (usdtPanel)  usdtPanel.style.display  = "none";
+    if (goalPanel)  goalPanel.style.display  = "block";
+    const ga = document.getElementById("calcGoalAmount");
+    const gh = document.getElementById("calcGoalHoldings");
+    const gt = document.getElementById("calcGoalToken");
+    if (ga) ga.value = "";
+    if (gh) gh.value = "";
+    if (gt) gt.value = "";
   } else {
+    /* current */
     targetSelector.style.display = "none";
     priceInput.readOnly          = false;
     calcPriceRow.style.display   = "block";
     calcAmountRow.style.display  = "block";
     if (prefillRow) prefillRow.style.display = "flex";
     if (usdtPanel)  usdtPanel.style.display  = "none";
+    if (goalPanel)  goalPanel.style.display  = "none";
   }
 }
 
@@ -1470,6 +1552,11 @@ formatOnBlur(amountInput);
 const calcUsdtAmtInput = document.getElementById("calcUsdtAmount");
 if (calcUsdtAmtInput) { sanitizeDecimalInput(calcUsdtAmtInput); formatOnBlur(calcUsdtAmtInput); }
 
+const calcGoalAmtInput = document.getElementById("calcGoalAmount");
+const calcGoalHldInput = document.getElementById("calcGoalHoldings");
+if (calcGoalAmtInput) { sanitizeDecimalInput(calcGoalAmtInput); formatOnBlur(calcGoalAmtInput); }
+if (calcGoalHldInput) { sanitizeDecimalInput(calcGoalHldInput); formatOnBlur(calcGoalHldInput); }
+
 calcModeRadios.forEach(r => r.addEventListener("change", e => setCalcMode(e.target.value)));
 targetRadios.forEach(r => r.addEventListener("change", e => {
   priceInput.value = String(PRICE_TARGETS[e.target.value] || "");
@@ -1489,6 +1576,58 @@ document.getElementById("calcButton").addEventListener("click", () => {
   clearCalcOutput();
   const mode = document.querySelector('input[name="calcMode"]:checked')?.value;
 
+  /* ── Token Goal mode ── */
+  if (mode === "goal") {
+    const sym          = document.getElementById("calcGoalToken").value;
+    const goalRaw      = document.getElementById("calcGoalAmount").value;
+    const holdingsRaw  = document.getElementById("calcGoalHoldings").value.trim();
+    const goal         = parseLocalizedNumber(goalRaw);
+    const holdings     = holdingsRaw ? parseLocalizedNumber(holdingsRaw) : 0;
+
+    if (!sym) {
+      calcAlert.textContent = "Please select a token.";
+      calcAlert.style.display = "block"; return;
+    }
+    if (isNaN(goal) || goal <= 0) {
+      calcAlert.textContent = "Please enter a valid token goal.";
+      calcAlert.style.display = "block"; return;
+    }
+    if (holdingsRaw && (isNaN(holdings) || holdings < 0)) {
+      calcAlert.textContent = "Please enter a valid current holdings amount.";
+      calcAlert.style.display = "block"; return;
+    }
+
+    const price = tokenPrices[sym];
+    if (!price) {
+      calcAlert.textContent = `Price for ${sym} is not yet available. Please wait a moment and try again.`;
+      calcAlert.style.display = "block"; return;
+    }
+
+    const safeHoldings  = holdingsRaw ? holdings : 0;
+    const tokensNeeded  = goal - safeHoldings;
+    const fmt           = n => new Intl.NumberFormat(navigator.language).format(n);
+    const fmtUsd        = n => new Intl.NumberFormat(navigator.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
+    if (tokensNeeded <= 0) {
+      calcResult.textContent =
+        `You already hold ${fmt(safeHoldings)} ${sym}, which meets or exceeds your goal of ${fmt(goal)} ${sym}.`;
+      return;
+    }
+
+    const usdtNeeded    = tokensNeeded * price;
+    const holdingsNote  = safeHoldings > 0
+      ? ` After subtracting your current holdings of ${fmt(safeHoldings)} ${sym}, you still need ${fmt(tokensNeeded)} ${sym}.`
+      : "";
+
+    calcResult.innerHTML =
+      `Estimated USDT needed: <span style="font-size:1.1em;">~$${fmtUsd(usdtNeeded)}</span>` +
+      `<br><span style="font-weight:400; font-size:.9em; color:var(--text-muted);">` +
+      `Goal: ${fmt(goal)} ${sym} at ${formatPrice(price, sym)} per ${sym}.${holdingsNote}` +
+      `</span>`;
+    return;
+  }
+
+  /* ── USDT → Tokens mode ── */
   if (mode === "usdt") {
     const usdtAmt = parseLocalizedNumber(document.getElementById("calcUsdtAmount").value);
     const sym     = document.getElementById("calcUsdtToken").value;
@@ -1509,6 +1648,7 @@ document.getElementById("calcButton").addEventListener("click", () => {
     return;
   }
 
+  /* ── Current Price / Price Target mode ── */
   const price  = parseLocalizedNumber(priceInput.value);
   const amount = parseLocalizedNumber(amountInput.value);
 
@@ -1524,6 +1664,14 @@ document.getElementById("calcReset").addEventListener("click", () => {
   amountInput.value = "";
   document.querySelector('input[name="calcMode"][value="current"]').checked = true;
   targetRadios.forEach(r => r.checked = false);
+
+  const ga = document.getElementById("calcGoalAmount");
+  const gh = document.getElementById("calcGoalHoldings");
+  const gt = document.getElementById("calcGoalToken");
+  if (ga) ga.value = "";
+  if (gh) gh.value = "";
+  if (gt) gt.value = "";
+
   setCalcMode("current");
   const ts = document.getElementById("calcTokenSelect");
   if (ts) ts.value = "";
