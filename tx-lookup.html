@@ -24,248 +24,132 @@
     --success:  #34c77b;
     --warning:  #f5a623;
     --danger:   #f05353;
+    --token:    #a78bfa;
     --success-bg: rgba(52,199,123,0.10);
-    --warning-bg: rgba(245,166,35,0.10);
+    --token-bg:   rgba(167,139,250,0.08);
+    --token-border: rgba(167,139,250,0.25);
     --radius:   10px;
     --radius-lg:14px;
     --mono:     'JetBrains Mono', monospace;
     --sans:     'Inter', sans-serif;
   }
 
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 2rem 1rem 4rem;
-  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem 4rem; }
+  .page { max-width: 860px; margin: 0 auto; }
 
-  .page {
-    max-width: 860px;
-    margin: 0 auto;
-  }
-
-  /* ── Header ── */
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 2rem;
-  }
-  .header-icon {
-    width: 46px; height: 46px; border-radius: 12px;
-    background: linear-gradient(135deg, #1c2340, #2a3060);
-    border: 1px solid rgba(79,142,247,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; color: var(--accent);
-    flex-shrink: 0;
-  }
+  /* Header */
+  .header { display: flex; align-items: center; gap: 14px; margin-bottom: 2rem; }
+  .header-icon { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg,#1c2340,#2a3060); border: 1px solid rgba(79,142,247,0.3); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--accent); flex-shrink: 0; }
   .header h1 { font-size: 20px; font-weight: 600; color: var(--text); }
   .header p  { font-size: 13px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
 
-  /* ── Search bar ── */
-  .search-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .search-input {
-    flex: 1;
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 0 14px;
-    height: 46px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-  }
+  /* Search */
+  .search-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .search-input { flex: 1; background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 0 14px; height: 46px; font-family: var(--mono); font-size: 13px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .search-input::placeholder { color: var(--text3); }
   .search-input:focus { border-color: var(--accent); }
-
-  .search-btn {
-    height: 46px;
-    padding: 0 22px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: opacity 0.15s, transform 0.1s;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .search-btn { height: 46px; padding: 0 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: opacity 0.15s, transform 0.1s; display: flex; align-items: center; gap: 6px; }
   .search-btn:hover:not(:disabled) { opacity: 0.88; }
   .search-btn:active:not(:disabled) { transform: scale(0.97); }
   .search-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-  /* ── Hint pill ── */
-  .hint {
-    display: flex; align-items: flex-start; gap: 8px;
-    background: rgba(79,142,247,0.08);
-    border: 1px solid rgba(79,142,247,0.2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: var(--text2);
-    margin-bottom: 1.25rem;
-    line-height: 1.5;
-  }
+  /* Hint */
+  .hint { display: flex; align-items: flex-start; gap: 8px; background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--text2); margin-bottom: 1.25rem; line-height: 1.5; }
   .hint i { color: var(--accent); margin-top: 1px; flex-shrink: 0; }
   .hint strong { color: var(--text); font-weight: 500; }
 
-  /* ── Chain grid ── */
-  .chain-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 7px;
-    margin-bottom: 1.5rem;
-  }
-  .chain-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 9px 11px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .chain-card.found {
-    background: var(--success-bg);
-    border-color: rgba(52,199,123,0.35);
-  }
-  .chain-badge {
-    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 8px; font-weight: 700; letter-spacing: -0.03em;
-  }
-  .chain-name  { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Chain grid */
+  .chain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 7px; margin-bottom: 1.5rem; }
+  .chain-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; display: flex; align-items: center; gap: 9px; transition: border-color 0.2s, background 0.2s; }
+  .chain-card.found { background: var(--success-bg); border-color: rgba(52,199,123,0.35); }
+  .chain-badge { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; letter-spacing: -0.03em; }
+  .chain-name   { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .chain-status { font-size: 11px; display: flex; align-items: center; gap: 3px; margin-top: 1px; }
-  .chain-status.idle     { color: var(--text3); }
-  .chain-status.searching{ color: var(--warning); }
-  .chain-status.found    { color: var(--success); }
-  .chain-status.not_found{ color: var(--text3); }
-  .chain-status.error    { color: var(--warning); }
+  .chain-status.idle      { color: var(--text3); }
+  .chain-status.searching { color: var(--warning); }
+  .chain-status.found     { color: var(--success); }
+  .chain-status.not_found { color: var(--text3); }
+  .chain-status.error     { color: var(--warning); }
 
-  /* ── Result cards ── */
-  .results-label {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
-    text-transform: uppercase; color: var(--text2);
-    display: flex; align-items: center; gap: 6px;
-    margin-bottom: 10px;
-  }
+  /* Result cards */
+  .results-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text2); display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
   .results-label i { color: var(--success); }
-
-  .result-card {
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-lg);
-    padding: 1.1rem 1.25rem;
-    margin-bottom: 10px;
-  }
-  .result-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 14px;
-  }
+  .result-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 10px; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .result-chain-info { display: flex; align-items: center; gap: 11px; }
-  .result-badge {
-    width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 700; letter-spacing: -0.01em;
-  }
-  .result-chain-name  { font-size: 15px; font-weight: 600; color: var(--text); }
+  .result-badge { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; letter-spacing: -0.01em; }
+  .result-chain-name   { font-size: 15px; font-weight: 600; color: var(--text); }
   .result-chain-status { font-size: 12px; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
-  .result-chain-status.ok  { color: var(--success); }
+  .result-chain-status.ok      { color: var(--success); }
   .result-chain-status.pending { color: var(--warning); }
-
-  .explorer-link {
-    font-size: 12px; color: var(--accent); text-decoration: none;
-    display: flex; align-items: center; gap: 4px;
-    opacity: 0.85; transition: opacity 0.15s;
-  }
+  .explorer-link { font-size: 12px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 4px; opacity: 0.85; transition: opacity 0.15s; }
   .explorer-link:hover { opacity: 1; }
-
   .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-
-  .fields-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px 20px;
-  }
+  .fields-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 12px 20px; }
   .field-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
   .field-value { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; word-break: break-all; }
-  .field-value.mono { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+  .field-value.muted { color: var(--text3); font-weight: 400; }
 
-  .addresses-section { margin-top: 12px; }
+  /* Address rows */
+  .addresses-section { margin-top: 2px; }
   .address-row { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; align-items: baseline; }
   .address-tag { font-size: 11px; color: var(--text3); flex-shrink: 0; min-width: 22px; }
   .address-val { font-size: 12px; font-family: var(--mono); color: var(--text2); word-break: break-all; }
 
-  /* ── Empty state ── */
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+  /* ── Token transfers ── */
+  .token-section { margin-top: 14px; }
+  .token-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--token); display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+  .token-row {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    background: var(--token-bg); border: 1px solid var(--token-border);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 6px;
   }
+  .token-row:last-child { margin-bottom: 0; }
+  .token-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .token-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(167,139,250,0.15); border: 1.5px solid var(--token-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--token); flex-shrink: 0; letter-spacing: -0.02em; }
+  .token-symbol { font-size: 14px; font-weight: 600; color: var(--text); }
+  .token-contract { font-size: 11px; font-family: var(--mono); color: var(--text3); margin-top: 1px; }
+  .token-amount-col { text-align: right; flex-shrink: 0; }
+  .token-amount { font-size: 15px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+  .token-amount-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .token-addrs { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--token-border); }
+  .token-addr-row { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; margin-bottom: 3px; }
+  .token-addr-row:last-child { margin-bottom: 0; }
+  .token-addr-tag { font-size: 10px; color: var(--text3); min-width: 22px; flex-shrink: 0; }
+  .token-addr-val { font-size: 11px; font-family: var(--mono); color: var(--text2); word-break: break-all; }
+
+  /* Empty / Welcome */
+  .empty-state { text-align: center; padding: 3rem 1rem; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); }
   .empty-state i { font-size: 42px; color: var(--text3); display: block; margin-bottom: 12px; }
   .empty-state h3 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-  .empty-state p  { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .empty-state p { font-size: 13px; color: var(--text2); line-height: 1.6; }
   .empty-state small { font-size: 12px; color: var(--text3); display: block; margin-top: 6px; }
+  .welcome { text-align: center; padding: 3rem 1rem 2rem; color: var(--text3); }
+  .welcome i { font-size: 48px; display: block; margin-bottom: 12px; }
+  .welcome p { font-size: 13px; line-height: 1.7; max-width: 420px; margin: 0 auto; }
+  .chain-strip { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; padding: 12px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); }
+  .chain-pill { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border2); color: var(--text2); background: var(--bg3); }
 
-  /* ── Spinner ── */
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .spin { display: inline-block; animation: spin 0.9s linear infinite; }
 
-  /* ── Welcome / idle state ── */
-  .welcome {
-    text-align: center;
-    padding: 3rem 1rem 2rem;
-    color: var(--text3);
-  }
-  .welcome i { font-size: 48px; display: block; margin-bottom: 12px; }
-  .welcome p { font-size: 13px; line-height: 1.7; max-width: 420px; margin: 0 auto; }
-
-  /* ── Chain pills strip ── */
-  .chain-strip {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 1.5rem;
-    padding: 12px 14px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-  }
-  .chain-pill {
-    font-size: 11px; font-weight: 500;
-    padding: 3px 9px; border-radius: 20px;
-    border: 1px solid var(--border2);
-    color: var(--text2);
-    background: var(--bg3);
-  }
-
-  /* ── Responsive ── */
   @media (max-width: 600px) {
     .header h1 { font-size: 17px; }
     .chain-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     .search-btn span { display: none; }
+    .token-row { flex-direction: column; }
+    .token-amount-col { text-align: left; }
   }
 </style>
 </head>
 <body>
 <div class="page">
-
   <div class="header">
     <div class="header-icon"><i class="ti ti-topology-ring-3"></i></div>
     <div>
       <h1>Transaction Hash Lookup</h1>
-      <p>Search 14 blockchains simultaneously — paste any tx hash to identify its chain.</p>
+      <p>Search 14 blockchains simultaneously — identifies chain, native amounts, and token transfers.</p>
     </div>
   </div>
 
@@ -274,21 +158,19 @@
       placeholder="Paste transaction hash (0x…, 64-char hex, or base58)…"
       autocomplete="off" autocorrect="off" spellcheck="false" />
     <button class="search-btn" id="searchBtn" disabled>
-      <i class="ti ti-search"></i>
-      <span>Search</span>
+      <i class="ti ti-search"></i><span>Search</span>
     </button>
   </div>
-
   <div class="hint" id="hintBox" style="display:none">
-    <i class="ti ti-info-circle"></i>
-    <span id="hintText"></span>
+    <i class="ti ti-info-circle"></i><span id="hintText"></span>
   </div>
-
   <div id="app"></div>
-
 </div>
 
 <script>
+/* ═══════════════════════════════════════════════════════
+   CHAIN DEFINITIONS
+═══════════════════════════════════════════════════════ */
 const CHAINS = [
   { id:"bitcoin",   name:"Bitcoin",      symbol:"BTC",  color:"#F7931A", type:"bitcoin" },
   { id:"litecoin",  name:"Litecoin",     symbol:"LTC",  color:"#345D9D", type:"litecoin" },
@@ -308,12 +190,12 @@ const CHAINS = [
 
 const FIELD_LABELS = {
   blockHeight:"Block height", blockNumber:"Block number", confirmations:"Confirmations",
-  fee:"Fee", value:"Amount", inputs:"Inputs", outputs:"Outputs", size:"Size",
+  fee:"Fee", nativeValue:"Native amount", inputs:"Inputs", outputs:"Outputs", size:"Size",
   slot:"Slot", blockTime:"Block time", signers:"Accounts", status:"Status",
   from:"From", to:"To", gasLimit:"Gas limit", gasUsed:"Gas used",
 };
-const MONO_FIELDS = new Set(["from","to"]);
-const HIDE_FIELDS = new Set(["explorerUrl","confirmed"]);
+const MONO_FIELDS  = new Set(["from","to"]);
+const HIDE_FIELDS  = new Set(["explorerUrl","confirmed","tokenTransfers","value"]);
 
 const STATUS_CFG = {
   idle:      { icon:"ti-circle",       cls:"idle",      label:"Ready" },
@@ -325,20 +207,127 @@ const STATUS_CFG = {
 
 let statuses = {}, results = {}, searching = false;
 
-function abortIn(ms) {
-  const c = new AbortController();
-  setTimeout(() => c.abort(), ms);
-  return c.signal;
+/* ═══════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════ */
+function abortIn(ms) { const c = new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal; }
+function hexCol(color, alpha) { return color + Math.round(alpha*255).toString(16).padStart(2,'0'); }
+function truncAddr(a, front=10, back=8) {
+  if (!a || a.length <= front+back+3) return a;
+  return `${a.slice(0,front)}…${a.slice(-back)}`;
 }
 
+/** Decode ABI-encoded string returned by eth_call (handles both string and bytes32 encoding) */
+function decodeABIString(hex) {
+  if (!hex || hex === '0x' || hex.length < 4) return null;
+  const data = hex.startsWith('0x') ? hex.slice(2) : hex;
+  // Attempt standard ABI string: [offset:32bytes][length:32bytes][utf8data...]
+  try {
+    const offsetBytes = parseInt(data.slice(0, 64), 16);
+    if (offsetBytes < data.length / 2) {
+      const lenHexPos = offsetBytes * 2;
+      const strLen = parseInt(data.slice(lenHexPos, lenHexPos + 64), 16);
+      if (strLen > 0 && strLen < 200) {
+        const strHex = data.slice(lenHexPos + 64, lenHexPos + 64 + strLen * 2);
+        const bytes = new Uint8Array(strHex.match(/.{2}/g).map(b=>parseInt(b,16)));
+        const str = new TextDecoder().decode(bytes);
+        if (/^[\x20-\x7E]+$/.test(str)) return str.trim();
+      }
+    }
+  } catch {}
+  // Fallback: bytes32 (older tokens like MKR, WBTC)
+  try {
+    const bytes = new Uint8Array(data.match(/.{2}/g).slice(0,32).map(b=>parseInt(b,16))).filter(b=>b!==0);
+    const str = new TextDecoder().decode(bytes);
+    if (str.length > 0 && /^[\x20-\x7E]+$/.test(str)) return str.trim();
+  } catch {}
+  return null;
+}
+
+/** Format a raw BigInt token amount using decimals, up to 8 significant decimal places */
+function formatTokenAmt(rawHex, decimals) {
+  try {
+    if (!rawHex || rawHex === '0x') return '0';
+    const raw = BigInt(rawHex);
+    const dec = BigInt(decimals);
+    const divisor = 10n ** dec;
+    const whole = raw / divisor;
+    const frac  = raw % divisor;
+    if (frac === 0n) return whole.toLocaleString();
+    const fracStr = frac.toString().padStart(decimals, '0').slice(0, 8).replace(/0+$/, '');
+    return `${whole.toLocaleString()}.${fracStr}`;
+  } catch { return '?'; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   EVM TOKEN HELPERS
+═══════════════════════════════════════════════════════ */
+const ERC20_TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+
+async function fetchTokenInfo(contractAddr, rpcUrl) {
+  const call = (selector) => JSON.stringify({
+    jsonrpc:'2.0', id:1, method:'eth_call',
+    params:[{ to: contractAddr, data: selector }, 'latest']
+  });
+  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, signal: abortIn(5000) };
+  try {
+    const [symRes, decRes] = await Promise.all([
+      fetch(rpcUrl, { ...opts, body: call('0x95d89b41') }), // symbol()
+      fetch(rpcUrl, { ...opts, body: call('0x313ce567') }), // decimals()
+    ]);
+    const symData = await symRes.json();
+    const decData = await decRes.json();
+    const symbol   = decodeABIString(symData.result) ?? contractAddr.slice(0,8)+'…';
+    const decimals = decData.result && decData.result !== '0x' ? parseInt(decData.result, 16) : 18;
+    return { symbol, decimals };
+  } catch { return { symbol: '???', decimals: 18 }; }
+}
+
+/** Parse ERC-20 Transfer events from receipt logs */
+async function parseEVMTokenTransfers(logs, rpcUrl) {
+  if (!logs?.length) return [];
+  // ERC-20: 3 topics (sig, from, to) + non-empty data
+  const transferLogs = logs.filter(l =>
+    l.topics?.[0]?.toLowerCase() === ERC20_TRANSFER_TOPIC &&
+    l.topics.length === 3 &&
+    l.data && l.data !== '0x' && l.data.length > 2
+  );
+  if (!transferLogs.length) return [];
+
+  // Fetch token info for each unique contract in parallel
+  const uniqueContracts = [...new Set(transferLogs.map(l => l.address.toLowerCase()))];
+  const tokenInfoMap = {};
+  await Promise.all(uniqueContracts.map(async addr => {
+    tokenInfoMap[addr] = await fetchTokenInfo(addr, rpcUrl);
+  }));
+
+  return transferLogs.map(log => {
+    const contractAddr = log.address.toLowerCase();
+    const { symbol, decimals } = tokenInfoMap[contractAddr] || { symbol:'???', decimals:18 };
+    const from   = '0x' + log.topics[1].slice(-40);
+    const to     = '0x' + log.topics[2].slice(-40);
+    const amount = formatTokenAmt(log.data, decimals);
+    return { symbol, amount, from, to, contractAddr };
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   FETCH FUNCTIONS
+═══════════════════════════════════════════════════════ */
 async function fetchBitcoin(hash) {
   const r = await fetch(`https://blockstream.info/api/tx/${hash}`, { signal: abortIn(9000) });
   if (!r.ok) return null;
   const d = await r.json();
-  const total = d.vout.reduce((s, o) => s + o.value, 0);
-  return { blockHeight: d.status.block_height ?? "Pending", fee: `${(d.fee/1e8).toFixed(8)} BTC`,
-    value: `${(total/1e8).toFixed(8)} BTC`, inputs: d.vin.length, outputs: d.vout.length,
-    size: `${d.size} bytes`, explorerUrl: `https://blockstream.info/tx/${hash}`, confirmed: d.status.confirmed };
+  const total = d.vout.reduce((s,o)=>s+o.value,0);
+  return {
+    blockHeight: d.status.block_height ?? 'Pending',
+    fee:   `${(d.fee/1e8).toFixed(8)} BTC`,
+    nativeValue: `${(total/1e8).toFixed(8)} BTC`,
+    inputs: d.vin.length, outputs: d.vout.length,
+    size:  `${d.size} bytes`,
+    explorerUrl: `https://blockstream.info/tx/${hash}`,
+    confirmed: d.status.confirmed,
+  };
 }
 
 async function fetchBlockcypher(hash, coin, symbol, base) {
@@ -346,90 +335,186 @@ async function fetchBlockcypher(hash, coin, symbol, base) {
   if (!r.ok) return null;
   const d = await r.json();
   if (d.error) return null;
-  return { confirmations: d.confirmations ?? 0, blockHeight: d.block_height ?? "Pending",
-    fee: `${((d.fees??0)/1e8).toFixed(8)} ${symbol}`, value: `${((d.total??0)/1e8).toFixed(8)} ${symbol}`,
-    explorerUrl: `${base}${hash}/`, confirmed: (d.confirmations??0) > 0 };
+  return {
+    confirmations: d.confirmations ?? 0,
+    blockHeight:   d.block_height ?? 'Pending',
+    fee:           `${((d.fees??0)/1e8).toFixed(8)} ${symbol}`,
+    nativeValue:   `${((d.total??0)/1e8).toFixed(8)} ${symbol}`,
+    explorerUrl:   `${base}${hash}/`,
+    confirmed:     (d.confirmations??0) > 0,
+  };
 }
 
 async function fetchTron(hash) {
-  const r = await fetch(`https://api.trongrid.io/v1/transactions/${hash}`, { headers:{ Accept:"application/json" }, signal: abortIn(9000) });
-  if (!r.ok) return null;
-  const d = await r.json();
-  if (!d.data?.length) return null;
-  const tx = d.data[0];
-  const ret = tx.ret?.[0]?.contractRet ?? "Unknown";
-  return { status: ret, blockNumber: tx.blockNumber ?? "N/A",
-    fee: tx.fee != null ? `${(tx.fee/1e6).toFixed(6)} TRX` : "0 TRX",
-    from: tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address ?? "N/A",
-    explorerUrl: `https://tronscan.org/#/transaction/${hash}`, confirmed: ret === "SUCCESS" };
+  // Fetch tx + events in parallel
+  const opts = { headers:{ Accept:'application/json' }, signal: abortIn(9000) };
+  const [txRes, evRes] = await Promise.allSettled([
+    fetch(`https://api.trongrid.io/v1/transactions/${hash}`, opts),
+    fetch(`https://api.trongrid.io/v1/transactions/${hash}/events`, opts),
+  ]);
+
+  if (txRes.status === 'rejected') return null;
+  const txData = await txRes.value.json();
+  if (!txData.data?.length) return null;
+  const tx  = txData.data[0];
+  const ret = tx.ret?.[0]?.contractRet ?? 'Unknown';
+
+  const result = {
+    status:      ret,
+    blockNumber: tx.blockNumber ?? 'N/A',
+    fee:         tx.fee != null ? `${(tx.fee/1e6).toFixed(6)} TRX` : '0 TRX',
+    nativeValue: tx.raw_data?.contract?.[0]?.parameter?.value?.amount != null
+                   ? `${(tx.raw_data.contract[0].parameter.value.amount/1e6).toFixed(6)} TRX` : '0 TRX',
+    from:        tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address ?? 'N/A',
+    explorerUrl: `https://tronscan.org/#/transaction/${hash}`,
+    confirmed:   ret === 'SUCCESS',
+    tokenTransfers: [],
+  };
+
+  // Parse TRC-20 Transfer events
+  if (evRes.status === 'fulfilled' && evRes.value.ok) {
+    try {
+      const evData = await evRes.value.json();
+      for (const ev of (evData.data ?? [])) {
+        if (ev.event_name !== 'Transfer') continue;
+        const r      = ev.result ?? {};
+        const info   = ev.token_info ?? {};
+        const from   = r._from ?? r.from ?? '?';
+        const to     = r._to   ?? r.to   ?? '?';
+        const rawVal = r._value ?? r.value ?? '0';
+        const dec    = info.decimals ?? 6;
+        let amount;
+        try {
+          amount = formatTokenAmt('0x' + BigInt(rawVal).toString(16), dec);
+        } catch { amount = rawVal; }
+        result.tokenTransfers.push({
+          symbol:       info.symbol ?? 'TRC-20',
+          amount,
+          from,
+          to,
+          contractAddr: ev.contract_address ?? '',
+        });
+      }
+    } catch {}
+  }
+
+  return result;
 }
 
 async function fetchSolana(hash) {
-  const r = await fetch("https://api.mainnet-beta.solana.com", {
-    method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"getTransaction", params:[hash,{ encoding:"json", maxSupportedTransactionVersion:0 }] }),
-    signal: abortIn(12000)
+  const r = await fetch('https://api.mainnet-beta.solana.com', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ jsonrpc:'2.0', id:1, method:'getTransaction',
+      params:[hash,{ encoding:'json', maxSupportedTransactionVersion:0 }] }),
+    signal: abortIn(12000),
   });
   const d = await r.json();
   if (!d.result) return null;
   const tx = d.result;
-  return { slot: tx.slot, blockTime: tx.blockTime ? new Date(tx.blockTime*1000).toLocaleString() : "N/A",
-    fee: `${((tx.meta?.fee??0)/1e9).toFixed(6)} SOL`, signers: tx.transaction?.message?.accountKeys?.length ?? "N/A",
-    explorerUrl: `https://solscan.io/tx/${hash}`, confirmed: tx.meta?.err === null };
+
+  // Detect SPL token transfers via preTokenBalances / postTokenBalances
+  const pre  = tx.meta?.preTokenBalances  ?? [];
+  const post = tx.meta?.postTokenBalances ?? [];
+  const tokenTransfers = [];
+
+  for (const postBal of post) {
+    const preBal   = pre.find(p => p.accountIndex===postBal.accountIndex && p.mint===postBal.mint);
+    const preAmt   = preBal?.uiTokenAmount?.uiAmount  ?? 0;
+    const postAmt  = postBal.uiTokenAmount?.uiAmount  ?? 0;
+    const diff     = postAmt - preAmt;
+    if (diff > 0) {
+      // Find sender (the account with negative diff for same mint)
+      const senderBal = post.find(p =>
+        p.mint === postBal.mint &&
+        p.accountIndex !== postBal.accountIndex &&
+        (pre.find(pp=>pp.accountIndex===p.accountIndex&&pp.mint===p.mint)?.uiTokenAmount?.uiAmount??0)
+          - (p.uiTokenAmount?.uiAmount??0) > 0
+      );
+      tokenTransfers.push({
+        symbol: postBal.uiTokenAmount?.symbol ?? truncAddr(postBal.mint, 6, 4),
+        amount: postBal.uiTokenAmount?.uiAmountString ?? diff.toString(),
+        from:   senderBal?.owner ?? '(unknown)',
+        to:     postBal.owner ?? '(unknown)',
+        contractAddr: postBal.mint,
+      });
+    }
+  }
+
+  return {
+    slot:      tx.slot,
+    blockTime: tx.blockTime ? new Date(tx.blockTime*1000).toLocaleString() : 'N/A',
+    fee:       `${((tx.meta?.fee??0)/1e9).toFixed(6)} SOL`,
+    signers:   tx.transaction?.message?.accountKeys?.length ?? 'N/A',
+    explorerUrl: `https://solscan.io/tx/${hash}`,
+    confirmed: tx.meta?.err === null,
+    tokenTransfers,
+  };
 }
 
 async function fetchEVM(hash, chain) {
-  const body = (m, p, i) => JSON.stringify({ jsonrpc:"2.0", id:i, method:m, params:p });
-  const opts = { method:"POST", headers:{"Content-Type":"application/json"}, signal: abortIn(9000) };
+  const body = (m,p,i) => JSON.stringify({jsonrpc:'2.0', id:i, method:m, params:p});
+  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, signal: abortIn(9000) };
   const [tr, rr] = await Promise.all([
-    fetch(chain.rpc, { ...opts, body: body("eth_getTransactionByHash",[hash],1) }),
-    fetch(chain.rpc, { ...opts, body: body("eth_getTransactionReceipt",[hash],2) }),
+    fetch(chain.rpc, { ...opts, body: body('eth_getTransactionByHash',[hash],1) }),
+    fetch(chain.rpc, { ...opts, body: body('eth_getTransactionReceipt',[hash],2) }),
   ]);
   const td = await tr.json(), rd = await rr.json();
   const tx = td.result; if (!tx) return null;
   const rcp = rd.result;
-  const val = parseInt(tx.value??"0x0",16)/1e18;
-  let feeStr = "N/A";
+
+  const rawVal = BigInt(tx.value ?? '0x0');
+  const nativeValue = rawVal === 0n
+    ? `0 ${chain.symbol}`
+    : `${(Number(rawVal)/1e18).toFixed(6)} ${chain.symbol}`;
+
+  let feeStr = 'N/A';
   if (rcp?.gasUsed && tx.gasPrice) {
-    const fee = parseInt(rcp.gasUsed,16)*parseInt(tx.gasPrice,16);
+    const fee = parseInt(rcp.gasUsed,16) * parseInt(tx.gasPrice,16);
     feeStr = `${(fee/1e18).toFixed(8)} ${chain.symbol}`;
   }
-  return { status: rcp?(rcp.status==="0x1"?"Success":"Failed"):"Pending",
-    blockNumber: tx.blockNumber?parseInt(tx.blockNumber,16).toLocaleString():"Pending",
-    from: tx.from, to: tx.to??"Contract creation",
-    value: `${val.toFixed(6)} ${chain.symbol}`, fee: feeStr,
-    gasLimit: parseInt(tx.gas,16).toLocaleString(),
-    gasUsed: rcp?.gasUsed?parseInt(rcp.gasUsed,16).toLocaleString():"N/A",
-    explorerUrl: chain.explorer+hash, confirmed: rcp?.status==="0x1" };
+
+  const tokenTransfers = rcp
+    ? await parseEVMTokenTransfers(rcp.logs, chain.rpc)
+    : [];
+
+  return {
+    status:      rcp ? (rcp.status==='0x1' ? 'Success' : 'Failed') : 'Pending',
+    blockNumber: tx.blockNumber ? parseInt(tx.blockNumber,16).toLocaleString() : 'Pending',
+    from:        tx.from,
+    to:          tx.to ?? 'Contract creation',
+    nativeValue,
+    fee:         feeStr,
+    gasLimit:    parseInt(tx.gas,16).toLocaleString(),
+    gasUsed:     rcp?.gasUsed ? parseInt(rcp.gasUsed,16).toLocaleString() : 'N/A',
+    explorerUrl: chain.explorer + hash,
+    confirmed:   rcp?.status === '0x1',
+    tokenTransfers,
+  };
 }
 
+/* ═══════════════════════════════════════════════════════
+   HASH HINT
+═══════════════════════════════════════════════════════ */
 function hashHint(h) {
-  if (h.startsWith("0x") && h.length===66)
-    return { label:"EVM / Tron format (0x…)", chains:"Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, Tron" };
+  if (h.startsWith('0x') && h.length===66)
+    return { label:'EVM / Tron format (0x…)', chains:'Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, Tron' };
   if (/^[0-9a-fA-F]{64}$/.test(h))
-    return { label:"64-char hex (no 0x)", chains:"Bitcoin, Litecoin, Dogecoin, Tron" };
+    return { label:'64-char hex (no 0x)', chains:'Bitcoin, Litecoin, Dogecoin, Tron' };
   if (h.length>=43 && h.length<=90 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
-    return { label:"Base58 format", chains:"Solana" };
+    return { label:'Base58 format', chains:'Solana' };
   return null;
 }
 
-function truncAddr(a) {
-  if (!a || a.length < 20) return a;
-  return `${a.slice(0,10)}…${a.slice(-8)}`;
-}
-
-function hex(color, alpha) {
-  return color + Math.round(alpha * 255).toString(16).padStart(2,'0');
-}
-
-/* ── Render ── */
+/* ═══════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════ */
 function renderChainGrid() {
   return `<div class="chain-grid">${CHAINS.map(c => {
-    const s = statuses[c.id] ?? "idle";
+    const s = statuses[c.id] ?? 'idle';
     const cfg = STATUS_CFG[s];
-    const found = s === "found";
-    return `<div class="chain-card${found?" found":""}">
-      <div class="chain-badge" style="background:${hex(c.color,0.1)};border:1.5px solid ${c.color};color:${c.color}">
+    const found = s === 'found';
+    return `<div class="chain-card${found?' found':''}">
+      <div class="chain-badge" style="background:${hexCol(c.color,.1)};border:1.5px solid ${c.color};color:${c.color}">
         ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
       </div>
       <div style="min-width:0">
@@ -442,58 +527,112 @@ function renderChainGrid() {
   }).join('')}</div>`;
 }
 
+function renderTokenTransfers(transfers) {
+  if (!transfers?.length) return '';
+  return `
+  <div class="token-section">
+    <div class="token-section-title">
+      <i class="ti ti-coin"></i> Token transfer${transfers.length>1?'s':''} (${transfers.length})
+    </div>
+    ${transfers.map(t => `
+    <div class="token-row">
+      <div style="flex:1;min-width:0">
+        <div class="token-left">
+          <div class="token-icon">${(t.symbol||'?').slice(0,5)}</div>
+          <div>
+            <div class="token-symbol">${escHtml(t.symbol)}</div>
+            ${t.contractAddr ? `<div class="token-contract">${truncAddr(t.contractAddr,8,6)}</div>` : ''}
+          </div>
+        </div>
+        ${(t.from || t.to) ? `
+        <div class="token-addrs" style="margin-top:8px">
+          ${t.from && t.from!=='?' ? `<div class="token-addr-row"><span class="token-addr-tag">From</span><span class="token-addr-val">${escHtml(t.from)}</span></div>` : ''}
+          ${t.to   && t.to!=='?'  ? `<div class="token-addr-row"><span class="token-addr-tag">To</span><span class="token-addr-val">${escHtml(t.to)}</span></div>` : ''}
+        </div>` : ''}
+      </div>
+      <div class="token-amount-col">
+        <div class="token-amount">${escHtml(String(t.amount))}</div>
+        <div class="token-amount-label">${escHtml(t.symbol)}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function renderResultCards() {
   const found = CHAINS.filter(c => statuses[c.id]==='found');
   if (!found.length) return '';
   return `
-    <div class="results-label">
-      <i class="ti ti-circle-check"></i>
-      Match${found.length>1?'es':''} found on ${found.map(c=>c.name).join(' · ')}
-    </div>
-    ${found.map(c => {
-      const r = results[c.id]; if (!r) return '';
-      const fields = Object.entries(r).filter(([k]) => !HIDE_FIELDS.has(k) && !MONO_FIELDS.has(k));
-      const addrFields = Object.entries(r).filter(([k]) => MONO_FIELDS.has(k));
-      return `<div class="result-card">
-        <div class="result-header">
-          <div class="result-chain-info">
-            <div class="result-badge" style="background:${hex(c.color,0.12)};border:2px solid ${c.color};color:${c.color}">
-              ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
-            </div>
-            <div>
-              <div class="result-chain-name">${c.name}</div>
-              <div class="result-chain-status ${r.confirmed?'ok':'pending'}">
-                <i class="ti ${r.confirmed?'ti-circle-check':'ti-clock'}"></i>
-                ${r.confirmed?'Confirmed':'Pending / Unconfirmed'}
-              </div>
+  <div class="results-label">
+    <i class="ti ti-circle-check"></i>
+    Match${found.length>1?'es':''} found on ${found.map(c=>c.name).join(' · ')}
+  </div>
+  ${found.map(c => {
+    const r = results[c.id]; if (!r) return '';
+    const tokenTransfers = r.tokenTransfers ?? [];
+    const hasTokens      = tokenTransfers.length > 0;
+
+    // Determine which fields to show in the main grid
+    // If there are token transfers and native value is 0, mark it muted
+    const nativeIsMoot = hasTokens && (r.nativeValue?.startsWith('0 ') || r.nativeValue === '0');
+
+    const mainFields = Object.entries(r).filter(([k]) =>
+      !HIDE_FIELDS.has(k) && !MONO_FIELDS.has(k) && k !== 'nativeValue'
+    );
+    // Always add nativeValue at the start of the grid
+    const allFields = r.nativeValue
+      ? [['nativeValue', r.nativeValue], ...mainFields]
+      : mainFields;
+
+    const addrFields = Object.entries(r).filter(([k]) => MONO_FIELDS.has(k));
+
+    return `<div class="result-card">
+      <div class="result-header">
+        <div class="result-chain-info">
+          <div class="result-badge" style="background:${hexCol(c.color,.12)};border:2px solid ${c.color};color:${c.color}">
+            ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
+          </div>
+          <div>
+            <div class="result-chain-name">${c.name}</div>
+            <div class="result-chain-status ${r.confirmed?'ok':'pending'}">
+              <i class="ti ${r.confirmed?'ti-circle-check':'ti-clock'}"></i>
+              ${r.confirmed?'Confirmed':'Pending / Unconfirmed'}
             </div>
           </div>
-          ${r.explorerUrl?`<a class="explorer-link" href="${r.explorerUrl}" target="_blank" rel="noopener">
-            Explorer <i class="ti ti-external-link"></i>
-          </a>`:''}
         </div>
+        ${r.explorerUrl?`<a class="explorer-link" href="${escHtml(r.explorerUrl)}" target="_blank" rel="noopener">
+          Explorer <i class="ti ti-external-link"></i>
+        </a>`:''}
+      </div>
+      <hr class="divider" />
+
+      ${renderTokenTransfers(tokenTransfers)}
+
+      <div class="fields-grid" style="${hasTokens?'margin-top:14px':''}">
+        ${allFields.map(([k,v]) => `<div>
+          <div class="field-label">${FIELD_LABELS[k]??k}</div>
+          <div class="field-value${k==='nativeValue'&&nativeIsMoot?' muted':''}">${escHtml(String(v))}</div>
+        </div>`).join('')}
+      </div>
+
+      ${addrFields.length ? `
+      <div class="addresses-section">
         <hr class="divider" />
-        <div class="fields-grid">
-          ${fields.map(([k,v])=>`<div>
-            <div class="field-label">${FIELD_LABELS[k]??k}</div>
-            <div class="field-value">${String(v)}</div>
-          </div>`).join('')}
-        </div>
-        ${addrFields.length?`
-        <div class="addresses-section">
-          <hr class="divider" />
-          <div class="field-label" style="margin-bottom:8px">Full addresses</div>
-          ${addrFields.map(([k,v])=>`<div class="address-row">
-            <span class="address-tag">${FIELD_LABELS[k]??k}</span>
-            <span class="address-val">${String(v)}</span>
-          </div>`).join('')}
-        </div>`:''}
-      </div>`;
-    }).join('')}`;
+        <div class="field-label" style="margin-bottom:8px">Signer addresses</div>
+        ${addrFields.map(([k,v])=>`<div class="address-row">
+          <span class="address-tag">${FIELD_LABELS[k]??k}</span>
+          <span class="address-val">${escHtml(String(v))}</span>
+        </div>`).join('')}
+      </div>` : ''}
+    </div>`;
+  }).join('')}`;
 }
 
 function renderEmpty() {
-  const allDone = Object.values(statuses).every(s => s !== 'searching');
+  const allDone  = Object.values(statuses).every(s => s !== 'searching');
   const anyFound = Object.values(statuses).some(s => s === 'found');
   if (!allDone || anyFound) return '';
   return `<div class="empty-state">
@@ -507,10 +646,10 @@ function renderEmpty() {
 function renderWelcome() {
   return `<div class="welcome">
     <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
-    <p>Paste a transaction hash above to identify which blockchain it belongs to and view its details.</p>
+    <p>Paste a transaction hash above to identify the chain, view transaction details, and detect any token transfers.</p>
   </div>
   <div class="chain-strip">
-    ${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hex(c.color,0.35)};color:${c.color}">${c.name}</span>`).join('')}
+    ${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}
   </div>`;
 }
 
@@ -521,7 +660,9 @@ function render() {
   app.innerHTML = renderChainGrid() + renderResultCards() + renderEmpty();
 }
 
-/* ── Events ── */
+/* ═══════════════════════════════════════════════════════
+   EVENT WIRING
+═══════════════════════════════════════════════════════ */
 const hashInput = document.getElementById('hashInput');
 const searchBtn = document.getElementById('searchBtn');
 const hintBox   = document.getElementById('hintBox');
@@ -532,7 +673,7 @@ hashInput.addEventListener('input', () => {
   searchBtn.disabled = !h || searching;
   const hint = h ? hashHint(h) : null;
   if (hint) {
-    hintText.innerHTML = `<strong>${hint.label}</strong> — likely: ${hint.chains}`;
+    hintText.innerHTML = `<strong>${escHtml(hint.label)}</strong> — likely: ${escHtml(hint.chains)}`;
     hintBox.style.display = 'flex';
   } else {
     hintBox.style.display = 'none';
@@ -557,7 +698,7 @@ searchBtn.addEventListener('click', async () => {
     render();
   };
 
-  const searches = CHAINS.map(async chain => {
+  await Promise.allSettled(CHAINS.map(async chain => {
     try {
       let r = null;
       if      (chain.type==='bitcoin')  r = await fetchBitcoin(hash);
@@ -568,9 +709,8 @@ searchBtn.addEventListener('click', async () => {
       else if (chain.type==='evm')      r = await fetchEVM(hash, chain);
       update(chain.id, r ? 'found' : 'not_found', r);
     } catch { update(chain.id, 'error'); }
-  });
+  }));
 
-  await Promise.allSettled(searches);
   searching = false;
   searchBtn.disabled = false;
   searchBtn.innerHTML = `<i class="ti ti-search"></i> <span>Search</span>`;
