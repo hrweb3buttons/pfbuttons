@@ -10,136 +10,117 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg:       #0d0f14;
-    --bg2:      #13161e;
-    --bg3:      #1a1e2a;
-    --border:   rgba(255,255,255,0.08);
-    --border2:  rgba(255,255,255,0.14);
-    --text:     #e8eaf0;
-    --text2:    #8b8fa8;
-    --text3:    #565970;
-    --accent:   #4f8ef7;
-    --success:  #34c77b;
-    --warning:  #f5a623;
-    --danger:   #f05353;
-    --token:    #a78bfa;
-    --success-bg: rgba(52,199,123,0.10);
-    --token-bg:   rgba(167,139,250,0.08);
-    --token-border: rgba(167,139,250,0.25);
-    --radius:   10px;
-    --radius-lg:14px;
-    --mono:     'JetBrains Mono', monospace;
-    --sans:     'Inter', sans-serif;
+    --bg:#0d0f14; --bg2:#13161e; --bg3:#1a1e2a;
+    --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+    --text:#e8eaf0; --text2:#8b8fa8; --text3:#565970;
+    --accent:#4f8ef7; --success:#34c77b; --warning:#f5a623; --danger:#f05353; --token:#a78bfa;
+    --success-bg:rgba(52,199,123,0.10); --token-bg:rgba(167,139,250,0.08); --token-border:rgba(167,139,250,0.25);
+    --radius:10px; --radius-lg:14px;
+    --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif;
   }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem 4rem; }
-  .page { max-width: 860px; margin: 0 auto; }
+  body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; padding:2rem 1rem 4rem; }
+  .page { max-width:900px; margin:0 auto; }
 
   /* Header */
-  .header { display: flex; align-items: center; gap: 14px; margin-bottom: 2rem; }
-  .header-icon { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg,#1c2340,#2a3060); border: 1px solid rgba(79,142,247,0.3); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--accent); flex-shrink: 0; }
-  .header h1 { font-size: 20px; font-weight: 600; color: var(--text); }
-  .header p  { font-size: 13px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+  .header { display:flex; align-items:center; gap:14px; margin-bottom:2rem; }
+  .header-icon { width:46px; height:46px; border-radius:12px; background:linear-gradient(135deg,#1c2340,#2a3060); border:1px solid rgba(79,142,247,0.3); display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--accent); flex-shrink:0; }
+  .header h1 { font-size:20px; font-weight:600; color:var(--text); }
+  .header p  { font-size:13px; color:var(--text2); margin-top:2px; line-height:1.5; }
 
   /* Search */
-  .search-row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .search-input { flex: 1; background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 0 14px; height: 46px; font-family: var(--mono); font-size: 13px; color: var(--text); outline: none; transition: border-color 0.15s; }
-  .search-input::placeholder { color: var(--text3); }
-  .search-input:focus { border-color: var(--accent); }
-  .search-btn { height: 46px; padding: 0 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: opacity 0.15s, transform 0.1s; display: flex; align-items: center; gap: 6px; }
-  .search-btn:hover:not(:disabled) { opacity: 0.88; }
-  .search-btn:active:not(:disabled) { transform: scale(0.97); }
-  .search-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .search-row { display:flex; gap:10px; margin-bottom:10px; }
+  .search-input { flex:1; background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); padding:0 14px; height:46px; font-family:var(--mono); font-size:13px; color:var(--text); outline:none; transition:border-color 0.15s; }
+  .search-input::placeholder { color:var(--text3); }
+  .search-input:focus { border-color:var(--accent); }
+  .search-btn { height:46px; padding:0 22px; background:var(--accent); color:#fff; border:none; border-radius:var(--radius); font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; white-space:nowrap; transition:opacity 0.15s,transform 0.1s; display:flex; align-items:center; gap:6px; }
+  .search-btn:hover:not(:disabled) { opacity:0.88; }
+  .search-btn:active:not(:disabled) { transform:scale(0.97); }
+  .search-btn:disabled { opacity:0.45; cursor:not-allowed; }
 
   /* Hint */
-  .hint { display: flex; align-items: flex-start; gap: 8px; background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--text2); margin-bottom: 1.25rem; line-height: 1.5; }
-  .hint i { color: var(--accent); margin-top: 1px; flex-shrink: 0; }
-  .hint strong { color: var(--text); font-weight: 500; }
+  .hint { display:flex; align-items:flex-start; gap:8px; background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:8px 12px; font-size:12px; color:var(--text2); margin-bottom:1.25rem; line-height:1.5; }
+  .hint i { color:var(--accent); margin-top:1px; flex-shrink:0; }
+  .hint strong { color:var(--text); font-weight:500; }
 
   /* Chain grid */
-  .chain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 7px; margin-bottom: 1.5rem; }
-  .chain-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; display: flex; align-items: center; gap: 9px; transition: border-color 0.2s, background 0.2s; }
-  .chain-card.found { background: var(--success-bg); border-color: rgba(52,199,123,0.35); }
-  .chain-badge { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; letter-spacing: -0.03em; }
-  .chain-name   { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .chain-status { font-size: 11px; display: flex; align-items: center; gap: 3px; margin-top: 1px; }
-  .chain-status.idle      { color: var(--text3); }
-  .chain-status.searching { color: var(--warning); }
-  .chain-status.found     { color: var(--success); }
-  .chain-status.not_found { color: var(--text3); }
-  .chain-status.error     { color: var(--warning); }
+  .chain-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(135px,1fr)); gap:6px; margin-bottom:1.5rem; }
+  .chain-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:8px 10px; display:flex; align-items:center; gap:8px; transition:border-color 0.2s,background 0.2s; }
+  .chain-card.found { background:var(--success-bg); border-color:rgba(52,199,123,0.35); }
+  .chain-badge { width:30px; height:30px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:7px; font-weight:700; letter-spacing:-0.03em; }
+  .chain-name   { font-size:11px; font-weight:500; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chain-status { font-size:10px; display:flex; align-items:center; gap:3px; margin-top:1px; }
+  .chain-status.idle      { color:var(--text3); }
+  .chain-status.searching { color:var(--warning); }
+  .chain-status.found     { color:var(--success); }
+  .chain-status.not_found { color:var(--text3); }
+  .chain-status.error     { color:var(--warning); }
 
   /* Result cards */
-  .results-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text2); display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-  .results-label i { color: var(--success); }
-  .result-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 10px; }
-  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .result-chain-info { display: flex; align-items: center; gap: 11px; }
-  .result-badge { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; letter-spacing: -0.01em; }
-  .result-chain-name   { font-size: 15px; font-weight: 600; color: var(--text); }
-  .result-chain-status { font-size: 12px; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
-  .result-chain-status.ok      { color: var(--success); }
-  .result-chain-status.pending { color: var(--warning); }
-  .explorer-link { font-size: 12px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 4px; opacity: 0.85; transition: opacity 0.15s; }
-  .explorer-link:hover { opacity: 1; }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-  .fields-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 12px 20px; }
-  .field-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
-  .field-value { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; word-break: break-all; }
-  .field-value.muted { color: var(--text3); font-weight: 400; }
+  .results-label { font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text2); display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+  .results-label i { color:var(--success); }
+  .result-card { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius-lg); padding:1.1rem 1.25rem; margin-bottom:10px; }
+  .result-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .result-chain-info { display:flex; align-items:center; gap:11px; }
+  .result-badge { width:42px; height:42px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; letter-spacing:-0.01em; }
+  .result-chain-name   { font-size:15px; font-weight:600; color:var(--text); }
+  .result-chain-status { font-size:12px; display:flex; align-items:center; gap:4px; margin-top:2px; }
+  .result-chain-status.ok      { color:var(--success); }
+  .result-chain-status.pending { color:var(--warning); }
+  .explorer-link { font-size:12px; color:var(--accent); text-decoration:none; display:flex; align-items:center; gap:4px; opacity:0.85; transition:opacity 0.15s; }
+  .explorer-link:hover { opacity:1; }
+  .divider { border:none; border-top:1px solid var(--border); margin:12px 0; }
+  .fields-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:12px 20px; }
+  .field-label { font-size:11px; color:var(--text3); margin-bottom:3px; }
+  .field-value { font-size:13px; font-weight:500; color:var(--text); line-height:1.4; word-break:break-all; }
+  .field-value.muted { color:var(--text3); font-weight:400; }
+  .field-value.privacy { color:var(--warning); font-weight:400; font-style:italic; font-size:12px; }
 
   /* Address rows */
-  .addresses-section { margin-top: 2px; }
-  .address-row { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; align-items: baseline; }
-  .address-tag { font-size: 11px; color: var(--text3); flex-shrink: 0; min-width: 22px; }
-  .address-val { font-size: 12px; font-family: var(--mono); color: var(--text2); word-break: break-all; }
+  .addresses-section { margin-top:2px; }
+  .address-row { display:flex; gap:8px; margin-bottom:5px; flex-wrap:wrap; align-items:baseline; }
+  .address-tag { font-size:11px; color:var(--text3); flex-shrink:0; min-width:22px; }
+  .address-val { font-size:12px; font-family:var(--mono); color:var(--text2); word-break:break-all; }
 
-  /* ── Token transfers ── */
-  .token-section { margin-top: 14px; }
-  .token-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--token); display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
-  .token-row {
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
-    background: var(--token-bg); border: 1px solid var(--token-border);
-    border-radius: 8px; padding: 10px 12px; margin-bottom: 6px;
-  }
-  .token-row:last-child { margin-bottom: 0; }
-  .token-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .token-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(167,139,250,0.15); border: 1.5px solid var(--token-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--token); flex-shrink: 0; letter-spacing: -0.02em; }
-  .token-symbol { font-size: 14px; font-weight: 600; color: var(--text); }
-  .token-contract { font-size: 11px; font-family: var(--mono); color: var(--text3); margin-top: 1px; }
-  .token-amount-col { text-align: right; flex-shrink: 0; }
-  .token-amount { font-size: 15px; font-weight: 600; color: var(--text); font-family: var(--mono); }
-  .token-amount-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .token-addrs { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--token-border); }
-  .token-addr-row { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; margin-bottom: 3px; }
-  .token-addr-row:last-child { margin-bottom: 0; }
-  .token-addr-tag { font-size: 10px; color: var(--text3); min-width: 22px; flex-shrink: 0; }
-  .token-addr-val { font-size: 11px; font-family: var(--mono); color: var(--text2); word-break: break-all; }
+  /* Token transfers */
+  .token-section { margin-top:14px; }
+  .token-section-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:var(--token); display:flex; align-items:center; gap:5px; margin-bottom:8px; }
+  .token-row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; background:var(--token-bg); border:1px solid var(--token-border); border-radius:8px; padding:10px 12px; margin-bottom:6px; }
+  .token-row:last-child { margin-bottom:0; }
+  .token-left { display:flex; align-items:center; gap:10px; min-width:0; }
+  .token-icon { width:30px; height:30px; border-radius:50%; background:rgba(167,139,250,0.15); border:1.5px solid var(--token-border); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:var(--token); flex-shrink:0; letter-spacing:-0.02em; }
+  .token-symbol { font-size:14px; font-weight:600; color:var(--text); }
+  .token-contract { font-size:11px; font-family:var(--mono); color:var(--text3); margin-top:1px; }
+  .token-amount-col { text-align:right; flex-shrink:0; }
+  .token-amount { font-size:15px; font-weight:600; color:var(--text); font-family:var(--mono); }
+  .token-amount-label { font-size:11px; color:var(--text3); margin-top:2px; }
+  .token-addrs { margin-top:8px; padding-top:8px; border-top:1px solid var(--token-border); }
+  .token-addr-row { display:flex; gap:6px; align-items:baseline; flex-wrap:wrap; margin-bottom:3px; }
+  .token-addr-row:last-child { margin-bottom:0; }
+  .token-addr-tag { font-size:10px; color:var(--text3); min-width:22px; flex-shrink:0; }
+  .token-addr-val { font-size:11px; font-family:var(--mono); color:var(--text2); word-break:break-all; }
 
   /* Empty / Welcome */
-  .empty-state { text-align: center; padding: 3rem 1rem; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); }
-  .empty-state i { font-size: 42px; color: var(--text3); display: block; margin-bottom: 12px; }
-  .empty-state h3 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-  .empty-state p { font-size: 13px; color: var(--text2); line-height: 1.6; }
-  .empty-state small { font-size: 12px; color: var(--text3); display: block; margin-top: 6px; }
-  .welcome { text-align: center; padding: 3rem 1rem 2rem; color: var(--text3); }
-  .welcome i { font-size: 48px; display: block; margin-bottom: 12px; }
-  .welcome p { font-size: 13px; line-height: 1.7; max-width: 420px; margin: 0 auto; }
-  .chain-strip { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; padding: 12px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); }
-  .chain-pill { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border2); color: var(--text2); background: var(--bg3); }
+  .empty-state { text-align:center; padding:3rem 1rem; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); }
+  .empty-state i { font-size:42px; color:var(--text3); display:block; margin-bottom:12px; }
+  .empty-state h3 { font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px; }
+  .empty-state p { font-size:13px; color:var(--text2); line-height:1.6; }
+  .empty-state small { font-size:12px; color:var(--text3); display:block; margin-top:6px; }
+  .welcome { text-align:center; padding:3rem 1rem 2rem; color:var(--text3); }
+  .welcome i { font-size:48px; display:block; margin-bottom:12px; }
+  .welcome p { font-size:13px; line-height:1.7; max-width:460px; margin:0 auto; }
+  .chain-strip { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.5rem; padding:12px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); }
+  .chain-pill { font-size:11px; font-weight:500; padding:3px 9px; border-radius:20px; border:1px solid var(--border2); color:var(--text2); background:var(--bg3); }
 
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .spin { display: inline-block; animation: spin 0.9s linear infinite; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .spin { display:inline-block; animation:spin 0.9s linear infinite; }
 
-  @media (max-width: 600px) {
-    .header h1 { font-size: 17px; }
-    .chain-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-    .search-btn span { display: none; }
-    .token-row { flex-direction: column; }
-    .token-amount-col { text-align: left; }
+  @media(max-width:600px) {
+    .header h1 { font-size:17px; }
+    .chain-grid { grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); }
+    .search-btn span { display:none; }
+    .token-row { flex-direction:column; }
+    .token-amount-col { text-align:left; }
   }
 </style>
 </head>
@@ -149,13 +130,12 @@
     <div class="header-icon"><i class="ti ti-topology-ring-3"></i></div>
     <div>
       <h1>Transaction Hash Lookup</h1>
-      <p>Search 14 blockchains simultaneously — identifies chain, native amounts, and token transfers.</p>
+      <p>Search 30 blockchains simultaneously — identifies chain, native amounts, and token/asset transfers.</p>
     </div>
   </div>
-
   <div class="search-row">
     <input class="search-input" id="hashInput" type="text"
-      placeholder="Paste transaction hash (0x…, 64-char hex, or base58)…"
+      placeholder="Paste transaction hash (0x…, 64-char hex, base58, base64…)"
       autocomplete="off" autocorrect="off" spellcheck="false" />
     <button class="search-btn" id="searchBtn" disabled>
       <i class="ti ti-search"></i><span>Search</span>
@@ -166,33 +146,53 @@
   </div>
   <div id="app"></div>
 </div>
-
 <script>
-/* ═══════════════════════════════════════════════════════
-   CHAIN DEFINITIONS
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   CHAIN DEFINITIONS  (30 chains)
+═══════════════════════════════════════════ */
 const CHAINS = [
-  { id:"bitcoin",   name:"Bitcoin",      symbol:"BTC",  color:"#F7931A", type:"bitcoin" },
-  { id:"litecoin",  name:"Litecoin",     symbol:"LTC",  color:"#345D9D", type:"litecoin" },
-  { id:"dogecoin",  name:"Dogecoin",     symbol:"DOGE", color:"#C2A633", type:"dogecoin" },
-  { id:"tron",      name:"Tron",         symbol:"TRX",  color:"#EF0027", type:"tron" },
-  { id:"solana",    name:"Solana",       symbol:"SOL",  color:"#9945FF", type:"solana" },
-  { id:"ethereum",  name:"Ethereum",     symbol:"ETH",  color:"#627EEA", type:"evm", rpc:"https://ethereum.publicnode.com",          explorer:"https://etherscan.io/tx/" },
-  { id:"bsc",       name:"BNB Chain",    symbol:"BNB",  color:"#F0B90B", type:"evm", rpc:"https://bsc.publicnode.com",               explorer:"https://bscscan.com/tx/" },
-  { id:"polygon",   name:"Polygon",      symbol:"POL",  color:"#7B3FE4", type:"evm", rpc:"https://polygon-bor.publicnode.com",       explorer:"https://polygonscan.com/tx/" },
-  { id:"arbitrum",  name:"Arbitrum",     symbol:"ARB",  color:"#28A0F0", type:"evm", rpc:"https://arbitrum-one.publicnode.com",      explorer:"https://arbiscan.io/tx/" },
-  { id:"optimism",  name:"Optimism",     symbol:"OP",   color:"#FF0420", type:"evm", rpc:"https://optimism.publicnode.com",          explorer:"https://optimistic.etherscan.io/tx/" },
-  { id:"base",      name:"Base",         symbol:"BASE", color:"#0052FF", type:"evm", rpc:"https://base.publicnode.com",              explorer:"https://basescan.org/tx/" },
-  { id:"avalanche", name:"Avalanche C",  symbol:"AVAX", color:"#E84142", type:"evm", rpc:"https://avalanche-c-chain.publicnode.com", explorer:"https://snowtrace.io/tx/" },
-  { id:"fantom",    name:"Fantom",       symbol:"FTM",  color:"#1969FF", type:"evm", rpc:"https://rpc.ankr.com/fantom",             explorer:"https://ftmscan.com/tx/" },
-  { id:"cronos",    name:"Cronos",       symbol:"CRO",  color:"#002D74", type:"evm", rpc:"https://evm.cronos.org",                  explorer:"https://cronoscan.com/tx/" },
+  // ── UTXO ──
+  { id:"bitcoin",   name:"Bitcoin",          symbol:"BTC",  color:"#F7931A", type:"bitcoin" },
+  { id:"litecoin",  name:"Litecoin",         symbol:"LTC",  color:"#345D9D", type:"blockcypher", coin:"ltc",  explorerBase:"https://live.blockcypher.com/ltc/tx/" },
+  { id:"dogecoin",  name:"Dogecoin",         symbol:"DOGE", color:"#C2A633", type:"blockcypher", coin:"doge", explorerBase:"https://live.blockcypher.com/doge/tx/" },
+  { id:"bch",       name:"Bitcoin Cash",     symbol:"BCH",  color:"#8DC351", type:"blockcypher", coin:"bch",  explorerBase:"https://live.blockcypher.com/bch/tx/" },
+  { id:"bsv",       name:"Bitcoin SV",       symbol:"BSV",  color:"#EAB300", type:"bsv" },
+  { id:"bcd",       name:"Bitcoin Diamond",  symbol:"BCD",  color:"#1A73E8", type:"bcd" },
+  // ── Non-EVM L1 ──
+  { id:"xrp",       name:"Ripple (XRP)",     symbol:"XRP",  color:"#00AAE4", type:"xrp" },
+  { id:"cardano",   name:"Cardano",          symbol:"ADA",  color:"#0033AD", type:"cardano" },
+  { id:"ton",       name:"TON",              symbol:"TON",  color:"#0088CC", type:"ton" },
+  { id:"nano",      name:"Nano",             symbol:"XNO",  color:"#4A90D9", type:"nano" },
+  { id:"monero",    name:"Monero",           symbol:"XMR",  color:"#FF6600", type:"monero" },
+  { id:"stellar",   name:"Stellar",          symbol:"XLM",  color:"#7D00FF", type:"stellar" },
+  { id:"tezos",     name:"Tezos",            symbol:"XTZ",  color:"#2C7DF7", type:"tezos" },
+  { id:"polkadot",  name:"Polkadot",         symbol:"DOT",  color:"#E6007A", type:"polkadot" },
+  { id:"near",      name:"NEAR",             symbol:"NEAR", color:"#00C08B", type:"near" },
+  { id:"tron",      name:"Tron",             symbol:"TRX",  color:"#EF0027", type:"tron" },
+  { id:"solana",    name:"Solana",           symbol:"SOL",  color:"#9945FF", type:"solana" },
+  // ── EVM ──
+  { id:"ethereum",  name:"Ethereum",         symbol:"ETH",  color:"#627EEA", type:"evm", rpc:"https://ethereum.publicnode.com",              explorer:"https://etherscan.io/tx/" },
+  { id:"bsc",       name:"BNB Chain",        symbol:"BNB",  color:"#F0B90B", type:"evm", rpc:"https://bsc.publicnode.com",                   explorer:"https://bscscan.com/tx/" },
+  { id:"polygon",   name:"Polygon",          symbol:"POL",  color:"#7B3FE4", type:"evm", rpc:"https://polygon-bor.publicnode.com",           explorer:"https://polygonscan.com/tx/" },
+  { id:"arbitrum",  name:"Arbitrum",         symbol:"ARB",  color:"#28A0F0", type:"evm", rpc:"https://arbitrum-one.publicnode.com",          explorer:"https://arbiscan.io/tx/" },
+  { id:"optimism",  name:"Optimism",         symbol:"OP",   color:"#FF0420", type:"evm", rpc:"https://optimism.publicnode.com",              explorer:"https://optimistic.etherscan.io/tx/" },
+  { id:"base",      name:"Base",             symbol:"BASE", color:"#0052FF", type:"evm", rpc:"https://base.publicnode.com",                  explorer:"https://basescan.org/tx/" },
+  { id:"avalanche", name:"Avalanche C",      symbol:"AVAX", color:"#E84142", type:"evm", rpc:"https://avalanche-c-chain.publicnode.com",     explorer:"https://snowtrace.io/tx/" },
+  { id:"fantom",    name:"Fantom",           symbol:"FTM",  color:"#1969FF", type:"evm", rpc:"https://rpc.ankr.com/fantom",                 explorer:"https://ftmscan.com/tx/" },
+  { id:"cronos",    name:"Cronos",           symbol:"CRO",  color:"#002D74", type:"evm", rpc:"https://evm.cronos.org",                      explorer:"https://cronoscan.com/tx/" },
+  { id:"etc",       name:"Ethereum Classic", symbol:"ETC",  color:"#328432", type:"evm", rpc:"https://rpc.ankr.com/eth_classic",             explorer:"https://etc.blockscout.com/tx/" },
+  { id:"opbnb",     name:"opBNB",            symbol:"BNB",  color:"#F0B90B", type:"evm", rpc:"https://opbnb.publicnode.com",                explorer:"https://opbnb.bscscan.com/tx/" },
+  { id:"celo",      name:"CELO",             symbol:"CELO", color:"#35D07F", type:"evm", rpc:"https://forno.celo.org",                      explorer:"https://celoscan.io/tx/" },
+  { id:"kava",      name:"KAVA",             symbol:"KAVA", color:"#FF433E", type:"evm", rpc:"https://evm.kava.io",                         explorer:"https://kavascan.com/tx/" },
 ];
 
 const FIELD_LABELS = {
-  blockHeight:"Block height", blockNumber:"Block number", confirmations:"Confirmations",
-  fee:"Fee", nativeValue:"Native amount", inputs:"Inputs", outputs:"Outputs", size:"Size",
-  slot:"Slot", blockTime:"Block time", signers:"Accounts", status:"Status",
+  blockHeight:"Block height", blockNumber:"Block number", blockTime:"Block time",
+  confirmations:"Confirmations", fee:"Fee", nativeValue:"Native amount",
+  inputs:"Inputs", outputs:"Outputs", size:"Size",
+  slot:"Slot", signers:"Accounts", status:"Status", type:"Type",
   from:"From", to:"To", gasLimit:"Gas limit", gasUsed:"Gas used",
+  ledger:"Ledger", operations:"Operations", module:"Call",
 };
 const MONO_FIELDS  = new Set(["from","to"]);
 const HIDE_FIELDS  = new Set(["explorerUrl","confirmed","tokenTransfers","value"]);
@@ -205,317 +205,535 @@ const STATUS_CFG = {
   error:     { icon:"ti-alert-circle", cls:"error",     label:"Unavailable" },
 };
 
-let statuses = {}, results = {}, searching = false;
+let statuses={}, results={}, searching=false;
 
-/* ═══════════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════════ */
-function abortIn(ms) { const c = new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal; }
-function hexCol(color, alpha) { return color + Math.round(alpha*255).toString(16).padStart(2,'0'); }
-function truncAddr(a, front=10, back=8) {
-  if (!a || a.length <= front+back+3) return a;
-  return `${a.slice(0,front)}…${a.slice(-back)}`;
-}
+/* ═══════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════ */
+function abortIn(ms){ const c=new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal; }
+function hexCol(color,alpha){ return color+Math.round(alpha*255).toString(16).padStart(2,'0'); }
+function truncAddr(a,f=10,b=8){ if(!a||a.length<=f+b+3)return a; return `${a.slice(0,f)}…${a.slice(-b)}`; }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-/** Decode ABI-encoded string returned by eth_call (handles both string and bytes32 encoding) */
-function decodeABIString(hex) {
-  if (!hex || hex === '0x' || hex.length < 4) return null;
-  const data = hex.startsWith('0x') ? hex.slice(2) : hex;
-  // Attempt standard ABI string: [offset:32bytes][length:32bytes][utf8data...]
-  try {
-    const offsetBytes = parseInt(data.slice(0, 64), 16);
-    if (offsetBytes < data.length / 2) {
-      const lenHexPos = offsetBytes * 2;
-      const strLen = parseInt(data.slice(lenHexPos, lenHexPos + 64), 16);
-      if (strLen > 0 && strLen < 200) {
-        const strHex = data.slice(lenHexPos + 64, lenHexPos + 64 + strLen * 2);
-        const bytes = new Uint8Array(strHex.match(/.{2}/g).map(b=>parseInt(b,16)));
-        const str = new TextDecoder().decode(bytes);
-        if (/^[\x20-\x7E]+$/.test(str)) return str.trim();
+function decodeABIString(hex){
+  if(!hex||hex==='0x'||hex.length<4)return null;
+  const data=hex.startsWith('0x')?hex.slice(2):hex;
+  try{
+    const off=parseInt(data.slice(0,64),16);
+    if(off<data.length/2){
+      const lp=off*2, len=parseInt(data.slice(lp,lp+64),16);
+      if(len>0&&len<200){
+        const sh=data.slice(lp+64,lp+64+len*2);
+        const bytes=new Uint8Array(sh.match(/.{2}/g).map(b=>parseInt(b,16)));
+        const str=new TextDecoder().decode(bytes);
+        if(/^[\x20-\x7E]+$/.test(str))return str.trim();
       }
     }
-  } catch {}
-  // Fallback: bytes32 (older tokens like MKR, WBTC)
-  try {
-    const bytes = new Uint8Array(data.match(/.{2}/g).slice(0,32).map(b=>parseInt(b,16))).filter(b=>b!==0);
-    const str = new TextDecoder().decode(bytes);
-    if (str.length > 0 && /^[\x20-\x7E]+$/.test(str)) return str.trim();
-  } catch {}
+  }catch{}
+  try{
+    const bytes=new Uint8Array(data.match(/.{2}/g).slice(0,32).map(b=>parseInt(b,16))).filter(b=>b!==0);
+    const str=new TextDecoder().decode(bytes);
+    if(str.length>0&&/^[\x20-\x7E]+$/.test(str))return str.trim();
+  }catch{}
   return null;
 }
 
-/** Format a raw BigInt token amount using decimals, up to 8 significant decimal places */
-function formatTokenAmt(rawHex, decimals) {
-  try {
-    if (!rawHex || rawHex === '0x') return '0';
-    const raw = BigInt(rawHex);
-    const dec = BigInt(decimals);
-    const divisor = 10n ** dec;
-    const whole = raw / divisor;
-    const frac  = raw % divisor;
-    if (frac === 0n) return whole.toLocaleString();
-    const fracStr = frac.toString().padStart(decimals, '0').slice(0, 8).replace(/0+$/, '');
-    return `${whole.toLocaleString()}.${fracStr}`;
-  } catch { return '?'; }
+function formatTokenAmt(rawHex,decimals){
+  try{
+    if(!rawHex||rawHex==='0x')return '0';
+    const raw=BigInt(rawHex), dec=BigInt(decimals), div=10n**dec;
+    const whole=raw/div, frac=raw%div;
+    if(frac===0n)return whole.toLocaleString();
+    const fs=frac.toString().padStart(decimals,'0').slice(0,8).replace(/0+$/,'');
+    return `${whole.toLocaleString()}.${fs}`;
+  }catch{return '?';}
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    EVM TOKEN HELPERS
-═══════════════════════════════════════════════════════ */
-const ERC20_TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+═══════════════════════════════════════════ */
+const ERC20_TOPIC='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
-async function fetchTokenInfo(contractAddr, rpcUrl) {
-  const call = (selector) => JSON.stringify({
-    jsonrpc:'2.0', id:1, method:'eth_call',
-    params:[{ to: contractAddr, data: selector }, 'latest']
-  });
-  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, signal: abortIn(5000) };
-  try {
-    const [symRes, decRes] = await Promise.all([
-      fetch(rpcUrl, { ...opts, body: call('0x95d89b41') }), // symbol()
-      fetch(rpcUrl, { ...opts, body: call('0x313ce567') }), // decimals()
+async function fetchTokenInfo(addr,rpc){
+  const call=sel=>JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to:addr,data:sel},'latest']});
+  const opts={method:'POST',headers:{'Content-Type':'application/json'},signal:abortIn(5000)};
+  try{
+    const [sr,dr]=await Promise.all([
+      fetch(rpc,{...opts,body:call('0x95d89b41')}),
+      fetch(rpc,{...opts,body:call('0x313ce567')}),
     ]);
-    const symData = await symRes.json();
-    const decData = await decRes.json();
-    const symbol   = decodeABIString(symData.result) ?? contractAddr.slice(0,8)+'…';
-    const decimals = decData.result && decData.result !== '0x' ? parseInt(decData.result, 16) : 18;
-    return { symbol, decimals };
-  } catch { return { symbol: '???', decimals: 18 }; }
+    const sd=await sr.json(), dd=await dr.json();
+    const symbol=decodeABIString(sd.result)??addr.slice(0,8)+'…';
+    const decimals=dd.result&&dd.result!=='0x'?parseInt(dd.result,16):18;
+    return{symbol,decimals};
+  }catch{return{symbol:'???',decimals:18};}
 }
 
-/** Parse ERC-20 Transfer events from receipt logs */
-async function parseEVMTokenTransfers(logs, rpcUrl) {
-  if (!logs?.length) return [];
-  // ERC-20: 3 topics (sig, from, to) + non-empty data
-  const transferLogs = logs.filter(l =>
-    l.topics?.[0]?.toLowerCase() === ERC20_TRANSFER_TOPIC &&
-    l.topics.length === 3 &&
-    l.data && l.data !== '0x' && l.data.length > 2
-  );
-  if (!transferLogs.length) return [];
-
-  // Fetch token info for each unique contract in parallel
-  const uniqueContracts = [...new Set(transferLogs.map(l => l.address.toLowerCase()))];
-  const tokenInfoMap = {};
-  await Promise.all(uniqueContracts.map(async addr => {
-    tokenInfoMap[addr] = await fetchTokenInfo(addr, rpcUrl);
-  }));
-
-  return transferLogs.map(log => {
-    const contractAddr = log.address.toLowerCase();
-    const { symbol, decimals } = tokenInfoMap[contractAddr] || { symbol:'???', decimals:18 };
-    const from   = '0x' + log.topics[1].slice(-40);
-    const to     = '0x' + log.topics[2].slice(-40);
-    const amount = formatTokenAmt(log.data, decimals);
-    return { symbol, amount, from, to, contractAddr };
+async function parseEVMTokenTransfers(logs,rpc){
+  if(!logs?.length)return[];
+  const xfers=logs.filter(l=>l.topics?.[0]?.toLowerCase()===ERC20_TOPIC&&l.topics.length===3&&l.data&&l.data!=='0x'&&l.data.length>2);
+  if(!xfers.length)return[];
+  const uniq=[...new Set(xfers.map(l=>l.address.toLowerCase()))];
+  const infoMap={};
+  await Promise.all(uniq.map(async a=>{infoMap[a]=await fetchTokenInfo(a,rpc);}));
+  return xfers.map(log=>{
+    const ca=log.address.toLowerCase();
+    const{symbol,decimals}=infoMap[ca]||{symbol:'???',decimals:18};
+    return{symbol,amount:formatTokenAmt(log.data,decimals),from:'0x'+log.topics[1].slice(-40),to:'0x'+log.topics[2].slice(-40),contractAddr:ca};
   });
 }
 
-/* ═══════════════════════════════════════════════════════
-   FETCH FUNCTIONS
-═══════════════════════════════════════════════════════ */
-async function fetchBitcoin(hash) {
-  const r = await fetch(`https://blockstream.info/api/tx/${hash}`, { signal: abortIn(9000) });
-  if (!r.ok) return null;
-  const d = await r.json();
-  const total = d.vout.reduce((s,o)=>s+o.value,0);
-  return {
-    blockHeight: d.status.block_height ?? 'Pending',
-    fee:   `${(d.fee/1e8).toFixed(8)} BTC`,
-    nativeValue: `${(total/1e8).toFixed(8)} BTC`,
-    inputs: d.vin.length, outputs: d.vout.length,
-    size:  `${d.size} bytes`,
-    explorerUrl: `https://blockstream.info/tx/${hash}`,
-    confirmed: d.status.confirmed,
-  };
+/* ═══════════════════════════════════════════
+   FETCH — BITCOIN
+═══════════════════════════════════════════ */
+async function fetchBitcoin(hash){
+  const r=await fetch(`https://blockstream.info/api/tx/${hash}`,{signal:abortIn(9000)});
+  if(!r.ok)return null;
+  const d=await r.json();
+  const total=d.vout.reduce((s,o)=>s+o.value,0);
+  return{blockHeight:d.status.block_height??'Pending',fee:`${(d.fee/1e8).toFixed(8)} BTC`,
+    nativeValue:`${(total/1e8).toFixed(8)} BTC`,inputs:d.vin.length,outputs:d.vout.length,
+    size:`${d.size} bytes`,explorerUrl:`https://blockstream.info/tx/${hash}`,
+    confirmed:d.status.confirmed,tokenTransfers:[]};
 }
 
-async function fetchBlockcypher(hash, coin, symbol, base) {
-  const r = await fetch(`https://api.blockcypher.com/v1/${coin}/main/txs/${hash}`, { signal: abortIn(9000) });
-  if (!r.ok) return null;
-  const d = await r.json();
-  if (d.error) return null;
-  return {
-    confirmations: d.confirmations ?? 0,
-    blockHeight:   d.block_height ?? 'Pending',
-    fee:           `${((d.fees??0)/1e8).toFixed(8)} ${symbol}`,
-    nativeValue:   `${((d.total??0)/1e8).toFixed(8)} ${symbol}`,
-    explorerUrl:   `${base}${hash}/`,
-    confirmed:     (d.confirmations??0) > 0,
-  };
+/* ═══════════════════════════════════════════
+   FETCH — BLOCKCYPHER (LTC / DOGE / BCH)
+═══════════════════════════════════════════ */
+async function fetchBlockcypher(hash,chain){
+  const r=await fetch(`https://api.blockcypher.com/v1/${chain.coin}/main/txs/${hash}`,{signal:abortIn(9000)});
+  if(!r.ok)return null;
+  const d=await r.json(); if(d.error)return null;
+  return{confirmations:d.confirmations??0,blockHeight:d.block_height??'Pending',
+    fee:`${((d.fees??0)/1e8).toFixed(8)} ${chain.symbol}`,
+    nativeValue:`${((d.total??0)/1e8).toFixed(8)} ${chain.symbol}`,
+    explorerUrl:`${chain.explorerBase}${hash}/`,confirmed:(d.confirmations??0)>0,tokenTransfers:[]};
 }
 
-async function fetchTron(hash) {
-  // Fetch tx + events in parallel
-  const opts = { headers:{ Accept:'application/json' }, signal: abortIn(9000) };
-  const [txRes, evRes] = await Promise.allSettled([
-    fetch(`https://api.trongrid.io/v1/transactions/${hash}`, opts),
-    fetch(`https://api.trongrid.io/v1/transactions/${hash}/events`, opts),
-  ]);
+/* ═══════════════════════════════════════════
+   FETCH — BITCOIN SV
+═══════════════════════════════════════════ */
+async function fetchBSV(hash){
+  const r=await fetch(`https://api.whatsonchain.com/v1/bsv/main/tx/${hash}`,{signal:abortIn(9000)});
+  if(!r.ok)return null;
+  const d=await r.json(); if(!d.txid)return null;
+  const total=(d.vout||[]).reduce((s,o)=>s+(o.value||0),0);
+  return{blockHeight:d.blockheight??'Pending',confirmations:d.confirmations??0,
+    nativeValue:`${total.toFixed(8)} BSV`,inputs:d.vin?.length??0,outputs:d.vout?.length??0,
+    size:`${d.size??0} bytes`,explorerUrl:`https://whatsonchain.com/tx/${hash}`,
+    confirmed:(d.confirmations??0)>0,tokenTransfers:[]};
+}
 
-  if (txRes.status === 'rejected') return null;
-  const txData = await txRes.value.json();
-  if (!txData.data?.length) return null;
-  const tx  = txData.data[0];
-  const ret = tx.ret?.[0]?.contractRet ?? 'Unknown';
+/* ═══════════════════════════════════════════
+   FETCH — BITCOIN DIAMOND  (Blockchair)
+═══════════════════════════════════════════ */
+async function fetchBCD(hash){
+  const r=await fetch(`https://api.blockchair.com/bitcoin-diamond/dashboards/transaction/${hash}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;
+  const d=await r.json();
+  const tx=d.data?.[hash]?.transaction; if(!tx)return null;
+  return{blockHeight:tx.block_id??'Pending',confirmations:tx.confirmations??0,
+    fee:`${(tx.fee/1e8).toFixed(8)} BCD`,nativeValue:`${(tx.output_total/1e8).toFixed(8)} BCD`,
+    inputs:tx.input_count??0,outputs:tx.output_count??0,size:`${tx.size??0} bytes`,
+    explorerUrl:`https://blockchair.com/bitcoin-diamond/transaction/${hash}`,
+    confirmed:(tx.confirmations??0)>0,tokenTransfers:[]};
+}
 
-  const result = {
-    status:      ret,
-    blockNumber: tx.blockNumber ?? 'N/A',
-    fee:         tx.fee != null ? `${(tx.fee/1e6).toFixed(6)} TRX` : '0 TRX',
-    nativeValue: tx.raw_data?.contract?.[0]?.parameter?.value?.amount != null
-                   ? `${(tx.raw_data.contract[0].parameter.value.amount/1e6).toFixed(6)} TRX` : '0 TRX',
-    from:        tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address ?? 'N/A',
-    explorerUrl: `https://tronscan.org/#/transaction/${hash}`,
-    confirmed:   ret === 'SUCCESS',
-    tokenTransfers: [],
-  };
-
-  // Parse TRC-20 Transfer events
-  if (evRes.status === 'fulfilled' && evRes.value.ok) {
-    try {
-      const evData = await evRes.value.json();
-      for (const ev of (evData.data ?? [])) {
-        if (ev.event_name !== 'Transfer') continue;
-        const r      = ev.result ?? {};
-        const info   = ev.token_info ?? {};
-        const from   = r._from ?? r.from ?? '?';
-        const to     = r._to   ?? r.to   ?? '?';
-        const rawVal = r._value ?? r.value ?? '0';
-        const dec    = info.decimals ?? 6;
-        let amount;
-        try {
-          amount = formatTokenAmt('0x' + BigInt(rawVal).toString(16), dec);
-        } catch { amount = rawVal; }
-        result.tokenTransfers.push({
-          symbol:       info.symbol ?? 'TRC-20',
-          amount,
-          from,
-          to,
-          contractAddr: ev.contract_address ?? '',
-        });
-      }
-    } catch {}
+/* ═══════════════════════════════════════════
+   FETCH — RIPPLE / XRP
+═══════════════════════════════════════════ */
+async function fetchXRP(hash){
+  const r=await fetch('https://xrplcluster.com/',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({method:'tx',params:[{transaction:hash,binary:false}]}),
+    signal:abortIn(9000)
+  });
+  const d=await r.json();
+  const res=d.result; if(!res||res.error||(!res.validated&&!res.TransactionType))return null;
+  const fee=parseInt(res.Fee||'0');
+  const tokenTransfers=[];
+  let nativeValue='0 XRP';
+  if(typeof res.Amount==='string'){
+    nativeValue=`${(parseInt(res.Amount)/1e6).toFixed(6)} XRP`;
+  }else if(res.Amount&&typeof res.Amount==='object'){
+    tokenTransfers.push({symbol:res.Amount.currency,amount:res.Amount.value,
+      from:res.Account,to:res.Destination??'?',contractAddr:res.Amount.issuer??''});
   }
-
-  return result;
+  return{status:res.meta?.TransactionResult??'Unknown',blockNumber:res.ledger_index??'N/A',
+    from:res.Account,nativeValue,fee:`${(fee/1e6).toFixed(6)} XRP`,
+    explorerUrl:`https://livenet.xrpl.org/transactions/${hash}`,
+    confirmed:res.validated===true,tokenTransfers};
 }
 
-async function fetchSolana(hash) {
-  const r = await fetch('https://api.mainnet-beta.solana.com', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ jsonrpc:'2.0', id:1, method:'getTransaction',
-      params:[hash,{ encoding:'json', maxSupportedTransactionVersion:0 }] }),
-    signal: abortIn(12000),
+/* ═══════════════════════════════════════════
+   FETCH — CARDANO  (Koios, no key needed)
+═══════════════════════════════════════════ */
+async function fetchCardano(hash){
+  const r=await fetch('https://api.koios.rest/api/v1/tx_info',{
+    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({_tx_hashes:[hash]}),signal:abortIn(12000)
   });
-  const d = await r.json();
-  if (!d.result) return null;
-  const tx = d.result;
-
-  // Detect SPL token transfers via preTokenBalances / postTokenBalances
-  const pre  = tx.meta?.preTokenBalances  ?? [];
-  const post = tx.meta?.postTokenBalances ?? [];
-  const tokenTransfers = [];
-
-  for (const postBal of post) {
-    const preBal   = pre.find(p => p.accountIndex===postBal.accountIndex && p.mint===postBal.mint);
-    const preAmt   = preBal?.uiTokenAmount?.uiAmount  ?? 0;
-    const postAmt  = postBal.uiTokenAmount?.uiAmount  ?? 0;
-    const diff     = postAmt - preAmt;
-    if (diff > 0) {
-      // Find sender (the account with negative diff for same mint)
-      const senderBal = post.find(p =>
-        p.mint === postBal.mint &&
-        p.accountIndex !== postBal.accountIndex &&
-        (pre.find(pp=>pp.accountIndex===p.accountIndex&&pp.mint===p.mint)?.uiTokenAmount?.uiAmount??0)
-          - (p.uiTokenAmount?.uiAmount??0) > 0
-      );
+  if(!r.ok)return null;
+  const d=await r.json(); if(!d.length)return null;
+  const tx=d[0];
+  const tokenTransfers=[];
+  for(const out of(tx.outputs??[])){
+    for(const asset of(out.asset_list??[])){
       tokenTransfers.push({
-        symbol: postBal.uiTokenAmount?.symbol ?? truncAddr(postBal.mint, 6, 4),
-        amount: postBal.uiTokenAmount?.uiAmountString ?? diff.toString(),
-        from:   senderBal?.owner ?? '(unknown)',
-        to:     postBal.owner ?? '(unknown)',
-        contractAddr: postBal.mint,
+        symbol:asset.asset_name_ascii||asset.policy_id.slice(0,10)+'…',
+        amount:asset.quantity,from:'(see inputs)',
+        to:out.payment_addr?.bech32??'?',contractAddr:asset.policy_id
+      });
+    }
+  }
+  const totalLovelace=(tx.outputs??[]).reduce((s,o)=>s+parseInt(o.value||0),0);
+  return{blockNumber:tx.block_height??'N/A',
+    blockTime:tx.tx_timestamp?new Date(tx.tx_timestamp*1000).toLocaleString():'N/A',
+    fee:`${(parseInt(tx.fee??0)/1e6).toFixed(6)} ADA`,
+    nativeValue:`${(totalLovelace/1e6).toFixed(6)} ADA`,
+    size:tx.tx_size?`${tx.tx_size} bytes`:'N/A',
+    explorerUrl:`https://cardanoscan.io/transaction/${hash}`,
+    confirmed:true,tokenTransfers};
+}
+
+/* ═══════════════════════════════════════════
+   FETCH — TON  (TonAPI)
+═══════════════════════════════════════════ */
+async function fetchTON(hash){
+  const r=await fetch(`https://tonapi.io/v2/blockchain/transactions/${encodeURIComponent(hash)}`,{
+    headers:{Accept:'application/json'},signal:abortIn(10000)
+  });
+  if(!r.ok)return null;
+  const d=await r.json(); if(!d.hash)return null;
+  const inMsg=d.in_msg;
+  const value=inMsg?.value?parseInt(inMsg.value)/1e9:0;
+  const fee=d.total_fees?parseInt(d.total_fees)/1e9:0;
+
+  const tokenTransfers=[];
+  // Parse Jetton transfer actions
+  for(const action of(d.actions??[])){
+    if(action.type==='JettonTransfer'&&action.JettonTransfer){
+      const jt=action.JettonTransfer;
+      tokenTransfers.push({
+        symbol:jt.jetton?.symbol??'Jetton',
+        amount:jt.amount?(parseInt(jt.amount)/Math.pow(10,jt.jetton?.decimals??9)).toFixed(4):'?',
+        from:jt.sender?.address??'?',to:jt.recipient?.address??'?',
+        contractAddr:jt.jetton?.address??''
       });
     }
   }
 
-  return {
-    slot:      tx.slot,
-    blockTime: tx.blockTime ? new Date(tx.blockTime*1000).toLocaleString() : 'N/A',
-    fee:       `${((tx.meta?.fee??0)/1e9).toFixed(6)} SOL`,
-    signers:   tx.transaction?.message?.accountKeys?.length ?? 'N/A',
-    explorerUrl: `https://solscan.io/tx/${hash}`,
-    confirmed: tx.meta?.err === null,
-    tokenTransfers,
-  };
+  return{blockNumber:`${d.block?.workchain??'?'}:${d.block?.seqno??'?'}`,
+    blockTime:d.utime?new Date(d.utime*1000).toLocaleString():'N/A',
+    from:inMsg?.source?.address??'N/A',to:inMsg?.destination?.address??'N/A',
+    nativeValue:`${value.toFixed(6)} TON`,fee:`${fee.toFixed(6)} TON`,
+    explorerUrl:`https://tonscan.org/tx/${hash}`,
+    confirmed:d.success===true,tokenTransfers};
 }
 
-async function fetchEVM(hash, chain) {
-  const body = (m,p,i) => JSON.stringify({jsonrpc:'2.0', id:i, method:m, params:p});
-  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, signal: abortIn(9000) };
-  const [tr, rr] = await Promise.all([
-    fetch(chain.rpc, { ...opts, body: body('eth_getTransactionByHash',[hash],1) }),
-    fetch(chain.rpc, { ...opts, body: body('eth_getTransactionReceipt',[hash],2) }),
-  ]);
-  const td = await tr.json(), rd = await rr.json();
-  const tx = td.result; if (!tx) return null;
-  const rcp = rd.result;
+/* ═══════════════════════════════════════════
+   FETCH — NANO
+═══════════════════════════════════════════ */
+async function fetchNano(hash){
+  const r=await fetch('https://rpc.nano.to',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'block_info',json_block:'true',hash}),signal:abortIn(9000)
+  });
+  if(!r.ok)return null;
+  const d=await r.json(); if(d.error||!d.contents)return null;
+  let block=d.contents;
+  if(typeof block==='string'){try{block=JSON.parse(block);}catch{}}
+  let amtNano='0 XNO';
+  try{amtNano=`${(Number(BigInt(d.amount||'0'))/1e30).toFixed(6)} XNO`;}catch{}
+  return{type:d.subtype??block.type??'N/A',blockHeight:d.height??'N/A',
+    from:block.account??d.block_account??'N/A',to:block.link_as_account??'N/A',
+    nativeValue:amtNano,explorerUrl:`https://nanobrowse.com/block/${hash}`,
+    confirmed:d.confirmed==='true'||d.confirmed===true,tokenTransfers:[]};
+}
 
-  const rawVal = BigInt(tx.value ?? '0x0');
-  const nativeValue = rawVal === 0n
-    ? `0 ${chain.symbol}`
-    : `${(Number(rawVal)/1e18).toFixed(6)} ${chain.symbol}`;
+/* ═══════════════════════════════════════════
+   FETCH — MONERO  (xmrchain.net)
+═══════════════════════════════════════════ */
+async function fetchMonero(hash){
+  const r=await fetch(`https://xmrchain.net/api/transaction/${hash}`,{signal:abortIn(9000)});
+  if(!r.ok)return null;
+  const d=await r.json(); if(!d.data)return null;
+  const tx=d.data;
+  return{blockHeight:tx.block_height??'Pending (mempool)',confirmations:tx.confirmations??0,
+    fee:`${((tx.tx_fee||0)/1e12).toFixed(6)} XMR`,
+    nativeValue:'🔒 Hidden (privacy chain)',
+    size:`${tx.tx_size??0} bytes`,
+    explorerUrl:`https://xmrchain.net/tx/${hash}`,
+    confirmed:(tx.confirmations??0)>0,tokenTransfers:[]};
+}
 
-  let feeStr = 'N/A';
-  if (rcp?.gasUsed && tx.gasPrice) {
-    const fee = parseInt(rcp.gasUsed,16) * parseInt(tx.gasPrice,16);
-    feeStr = `${(fee/1e18).toFixed(8)} ${chain.symbol}`;
+/* ═══════════════════════════════════════════
+   FETCH — STELLAR  (Horizon + operations)
+═══════════════════════════════════════════ */
+async function fetchStellar(hash){
+  const r=await fetch(`https://horizon.stellar.org/transactions/${hash}`,{signal:abortIn(9000)});
+  if(!r.ok)return null;
+  const d=await r.json(); if(!d.id)return null;
+
+  const tokenTransfers=[]; let nativeValue='0 XLM';
+  try{
+    const or=await fetch(`https://horizon.stellar.org/transactions/${hash}/operations`,{signal:abortIn(8000)});
+    if(or.ok){
+      const ops=await or.json();
+      for(const op of(ops._embedded?.records??[])){
+        if(op.type==='payment'){
+          if(op.asset_type==='native'){
+            nativeValue=`${parseFloat(op.amount).toFixed(6)} XLM`;
+          }else{
+            tokenTransfers.push({symbol:op.asset_code,amount:parseFloat(op.amount).toFixed(6),
+              from:op.from,to:op.to,contractAddr:`${op.asset_code}:${op.asset_issuer?.slice(0,10)}…`});
+          }
+        }else if(op.type==='path_payment_strict_send'||op.type==='path_payment_strict_receive'){
+          const sym=op.asset_type==='native'?'XLM':op.asset_code;
+          tokenTransfers.push({symbol:sym,amount:parseFloat(op.amount||op.source_amount||0).toFixed(6),
+            from:op.from,to:op.to,contractAddr:op.asset_issuer?.slice(0,10)+'…'||''});
+        }
+      }
+    }
+  }catch{}
+
+  return{ledger:d.ledger,blockTime:d.created_at?new Date(d.created_at).toLocaleString():'N/A',
+    from:d.source_account,fee:`${(parseInt(d.fee_charged)/1e7).toFixed(7)} XLM`,
+    nativeValue,operations:d.operation_count,
+    explorerUrl:`https://stellar.expert/explorer/public/tx/${hash}`,
+    confirmed:d.successful===true,tokenTransfers};
+}
+
+/* ═══════════════════════════════════════════
+   FETCH — TEZOS  (TzKT)
+═══════════════════════════════════════════ */
+async function fetchTezos(hash){
+  const r=await fetch(`https://api.tzkt.io/v1/operations/transactions/${hash}`,{signal:abortIn(9000)});
+  if(!r.ok)return null;
+  const d=await r.json(); if(!d.length)return null;
+  const tx=d[0];
+  return{blockHeight:tx.level??'N/A',blockTime:tx.timestamp?new Date(tx.timestamp).toLocaleString():'N/A',
+    from:tx.sender?.address??'N/A',to:tx.target?.address??'N/A',
+    nativeValue:`${((tx.amount??0)/1e6).toFixed(6)} XTZ`,
+    fee:`${((tx.bakerFee??0)/1e6).toFixed(6)} XTZ`,
+    status:tx.status??'N/A',
+    explorerUrl:`https://tzkt.io/${hash}`,
+    confirmed:tx.status==='applied',tokenTransfers:[]};
+}
+
+/* ═══════════════════════════════════════════
+   FETCH — POLKADOT  (Subscan open API)
+═══════════════════════════════════════════ */
+async function fetchPolkadot(hash){
+  const r=await fetch('https://polkadot.api.subscan.io/api/scan/extrinsic',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({hash}),signal:abortIn(10000)
+  });
+  if(!r.ok)return null;
+  const d=await r.json(); if(d.code!==0||!d.data)return null;
+  const ex=d.data;
+  return{blockNumber:ex.block_num??'N/A',
+    blockTime:ex.block_timestamp?new Date(ex.block_timestamp*1000).toLocaleString():'N/A',
+    from:ex.account_id??'N/A',module:`${ex.call_module??''}::${ex.call_module_function??''}`,
+    fee:ex.fee?`${(parseInt(ex.fee)/1e10).toFixed(4)} DOT`:'N/A',
+    nativeValue:'See explorer',
+    explorerUrl:`https://polkadot.subscan.io/extrinsic/${hash}`,
+    confirmed:ex.success===true,tokenTransfers:[]};
+}
+
+/* ═══════════════════════════════════════════
+   FETCH — NEAR  (NearBlocks API)
+═══════════════════════════════════════════ */
+async function fetchNEAR(hash){
+  const r=await fetch(`https://api.nearblocks.io/v1/transactions/${hash}`,{
+    headers:{Accept:'application/json'},signal:abortIn(10000)
+  });
+  if(!r.ok)return null;
+  const d=await r.json();
+  const tx=d.txns?.[0]; if(!tx)return null;
+
+  const tokenTransfers=[];
+  for(const action of(tx.actions??[])){
+    if(action.action==='FUNCTION_CALL'&&(action.method==='ft_transfer'||action.method==='ft_transfer_call')){
+      try{
+        const args=JSON.parse(atob(action.args));
+        tokenTransfers.push({symbol:tx.receiver_account_id,
+          amount:args.amount??(args.msg??'?'),
+          from:tx.signer_account_id,to:args.receiver_id??'?',
+          contractAddr:tx.receiver_account_id});
+      }catch{}
+    }
   }
 
-  const tokenTransfers = rcp
-    ? await parseEVMTokenTransfers(rcp.logs, chain.rpc)
-    : [];
-
-  return {
-    status:      rcp ? (rcp.status==='0x1' ? 'Success' : 'Failed') : 'Pending',
-    blockNumber: tx.blockNumber ? parseInt(tx.blockNumber,16).toLocaleString() : 'Pending',
-    from:        tx.from,
-    to:          tx.to ?? 'Contract creation',
-    nativeValue,
-    fee:         feeStr,
-    gasLimit:    parseInt(tx.gas,16).toLocaleString(),
-    gasUsed:     rcp?.gasUsed ? parseInt(rcp.gasUsed,16).toLocaleString() : 'N/A',
-    explorerUrl: chain.explorer + hash,
-    confirmed:   rcp?.status === '0x1',
-    tokenTransfers,
-  };
+  const deposit=tx.actions_agg?.deposit;
+  const nativeValue=deposit&&deposit!=='0'?`${(parseInt(deposit)/1e24).toFixed(6)} NEAR`:'0 NEAR';
+  const s=tx.outcomes?.status??'';
+  return{blockHeight:tx.block?.block_height??'N/A',
+    blockTime:tx.block_timestamp?new Date(parseInt(tx.block_timestamp)/1e6).toLocaleString():'N/A',
+    from:tx.signer_account_id,to:tx.receiver_account_id,
+    status:s,fee:tx.transaction_fee?`${(parseInt(tx.transaction_fee)/1e24).toFixed(8)} NEAR`:'N/A',
+    nativeValue,explorerUrl:`https://nearblocks.io/txns/${hash}`,
+    confirmed:s.startsWith('SUCCESS'),tokenTransfers};
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
+   FETCH — TRON
+═══════════════════════════════════════════ */
+async function fetchTron(hash){
+  const opts={headers:{Accept:'application/json'},signal:abortIn(9000)};
+  const [txRes,evRes]=await Promise.allSettled([
+    fetch(`https://api.trongrid.io/v1/transactions/${hash}`,opts),
+    fetch(`https://api.trongrid.io/v1/transactions/${hash}/events`,opts),
+  ]);
+  if(txRes.status==='rejected')return null;
+  const txData=await txRes.value.json();
+  if(!txData.data?.length)return null;
+  const tx=txData.data[0];
+  const ret=tx.ret?.[0]?.contractRet??'Unknown';
+  const result={status:ret,blockNumber:tx.blockNumber??'N/A',
+    fee:tx.fee!=null?`${(tx.fee/1e6).toFixed(6)} TRX`:'0 TRX',
+    nativeValue:tx.raw_data?.contract?.[0]?.parameter?.value?.amount!=null
+      ?`${(tx.raw_data.contract[0].parameter.value.amount/1e6).toFixed(6)} TRX`:'0 TRX',
+    from:tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address??'N/A',
+    explorerUrl:`https://tronscan.org/#/transaction/${hash}`,
+    confirmed:ret==='SUCCESS',tokenTransfers:[]};
+  if(evRes.status==='fulfilled'&&evRes.value.ok){
+    try{
+      const ev=await evRes.value.json();
+      for(const e of(ev.data??[])){
+        if(e.event_name!=='Transfer')continue;
+        const r2=e.result??{},info=e.token_info??{};
+        const raw=r2._value??r2.value??'0';
+        const dec=info.decimals??6;
+        let amt;
+        try{amt=formatTokenAmt('0x'+BigInt(raw).toString(16),dec);}catch{amt=raw;}
+        result.tokenTransfers.push({symbol:info.symbol??'TRC-20',amount:amt,
+          from:r2._from??r2.from??'?',to:r2._to??r2.to??'?',
+          contractAddr:e.contract_address??''});
+      }
+    }catch{}
+  }
+  return result;
+}
+
+/* ═══════════════════════════════════════════
+   FETCH — SOLANA
+═══════════════════════════════════════════ */
+async function fetchSolana(hash){
+  const r=await fetch('https://api.mainnet-beta.solana.com',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getTransaction',
+      params:[hash,{encoding:'json',maxSupportedTransactionVersion:0}]}),
+    signal:abortIn(12000)
+  });
+  const d=await r.json(); if(!d.result)return null;
+  const tx=d.result;
+  const pre=tx.meta?.preTokenBalances??[], post=tx.meta?.postTokenBalances??[];
+  const tokenTransfers=[];
+  for(const pb of post){
+    const pr=pre.find(p=>p.accountIndex===pb.accountIndex&&p.mint===pb.mint);
+    const preAmt=pr?.uiTokenAmount?.uiAmount??0, postAmt=pb.uiTokenAmount?.uiAmount??0;
+    const diff=postAmt-preAmt;
+    if(diff>0){
+      const sender=post.find(p=>p.mint===pb.mint&&p.accountIndex!==pb.accountIndex&&
+        ((pre.find(pp=>pp.accountIndex===p.accountIndex&&pp.mint===p.mint)?.uiTokenAmount?.uiAmount??0)-(p.uiTokenAmount?.uiAmount??0))>0);
+      tokenTransfers.push({symbol:pb.uiTokenAmount?.symbol??truncAddr(pb.mint,6,4),
+        amount:pb.uiTokenAmount?.uiAmountString??diff.toString(),
+        from:sender?.owner??'(unknown)',to:pb.owner??'(unknown)',contractAddr:pb.mint});
+    }
+  }
+  return{slot:tx.slot,blockTime:tx.blockTime?new Date(tx.blockTime*1000).toLocaleString():'N/A',
+    fee:`${((tx.meta?.fee??0)/1e9).toFixed(6)} SOL`,
+    signers:tx.transaction?.message?.accountKeys?.length??'N/A',
+    explorerUrl:`https://solscan.io/tx/${hash}`,
+    confirmed:tx.meta?.err===null,tokenTransfers};
+}
+
+/* ═══════════════════════════════════════════
+   FETCH — EVM
+═══════════════════════════════════════════ */
+async function fetchEVM(hash,chain){
+  const body=(m,p,i)=>JSON.stringify({jsonrpc:'2.0',id:i,method:m,params:p});
+  const opts={method:'POST',headers:{'Content-Type':'application/json'},signal:abortIn(9000)};
+  const [tr,rr]=await Promise.all([
+    fetch(chain.rpc,{...opts,body:body('eth_getTransactionByHash',[hash],1)}),
+    fetch(chain.rpc,{...opts,body:body('eth_getTransactionReceipt',[hash],2)}),
+  ]);
+  const td=await tr.json(),rd=await rr.json();
+  const tx=td.result; if(!tx)return null;
+  const rcp=rd.result;
+  const rawVal=BigInt(tx.value??'0x0');
+  const nativeValue=rawVal===0n?`0 ${chain.symbol}`:`${(Number(rawVal)/1e18).toFixed(6)} ${chain.symbol}`;
+  let feeStr='N/A';
+  if(rcp?.gasUsed&&tx.gasPrice){
+    const fee=parseInt(rcp.gasUsed,16)*parseInt(tx.gasPrice,16);
+    feeStr=`${(fee/1e18).toFixed(8)} ${chain.symbol}`;
+  }
+  const tokenTransfers=rcp?await parseEVMTokenTransfers(rcp.logs,chain.rpc):[];
+  return{status:rcp?(rcp.status==='0x1'?'Success':'Failed'):'Pending',
+    blockNumber:tx.blockNumber?parseInt(tx.blockNumber,16).toLocaleString():'Pending',
+    from:tx.from,to:tx.to??'Contract creation',nativeValue,fee:feeStr,
+    gasLimit:parseInt(tx.gas,16).toLocaleString(),
+    gasUsed:rcp?.gasUsed?parseInt(rcp.gasUsed,16).toLocaleString():'N/A',
+    explorerUrl:chain.explorer+hash,confirmed:rcp?.status==='0x1',tokenTransfers};
+}
+
+/* ═══════════════════════════════════════════
+   MASTER DISPATCHER
+═══════════════════════════════════════════ */
+async function searchChain(chain,hash){
+  switch(chain.type){
+    case'bitcoin':    return fetchBitcoin(hash);
+    case'blockcypher':return fetchBlockcypher(hash,chain);
+    case'bsv':        return fetchBSV(hash);
+    case'bcd':        return fetchBCD(hash);
+    case'xrp':        return fetchXRP(hash);
+    case'cardano':    return fetchCardano(hash);
+    case'ton':        return fetchTON(hash);
+    case'nano':       return fetchNano(hash);
+    case'monero':     return fetchMonero(hash);
+    case'stellar':    return fetchStellar(hash);
+    case'tezos':      return fetchTezos(hash);
+    case'polkadot':   return fetchPolkadot(hash);
+    case'near':       return fetchNEAR(hash);
+    case'tron':       return fetchTron(hash);
+    case'solana':     return fetchSolana(hash);
+    case'evm':        return fetchEVM(hash,chain);
+    default:          return null;
+  }
+}
+
+/* ═══════════════════════════════════════════
    HASH HINT
-═══════════════════════════════════════════════════════ */
-function hashHint(h) {
-  if (h.startsWith('0x') && h.length===66)
-    return { label:'EVM / Tron format (0x…)', chains:'Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, Tron' };
-  if (/^[0-9a-fA-F]{64}$/.test(h))
-    return { label:'64-char hex (no 0x)', chains:'Bitcoin, Litecoin, Dogecoin, Tron' };
-  if (h.length>=43 && h.length<=90 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
-    return { label:'Base58 format', chains:'Solana' };
+═══════════════════════════════════════════ */
+function hashHint(h){
+  // TON base64url (44-char without padding, or 44 with =)
+  if(/^[A-Za-z0-9+/_-]{43,44}={0,2}$/.test(h)&&!/^[0-9a-fA-F]+$/.test(h))
+    return{label:'Base64 / Base64url format',chains:'TON'};
+  // EVM 0x prefix
+  if(h.startsWith('0x')&&h.length===66)
+    return{label:'EVM format (0x + 64 hex)',chains:'Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, ETC, opBNB, CELO, KAVA, Tron, Polkadot'};
+  // 64-char hex (no 0x) — Bitcoin family, Monero, XRP, Stellar, Cardano, Nano, NEAR
+  if(/^[0-9a-fA-F]{64}$/.test(h))
+    return{label:'64-char hex (no 0x prefix)',chains:'Bitcoin, Litecoin, Dogecoin, BCH, BSV, BCD, Monero, Nano, Cardano, XRP, Stellar, NEAR, TON'};
+  // Tezos (starts with 'o', base58)
+  if(h.startsWith('o')&&h.length>=50&&h.length<=54&&/^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
+    return{label:'Tezos operation hash (Base58)',chains:'Tezos'};
+  // Base58 general (Solana, NEAR)
+  if(h.length>=43&&h.length<=90&&/^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
+    return{label:'Base58 format',chains:'Solana, NEAR, Tezos'};
   return null;
 }
 
-/* ═══════════════════════════════════════════════════════
-   RENDER
-═══════════════════════════════════════════════════════ */
-function renderChainGrid() {
-  return `<div class="chain-grid">${CHAINS.map(c => {
-    const s = statuses[c.id] ?? 'idle';
-    const cfg = STATUS_CFG[s];
-    const found = s === 'found';
-    return `<div class="chain-card${found?' found':''}">
+/* ═══════════════════════════════════════════
+   RENDER HELPERS
+═══════════════════════════════════════════ */
+function renderChainGrid(){
+  return`<div class="chain-grid">${CHAINS.map(c=>{
+    const s=statuses[c.id]??'idle', cfg=STATUS_CFG[s], found=s==='found';
+    return`<div class="chain-card${found?' found':''}">
       <div class="chain-badge" style="background:${hexCol(c.color,.1)};border:1.5px solid ${c.color};color:${c.color}">
-        ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
+        ${c.symbol.length>4?c.symbol.slice(0,4):c.symbol}
       </div>
       <div style="min-width:0">
         <div class="chain-name">${c.name}</div>
@@ -527,28 +745,23 @@ function renderChainGrid() {
   }).join('')}</div>`;
 }
 
-function renderTokenTransfers(transfers) {
-  if (!transfers?.length) return '';
-  return `
-  <div class="token-section">
-    <div class="token-section-title">
-      <i class="ti ti-coin"></i> Token transfer${transfers.length>1?'s':''} (${transfers.length})
-    </div>
-    ${transfers.map(t => `
-    <div class="token-row">
+function renderTokenTransfers(transfers){
+  if(!transfers?.length)return'';
+  return`<div class="token-section">
+    <div class="token-section-title"><i class="ti ti-coin"></i> Token transfer${transfers.length>1?'s':''} (${transfers.length})</div>
+    ${transfers.map(t=>`<div class="token-row">
       <div style="flex:1;min-width:0">
         <div class="token-left">
-          <div class="token-icon">${(t.symbol||'?').slice(0,5)}</div>
+          <div class="token-icon">${escHtml((t.symbol||'?').slice(0,5))}</div>
           <div>
             <div class="token-symbol">${escHtml(t.symbol)}</div>
-            ${t.contractAddr ? `<div class="token-contract">${truncAddr(t.contractAddr,8,6)}</div>` : ''}
+            ${t.contractAddr?`<div class="token-contract">${truncAddr(t.contractAddr,8,6)}</div>`:''}
           </div>
         </div>
-        ${(t.from || t.to) ? `
-        <div class="token-addrs" style="margin-top:8px">
-          ${t.from && t.from!=='?' ? `<div class="token-addr-row"><span class="token-addr-tag">From</span><span class="token-addr-val">${escHtml(t.from)}</span></div>` : ''}
-          ${t.to   && t.to!=='?'  ? `<div class="token-addr-row"><span class="token-addr-tag">To</span><span class="token-addr-val">${escHtml(t.to)}</span></div>` : ''}
-        </div>` : ''}
+        ${(t.from||t.to)?`<div class="token-addrs" style="margin-top:8px">
+          ${t.from&&t.from!=='?'?`<div class="token-addr-row"><span class="token-addr-tag">From</span><span class="token-addr-val">${escHtml(t.from)}</span></div>`:''}
+          ${t.to  &&t.to  !=='?'?`<div class="token-addr-row"><span class="token-addr-tag">To</span><span class="token-addr-val">${escHtml(t.to)}</span></div>`:''}
+        </div>`:''}
       </div>
       <div class="token-amount-col">
         <div class="token-amount">${escHtml(String(t.amount))}</div>
@@ -558,42 +771,27 @@ function renderTokenTransfers(transfers) {
   </div>`;
 }
 
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function renderResultCards() {
-  const found = CHAINS.filter(c => statuses[c.id]==='found');
-  if (!found.length) return '';
-  return `
-  <div class="results-label">
+function renderResultCards(){
+  const found=CHAINS.filter(c=>statuses[c.id]==='found');
+  if(!found.length)return'';
+  return`<div class="results-label">
     <i class="ti ti-circle-check"></i>
     Match${found.length>1?'es':''} found on ${found.map(c=>c.name).join(' · ')}
   </div>
-  ${found.map(c => {
-    const r = results[c.id]; if (!r) return '';
-    const tokenTransfers = r.tokenTransfers ?? [];
-    const hasTokens      = tokenTransfers.length > 0;
-
-    // Determine which fields to show in the main grid
-    // If there are token transfers and native value is 0, mark it muted
-    const nativeIsMoot = hasTokens && (r.nativeValue?.startsWith('0 ') || r.nativeValue === '0');
-
-    const mainFields = Object.entries(r).filter(([k]) =>
-      !HIDE_FIELDS.has(k) && !MONO_FIELDS.has(k) && k !== 'nativeValue'
-    );
-    // Always add nativeValue at the start of the grid
-    const allFields = r.nativeValue
-      ? [['nativeValue', r.nativeValue], ...mainFields]
-      : mainFields;
-
-    const addrFields = Object.entries(r).filter(([k]) => MONO_FIELDS.has(k));
-
-    return `<div class="result-card">
+  ${found.map(c=>{
+    const r=results[c.id]; if(!r)return'';
+    const tokenTransfers=r.tokenTransfers??[];
+    const hasTokens=tokenTransfers.length>0;
+    const nativeIsMoot=hasTokens&&(r.nativeValue?.startsWith('0 ')||r.nativeValue==='0');
+    const mainFields=Object.entries(r).filter(([k])=>!HIDE_FIELDS.has(k)&&!MONO_FIELDS.has(k)&&k!=='nativeValue');
+    const allFields=r.nativeValue?[['nativeValue',r.nativeValue],...mainFields]:mainFields;
+    const addrFields=Object.entries(r).filter(([k])=>MONO_FIELDS.has(k));
+    const isPrivacy=String(r.nativeValue||'').includes('Hidden');
+    return`<div class="result-card">
       <div class="result-header">
         <div class="result-chain-info">
           <div class="result-badge" style="background:${hexCol(c.color,.12)};border:2px solid ${c.color};color:${c.color}">
-            ${c.symbol.length>3?c.symbol.slice(0,4):c.symbol}
+            ${c.symbol.length>4?c.symbol.slice(0,4):c.symbol}
           </div>
           <div>
             <div class="result-chain-name">${c.name}</div>
@@ -607,35 +805,31 @@ function renderResultCards() {
           Explorer <i class="ti ti-external-link"></i>
         </a>`:''}
       </div>
-      <hr class="divider" />
-
+      <hr class="divider"/>
       ${renderTokenTransfers(tokenTransfers)}
-
       <div class="fields-grid" style="${hasTokens?'margin-top:14px':''}">
-        ${allFields.map(([k,v]) => `<div>
+        ${allFields.map(([k,v])=>`<div>
           <div class="field-label">${FIELD_LABELS[k]??k}</div>
-          <div class="field-value${k==='nativeValue'&&nativeIsMoot?' muted':''}">${escHtml(String(v))}</div>
+          <div class="field-value${k==='nativeValue'&&nativeIsMoot?' muted':k==='nativeValue'&&isPrivacy?' privacy':''}">${escHtml(String(v))}</div>
         </div>`).join('')}
       </div>
-
-      ${addrFields.length ? `
-      <div class="addresses-section">
-        <hr class="divider" />
-        <div class="field-label" style="margin-bottom:8px">Signer addresses</div>
+      ${addrFields.length?`<div class="addresses-section">
+        <hr class="divider"/>
+        <div class="field-label" style="margin-bottom:8px">Addresses</div>
         ${addrFields.map(([k,v])=>`<div class="address-row">
           <span class="address-tag">${FIELD_LABELS[k]??k}</span>
           <span class="address-val">${escHtml(String(v))}</span>
         </div>`).join('')}
-      </div>` : ''}
+      </div>`:''}
     </div>`;
   }).join('')}`;
 }
 
-function renderEmpty() {
-  const allDone  = Object.values(statuses).every(s => s !== 'searching');
-  const anyFound = Object.values(statuses).some(s => s === 'found');
-  if (!allDone || anyFound) return '';
-  return `<div class="empty-state">
+function renderEmpty(){
+  const allDone=Object.values(statuses).every(s=>s!=='searching');
+  const anyFound=Object.values(statuses).some(s=>s==='found');
+  if(!allDone||anyFound)return'';
+  return`<div class="empty-state">
     <i class="ti ti-search-off"></i>
     <h3>No match found</h3>
     <p>This hash was not found on any of the ${CHAINS.length} supported chains.</p>
@@ -643,77 +837,66 @@ function renderEmpty() {
   </div>`;
 }
 
-function renderWelcome() {
-  return `<div class="welcome">
+function renderWelcome(){
+  return`<div class="welcome">
     <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
-    <p>Paste a transaction hash above to identify the chain, view transaction details, and detect any token transfers.</p>
+    <p>Paste a transaction hash above to identify the chain, view transaction details, and detect token / asset transfers across ${CHAINS.length} blockchains.</p>
   </div>
   <div class="chain-strip">
     ${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}
   </div>`;
 }
 
-function render() {
-  const app = document.getElementById('app');
-  const hasSearched = Object.keys(statuses).length > 0;
-  if (!hasSearched) { app.innerHTML = renderWelcome(); return; }
-  app.innerHTML = renderChainGrid() + renderResultCards() + renderEmpty();
+function render(){
+  const app=document.getElementById('app');
+  if(!Object.keys(statuses).length){app.innerHTML=renderWelcome();return;}
+  app.innerHTML=renderChainGrid()+renderResultCards()+renderEmpty();
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    EVENT WIRING
-═══════════════════════════════════════════════════════ */
-const hashInput = document.getElementById('hashInput');
-const searchBtn = document.getElementById('searchBtn');
-const hintBox   = document.getElementById('hintBox');
-const hintText  = document.getElementById('hintText');
+═══════════════════════════════════════════ */
+const hashInput=document.getElementById('hashInput');
+const searchBtn=document.getElementById('searchBtn');
+const hintBox=document.getElementById('hintBox');
+const hintText=document.getElementById('hintText');
 
-hashInput.addEventListener('input', () => {
-  const h = hashInput.value.trim();
-  searchBtn.disabled = !h || searching;
-  const hint = h ? hashHint(h) : null;
-  if (hint) {
-    hintText.innerHTML = `<strong>${escHtml(hint.label)}</strong> — likely: ${escHtml(hint.chains)}`;
-    hintBox.style.display = 'flex';
-  } else {
-    hintBox.style.display = 'none';
-  }
+hashInput.addEventListener('input',()=>{
+  const h=hashInput.value.trim();
+  searchBtn.disabled=!h||searching;
+  const hint=h?hashHint(h):null;
+  if(hint){
+    hintText.innerHTML=`<strong>${escHtml(hint.label)}</strong> — likely: ${escHtml(hint.chains)}`;
+    hintBox.style.display='flex';
+  }else{hintBox.style.display='none';}
 });
 
-hashInput.addEventListener('keydown', e => { if (e.key==='Enter') searchBtn.click(); });
+hashInput.addEventListener('keydown',e=>{if(e.key==='Enter')searchBtn.click();});
 
-searchBtn.addEventListener('click', async () => {
-  const hash = hashInput.value.trim();
-  if (!hash || searching) return;
-  searching = true;
-  searchBtn.disabled = true;
-  searchBtn.innerHTML = `<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
-  statuses = {}; results = {};
-  CHAINS.forEach(c => { statuses[c.id] = 'searching'; });
+searchBtn.addEventListener('click',async()=>{
+  const hash=hashInput.value.trim();
+  if(!hash||searching)return;
+  searching=true; searchBtn.disabled=true;
+  searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
+  statuses={}; results={};
+  CHAINS.forEach(c=>{statuses[c.id]='searching';});
   render();
 
-  const update = (id, status, result) => {
-    statuses[id] = status;
-    if (result) results[id] = result;
+  const update=(id,status,result)=>{
+    statuses[id]=status;
+    if(result)results[id]=result;
     render();
   };
 
-  await Promise.allSettled(CHAINS.map(async chain => {
-    try {
-      let r = null;
-      if      (chain.type==='bitcoin')  r = await fetchBitcoin(hash);
-      else if (chain.type==='litecoin') r = await fetchBlockcypher(hash,'ltc','LTC','https://live.blockcypher.com/ltc/tx/');
-      else if (chain.type==='dogecoin') r = await fetchBlockcypher(hash,'doge','DOGE','https://live.blockcypher.com/doge/tx/');
-      else if (chain.type==='tron')     r = await fetchTron(hash);
-      else if (chain.type==='solana')   r = await fetchSolana(hash);
-      else if (chain.type==='evm')      r = await fetchEVM(hash, chain);
-      update(chain.id, r ? 'found' : 'not_found', r);
-    } catch { update(chain.id, 'error'); }
+  await Promise.allSettled(CHAINS.map(async chain=>{
+    try{
+      const r=await searchChain(chain,hash);
+      update(chain.id,r?'found':'not_found',r);
+    }catch{update(chain.id,'error');}
   }));
 
-  searching = false;
-  searchBtn.disabled = false;
-  searchBtn.innerHTML = `<i class="ti ti-search"></i> <span>Search</span>`;
+  searching=false; searchBtn.disabled=false;
+  searchBtn.innerHTML=`<i class="ti ti-search"></i> <span>Search</span>`;
   render();
 });
 
