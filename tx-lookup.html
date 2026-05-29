@@ -14,8 +14,10 @@
     --bg:#0d0f14; --bg2:#13161e; --bg3:#1a1e2a;
     --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
     --text:#e8eaf0; --text2:#8b8fa8; --text3:#565970;
-    --accent:#4f8ef7; --success:#34c77b; --warning:#f5a623; --danger:#f05353; --token:#a78bfa;
-    --success-bg:rgba(52,199,123,0.10); --token-bg:rgba(167,139,250,0.08); --token-border:rgba(167,139,250,0.25);
+    --accent:#4f8ef7; --success:#34c77b; --warning:#f5a623; --danger:#f05353;
+    --token:#a78bfa; --ts:#38bdf8;
+    --success-bg:rgba(52,199,123,0.10); --token-bg:rgba(167,139,250,0.08);
+    --token-border:rgba(167,139,250,0.25); --ts-bg:rgba(56,189,248,0.07);
     --radius:10px; --radius-lg:14px;
     --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif;
   }
@@ -70,6 +72,22 @@
   .explorer-link { font-size:12px; color:var(--accent); text-decoration:none; display:flex; align-items:center; gap:4px; opacity:0.85; transition:opacity 0.15s; }
   .explorer-link:hover { opacity:1; }
   .divider { border:none; border-top:1px solid var(--border); margin:12px 0; }
+
+  /* ── Timestamp banner ── */
+  .ts-banner {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--ts-bg);
+    border: 1px solid rgba(56,189,248,0.18);
+    border-radius: 8px;
+    padding: 9px 13px;
+    margin-bottom: 12px;
+  }
+  .ts-banner i { color: var(--ts); font-size: 15px; flex-shrink: 0; }
+  .ts-banner-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .ts-banner-value { font-size: 13px; font-weight: 600; color: var(--ts); font-family: var(--mono); }
+  .ts-banner-sub   { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+  /* Fields grid */
   .fields-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:12px 20px; }
   .field-label { font-size:11px; color:var(--text3); margin-bottom:3px; }
   .field-value { font-size:13px; font-weight:500; color:var(--text); line-height:1.4; word-break:break-all; }
@@ -121,6 +139,7 @@
     .search-btn span { display:none; }
     .token-row { flex-direction:column; }
     .token-amount-col { text-align:left; }
+    .ts-banner { flex-wrap:wrap; }
   }
 </style>
 </head>
@@ -130,7 +149,7 @@
     <div class="header-icon"><i class="ti ti-topology-ring-3"></i></div>
     <div>
       <h1>Transaction Hash Lookup</h1>
-      <p>Search 30 blockchains simultaneously — identifies chain, native amounts, and token/asset transfers.</p>
+      <p>Search 30 blockchains simultaneously — chain, timestamp, native amounts, and token transfers.</p>
     </div>
   </div>
   <div class="search-row">
@@ -146,10 +165,11 @@
   </div>
   <div id="app"></div>
 </div>
+
 <script>
-/* ═══════════════════════════════════════════
-   CHAIN DEFINITIONS  (30 chains)
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   CHAIN DEFINITIONS
+════════════════════════════════════════════ */
 const CHAINS = [
   // ── UTXO ──
   { id:"bitcoin",   name:"Bitcoin",          symbol:"BTC",  color:"#F7931A", type:"bitcoin" },
@@ -187,15 +207,15 @@ const CHAINS = [
 ];
 
 const FIELD_LABELS = {
-  blockHeight:"Block height", blockNumber:"Block number", blockTime:"Block time",
+  blockHeight:"Block height", blockNumber:"Block number",
   confirmations:"Confirmations", fee:"Fee", nativeValue:"Native amount",
   inputs:"Inputs", outputs:"Outputs", size:"Size",
   slot:"Slot", signers:"Accounts", status:"Status", type:"Type",
   from:"From", to:"To", gasLimit:"Gas limit", gasUsed:"Gas used",
   ledger:"Ledger", operations:"Operations", module:"Call",
 };
-const MONO_FIELDS  = new Set(["from","to"]);
-const HIDE_FIELDS  = new Set(["explorerUrl","confirmed","tokenTransfers","value"]);
+const MONO_FIELDS = new Set(["from","to"]);
+const HIDE_FIELDS = new Set(["explorerUrl","confirmed","tokenTransfers","value","blockTime","_tsRaw"]);
 
 const STATUS_CFG = {
   idle:      { icon:"ti-circle",       cls:"idle",      label:"Ready" },
@@ -207,13 +227,55 @@ const STATUS_CFG = {
 
 let statuses={}, results={}, searching=false;
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    UTILITIES
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 function abortIn(ms){ const c=new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal; }
 function hexCol(color,alpha){ return color+Math.round(alpha*255).toString(16).padStart(2,'0'); }
 function truncAddr(a,f=10,b=8){ if(!a||a.length<=f+b+3)return a; return `${a.slice(0,f)}…${a.slice(-b)}`; }
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* Panama time — UTC-5, no DST ever */
+const PANAMA_FMT = new Intl.DateTimeFormat('en-US', {
+  timeZone:    'America/Panama',
+  year:        'numeric', month: 'short', day:   'numeric',
+  hour:        '2-digit', minute:'2-digit',second:'2-digit',
+  hour12:      true,
+});
+const PANAMA_DATE_FMT = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Panama',
+  weekday: 'short', year:'numeric', month:'short', day:'numeric',
+});
+const PANAMA_TIME_FMT = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Panama',
+  hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true,
+});
+
+/**
+ * Convert a Unix timestamp (seconds) to a { dateStr, timeStr, full } object
+ * formatted in Panama time (UTC-5).
+ * Returns null if secs is falsy/invalid.
+ */
+function toPanama(secs) {
+  if (!secs) return null;
+  try {
+    const ms  = typeof secs === 'number' ? secs * 1000 : Number(secs) * 1000;
+    const d   = new Date(ms);
+    if (isNaN(d.getTime())) return null;
+    return {
+      date: PANAMA_DATE_FMT.format(d),
+      time: PANAMA_TIME_FMT.format(d),
+      full: PANAMA_FMT.format(d),
+    };
+  } catch { return null; }
+}
+
+/** Parse an ISO-8601 string into Unix seconds */
+function isoToSecs(iso) {
+  if (!iso) return null;
+  const ms = Date.parse(iso);
+  return isNaN(ms) ? null : ms / 1000;
+}
 
 function decodeABIString(hex){
   if(!hex||hex==='0x'||hex.length<4)return null;
@@ -249,9 +311,9 @@ function formatTokenAmt(rawHex,decimals){
   }catch{return '?';}
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    EVM TOKEN HELPERS
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 const ERC20_TOPIC='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
 async function fetchTokenInfo(addr,rpc){
@@ -283,70 +345,97 @@ async function parseEVMTokenTransfers(logs,rpc){
   });
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — BITCOIN
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — BITCOIN  (Blockstream)
+════════════════════════════════════════════ */
 async function fetchBitcoin(hash){
   const r=await fetch(`https://blockstream.info/api/tx/${hash}`,{signal:abortIn(9000)});
   if(!r.ok)return null;
   const d=await r.json();
   const total=d.vout.reduce((s,o)=>s+o.value,0);
-  return{blockHeight:d.status.block_height??'Pending',fee:`${(d.fee/1e8).toFixed(8)} BTC`,
-    nativeValue:`${(total/1e8).toFixed(8)} BTC`,inputs:d.vin.length,outputs:d.vout.length,
-    size:`${d.size} bytes`,explorerUrl:`https://blockstream.info/tx/${hash}`,
-    confirmed:d.status.confirmed,tokenTransfers:[]};
+  return{
+    blockTime: toPanama(d.status?.block_time),
+    blockHeight:d.status.block_height??'Pending',
+    fee:`${(d.fee/1e8).toFixed(8)} BTC`,
+    nativeValue:`${(total/1e8).toFixed(8)} BTC`,
+    inputs:d.vin.length, outputs:d.vout.length,
+    size:`${d.size} bytes`,
+    explorerUrl:`https://blockstream.info/tx/${hash}`,
+    confirmed:d.status.confirmed, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — BLOCKCYPHER (LTC / DOGE / BCH)
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — BLOCKCYPHER  (LTC / DOGE / BCH)
+════════════════════════════════════════════ */
 async function fetchBlockcypher(hash,chain){
   const r=await fetch(`https://api.blockcypher.com/v1/${chain.coin}/main/txs/${hash}`,{signal:abortIn(9000)});
   if(!r.ok)return null;
   const d=await r.json(); if(d.error)return null;
-  return{confirmations:d.confirmations??0,blockHeight:d.block_height??'Pending',
+  // BlockCypher returns confirmed as ISO string when mined
+  const secs = d.confirmed ? isoToSecs(d.confirmed) : (d.received ? isoToSecs(d.received) : null);
+  return{
+    blockTime:toPanama(secs),
+    confirmations:d.confirmations??0,
+    blockHeight:d.block_height??'Pending',
     fee:`${((d.fees??0)/1e8).toFixed(8)} ${chain.symbol}`,
     nativeValue:`${((d.total??0)/1e8).toFixed(8)} ${chain.symbol}`,
-    explorerUrl:`${chain.explorerBase}${hash}/`,confirmed:(d.confirmations??0)>0,tokenTransfers:[]};
+    explorerUrl:`${chain.explorerBase}${hash}/`,
+    confirmed:(d.confirmations??0)>0, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — BITCOIN SV
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — BITCOIN SV  (WhatsonChain)
+════════════════════════════════════════════ */
 async function fetchBSV(hash){
   const r=await fetch(`https://api.whatsonchain.com/v1/bsv/main/tx/${hash}`,{signal:abortIn(9000)});
   if(!r.ok)return null;
   const d=await r.json(); if(!d.txid)return null;
   const total=(d.vout||[]).reduce((s,o)=>s+(o.value||0),0);
-  return{blockHeight:d.blockheight??'Pending',confirmations:d.confirmations??0,
-    nativeValue:`${total.toFixed(8)} BSV`,inputs:d.vin?.length??0,outputs:d.vout?.length??0,
-    size:`${d.size??0} bytes`,explorerUrl:`https://whatsonchain.com/tx/${hash}`,
-    confirmed:(d.confirmations??0)>0,tokenTransfers:[]};
+  return{
+    blockTime:toPanama(d.blocktime??d.time),
+    blockHeight:d.blockheight??'Pending',
+    confirmations:d.confirmations??0,
+    nativeValue:`${total.toFixed(8)} BSV`,
+    inputs:d.vin?.length??0, outputs:d.vout?.length??0,
+    size:`${d.size??0} bytes`,
+    explorerUrl:`https://whatsonchain.com/tx/${hash}`,
+    confirmed:(d.confirmations??0)>0, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — BITCOIN DIAMOND  (Blockchair)
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function fetchBCD(hash){
   const r=await fetch(`https://api.blockchair.com/bitcoin-diamond/dashboards/transaction/${hash}`,{signal:abortIn(10000)});
   if(!r.ok)return null;
   const d=await r.json();
   const tx=d.data?.[hash]?.transaction; if(!tx)return null;
-  return{blockHeight:tx.block_id??'Pending',confirmations:tx.confirmations??0,
-    fee:`${(tx.fee/1e8).toFixed(8)} BCD`,nativeValue:`${(tx.output_total/1e8).toFixed(8)} BCD`,
-    inputs:tx.input_count??0,outputs:tx.output_count??0,size:`${tx.size??0} bytes`,
+  return{
+    blockTime:toPanama(isoToSecs(tx.time)),
+    blockHeight:tx.block_id??'Pending',
+    confirmations:tx.confirmations??0,
+    fee:`${(tx.fee/1e8).toFixed(8)} BCD`,
+    nativeValue:`${(tx.output_total/1e8).toFixed(8)} BCD`,
+    inputs:tx.input_count??0, outputs:tx.output_count??0,
+    size:`${tx.size??0} bytes`,
     explorerUrl:`https://blockchair.com/bitcoin-diamond/transaction/${hash}`,
-    confirmed:(tx.confirmations??0)>0,tokenTransfers:[]};
+    confirmed:(tx.confirmations??0)>0, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — RIPPLE / XRP
-═══════════════════════════════════════════ */
+   XRP epoch = Jan 1, 2000 00:00:00 UTC = Unix 946684800
+════════════════════════════════════════════ */
+const XRP_EPOCH_OFFSET = 946684800;
 async function fetchXRP(hash){
   const r=await fetch('https://xrplcluster.com/',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({method:'tx',params:[{transaction:hash,binary:false}]}),
-    signal:abortIn(9000)
+    signal:abortIn(9000),
   });
   const d=await r.json();
   const res=d.result; if(!res||res.error||(!res.validated&&!res.TransactionType))return null;
@@ -359,19 +448,26 @@ async function fetchXRP(hash){
     tokenTransfers.push({symbol:res.Amount.currency,amount:res.Amount.value,
       from:res.Account,to:res.Destination??'?',contractAddr:res.Amount.issuer??''});
   }
-  return{status:res.meta?.TransactionResult??'Unknown',blockNumber:res.ledger_index??'N/A',
-    from:res.Account,nativeValue,fee:`${(fee/1e6).toFixed(6)} XRP`,
+  // res.date is seconds since XRP epoch
+  const unixSecs = res.date ? res.date + XRP_EPOCH_OFFSET : null;
+  return{
+    blockTime:toPanama(unixSecs),
+    status:res.meta?.TransactionResult??'Unknown',
+    blockNumber:res.ledger_index??'N/A',
+    from:res.Account, nativeValue,
+    fee:`${(fee/1e6).toFixed(6)} XRP`,
     explorerUrl:`https://livenet.xrpl.org/transactions/${hash}`,
-    confirmed:res.validated===true,tokenTransfers};
+    confirmed:res.validated===true, tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — CARDANO  (Koios, no key needed)
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — CARDANO  (Koios)
+════════════════════════════════════════════ */
 async function fetchCardano(hash){
   const r=await fetch('https://api.koios.rest/api/v1/tx_info',{
     method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body:JSON.stringify({_tx_hashes:[hash]}),signal:abortIn(12000)
+    body:JSON.stringify({_tx_hashes:[hash]}),signal:abortIn(12000),
   });
   if(!r.ok)return null;
   const d=await r.json(); if(!d.length)return null;
@@ -382,62 +478,65 @@ async function fetchCardano(hash){
       tokenTransfers.push({
         symbol:asset.asset_name_ascii||asset.policy_id.slice(0,10)+'…',
         amount:asset.quantity,from:'(see inputs)',
-        to:out.payment_addr?.bech32??'?',contractAddr:asset.policy_id
+        to:out.payment_addr?.bech32??'?',contractAddr:asset.policy_id,
       });
     }
   }
   const totalLovelace=(tx.outputs??[]).reduce((s,o)=>s+parseInt(o.value||0),0);
-  return{blockNumber:tx.block_height??'N/A',
-    blockTime:tx.tx_timestamp?new Date(tx.tx_timestamp*1000).toLocaleString():'N/A',
+  return{
+    blockTime:toPanama(tx.tx_timestamp),
+    blockNumber:tx.block_height??'N/A',
     fee:`${(parseInt(tx.fee??0)/1e6).toFixed(6)} ADA`,
     nativeValue:`${(totalLovelace/1e6).toFixed(6)} ADA`,
     size:tx.tx_size?`${tx.tx_size} bytes`:'N/A',
     explorerUrl:`https://cardanoscan.io/transaction/${hash}`,
-    confirmed:true,tokenTransfers};
+    confirmed:true, tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — TON  (TonAPI)
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function fetchTON(hash){
   const r=await fetch(`https://tonapi.io/v2/blockchain/transactions/${encodeURIComponent(hash)}`,{
-    headers:{Accept:'application/json'},signal:abortIn(10000)
+    headers:{Accept:'application/json'},signal:abortIn(10000),
   });
   if(!r.ok)return null;
   const d=await r.json(); if(!d.hash)return null;
   const inMsg=d.in_msg;
   const value=inMsg?.value?parseInt(inMsg.value)/1e9:0;
   const fee=d.total_fees?parseInt(d.total_fees)/1e9:0;
-
   const tokenTransfers=[];
-  // Parse Jetton transfer actions
   for(const action of(d.actions??[])){
     if(action.type==='JettonTransfer'&&action.JettonTransfer){
       const jt=action.JettonTransfer;
       tokenTransfers.push({
         symbol:jt.jetton?.symbol??'Jetton',
         amount:jt.amount?(parseInt(jt.amount)/Math.pow(10,jt.jetton?.decimals??9)).toFixed(4):'?',
-        from:jt.sender?.address??'?',to:jt.recipient?.address??'?',
-        contractAddr:jt.jetton?.address??''
+        from:jt.sender?.address??'?', to:jt.recipient?.address??'?',
+        contractAddr:jt.jetton?.address??'',
       });
     }
   }
-
-  return{blockNumber:`${d.block?.workchain??'?'}:${d.block?.seqno??'?'}`,
-    blockTime:d.utime?new Date(d.utime*1000).toLocaleString():'N/A',
-    from:inMsg?.source?.address??'N/A',to:inMsg?.destination?.address??'N/A',
-    nativeValue:`${value.toFixed(6)} TON`,fee:`${fee.toFixed(6)} TON`,
+  return{
+    blockTime:toPanama(d.utime),
+    blockNumber:`${d.block?.workchain??'?'}:${d.block?.seqno??'?'}`,
+    from:inMsg?.source?.address??'N/A', to:inMsg?.destination?.address??'N/A',
+    nativeValue:`${value.toFixed(6)} TON`,
+    fee:`${fee.toFixed(6)} TON`,
     explorerUrl:`https://tonscan.org/tx/${hash}`,
-    confirmed:d.success===true,tokenTransfers};
+    confirmed:d.success===true, tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — NANO
-═══════════════════════════════════════════ */
+   Note: block_info doesn't reliably expose timestamp; we show N/A.
+════════════════════════════════════════════ */
 async function fetchNano(hash){
   const r=await fetch('https://rpc.nano.to',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'block_info',json_block:'true',hash}),signal:abortIn(9000)
+    body:JSON.stringify({action:'block_info',json_block:'true',hash}),signal:abortIn(9000),
   });
   if(!r.ok)return null;
   const d=await r.json(); if(d.error||!d.contents)return null;
@@ -445,36 +544,47 @@ async function fetchNano(hash){
   if(typeof block==='string'){try{block=JSON.parse(block);}catch{}}
   let amtNano='0 XNO';
   try{amtNano=`${(Number(BigInt(d.amount||'0'))/1e30).toFixed(6)} XNO`;}catch{}
-  return{type:d.subtype??block.type??'N/A',blockHeight:d.height??'N/A',
-    from:block.account??d.block_account??'N/A',to:block.link_as_account??'N/A',
-    nativeValue:amtNano,explorerUrl:`https://nanobrowse.com/block/${hash}`,
-    confirmed:d.confirmed==='true'||d.confirmed===true,tokenTransfers:[]};
+  // local_timestamp is sometimes returned (seconds)
+  const ts = d.local_timestamp ? parseInt(d.local_timestamp) : null;
+  return{
+    blockTime: toPanama(ts),
+    type:d.subtype??block.type??'N/A',
+    blockHeight:d.height??'N/A',
+    from:block.account??d.block_account??'N/A',
+    to:block.link_as_account??'N/A',
+    nativeValue:amtNano,
+    explorerUrl:`https://nanobrowse.com/block/${hash}`,
+    confirmed:d.confirmed==='true'||d.confirmed===true, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — MONERO  (xmrchain.net)
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function fetchMonero(hash){
   const r=await fetch(`https://xmrchain.net/api/transaction/${hash}`,{signal:abortIn(9000)});
   if(!r.ok)return null;
   const d=await r.json(); if(!d.data)return null;
   const tx=d.data;
-  return{blockHeight:tx.block_height??'Pending (mempool)',confirmations:tx.confirmations??0,
+  return{
+    blockTime:toPanama(tx.timestamp),
+    blockHeight:tx.block_height??'Pending (mempool)',
+    confirmations:tx.confirmations??0,
     fee:`${((tx.tx_fee||0)/1e12).toFixed(6)} XMR`,
     nativeValue:'🔒 Hidden (privacy chain)',
     size:`${tx.tx_size??0} bytes`,
     explorerUrl:`https://xmrchain.net/tx/${hash}`,
-    confirmed:(tx.confirmations??0)>0,tokenTransfers:[]};
+    confirmed:(tx.confirmations??0)>0, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — STELLAR  (Horizon + operations)
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — STELLAR  (Horizon)
+════════════════════════════════════════════ */
 async function fetchStellar(hash){
   const r=await fetch(`https://horizon.stellar.org/transactions/${hash}`,{signal:abortIn(9000)});
   if(!r.ok)return null;
   const d=await r.json(); if(!d.id)return null;
-
   const tokenTransfers=[]; let nativeValue='0 XLM';
   try{
     const or=await fetch(`https://horizon.stellar.org/transactions/${hash}/operations`,{signal:abortIn(8000)});
@@ -482,12 +592,9 @@ async function fetchStellar(hash){
       const ops=await or.json();
       for(const op of(ops._embedded?.records??[])){
         if(op.type==='payment'){
-          if(op.asset_type==='native'){
-            nativeValue=`${parseFloat(op.amount).toFixed(6)} XLM`;
-          }else{
-            tokenTransfers.push({symbol:op.asset_code,amount:parseFloat(op.amount).toFixed(6),
-              from:op.from,to:op.to,contractAddr:`${op.asset_code}:${op.asset_issuer?.slice(0,10)}…`});
-          }
+          if(op.asset_type==='native') nativeValue=`${parseFloat(op.amount).toFixed(6)} XLM`;
+          else tokenTransfers.push({symbol:op.asset_code,amount:parseFloat(op.amount).toFixed(6),
+            from:op.from,to:op.to,contractAddr:`${op.asset_code}:${op.asset_issuer?.slice(0,10)}…`});
         }else if(op.type==='path_payment_strict_send'||op.type==='path_payment_strict_receive'){
           const sym=op.asset_type==='native'?'XLM':op.asset_code;
           tokenTransfers.push({symbol:sym,amount:parseFloat(op.amount||op.source_amount||0).toFixed(6),
@@ -496,89 +603,100 @@ async function fetchStellar(hash){
       }
     }
   }catch{}
-
-  return{ledger:d.ledger,blockTime:d.created_at?new Date(d.created_at).toLocaleString():'N/A',
-    from:d.source_account,fee:`${(parseInt(d.fee_charged)/1e7).toFixed(7)} XLM`,
-    nativeValue,operations:d.operation_count,
+  return{
+    blockTime:toPanama(isoToSecs(d.created_at)),
+    ledger:d.ledger,
+    from:d.source_account,
+    fee:`${(parseInt(d.fee_charged)/1e7).toFixed(7)} XLM`,
+    nativeValue, operations:d.operation_count,
     explorerUrl:`https://stellar.expert/explorer/public/tx/${hash}`,
-    confirmed:d.successful===true,tokenTransfers};
+    confirmed:d.successful===true, tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — TEZOS  (TzKT)
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function fetchTezos(hash){
   const r=await fetch(`https://api.tzkt.io/v1/operations/transactions/${hash}`,{signal:abortIn(9000)});
   if(!r.ok)return null;
   const d=await r.json(); if(!d.length)return null;
   const tx=d[0];
-  return{blockHeight:tx.level??'N/A',blockTime:tx.timestamp?new Date(tx.timestamp).toLocaleString():'N/A',
-    from:tx.sender?.address??'N/A',to:tx.target?.address??'N/A',
+  return{
+    blockTime:toPanama(isoToSecs(tx.timestamp)),
+    blockHeight:tx.level??'N/A',
+    from:tx.sender?.address??'N/A', to:tx.target?.address??'N/A',
     nativeValue:`${((tx.amount??0)/1e6).toFixed(6)} XTZ`,
     fee:`${((tx.bakerFee??0)/1e6).toFixed(6)} XTZ`,
     status:tx.status??'N/A',
     explorerUrl:`https://tzkt.io/${hash}`,
-    confirmed:tx.status==='applied',tokenTransfers:[]};
+    confirmed:tx.status==='applied', tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — POLKADOT  (Subscan open API)
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — POLKADOT  (Subscan)
+════════════════════════════════════════════ */
 async function fetchPolkadot(hash){
   const r=await fetch('https://polkadot.api.subscan.io/api/scan/extrinsic',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({hash}),signal:abortIn(10000)
+    body:JSON.stringify({hash}),signal:abortIn(10000),
   });
   if(!r.ok)return null;
   const d=await r.json(); if(d.code!==0||!d.data)return null;
   const ex=d.data;
-  return{blockNumber:ex.block_num??'N/A',
-    blockTime:ex.block_timestamp?new Date(ex.block_timestamp*1000).toLocaleString():'N/A',
-    from:ex.account_id??'N/A',module:`${ex.call_module??''}::${ex.call_module_function??''}`,
+  return{
+    blockTime:toPanama(ex.block_timestamp),
+    blockNumber:ex.block_num??'N/A',
+    from:ex.account_id??'N/A',
+    module:`${ex.call_module??''}::${ex.call_module_function??''}`,
     fee:ex.fee?`${(parseInt(ex.fee)/1e10).toFixed(4)} DOT`:'N/A',
     nativeValue:'See explorer',
     explorerUrl:`https://polkadot.subscan.io/extrinsic/${hash}`,
-    confirmed:ex.success===true,tokenTransfers:[]};
+    confirmed:ex.success===true, tokenTransfers:[],
+  };
 }
 
-/* ═══════════════════════════════════════════
-   FETCH — NEAR  (NearBlocks API)
-═══════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   FETCH — NEAR  (NearBlocks)
+   block_timestamp is nanoseconds
+════════════════════════════════════════════ */
 async function fetchNEAR(hash){
   const r=await fetch(`https://api.nearblocks.io/v1/transactions/${hash}`,{
-    headers:{Accept:'application/json'},signal:abortIn(10000)
+    headers:{Accept:'application/json'},signal:abortIn(10000),
   });
   if(!r.ok)return null;
   const d=await r.json();
   const tx=d.txns?.[0]; if(!tx)return null;
-
   const tokenTransfers=[];
   for(const action of(tx.actions??[])){
     if(action.action==='FUNCTION_CALL'&&(action.method==='ft_transfer'||action.method==='ft_transfer_call')){
       try{
         const args=JSON.parse(atob(action.args));
-        tokenTransfers.push({symbol:tx.receiver_account_id,
-          amount:args.amount??(args.msg??'?'),
-          from:tx.signer_account_id,to:args.receiver_id??'?',
-          contractAddr:tx.receiver_account_id});
+        tokenTransfers.push({symbol:tx.receiver_account_id,amount:args.amount??(args.msg??'?'),
+          from:tx.signer_account_id,to:args.receiver_id??'?',contractAddr:tx.receiver_account_id});
       }catch{}
     }
   }
-
   const deposit=tx.actions_agg?.deposit;
   const nativeValue=deposit&&deposit!=='0'?`${(parseInt(deposit)/1e24).toFixed(6)} NEAR`:'0 NEAR';
   const s=tx.outcomes?.status??'';
-  return{blockHeight:tx.block?.block_height??'N/A',
-    blockTime:tx.block_timestamp?new Date(parseInt(tx.block_timestamp)/1e6).toLocaleString():'N/A',
-    from:tx.signer_account_id,to:tx.receiver_account_id,
-    status:s,fee:tx.transaction_fee?`${(parseInt(tx.transaction_fee)/1e24).toFixed(8)} NEAR`:'N/A',
-    nativeValue,explorerUrl:`https://nearblocks.io/txns/${hash}`,
-    confirmed:s.startsWith('SUCCESS'),tokenTransfers};
+  // block_timestamp in nanoseconds → seconds
+  const ts = tx.block_timestamp ? Math.floor(parseInt(tx.block_timestamp)/1e9) : null;
+  return{
+    blockTime:toPanama(ts),
+    blockHeight:tx.block?.block_height??'N/A',
+    from:tx.signer_account_id, to:tx.receiver_account_id,
+    status:s, fee:tx.transaction_fee?`${(parseInt(tx.transaction_fee)/1e24).toFixed(8)} NEAR`:'N/A',
+    nativeValue,
+    explorerUrl:`https://nearblocks.io/txns/${hash}`,
+    confirmed:s.startsWith('SUCCESS'), tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — TRON
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function fetchTron(hash){
   const opts={headers:{Accept:'application/json'},signal:abortIn(9000)};
   const [txRes,evRes]=await Promise.allSettled([
@@ -590,41 +708,43 @@ async function fetchTron(hash){
   if(!txData.data?.length)return null;
   const tx=txData.data[0];
   const ret=tx.ret?.[0]?.contractRet??'Unknown';
-  const result={status:ret,blockNumber:tx.blockNumber??'N/A',
+  // raw_data.timestamp is in milliseconds
+  const ts = tx.raw_data?.timestamp ? Math.floor(tx.raw_data.timestamp/1000) : null;
+  const result={
+    blockTime:toPanama(ts),
+    status:ret, blockNumber:tx.blockNumber??'N/A',
     fee:tx.fee!=null?`${(tx.fee/1e6).toFixed(6)} TRX`:'0 TRX',
     nativeValue:tx.raw_data?.contract?.[0]?.parameter?.value?.amount!=null
       ?`${(tx.raw_data.contract[0].parameter.value.amount/1e6).toFixed(6)} TRX`:'0 TRX',
     from:tx.raw_data?.contract?.[0]?.parameter?.value?.owner_address??'N/A',
     explorerUrl:`https://tronscan.org/#/transaction/${hash}`,
-    confirmed:ret==='SUCCESS',tokenTransfers:[]};
+    confirmed:ret==='SUCCESS', tokenTransfers:[],
+  };
   if(evRes.status==='fulfilled'&&evRes.value.ok){
     try{
       const ev=await evRes.value.json();
       for(const e of(ev.data??[])){
         if(e.event_name!=='Transfer')continue;
         const r2=e.result??{},info=e.token_info??{};
-        const raw=r2._value??r2.value??'0';
-        const dec=info.decimals??6;
-        let amt;
-        try{amt=formatTokenAmt('0x'+BigInt(raw).toString(16),dec);}catch{amt=raw;}
+        const raw=r2._value??r2.value??'0', dec=info.decimals??6;
+        let amt; try{amt=formatTokenAmt('0x'+BigInt(raw).toString(16),dec);}catch{amt=raw;}
         result.tokenTransfers.push({symbol:info.symbol??'TRC-20',amount:amt,
-          from:r2._from??r2.from??'?',to:r2._to??r2.to??'?',
-          contractAddr:e.contract_address??''});
+          from:r2._from??r2.from??'?',to:r2._to??r2.to??'?',contractAddr:e.contract_address??''});
       }
     }catch{}
   }
   return result;
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — SOLANA
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function fetchSolana(hash){
   const r=await fetch('https://api.mainnet-beta.solana.com',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getTransaction',
       params:[hash,{encoding:'json',maxSupportedTransactionVersion:0}]}),
-    signal:abortIn(12000)
+    signal:abortIn(12000),
   });
   const d=await r.json(); if(!d.result)return null;
   const tx=d.result;
@@ -632,8 +752,7 @@ async function fetchSolana(hash){
   const tokenTransfers=[];
   for(const pb of post){
     const pr=pre.find(p=>p.accountIndex===pb.accountIndex&&p.mint===pb.mint);
-    const preAmt=pr?.uiTokenAmount?.uiAmount??0, postAmt=pb.uiTokenAmount?.uiAmount??0;
-    const diff=postAmt-preAmt;
+    const preAmt=pr?.uiTokenAmount?.uiAmount??0, postAmt=pb.uiTokenAmount?.uiAmount??0, diff=postAmt-preAmt;
     if(diff>0){
       const sender=post.find(p=>p.mint===pb.mint&&p.accountIndex!==pb.accountIndex&&
         ((pre.find(pp=>pp.accountIndex===p.accountIndex&&pp.mint===p.mint)?.uiTokenAmount?.uiAmount??0)-(p.uiTokenAmount?.uiAmount??0))>0);
@@ -642,26 +761,43 @@ async function fetchSolana(hash){
         from:sender?.owner??'(unknown)',to:pb.owner??'(unknown)',contractAddr:pb.mint});
     }
   }
-  return{slot:tx.slot,blockTime:tx.blockTime?new Date(tx.blockTime*1000).toLocaleString():'N/A',
+  return{
+    blockTime:toPanama(tx.blockTime),   // blockTime is already Unix seconds in Solana RPC
+    slot:tx.slot,
     fee:`${((tx.meta?.fee??0)/1e9).toFixed(6)} SOL`,
     signers:tx.transaction?.message?.accountKeys?.length??'N/A',
     explorerUrl:`https://solscan.io/tx/${hash}`,
-    confirmed:tx.meta?.err===null,tokenTransfers};
+    confirmed:tx.meta?.err===null, tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    FETCH — EVM
-═══════════════════════════════════════════ */
+   Needs eth_getBlockByNumber to get timestamp.
+════════════════════════════════════════════ */
 async function fetchEVM(hash,chain){
-  const body=(m,p,i)=>JSON.stringify({jsonrpc:'2.0',id:i,method:m,params:p});
+  const rpcBody=(m,p,i)=>JSON.stringify({jsonrpc:'2.0',id:i,method:m,params:p});
   const opts={method:'POST',headers:{'Content-Type':'application/json'},signal:abortIn(9000)};
+
   const [tr,rr]=await Promise.all([
-    fetch(chain.rpc,{...opts,body:body('eth_getTransactionByHash',[hash],1)}),
-    fetch(chain.rpc,{...opts,body:body('eth_getTransactionReceipt',[hash],2)}),
+    fetch(chain.rpc,{...opts,body:rpcBody('eth_getTransactionByHash',[hash],1)}),
+    fetch(chain.rpc,{...opts,body:rpcBody('eth_getTransactionReceipt',[hash],2)}),
   ]);
-  const td=await tr.json(),rd=await rr.json();
+  const td=await tr.json(), rd=await rr.json();
   const tx=td.result; if(!tx)return null;
   const rcp=rd.result;
+
+  // Fetch block to get timestamp (parallel, non-blocking for the rest)
+  let blockTime=null;
+  if(tx.blockNumber){
+    try{
+      const br=await fetch(chain.rpc,{...opts,
+        body:rpcBody('eth_getBlockByNumber',[tx.blockNumber,false],3),signal:abortIn(6000)});
+      const bd=await br.json();
+      if(bd.result?.timestamp) blockTime=toPanama(parseInt(bd.result.timestamp,16));
+    }catch{}
+  }
+
   const rawVal=BigInt(tx.value??'0x0');
   const nativeValue=rawVal===0n?`0 ${chain.symbol}`:`${(Number(rawVal)/1e18).toFixed(6)} ${chain.symbol}`;
   let feeStr='N/A';
@@ -670,17 +806,22 @@ async function fetchEVM(hash,chain){
     feeStr=`${(fee/1e18).toFixed(8)} ${chain.symbol}`;
   }
   const tokenTransfers=rcp?await parseEVMTokenTransfers(rcp.logs,chain.rpc):[];
-  return{status:rcp?(rcp.status==='0x1'?'Success':'Failed'):'Pending',
+  return{
+    blockTime,
+    status:rcp?(rcp.status==='0x1'?'Success':'Failed'):'Pending',
     blockNumber:tx.blockNumber?parseInt(tx.blockNumber,16).toLocaleString():'Pending',
-    from:tx.from,to:tx.to??'Contract creation',nativeValue,fee:feeStr,
+    from:tx.from, to:tx.to??'Contract creation',
+    nativeValue, fee:feeStr,
     gasLimit:parseInt(tx.gas,16).toLocaleString(),
     gasUsed:rcp?.gasUsed?parseInt(rcp.gasUsed,16).toLocaleString():'N/A',
-    explorerUrl:chain.explorer+hash,confirmed:rcp?.status==='0x1',tokenTransfers};
+    explorerUrl:chain.explorer+hash,
+    confirmed:rcp?.status==='0x1', tokenTransfers,
+  };
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    MASTER DISPATCHER
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 async function searchChain(chain,hash){
   switch(chain.type){
     case'bitcoin':    return fetchBitcoin(hash);
@@ -703,31 +844,26 @@ async function searchChain(chain,hash){
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    HASH HINT
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 function hashHint(h){
-  // TON base64url (44-char without padding, or 44 with =)
   if(/^[A-Za-z0-9+/_-]{43,44}={0,2}$/.test(h)&&!/^[0-9a-fA-F]+$/.test(h))
     return{label:'Base64 / Base64url format',chains:'TON'};
-  // EVM 0x prefix
   if(h.startsWith('0x')&&h.length===66)
     return{label:'EVM format (0x + 64 hex)',chains:'Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, ETC, opBNB, CELO, KAVA, Tron, Polkadot'};
-  // 64-char hex (no 0x) — Bitcoin family, Monero, XRP, Stellar, Cardano, Nano, NEAR
   if(/^[0-9a-fA-F]{64}$/.test(h))
     return{label:'64-char hex (no 0x prefix)',chains:'Bitcoin, Litecoin, Dogecoin, BCH, BSV, BCD, Monero, Nano, Cardano, XRP, Stellar, NEAR, TON'};
-  // Tezos (starts with 'o', base58)
   if(h.startsWith('o')&&h.length>=50&&h.length<=54&&/^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
     return{label:'Tezos operation hash (Base58)',chains:'Tezos'};
-  // Base58 general (Solana, NEAR)
   if(h.length>=43&&h.length<=90&&/^[1-9A-HJ-NP-Za-km-z]+$/.test(h))
     return{label:'Base58 format',chains:'Solana, NEAR, Tezos'};
   return null;
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    RENDER HELPERS
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 function renderChainGrid(){
   return`<div class="chain-grid">${CHAINS.map(c=>{
     const s=statuses[c.id]??'idle', cfg=STATUS_CFG[s], found=s==='found';
@@ -743,6 +879,23 @@ function renderChainGrid(){
       </div>
     </div>`;
   }).join('')}</div>`;
+}
+
+function renderTimestamp(bt){
+  if(!bt) return`<div class="ts-banner">
+    <i class="ti ti-clock"></i>
+    <div>
+      <div class="ts-banner-label">Transaction time</div>
+      <div class="ts-banner-value" style="color:var(--text3);font-style:italic;font-size:12px">Timestamp not available for this chain</div>
+    </div>
+  </div>`;
+  return`<div class="ts-banner">
+    <i class="ti ti-clock"></i>
+    <div>
+      <div class="ts-banner-label">Transaction time &nbsp;·&nbsp; Panama (UTC−5)</div>
+      <div class="ts-banner-value">${escHtml(bt.time)} &nbsp;<span style="font-weight:400;color:var(--text2)">${escHtml(bt.date)}</span></div>
+    </div>
+  </div>`;
 }
 
 function renderTokenTransfers(transfers){
@@ -805,14 +958,18 @@ function renderResultCards(){
           Explorer <i class="ti ti-external-link"></i>
         </a>`:''}
       </div>
-      <hr class="divider"/>
+
+      ${renderTimestamp(r.blockTime)}
+
       ${renderTokenTransfers(tokenTransfers)}
+
       <div class="fields-grid" style="${hasTokens?'margin-top:14px':''}">
         ${allFields.map(([k,v])=>`<div>
           <div class="field-label">${FIELD_LABELS[k]??k}</div>
           <div class="field-value${k==='nativeValue'&&nativeIsMoot?' muted':k==='nativeValue'&&isPrivacy?' privacy':''}">${escHtml(String(v))}</div>
         </div>`).join('')}
       </div>
+
       ${addrFields.length?`<div class="addresses-section">
         <hr class="divider"/>
         <div class="field-label" style="margin-bottom:8px">Addresses</div>
@@ -840,7 +997,7 @@ function renderEmpty(){
 function renderWelcome(){
   return`<div class="welcome">
     <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
-    <p>Paste a transaction hash above to identify the chain, view transaction details, and detect token / asset transfers across ${CHAINS.length} blockchains.</p>
+    <p>Paste a transaction hash above to identify the chain, view the Panama-time timestamp, and detect token transfers across ${CHAINS.length} blockchains.</p>
   </div>
   <div class="chain-strip">
     ${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}
@@ -853,9 +1010,9 @@ function render(){
   app.innerHTML=renderChainGrid()+renderResultCards()+renderEmpty();
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════════
    EVENT WIRING
-═══════════════════════════════════════════ */
+════════════════════════════════════════════ */
 const hashInput=document.getElementById('hashInput');
 const searchBtn=document.getElementById('searchBtn');
 const hintBox=document.getElementById('hintBox');
