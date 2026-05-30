@@ -297,7 +297,7 @@ function formatTokenAmt(hex,dec){
   try{if(!hex||hex==='0x')return'0';
     const r=BigInt(hex),D=BigInt(dec),v=10n**D,w=r/v,f=r%v;
     if(f===0n)return w.toLocaleString();
-    return`${w.toLocaleString()}.${f.toString().padStart(dec,'0').slice(0,8).replace(/0+$/','')}`;
+    return`${w.toLocaleString()}.${f.toString().padStart(dec,'0').slice(0,8).replace(/0+$/,'')}`;
   }catch{return'?';}}
 
 /* ══════════════════════════════════════════════
