@@ -317,10 +317,85 @@ const PANAMA_T =new Intl.DateTimeFormat('en-US',{timeZone:'America/Panama',hour:
 function toPanama(secs){
   if(!secs)return null;
   try{const d=new Date(Number(secs)*1000);if(isNaN(d))return null;
-    return{date:PANAMA_D.format(d),time:PANAMA_T.format(d),full:PANAMA_DT.format(d)};}
+    return{date:PANAMA_D.format(d),time:PANAMA_T.format(d),full:PANAMA_DT.format(d),secs:Number(secs)};}
   catch{return null;}
 }
 function isoToSecs(s){if(!s)return null;const ms=Date.parse(s);return isNaN(ms)?null:ms/1000;}
+
+/* ── Relative time ── */
+function relativeTime(secs){
+  if(!secs)return null;
+  const diff=Math.floor(Date.now()/1000)-secs;
+  if(diff<0)return'just now';
+  if(diff<60)return`${diff}s ago`;
+  if(diff<3600)return`${Math.floor(diff/60)}m ago`;
+  if(diff<86400)return`${Math.floor(diff/3600)}h ago`;
+  if(diff<86400*30)return`${Math.floor(diff/86400)}d ago`;
+  if(diff<86400*365)return`${Math.floor(diff/(86400*30))}mo ago`;
+  return`${Math.floor(diff/(86400*365))}y ago`;
+}
+
+/* ── USD value at tx time (CoinGecko historical price) ── */
+function formatUSD(n){
+  if(n>=1e6) return`$${(n/1e6).toFixed(2)}M`;
+  if(n>=1000)return`$${n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  if(n>=0.01)return`$${n.toFixed(2)}`;
+  return`$${n.toFixed(6)}`;
+}
+
+const priceCache={};
+const COINGECKO_IDS={
+  'ETH':'ethereum',   'BTC':'bitcoin',      'LTC':'litecoin',
+  'DOGE':'dogecoin',  'BCH':'bitcoin-cash', 'BSV':'bitcoin-sv',
+  'BCD':'bitcoin-diamond','XRP':'ripple',   'ADA':'cardano',
+  'TON':'the-open-network','XNO':'nano',    'XMR':'monero',
+  'XLM':'stellar',    'XTZ':'tezos',        'DOT':'polkadot',
+  'NEAR':'near',      'TRX':'tron',         'SOL':'solana',
+  'BNB':'binancecoin','POL':'matic-network','ARB':'arbitrum',
+  'OP':'optimism',    'AVAX':'avalanche-2', 'FTM':'fantom',
+  'CRO':'crypto-com-chain','ETC':'ethereum-classic',
+  'CELO':'celo',      'KAVA':'kava',        'MNT':'mantle',
+  'GLMR':'moonbeam',  'MOVR':'moonriver',   'METIS':'metis-token',
+  'xDAI':'gnosis',    'IOTX':'iotex',       'KAIA':'kaia',
+  'OKB':'okb',        'frxETH':'frax-ether','PLS':'pulsechain',
+  'RBTC':'rootstock', 'S':'sonic-3',        'BASE':'ethereum',
+};
+
+async function fetchHistoricalUSD(symbol,secs){
+  const id=COINGECKO_IDS[symbol];
+  if(!id||!secs)return null;
+  const d=new Date(Number(secs)*1000);
+  const cacheKey=`${id}_${d.getUTCFullYear()}_${d.getUTCMonth()}_${d.getUTCDate()}`;
+  if(priceCache[cacheKey]!==undefined)return priceCache[cacheKey];
+  try{
+    const dd=String(d.getUTCDate()).padStart(2,'0');
+    const mm=String(d.getUTCMonth()+1).padStart(2,'0');
+    const yyyy=d.getUTCFullYear();
+    const r=await fetch(
+      `https://api.coingecko.com/api/v3/coins/${id}/history?date=${dd}-${mm}-${yyyy}&localization=false`,
+      {signal:abortIn(10000)}
+    );
+    if(!r.ok){priceCache[cacheKey]=null;return null;}
+    const data=await r.json();
+    const price=data.market_data?.current_price?.usd??null;
+    priceCache[cacheKey]=price;
+    return price;
+  }catch{priceCache[cacheKey]=null;return null;}
+}
+
+async function fetchAndApplyUSD(chainId,result){
+  if(!result.blockTime?.secs||!result.nativeValue)return;
+  const parts=String(result.nativeValue).split(' ');
+  if(parts.length<2)return;
+  const amount=parseFloat(parts[0]);
+  const symbol=parts[1];
+  if(isNaN(amount)||amount===0||result.nativeValue.includes('🔒')||result.nativeValue.includes('See'))return;
+  const price=await fetchHistoricalUSD(symbol,result.blockTime.secs);
+  if(price!==null&&results[chainId]){
+    results[chainId]._usd=formatUSD(amount*price);
+    render();
+  }
+}
 
 function decodeABIString(hex){
   if(!hex||hex==='0x'||hex.length<4)return null;
@@ -844,8 +919,16 @@ async function runTxSearch(hash){
   CHAINS.forEach(c=>{statuses[c.id]='searching';});
   render();
   await Promise.allSettled(CHAINS.map(async chain=>{
-    try{const r=await dispatchTxSearch(chain,hash);
-      statuses[chain.id]=r?'found':'not_found';if(r)results[chain.id]=r;}
+    try{
+      const r=await dispatchTxSearch(chain,hash);
+      statuses[chain.id]=r?'found':'not_found';
+      if(r){
+        results[chain.id]=r;
+        render();
+        // Non-blocking: fetch USD price and patch result when ready
+        if(r.blockTime?.secs) fetchAndApplyUSD(chain.id,r);
+      }
+    }
     catch{statuses[chain.id]='error';}
     render();
   }));
@@ -887,10 +970,13 @@ function renderTimestamp(bt){
     <div><div class="ts-banner-label">Transaction time</div>
     <div class="ts-banner-value" style="color:var(--text3);font-style:italic;font-size:12px;font-family:var(--sans)">Timestamp not available</div></div>
   </div>`;
+  const rel=relativeTime(bt.secs);
   return`<div class="ts-banner">
     <i class="ti ti-clock"></i>
-    <div><div class="ts-banner-label">Transaction time &nbsp;·&nbsp; Panama (UTC−5)</div>
-    <div class="ts-banner-value">${escHtml(bt.time)} &nbsp;<span style="font-weight:400;color:var(--text2)">${escHtml(bt.date)}</span></div></div>
+    <div>
+      <div class="ts-banner-label">Panama (UTC−5)${rel?` &nbsp;·&nbsp; <span style="color:var(--ts);font-weight:600">${escHtml(rel)}</span>`:''}</div>
+      <div class="ts-banner-value">${escHtml(bt.time)} &nbsp;<span style="font-weight:400;color:var(--text2)">${escHtml(bt.date)}</span></div>
+    </div>
   </div>`;
 }
 
@@ -945,8 +1031,10 @@ function renderTxCards(){
       ${renderTimestamp(r.blockTime)}
       ${renderTokenTransfers(tt)}
       <div class="fields-grid" style="${hasT?'margin-top:14px':''}">
-        ${allF.map(([k,v])=>`<div><div class="field-label">${FIELD_LABELS[k]??k}</div>
+        ${allF.map(([k,v])=>`<div>
+          <div class="field-label">${FIELD_LABELS[k]??k}</div>
           <div class="field-value${k==='nativeValue'&&nativeMoot?' muted':k==='nativeValue'&&isPrivacy?' privacy':''}">${escHtml(String(v))}</div>
+          ${k==='nativeValue'&&r._usd?`<div style="font-size:11px;color:var(--text3);margin-top:3px">≈ ${escHtml(r._usd)} at tx time</div>`:''}
         </div>`).join('')}
       </div>
       ${addrF.length?`<div class="addresses-section"><hr class="divider"/>
