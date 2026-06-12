@@ -150,7 +150,7 @@
     <div class="header-icon"><i class="ti ti-topology-ring-3"></i></div>
     <div>
       <h1>Transaction &amp; Address Lookup</h1>
-      <p>Paste a transaction hash <em>or</em> a wallet address — 50 chains, automatic detection.</p>
+      <p>Paste a transaction hash <em>or</em> a wallet address — 30 chains, automatic detection.</p>
     </div>
   </div>
   <div class="search-row">
@@ -286,8 +286,8 @@ const FIELD_LABELS={
   balance:"Balance",txCount:"Transactions",totalReceived:"Total received",totalSent:"Total sent",
 };
 const MONO_FIELDS=new Set(["from","to"]);
-const HIDE_FIELDS=new Set(["explorerUrl","confirmed","tokenTransfers","value","blockTime"]);
-const ADDR_HIDE=new Set(["explorerUrl","balance","txCount","totalReceived","totalSent"]);
+const HIDE_FIELDS=new Set(["explorerUrl","confirmed","tokenTransfers","value","blockTime","_usd","isContract"]);
+const ADDR_HIDE=new Set(["explorerUrl","balance","txCount","totalReceived","totalSent","isContract"]);
 
 const STATUS_CFG={
   idle:      {icon:"ti-circle",       cls:"idle",      label:"Ready"},
@@ -301,7 +301,9 @@ const STATUS_CFG={
 let appMode='idle'; // 'idle'|'tx'|'address'
 let statuses={}, results={}, searching=false;
 let activeChains=[];      // chains participating in current search
-let currentInput='';      // raw input being searched
+let currentInput='';      // raw input being searched (resolved address after domain lookup)
+let resolvedDomain='';    // original domain name if ENS/UD resolution was used
+let resolutionError='';   // message shown when domain resolution fails
 
 /* ══════════════════════════════════════════════
    UTILITIES
@@ -397,6 +399,25 @@ async function fetchAndApplyUSD(chainId,result){
   }
 }
 
+/* ── Domain name resolution ── */
+async function resolveENS(name){
+  try{
+    const r=await fetch(`https://api.ensideas.com/ens/resolve/${encodeURIComponent(name)}`,{signal:abortIn(9000)});
+    if(!r.ok)return null;
+    const d=await r.json();
+    return d.address??null;
+  }catch{return null;}
+}
+async function resolveUD(domain){
+  try{
+    const r=await fetch(`https://api.ud.me/resolve/${encodeURIComponent(domain)}`,{signal:abortIn(9000)});
+    if(!r.ok)return null;
+    const d=await r.json();
+    // Prefer a specific ETH address record, fall back to domain owner
+    return d.records?.['crypto.ETH.address']??d.meta?.owner??null;
+  }catch{return null;}
+}
+
 function decodeABIString(hex){
   if(!hex||hex==='0x'||hex.length<4)return null;
   const d=hex.startsWith('0x')?hex.slice(2):hex;
@@ -423,6 +444,14 @@ function formatTokenAmt(hex,dec){
 function detectInput(raw){
   const h=raw.trim();
   if(!h)return null;
+
+  /* ── Domain names (resolve first, then look up as address) ── */
+  if(/^[a-z0-9-]+\.eth$/i.test(h))
+    return{mode:'address',addrType:'ens',icon:'ti-world',
+      hint:'<strong>ENS domain</strong> — will resolve to address then search all EVM chains'};
+  if(/^[a-z0-9-]+\.(crypto|wallet|bitcoin|x|nft|dao|blockchain|888|zil|klever|hi|kresus|polygon|anime|manga|binanceus)$/i.test(h))
+    return{mode:'address',addrType:'ud',icon:'ti-world',
+      hint:'<strong>Unstoppable Domain</strong> — will resolve to address then search all EVM chains'};
 
   /* ── Addresses (most specific patterns first) ── */
   if(/^0x[0-9a-fA-F]{40}$/.test(h))
@@ -485,7 +514,7 @@ function detectInput(raw){
 /* chains for each address type */
 function chainsForAddrType(t){
   const byId=id=>CHAINS.find(c=>c.id===id);
-  if(t==='evm')        return CHAINS.filter(c=>c.type==='evm');
+  if(t==='evm'||t==='ens'||t==='ud') return CHAINS.filter(c=>c.type==='evm');
   if(t==='bitcoin')    return [byId('bitcoin')].filter(Boolean);
   if(t==='bitcoin_legacy')return [byId('bitcoin'),byId('bsv'),byId('bcd')].filter(Boolean);
   if(t==='litecoin')   return [byId('litecoin')].filter(Boolean);
