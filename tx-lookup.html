@@ -287,7 +287,7 @@ const FIELD_LABELS={
 };
 const MONO_FIELDS=new Set(["from","to"]);
 const HIDE_FIELDS=new Set(["explorerUrl","confirmed","tokenTransfers","value","blockTime","_usd","isContract"]);
-const ADDR_HIDE=new Set(["explorerUrl","balance","txCount","totalReceived","totalSent","isContract"]);
+const ADDR_HIDE=new Set(["explorerUrl","balance","txCount","totalReceived","totalSent","isContract","accountType"]);
 
 const STATUS_CFG={
   idle:      {icon:"ti-circle",       cls:"idle",      label:"Ready"},
@@ -806,14 +806,23 @@ async function dispatchTxSearch(chain,hash){
 async function addrEVM(address,chain){
   const body=(m,p,i)=>JSON.stringify({jsonrpc:'2.0',id:i,method:m,params:p});
   const opts={method:'POST',headers:{'Content-Type':'application/json'},signal:abortIn(6000)};
-  const[br,tr]=await Promise.all([
+  const[br,tr,cr]=await Promise.all([
     fetch(chain.rpc,{...opts,body:body('eth_getBalance',[address,'latest'],1)}),
     fetch(chain.rpc,{...opts,body:body('eth_getTransactionCount',[address,'latest'],2)}),
+    fetch(chain.rpc,{...opts,body:body('eth_getCode',[address,'latest'],3)}),
   ]);
-  const bd=await br.json(),td=await tr.json();
+  const bd=await br.json(),td=await tr.json(),cd=await cr.json();
   const balWei=BigInt(bd.result??'0x0'),txCount=parseInt(td.result??'0x0',16);
-  if(balWei===0n&&txCount===0)return null; // no activity on this chain
-  return{balance:`${(Number(balWei)/1e18).toFixed(6)} ${chain.symbol}`,txCount,explorerUrl:chain.addrExplorer+address};
+  const code=cd.result??'0x';
+  const isContract=code!=='0x'&&code!=='0x0'&&code.length>4;
+  // Show contract addresses even with zero balance (they might just hold tokens)
+  if(!isContract&&balWei===0n&&txCount===0)return null;
+  return{
+    balance:`${(Number(balWei)/1e18).toFixed(6)} ${chain.symbol}`,
+    txCount,isContract,
+    accountType:isContract?'Smart contract':'Externally owned account',
+    explorerUrl:chain.addrExplorer+address,
+  };
 }
 async function addrBitcoin(address){
   const r=await fetch(`https://blockstream.info/api/address/${address}`,{signal:abortIn(9000)});
@@ -1078,19 +1087,35 @@ function renderTxCards(){
 function renderAddrCards(){
   const found=activeChains.filter(c=>statuses[c.id]==='found');
   if(!found.length)return'';
+  const domainBanner=resolvedDomain?`<div style="display:flex;align-items:center;gap:8px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:12px">
+    <i class="ti ti-world" style="color:var(--token);flex-shrink:0"></i>
+    <span style="color:var(--text3)">Resolved from</span>
+    <span style="color:var(--token);font-family:var(--mono);font-weight:600">${escHtml(resolvedDomain)}</span>
+    <span style="color:var(--text3)">→</span>
+    <span style="color:var(--text2);font-family:var(--mono)">${truncAddr(currentInput,10,8)}</span>
+  </div>`:'';
   return`<div class="results-label"><i class="ti ti-wallet"></i>
     Address active on ${found.length} chain${found.length>1?'s':''}: ${found.map(c=>c.name).join(' · ')}
   </div>
   ${found.map(c=>{
     const r=results[c.id];if(!r)return'';
     const extras=Object.entries(r).filter(([k])=>!ADDR_HIDE.has(k));
+    const contractBadge=r.isContract!==undefined?`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:4px;
+      background:${r.isContract?'rgba(245,166,35,0.12)':'rgba(52,199,123,0.10)'};
+      color:${r.isContract?'var(--warning)':'var(--success)'};
+      border:1px solid ${r.isContract?'rgba(245,166,35,0.3)':'rgba(52,199,123,0.25)'}">
+      <i class="ti ${r.isContract?'ti-file-code':'ti-user'}"></i>
+      ${r.isContract?'Smart contract':'Wallet (EOA)'}
+    </span>`:'';
     return`<div class="result-card">
+      ${domainBanner}
       <div class="result-header">
         <div class="result-chain-info">
           <div class="result-badge" style="background:${hexCol(c.color,.12)};border:2px solid ${c.color};color:${c.color}">
             ${c.symbol.length>4?c.symbol.slice(0,4):c.symbol}</div>
-          <div><div class="result-chain-name">${c.name}</div>
-            <div class="result-chain-sub">${truncAddr(currentInput,14,10)}</div>
+          <div>
+            <div class="result-chain-name">${c.name}</div>
+            ${contractBadge}
           </div>
         </div>
         ${r.explorerUrl?`<a class="explorer-link" href="${escHtml(r.explorerUrl)}" target="_blank" rel="noopener">Explorer <i class="ti ti-external-link"></i></a>`:''}
@@ -1116,6 +1141,13 @@ function renderAddrCards(){
 }
 
 function renderEmpty(){
+  // Resolution failure takes priority
+  if(resolutionError)return`<div class="empty-state">
+    <i class="ti ti-world-off"></i>
+    <h3>Domain resolution failed</h3>
+    <p>${escHtml(resolutionError)}</p>
+    <small>Check that the domain is correctly spelled and has a registered address record.</small>
+  </div>`;
   const allDone=activeChains.every(c=>statuses[c.id]!=='searching');
   const anyFound=activeChains.some(c=>statuses[c.id]==='found');
   if(!allDone||anyFound)return'';
@@ -1134,7 +1166,7 @@ function renderEmpty(){
 function renderWelcome(){
   return`<div class="welcome">
     <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
-    <p>Paste a <strong style="color:var(--text2)">transaction hash</strong> or a <strong style="color:var(--addr)">wallet address</strong> — the tool automatically detects which it is and searches the right chains.</p>
+    <p>Paste a <strong style="color:var(--text2)">transaction hash</strong>, a <strong style="color:var(--addr)">wallet address</strong>, or a <strong style="color:var(--token)">domain name</strong> (ENS / Unstoppable) — automatic detection, 50 chains.</p>
   </div>
   <div class="chain-strip">${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}</div>`;
 }
@@ -1142,6 +1174,11 @@ function renderWelcome(){
 function render(){
   const app=document.getElementById('app');
   if(appMode==='idle'){app.innerHTML=renderWelcome();return;}
+  // Resolution error: show error without a chain grid
+  if(resolutionError){
+    const modeBadge=`<div class="mode-badge addr-mode"><i class="ti ti-world"></i> Domain lookup</div>`;
+    app.innerHTML=modeBadge+renderEmpty();return;
+  }
   const modeBadge=appMode==='address'
     ?`<div class="mode-badge addr-mode"><i class="ti ti-wallet"></i> Address lookup</div>`
     :`<div class="mode-badge tx-mode"><i class="ti ti-arrows-exchange"></i> Transaction lookup</div>`;
@@ -1176,13 +1213,29 @@ searchBtn.addEventListener('click',async()=>{
   const input=hashInput.value.trim();
   if(!input||searching)return;
   searching=true;searchBtn.disabled=true;
-  searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
-  statuses={};results={};currentInput=input;
+  statuses={};results={};resolutionError='';resolvedDomain='';currentInput=input;
 
   const det=detectInput(input);
-  if(det?.mode==='address'){
+
+  if(det?.mode==='address'&&(det.addrType==='ens'||det.addrType==='ud')){
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Resolving…</span>`;
+    resolvedDomain=input;
+    const resolved=det.addrType==='ens'?await resolveENS(input):await resolveUD(input);
+    if(!resolved){
+      resolutionError=`Could not resolve "${input}" — domain may not exist or the resolver is temporarily unavailable.`;
+      appMode='address';activeChains=[];
+      searching=false;searchBtn.disabled=false;
+      searchBtn.innerHTML=`<i class="ti ti-search"></i> <span>Search</span>`;
+      render();return;
+    }
+    currentInput=resolved;
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
+    await runAddrSearch(resolved,'evm');
+  }else if(det?.mode==='address'){
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
     await runAddrSearch(input,det.addrType);
   }else{
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
     await runTxSearch(input);
   }
 
