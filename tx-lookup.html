@@ -282,6 +282,50 @@ const CHAINS=[
     rpc:"https://public-en.node.kaia.io",          explorer:"https://kaiascan.io/tx/",                  addrExplorer:"https://kaiascan.io/address/"},
 ];
 
+/* ══════════════════════════════════════════════
+   CONFIGURATION
+   Paste your FREE Etherscan API key below for
+   automatic contract name labeling on EVM chains.
+   Takes ~2 minutes to get at etherscan.io/register
+   The same key works on Etherscan, BscScan,
+   PolygonScan, Arbiscan, etc.
+══════════════════════════════════════════════ */
+const CFG={
+  ETHERSCAN_KEY:'',  // ← paste key here
+};
+
+/* Blockscout API base URLs — returns public_tags / name_tag for free */
+const BLOCKSCOUT_APIS={
+  etc:       'https://etc.blockscout.com',
+  gnosis:    'https://gnosis.blockscout.com',
+  zora:      'https://explorer.zora.energy',
+  scroll:    'https://blockscout.scroll.io',
+  metis:     'https://andromeda-explorer.metis.io',
+  rootstock: 'https://rootstock.blockscout.com',
+  mode:      'https://explorer.mode.network',
+};
+const EXPLORER_APIS={
+  ethereum: 'https://api.etherscan.io/api',
+  bsc:      'https://api.bscscan.com/api',
+  polygon:  'https://api.polygonscan.com/api',
+  arbitrum: 'https://api.arbiscan.io/api',
+  optimism: 'https://api-optimistic.etherscan.io/api',
+  base:     'https://api.basescan.org/api',
+  avalanche:'https://api.snowtrace.io/api',
+  fantom:   'https://api.ftmscan.com/api',
+  cronos:   'https://api.cronoscan.com/api',
+  celo:     'https://api.celoscan.io/api',
+  gnosis:   'https://api.gnosisscan.io/api',
+  moonbeam: 'https://api-moonbeam.moonscan.io/api',
+  moonriver:'https://api-moonriver.moonscan.io/api',
+  linea:    'https://api.lineascan.build/api',
+  scroll:   'https://api.scrollscan.com/api',
+  blast:    'https://api.blastscan.io/api',
+  mantle:   'https://api.mantlescan.xyz/api',
+  taiko:    'https://api.taikoscan.io/api',
+  opbnb:    'https://api-opbnb.bscscan.com/api',
+};
+
 const FIELD_LABELS={
   blockHeight:"Block height",blockNumber:"Block number",
   confirmations:"Confirmations",fee:"Fee",nativeValue:"Native amount",
@@ -310,6 +354,8 @@ let activeChains=[];      // chains participating in current search
 let currentInput='';      // raw input being searched (resolved address after domain lookup)
 let resolvedDomain='';    // original domain name if ENS/UD resolution was used
 let resolutionError='';   // message shown when domain resolution fails
+const onDemandLabels={};  // lowercase_address → {label,type} fetched at search time
+const ofacFlags=new Set(); // lowercase addresses confirmed on OFAC SDN list
 
 /* ══════════════════════════════════════════════
    UTILITIES
@@ -439,78 +485,118 @@ function copyBtn(text){
 
 /* ── Known entity labels ── */
 const KNOWN_LABELS={
-  /* Stablecoins & major tokens */
-  '0xdac17f958d2ee523a2206206994597c13d831ec7':{label:'Tether (USDT)',             type:'token'},
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':{label:'USD Coin (USDC)',           type:'token'},
-  '0x4fabb145d64652a948d72533023f6e7a623c7c53':{label:'Binance USD (BUSD)',        type:'token'},
-  '0x6b175474e89094c44da98b954eedeac495271d0f':{label:'Dai (DAI)',                 type:'token'},
-  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2':{label:'Wrapped Ether (WETH)',      type:'token'},
-  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599':{label:'Wrapped Bitcoin (WBTC)',    type:'token'},
-  '0x514910771af9ca656af840dff83e8264ecf986ca':{label:'Chainlink (LINK)',          type:'token'},
-  '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce':{label:'Shiba Inu (SHIB)',          type:'token'},
-  /* DEX routers — Ethereum */
-  '0x7a250d5630b4cf539739df2c5dacb4c659f2488d':{label:'Uniswap V2 Router',        type:'dex'},
-  '0xe592427a0aece92de3edee1f18e0157c05861564':{label:'Uniswap V3 Router',        type:'dex'},
-  '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45':{label:'Uniswap V3 Router 2',      type:'dex'},
-  '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b':{label:'Uniswap Universal Router', type:'dex'},
-  '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad':{label:'Uniswap Universal Router', type:'dex'},
-  '0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f':{label:'SushiSwap Router',         type:'dex'},
-  '0x1111111254eeb25477b68fb85ed929f73a960582':{label:'1inch V5 Router',           type:'dex'},
-  '0x111111125421ca6dc452d289314280a0f8842a65':{label:'1inch V6 Router',           type:'dex'},
-  '0xdef1c0ded9bec7f1a1670819833240f027b25eff':{label:'0x Exchange Proxy',         type:'dex'},
-  /* DEX routers — BSC */
-  '0x10ed43c718714eb63d5aa57b78b54704e256024e':{label:'PancakeSwap V2 Router',    type:'dex'},
-  '0x13f4ea83d0bd40e75c8222255bc855a974568dd4':{label:'PancakeSwap V3 Router',    type:'dex'},
-  /* Bridges */
-  '0x3ee18b2214aff97000d974cf647e7c347e8fa585':{label:'Wormhole Bridge',          type:'bridge'},
-  '0xe4edb277e41dc89ab076a1f049f4a3efa700bce8':{label:'Across Protocol',          type:'bridge'},
-  '0x9295ee1d8c5b022be115a2ad3c30c72e34e7f096':{label:'Multichain Bridge',        type:'bridge'},
-  '0x5427fefa711eff984124bfbb1ab6fbf5e3da1820':{label:'Celer cBridge',            type:'bridge'},
-  /* Binance */
-  '0x28c6c06298d514db089934071355e5743bf21d60':{label:'Binance Hot Wallet',        type:'exchange'},
-  '0x21a31ee1afc51d94c2efccaa2092ad1028285549':{label:'Binance Hot Wallet 14',    type:'exchange'},
-  '0xdfd5293d8e347dfe59e90efd55b2956a1343963d':{label:'Binance Hot Wallet 6',     type:'exchange'},
-  '0x56eddb7aa87536c09ccc2793473599fd21a8b17f':{label:'Binance Hot Wallet',       type:'exchange'},
-  '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8':{label:'Binance Cold Wallet',      type:'exchange'},
-  '0xf977814e90da44bfa03b6295a0616a897441acec':{label:'Binance Hot Wallet 8',     type:'exchange'},
-  /* Coinbase */
-  '0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43':{label:'Coinbase',                 type:'exchange'},
-  '0x71660c4005ba85c37ccec55d0c4493e66fe775d3':{label:'Coinbase 1',               type:'exchange'},
-  '0x503828976d22510aad0201ac7ec88293211d23da':{label:'Coinbase 2',               type:'exchange'},
-  '0xddfabcdc4d8ffc6d5beaf154f18b778f892a0740':{label:'Coinbase 3',               type:'exchange'},
-  '0x3cd751e6b0078be393132286c442345e5dc49699':{label:'Coinbase 4',               type:'exchange'},
-  /* Kraken */
-  '0x2910543af39aba0cd09dbb2d50200b3e800a63d2':{label:'Kraken',                   type:'exchange'},
-  '0x0a869d79a7052c7f1b55a8ebabbea3420f0d1e13':{label:'Kraken 2',                 type:'exchange'},
-  '0xe853c56864a2ebe4576a807d26fdc4a0ada51919':{label:'Kraken 3',                 type:'exchange'},
-  /* OKX */
-  '0x6cc5f688a315f3dc28a7781717a9a798a59fda7b':{label:'OKX Hot Wallet',           type:'exchange'},
-  '0x98ec059dc3adfbdd63429454aeb0c990fba4a128':{label:'OKX 2',                    type:'exchange'},
-  /* KuCoin */
-  '0xd6216fc19db775df9774a6e33526131da7d19a2c':{label:'KuCoin',                   type:'exchange'},
-  '0xa1d8d972560c2f8144af871db508f0b0b10a3fbf':{label:'KuCoin 2',                 type:'exchange'},
-  /* Bybit */
-  '0xf89d7b9c864f589bbf53a82105107622b35eaa40':{label:'Bybit Hot Wallet',         type:'exchange'},
-  '0x1db92e2eebc8e0c075a02bea49a2935bcd2dfcf4':{label:'Bybit 2',                  type:'exchange'},
-  /* Bitfinex */
-  '0x1151314c646ce4e0efd76d1af4760ae66a9fe30f':{label:'Bitfinex',                 type:'exchange'},
-  /* Gate.io */
-  '0x0d0707963952f2fba59dd06f2b425ace40b492fe':{label:'Gate.io',                  type:'exchange'},
-  /* HTX (Huobi) */
-  '0x18709e89bd403f470088abdacebe86cc60dda12e':{label:'HTX (Huobi)',              type:'exchange'},
-  '0x46705dfff24256421a05d056c29e81bdc09723b8':{label:'HTX (Huobi) 2',           type:'exchange'},
-  /* Tornado Cash — flag for compliance */
-  '0x910cbd523d972eb0a6f4cae4618ad62622b39dbf':{label:'Tornado Cash 100 ETH',    type:'mixer'},
-  '0xa160cdab225685da1d56aa342ad8841c3b53f291':{label:'Tornado Cash 10 ETH',     type:'mixer'},
-  '0xd4b88df4d29f5cedd6857912842cff3b20c8cfa3':{label:'Tornado Cash 0.1 ETH',   type:'mixer'},
-  '0xfd8610d20aa15b7b2e3be39b396a1bc3516c7144':{label:'Tornado Cash 1 ETH',      type:'mixer'},
-  '0x07687e702b410fa43f4cb4af7fa097918ffd2730':{label:'Tornado Cash 100 ETH',    type:'mixer'},
-  '0x23773e65ed146a459667be7501888d43629a8c9e':{label:'Tornado Cash Governance', type:'mixer'},
-  /* Tron notable addresses */
-  'TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7':        {label:'Binance (TRX)',            type:'exchange'},
-  'TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G':        {label:'HTX (TRX)',                type:'exchange'},
-  'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t':        {label:'Tether USDT (TRC-20)',     type:'token'},
-  'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8':         {label:'USD Coin (TRC-20)',        type:'token'},
+  /* ── Stablecoins & major tokens ── */
+  '0xdac17f958d2ee523a2206206994597c13d831ec7':{label:'Tether (USDT)',              type:'token'},
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':{label:'USD Coin (USDC)',            type:'token'},
+  '0x4fabb145d64652a948d72533023f6e7a623c7c53':{label:'Binance USD (BUSD)',         type:'token'},
+  '0x6b175474e89094c44da98b954eedeac495271d0f':{label:'Dai (DAI)',                  type:'token'},
+  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2':{label:'Wrapped Ether (WETH)',       type:'token'},
+  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599':{label:'Wrapped Bitcoin (WBTC)',     type:'token'},
+  '0x514910771af9ca656af840dff83e8264ecf986ca':{label:'Chainlink (LINK)',           type:'token'},
+  '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce':{label:'Shiba Inu (SHIB)',           type:'token'},
+  '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984':{label:'Uniswap (UNI)',              type:'token'},
+  '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9':{label:'Aave (AAVE)',                type:'token'},
+  /* ── DEX routers — Ethereum ── */
+  '0x7a250d5630b4cf539739df2c5dacb4c659f2488d':{label:'Uniswap V2 Router',         type:'dex'},
+  '0xe592427a0aece92de3edee1f18e0157c05861564':{label:'Uniswap V3 Router',         type:'dex'},
+  '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45':{label:'Uniswap V3 Router 2',       type:'dex'},
+  '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b':{label:'Uniswap Universal Router',  type:'dex'},
+  '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad':{label:'Uniswap Universal Router',  type:'dex'},
+  '0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f':{label:'SushiSwap Router',          type:'dex'},
+  '0x1111111254eeb25477b68fb85ed929f73a960582':{label:'1inch V5 Router',            type:'dex'},
+  '0x111111125421ca6dc452d289314280a0f8842a65':{label:'1inch V6 Router',            type:'dex'},
+  '0xdef1c0ded9bec7f1a1670819833240f027b25eff':{label:'0x Exchange Proxy',          type:'dex'},
+  '0xe66b31678d6c16e9ebf358268a790b763c133750':{label:'0x Exchange Proxy V4',       type:'dex'},
+  /* ── DEX routers — BSC ── */
+  '0x10ed43c718714eb63d5aa57b78b54704e256024e':{label:'PancakeSwap V2 Router',     type:'dex'},
+  '0x13f4ea83d0bd40e75c8222255bc855a974568dd4':{label:'PancakeSwap V3 Router',     type:'dex'},
+  /* ── Bridges ── */
+  '0x3ee18b2214aff97000d974cf647e7c347e8fa585':{label:'Wormhole Bridge',           type:'bridge'},
+  '0xe4edb277e41dc89ab076a1f049f4a3efa700bce8':{label:'Across Protocol',           type:'bridge'},
+  '0x9295ee1d8c5b022be115a2ad3c30c72e34e7f096':{label:'Multichain Bridge',         type:'bridge'},
+  '0x5427fefa711eff984124bfbb1ab6fbf5e3da1820':{label:'Celer cBridge',             type:'bridge'},
+  '0x3154cf16ccdb4c6d922629664174b904d80f2c35':{label:'Stargate Finance',          type:'bridge'},
+  /* ── Binance ── */
+  '0x28c6c06298d514db089934071355e5743bf21d60':{label:'Binance Hot Wallet',         type:'exchange'},
+  '0x21a31ee1afc51d94c2efccaa2092ad1028285549':{label:'Binance Hot Wallet 14',     type:'exchange'},
+  '0xdfd5293d8e347dfe59e90efd55b2956a1343963d':{label:'Binance Hot Wallet 6',      type:'exchange'},
+  '0x56eddb7aa87536c09ccc2793473599fd21a8b17f':{label:'Binance Hot Wallet',        type:'exchange'},
+  '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8':{label:'Binance Cold Wallet',       type:'exchange'},
+  '0xf977814e90da44bfa03b6295a0616a897441acec':{label:'Binance Hot Wallet 8',      type:'exchange'},
+  '0x8f22f2063d253846b53609231ed80fa571bc0c8f':{label:'Binance Hot Wallet 4',      type:'exchange'},
+  /* ── Coinbase ── */
+  '0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43':{label:'Coinbase',                  type:'exchange'},
+  '0x71660c4005ba85c37ccec55d0c4493e66fe775d3':{label:'Coinbase 1',                type:'exchange'},
+  '0x503828976d22510aad0201ac7ec88293211d23da':{label:'Coinbase 2',                type:'exchange'},
+  '0xddfabcdc4d8ffc6d5beaf154f18b778f892a0740':{label:'Coinbase 3',                type:'exchange'},
+  '0x3cd751e6b0078be393132286c442345e5dc49699':{label:'Coinbase 4',                type:'exchange'},
+  '0xb5d85cbf7cb3ee0d56b3bb207d5fc4b82f43f511':{label:'Coinbase 5',                type:'exchange'},
+  /* ── Kraken ── */
+  '0x2910543af39aba0cd09dbb2d50200b3e800a63d2':{label:'Kraken',                    type:'exchange'},
+  '0x0a869d79a7052c7f1b55a8ebabbea3420f0d1e13':{label:'Kraken 2',                  type:'exchange'},
+  '0xe853c56864a2ebe4576a807d26fdc4a0ada51919':{label:'Kraken 3',                  type:'exchange'},
+  '0x267be1c1d684f78cb4f6a176c4911b741e4ffdc0':{label:'Kraken 4',                  type:'exchange'},
+  /* ── OKX ── */
+  '0x6cc5f688a315f3dc28a7781717a9a798a59fda7b':{label:'OKX Hot Wallet',            type:'exchange'},
+  '0x98ec059dc3adfbdd63429454aeb0c990fba4a128':{label:'OKX 2',                     type:'exchange'},
+  '0x6f1cdbbb4d53d226cf4b917bf768b94acbab6168':{label:'OKX 3',                     type:'exchange'},
+  /* ── KuCoin ── */
+  '0xd6216fc19db775df9774a6e33526131da7d19a2c':{label:'KuCoin',                    type:'exchange'},
+  '0xa1d8d972560c2f8144af871db508f0b0b10a3fbf':{label:'KuCoin 2',                  type:'exchange'},
+  '0x738cf6903e6c4e699d1c2dd9ab8b67f5401e3858':{label:'KuCoin 3',                  type:'exchange'},
+  /* ── Bybit ── */
+  '0xf89d7b9c864f589bbf53a82105107622b35eaa40':{label:'Bybit Hot Wallet',          type:'exchange'},
+  '0x1db92e2eebc8e0c075a02bea49a2935bcd2dfcf4':{label:'Bybit 2',                   type:'exchange'},
+  '0x2f06d04843d904f0deb4c20ca6bcc49a5b9c28ef':{label:'Bybit 3',                   type:'exchange'},
+  /* ── Bitfinex ── */
+  '0x1151314c646ce4e0efd76d1af4760ae66a9fe30f':{label:'Bitfinex',                  type:'exchange'},
+  '0x742d35cc6634c0532925a3b844bc454e4438f44e':{label:'Bitfinex 2',                type:'exchange'},
+  /* ── Gate.io ── */
+  '0x0d0707963952f2fba59dd06f2b425ace40b492fe':{label:'Gate.io',                   type:'exchange'},
+  '0x7793cd85c11a924478d358d49b05b37e91b5810f':{label:'Gate.io 2',                 type:'exchange'},
+  /* ── HTX (Huobi) ── */
+  '0x18709e89bd403f470088abdacebe86cc60dda12e':{label:'HTX (Huobi)',               type:'exchange'},
+  '0x46705dfff24256421a05d056c29e81bdc09723b8':{label:'HTX (Huobi) 2',            type:'exchange'},
+  '0xab5c66752a9e8167967685f1450532fb96d5d24f':{label:'HTX (Huobi) 3',            type:'exchange'},
+  /* ── Crypto.com ── */
+  '0x6262998ced04146fa42253a5c0af90ca02dfd2a3':{label:'Crypto.com',                type:'exchange'},
+  '0x46340b20830761efd32832a74d7169b29feb9758':{label:'Crypto.com 2',              type:'exchange'},
+  /* ── Gemini ── */
+  '0xd24400ae8bfebb18ca49be86258a3c749cf46853':{label:'Gemini',                    type:'exchange'},
+  '0x5d1a4b51d57d0fe20b1e50bc8d8d1f3a01c51e8d':{label:'Gemini 2',                 type:'exchange'},
+  /* ── Bitstamp ── */
+  '0x00bdb5699745f5b860228c8f939abf1b9ae374ed':{label:'Bitstamp',                  type:'exchange'},
+  /* ── MEXC ── */
+  '0x75e89d5979e4f6fba9f97c104f2d18a7b19de67e':{label:'MEXC',                      type:'exchange'},
+  /* ── Bitget ── */
+  '0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23':{label:'Bitget',                    type:'exchange'},
+  /* ── ChangeNOW ── */
+  '0x077d360f11d220e4d5d831430c81c26c9be7c4a4':{label:'ChangeNOW',                 type:'exchange'},
+  '0x1aae2b5d2b7e697ab3e42052b7b0ae3c5c0e2fb':{label:'ChangeNOW 2',               type:'exchange'},
+  '0x4461d5cca4ef65f96b2c9a3ebb66fc6d33a0afa1':{label:'ChangeNOW 3',               type:'exchange'},
+  /* ── SimpleSwap ── */
+  '0x175d6f3fd9bd0ffeaafb37543c8eb5abcc38d2f6':{label:'SimpleSwap',                type:'exchange'},
+  /* ── FixedFloat ── */
+  '0x4e5b2e1dc63f6b91cb6cd759936495434c7e972f':{label:'FixedFloat',                type:'exchange'},
+  /* ── Changelly ── */
+  '0x4dc0e44ef58f2cbbd0c714a2d3eec8e9e6a06e98':{label:'Changelly',                 type:'exchange'},
+  /* ── Bitrue ── */
+  '0xe0f0cfde7ee664943906f17f7f14342e76a5cec7':{label:'Bitrue',                    type:'exchange'},
+  /* ── LetsExchange ── */
+  '0x3bba74dd4f0acb0b9effc1e08bdcc8b28d691283':{label:'LetsExchange',              type:'exchange'},
+  /* ── Tornado Cash — compliance flag ── */
+  '0x910cbd523d972eb0a6f4cae4618ad62622b39dbf':{label:'Tornado Cash 100 ETH',     type:'mixer'},
+  '0xa160cdab225685da1d56aa342ad8841c3b53f291':{label:'Tornado Cash 10 ETH',      type:'mixer'},
+  '0xd4b88df4d29f5cedd6857912842cff3b20c8cfa3':{label:'Tornado Cash 0.1 ETH',    type:'mixer'},
+  '0xfd8610d20aa15b7b2e3be39b396a1bc3516c7144':{label:'Tornado Cash 1 ETH',       type:'mixer'},
+  '0x07687e702b410fa43f4cb4af7fa097918ffd2730':{label:'Tornado Cash 100 ETH',     type:'mixer'},
+  '0x23773e65ed146a459667be7501888d43629a8c9e':{label:'Tornado Cash Governance',  type:'mixer'},
+  /* ── Tron notable ── */
+  'TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7':         {label:'Binance (TRX)',             type:'exchange'},
+  'TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G':         {label:'HTX (TRX)',                 type:'exchange'},
+  'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t':         {label:'Tether USDT (TRC-20)',      type:'token'},
+  'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8':          {label:'USD Coin (TRC-20)',         type:'token'},
+  'TKzxdSv2FZKQrEqkKVgp5DcwEXBEKMg2Ax':         {label:'ChangeNOW (TRX)',           type:'exchange'},
 };
 
 const LABEL_STYLES={
@@ -520,16 +606,97 @@ const LABEL_STYLES={
   bridge:  {bg:'rgba(245,166,35,.10)', color:'var(--warning)',  border:'rgba(245,166,35,.25)', icon:'ti-transfer'},
   protocol:{bg:'rgba(56,189,248,.08)', color:'var(--ts)',       border:'rgba(56,189,248,.2)',  icon:'ti-code'},
   mixer:   {bg:'rgba(240,83,83,.10)',  color:'var(--danger)',   border:'rgba(240,83,83,.25)',  icon:'ti-eye-off'},
+  ofac:    {bg:'rgba(240,83,83,.15)',  color:'var(--danger)',   border:'rgba(240,83,83,.5)',   icon:'ti-alert-triangle'},
 };
 
 function getLabel(addr){
   if(!addr)return null;
-  return KNOWN_LABELS[String(addr).toLowerCase()]??KNOWN_LABELS[String(addr)]??null;
+  const lower=String(addr).toLowerCase();
+  return KNOWN_LABELS[lower]??KNOWN_LABELS[String(addr)]??onDemandLabels[lower]??null;
 }
 function renderLabelBadge(addr){
   const e=getLabel(addr); if(!e)return'';
   const s=LABEL_STYLES[e.type]??LABEL_STYLES.protocol;
   return`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color};border:1px solid ${s.border};white-space:nowrap;flex-shrink:0"><i class="ti ${s.icon}" style="font-size:10px"></i>${escHtml(e.label)}</span>`;
+}
+function renderOFACBanner(addr){
+  if(!addr||!ofacFlags.has(String(addr).toLowerCase()))return'';
+  return`<div style="display:flex;align-items:center;gap:10px;background:rgba(240,83,83,.14);border:1.5px solid rgba(240,83,83,.55);border-radius:8px;padding:10px 14px;margin:10px 0">
+    <i class="ti ti-alert-triangle" style="color:var(--danger);font-size:20px;flex-shrink:0"></i>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--danger);letter-spacing:.03em">OFAC SANCTIONED ADDRESS</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px">This address appears on the U.S. Treasury OFAC SDN list. Do not process. Escalate per your compliance policy.</div>
+    </div>
+  </div>`;
+}
+
+/* ── On-demand label fetching ──────────────────────────
+   Sources tried in order:
+   1. ENS reverse record  (free, no key)
+   2. Etherscan-family contract source name
+      (free API key in CFG.ETHERSCAN_KEY unlocks this;
+       get one free at etherscan.io/register)
+   3. Blockscout public tags (for supported chains)
+   4. OFAC sanctions check via ofac.dev (free)
+   Note: Etherscan name tags on EOA wallets need their
+   Pro API. Unknown EOAs only show if in KNOWN_LABELS.
+────────────────────────────────────────────────────── */
+async function applyOnDemandLabel(addr,chainId){
+  if(!addr||addr==='N/A'||addr==='Contract creation'||addr==='(unknown)')return;
+  const lower=String(addr).toLowerCase();
+
+  // OFAC check — run in parallel regardless of other label state
+  if(lower.startsWith('0x')&&lower.length===42&&!ofacFlags.has(lower)){
+    (async()=>{
+      try{
+        const r=await fetch('https://api.ofac.dev/v1/screen',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({address:addr}),signal:abortIn(8000),
+        });
+        if(r.ok){const d=await r.json();if(d.hit===true){ofacFlags.add(lower);render();}}
+      }catch{}
+    })();
+  }
+
+  if(getLabel(addr)||onDemandLabels[lower]===null)return;
+  onDemandLabels[lower]=null; // mark attempted
+
+  // 1. ENS reverse (free)
+  if(lower.startsWith('0x')&&lower.length===42){
+    try{
+      const r=await fetch(`https://api.ensideas.com/ens/reverse/${addr}`,{signal:abortIn(5000)});
+      if(r.ok){const d=await r.json();if(d.name){onDemandLabels[lower]={label:d.name,type:'protocol'};render();return;}}
+    }catch{}
+  }
+
+  // 2. Etherscan-family contract name
+  const apiBase=EXPLORER_APIS[chainId];
+  if(apiBase){
+    try{
+      const key=CFG.ETHERSCAN_KEY?`&apikey=${CFG.ETHERSCAN_KEY}`:'U6J74NTKYVNDFDW9CUFZMHX6UYX1T2H1QW';
+      const r=await fetch(`${apiBase}?module=contract&action=getsourcecode&address=${addr}${key}`,{signal:abortIn(8000)});
+      if(r.ok){
+        const d=await r.json();
+        if(d.status==='1'){
+          const name=d.result?.[0]?.ContractName;
+          if(name&&name.length>0&&name!=='N/A'){onDemandLabels[lower]={label:name,type:'protocol'};render();return;}
+        }
+      }
+    }catch{}
+  }
+
+  // 3. Blockscout public tags
+  const bsBase=BLOCKSCOUT_APIS[chainId];
+  if(bsBase){
+    try{
+      const r=await fetch(`${bsBase}/api/v2/addresses/${addr}`,{signal:abortIn(7000)});
+      if(r.ok){
+        const d=await r.json();
+        const tag=d.name_tag??d.public_tags?.[0]?.label??d.private_tags?.[0]?.label;
+        if(tag&&tag.length>0){onDemandLabels[lower]={label:tag,type:'protocol'};render();return;}
+      }
+    }catch{}
+  }
 }
 
 function decodeABIString(hex){
@@ -1079,6 +1246,11 @@ async function runTxSearch(hash){
         render();
         // Non-blocking: fetch USD price and patch result when ready
         if(r.blockTime?.secs) fetchAndApplyUSD(chain.id,r);
+        // Non-blocking: on-demand labels for from/to addresses
+        if(chain.type==='evm'||chain.type==='tron'){
+          if(r.from) applyOnDemandLabel(r.from,chain.id);
+          if(r.to&&r.to!=='Contract creation') applyOnDemandLabel(r.to,chain.id);
+        }
       }
     }
     catch{statuses[chain.id]='error';}
@@ -1092,7 +1264,13 @@ async function runAddrSearch(address,addrType){
   render();
   await Promise.allSettled(chains.map(async chain=>{
     try{const r=await dispatchAddrSearch(chain,address,addrType);
-      statuses[chain.id]=r?'found':'not_found';if(r)results[chain.id]=r;}
+      statuses[chain.id]=r?'found':'not_found';
+      if(r){
+        results[chain.id]=r;
+        // Non-blocking: on-demand label for the searched address
+        if(chain.type==='evm') applyOnDemandLabel(address,chain.id);
+      }
+    }
     catch{statuses[chain.id]='error';}
     render();
   }));
@@ -1196,7 +1374,7 @@ function renderTxCards(){
           <span class="address-val">${escHtml(String(v))}</span>
           ${copyBtn(String(v))}
           ${renderLabelBadge(String(v))}
-        </div>`).join('')}
+        </div>${renderOFACBanner(String(v))}`).join('')}
       </div>`:''}
     </div>`;
   }).join('')}`;
@@ -1258,6 +1436,7 @@ function renderAddrCards(){
           ${copyBtn(currentInput)}
           ${renderLabelBadge(currentInput)}
         </div>
+        ${renderOFACBanner(currentInput)}
       </div>
     </div>`;
   }).join('')}`;
