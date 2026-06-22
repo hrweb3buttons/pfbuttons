@@ -972,6 +972,8 @@ button.rpc-active {
 }
 /* ── Sustainability Notice Overlay ── */
  
+/* ── Final Sustainability Overlay ── */
+
 #sustainability-overlay {
   position: fixed;
   inset: 0;
@@ -981,221 +983,164 @@ button.rpc-active {
   justify-content: center;
   padding: 2rem 1rem;
   overflow-y: auto;
-  background: rgba(0, 0, 0, 0.78);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  animation: overlayFadeIn 0.3s ease;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: overlayFadeIn 0.4s ease;
 }
- 
+
 @keyframes overlayFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
- 
+
 #sustainability-notice {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.55);
   width: 100%;
   max-width: 700px;
   padding: 2rem 2rem 1.75rem;
   position: relative;
-  animation: noticeSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: noticeSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   margin: auto;
 }
- 
+
 @keyframes noticeSlideIn {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0); }
 }
- 
-#notice-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.25rem 0.65rem;
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
- 
-#notice-close:hover {
-  background: var(--border);
-  color: var(--text);
-}
- 
-#notice-close:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
-}
- 
+
 .notice-eyebrow {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--primary);
+  color: var(--error);
   margin-bottom: 0.5rem;
 }
- 
+
 #sustainability-notice h2 {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  margin: 0 0 1.25rem;
+  margin: 0 0 1.5rem;
   color: var(--text);
-  padding-right: 2rem;
   line-height: 1.3;
 }
- 
+
 .notice-section {
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.5rem;
 }
- 
+
 .notice-section h3 {
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.65rem;
   padding-bottom: 4px;
   border-bottom: 1px solid var(--border);
 }
- 
+
 .notice-section p {
-  font-size: 0.95rem;
+  font-size: 0.97rem;
   color: var(--text);
-  margin: 0 0 0.75rem;
-  line-height: 1.65;
+  margin: 0 0 0.85rem;
+  line-height: 1.75;
 }
- 
+
 .notice-section p:last-child {
   margin-bottom: 0;
 }
- 
+
 .notice-callout {
   border-left: 3px solid var(--primary);
   margin: 1rem 0;
-  padding: 0.8rem 1rem;
+  padding: 0.85rem 1rem;
   background: var(--background);
   border-radius: 0 var(--radius) var(--radius) 0;
-  font-size: 0.93rem;
+  font-size: 0.95rem;
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.65;
 }
- 
+
 .notice-callout.warning {
   border-left-color: #f9a825;
   background: rgba(249, 168, 37, 0.07);
-  color: var(--text);
 }
- 
+
+.notice-callout.critical {
+  border-left-color: var(--error);
+  background: rgba(176, 0, 32, 0.06);
+}
+
 :root.dark .notice-callout.warning {
   background: rgba(249, 168, 37, 0.06);
 }
- 
-.notice-callout.success {
-  border-left-color: #43a047;
-  background: rgba(67, 160, 71, 0.07);
-  color: var(--text);
+
+:root.dark .notice-callout.critical {
+  background: rgba(176, 0, 32, 0.08);
 }
- 
-:root.dark .notice-callout.success {
-  background: rgba(67, 160, 71, 0.06);
-}
- 
-.notice-tldr {
+
+/* ── Timer bar ── */
+
+.notice-timer-wrap {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
   background: var(--background);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--primary);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.4rem;
-  font-size: 0.93rem;
-  line-height: 1.6;
-  color: var(--text);
-}
- 
-.notice-cost-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.87rem;
-  margin: 0.5rem 0;
-}
- 
-.notice-cost-table th {
-  text-align: left;
-  font-weight: 700;
-  font-size: 0.76rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid var(--border);
-}
- 
-.notice-cost-table td {
-  padding: 0.5rem 0.6rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-  vertical-align: top;
-}
- 
-.notice-cost-table tr:last-child td {
-  border-bottom: none;
-}
- 
-.notice-cost-table td:last-child {
-  white-space: nowrap;
-  font-weight: 600;
-  color: var(--primary);
-}
- 
-.notice-cost-total {
+  border-radius: var(--radius);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 0.6rem;
-  border-top: 2px solid var(--border);
-  font-weight: 700;
-  font-size: 0.9rem;
-  margin-top: 0.2rem;
-  color: var(--text);
+  gap: 0.75rem;
 }
- 
-.notice-cost-total span:last-child {
-  color: var(--primary);
+
+.notice-timer-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
- 
-.notice-pill {
-  display: inline-block;
-  font-size: 0.72rem;
+
+.notice-timer-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.notice-timer-fill {
+  height: 100%;
+  background: var(--error);
+  border-radius: 2px;
+  width: 100%;
+  transition: width 1s linear;
+}
+
+.notice-timer-count {
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 1px 8px;
-  border-radius: 10px;
-  background: rgba(176, 0, 32, 0.08);
   color: var(--error);
-  border: 1px solid rgba(176, 0, 32, 0.2);
-  margin-right: 4px;
-  vertical-align: middle;
+  min-width: 2rem;
+  text-align: right;
+  flex-shrink: 0;
 }
- 
+
+/* ── Footer ── */
+
 .notice-footer {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  margin-top: 1.5rem;
-  padding-top: 1.1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--border);
 }
- 
+
 #notice-cta {
   width: 100%;
   padding: 0.85rem 1.25rem;
@@ -1207,26 +1152,32 @@ button.rpc-active {
   color: #fff !important;
   text-decoration: none;
   display: block;
-  transition: background 0.2s;
+  transition: background 0.2s, opacity 0.2s;
   box-sizing: border-box;
 }
- 
-#notice-cta:hover {
+
+#notice-cta:not([aria-disabled="true"]):hover {
   background: var(--primary-hover);
 }
- 
+
+#notice-cta[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 #notice-cta:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
- 
+
 .notice-secondary-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
 }
- 
+
 .notice-secondary-link {
   font-size: 0.85rem;
   font-weight: 600;
@@ -1236,42 +1187,53 @@ button.rpc-active {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: transparent;
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.2s;
   text-align: center;
 }
- 
-.notice-secondary-link:hover {
+
+.notice-secondary-link:not([aria-disabled="true"]):hover {
   background: var(--border);
 }
- 
+
+.notice-secondary-link[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 .notice-secondary-link:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
- 
+
 #notice-dismiss {
   background: transparent;
   color: var(--text-muted);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 0.6rem 1.25rem;
+  padding: 0.65rem 1.25rem;
   font-size: 0.85rem;
   font-weight: 600;
   width: 100%;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, opacity 0.2s;
 }
- 
-#notice-dismiss:hover {
+
+#notice-dismiss:not(:disabled):hover {
   background: var(--border);
   color: var(--text);
 }
- 
+
+#notice-dismiss:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 #notice-dismiss:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
- 
+
 .notice-signature {
   font-size: 0.82rem;
   color: var(--text-muted);
@@ -1281,196 +1243,156 @@ button.rpc-active {
 </head>
 
 <body>
- <div id="sustainability-overlay"
+ <<div id="sustainability-overlay"
      role="dialog"
      aria-modal="true"
      aria-labelledby="notice-heading"
      hidden>
   <div id="sustainability-notice">
- 
-    <button id="notice-close" aria-label="Close notice and continue to tools">✕</button>
- 
-    <div class="notice-eyebrow">A message from Hunter Rodriguez</div>
+
+    <div class="notice-eyebrow">An urgent message from Hunter Rodriguez</div>
     <h2 id="notice-heading">
-      Hunter's Toolbox needs community support to survive.
+      After one year, Hunter's Toolbox is shutting down.
     </h2>
- 
-    <!-- TL;DR -->
-    <div class="notice-tldr">
-      <strong>TL;DR:</strong> These tools cost approximately <strong>$10,000 in labor</strong> to build.
-      Keeping them alive and growing requires roughly
-      <strong>$150/month</strong> in support. To date, the community has contributed <strong>$10/month</strong>.
-      The gap needs to close, or the tools will not survive.
-    </div>
- 
-    <!-- Origin -->
-    <div class="notice-section">
-      <h3>How this started</h3>
-      <p>
-        Hunter's Toolbox was not built for an audience. It started in June 2025 as a single token
-        importer built quietly for the support team, because watching new members struggle through
-        a tedious manual process felt like a problem worth fixing. It spread on its own from there,
-        grew beyond what anyone planned, and eventually became something this community uses every day.
-      </p>
-      <p>
-        None of it was asked for. All of it was built out of a genuine belief that this community
-        deserves tools built with real care. That belief has not changed. What has changed is the
-        ability to sustain this work alone, indefinitely, with nothing coming back.
-      </p>
-    </div>
- 
-    <!-- What's been tried -->
-    <div class="notice-section">
-      <h3>What has already been tried</h3>
-      <p>
-        This is not the first time this issue has been raised. Every reasonable avenue has been
-        explored before reaching this point: donation buttons, community updates, weekly calls,
-        premium services, a Crypto Directory, a Public Goods Campaign across Telegram, individual
-        marketplace listings for each infrastructure cost, and a Cornerstone Sponsorship for anyone
-        wanting to cover everything at once.
-      </p>
-      <div class="notice-callout success">
-        One community member has stepped up, publicly, on a call, committing $10 per month and
-        saying she finds the Toolbox essential to the project as a whole. That act of leadership
-        matters. If one person can see it clearly enough to act, others can too.
+
+    <!-- Timer bar -->
+    <div class="notice-timer-wrap" id="notice-timer-wrap" aria-live="polite" aria-label="Please read before continuing">
+      <span class="notice-timer-label">Please read</span>
+      <div class="notice-timer-track">
+        <div class="notice-timer-fill" id="notice-timer-fill"></div>
       </div>
+      <span class="notice-timer-count" id="notice-timer-count">60</span>
+    </div>
+
+    <!-- One year -->
+    <div class="notice-section">
+      <h3>One year</h3>
       <p>
-        Beyond that single commitment, the financial response to everything above has been $0.
+        Today, June 22nd, 2026, marks a little over one year since the first version of this Toolbox went live. It started as a single
+        token importer built quietly for a handful of people I cared about, because I saw a problem
+        I could fix. It was never asked for. It was never funded. It was given freely, because I
+        believed this community was worth giving to.
+      </p>
+      <p>
+        Over the course of that year, it became something far larger than I ever planned. Tools that
+        members use every day. A security scanner. An RPC switcher that has seen people through
+        real outages. A calculator, a portfolio tracker, swap shortcuts, mobile fallbacks. Weekly
+        calls. Guides. Hundreds of hours. Thousands of dollars worth of labor, contributed without
+        hesitation, because I believed the community I was building for was real.
+      </p>
+      <p>
+        I am no longer sure that community exists. Or perhaps more accurately, I am no longer sure
+        it exists in the form I believed it did.
       </p>
     </div>
- 
-    <!-- Infrastructure costs -->
+
+    <!-- What I tried -->
     <div class="notice-section">
-      <h3>What it costs to do this properly</h3>
- 
-      <table class="notice-cost-table" aria-label="Monthly infrastructure costs">
-        <thead>
-          <tr>
-            <th>What</th>
-            <th>Why it matters</th>
-            <th>Cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Private domain</strong></td>
-            <td>Professional hosting independent of GitHub</td>
-            <td>~$5/mo</td>
-          </tr>
-          <tr>
-            <td><strong>Private server (VPS)</strong></td>
-            <td>Dedicated hosting for reliability, control, and growth</td>
-            <td>~$50/mo</td>
-          </tr>
-          <tr>
-            <td><strong>Private RPC node</strong></td>
-            <td>Dedicated blockchain connection — faster and more reliable than shared public nodes</td>
-            <td>~$40/mo</td>
-          </tr>
-          <tr>
-            <td><strong>File Storage for Documentation</strong></td>
-            <td>Private server hosting for all my documents used by the Pool Funding Ecosystem</td>
-            <td>Variable</td>
-          </tr>
-          <tr>
-            <td><strong>Gas Station Wallet</strong></td>
-            <td>A dedicated wallet to dispense enough of a gas token in cases of need</td>
-            <td>$5/mo</td>
-          </tr>
-          <tr>
-            <td><strong>Zoom Business</strong></td>
-            <td>Weekly community calls — currently covered by the platform founder, perhaps not permanently</td>
-            <td>~$24/mo, more if we expand</td>
-          </tr>
-        </tbody>
-      </table>
- 
-      <div class="notice-cost-total">
-        <span>Baseline total</span>
-        <span>~$125/month</span>
-      </div>
- 
-      <p style="margin-top:0.85rem; font-size:0.88rem;">
-        A realistic operating target is <strong>$150–$200/month</strong>, accounting for crypto
-        payment premiums and cost increases over time. Spread across this community, that is a
-        very small number per person.
-      </p>
-    </div>
- 
-    <!-- Why this matters -->
-    <div class="notice-section">
-      <h3>Why this is not a small problem</h3>
+      <h3>What I did to try to prevent this</h3>
       <p>
-        <span class="notice-pill">left-pad · 2016</span> A piece of software so small it fit on
-        one page, maintained by one unpaid volunteer, was deleted when he burned out.
-        Facebook, Netflix, and Spotify broke within hours. The entire internet scrambled to recover.
+        I did not arrive here without warning. I raised the sustainability issue in community updates,
+        on recorded calls, and on this page itself. I ran a 22 post Public Goods Campaign across
+        Telegram over the course of weeks. I created individual sponsorship listings for each piece
+        of infrastructure the Toolbox needs. I built a dedicated page documenting everything I had
+        tried and everything that was at stake. I made a formal sustainability statement. I put up
+        a notice on this page that has been visible on every visit for weeks.
       </p>
       <p>
-        <span class="notice-pill">Heartbleed · 2014</span> A critical vulnerability in OpenSSL,
-        the encryption layer protecting an estimated two thirds of secure websites,  was discovered
-        after years of under-resourcing. In the aftermath, it emerged the project was receiving
-        approximately <strong>$2,000 per year</strong> in donations. Two thousand dollars, protecting
-        the financial data and private communications of hundreds of millions of people.
+        One person responded. One member of this community, publicly and of her own volition, said
+        she found the Toolbox essential and committed $10 per month. I am grateful for that, and I
+        will not forget it.
       </p>
-      <p>
-        These are not edge cases. They are the predictable result of communities consuming
-        infrastructure without sustaining it. Hunter's Toolbox is smaller in scale.
-        The dynamic is identical.
-      </p>
-    </div>
- 
-    <!-- What happens next -->
-    <div class="notice-section">
-      <h3>What happens if nothing changes</h3>
       <div class="notice-callout warning">
-        Effective with the publication of this notice, no further development or routine maintenance
-        will be undertaken until a clear shift toward sustainability is demonstrated. No new features.
-        No compatibility fixes. No routine updates to endpoints, token data, or security information.
-        Community calls suspended. The one exception is a genuine security emergency. The community
-        will always be protected from active harm, regardless of circumstances.
+        Beyond that single act of support, the response from this community to everything above has
+        been silence. Not misunderstanding. Not lack of awareness. Silence.
       </div>
       <p>
-        The tools will remain accessible in their current state. Without maintenance they will degrade.
-        Endpoints will go stale, compatibility will erode, the experience will worsen gradually and
-        then significantly. This is not a decision made out of malice. It is a decision made out of
-        necessity. A controlled freeze is the responsible alternative to becoming the next left-pad.
-        Not out of malice. Out of necessity.
+        I have spent months protecting this community from the natural consequence of that silence.
+        I am no longer willing to do that.
       </p>
     </div>
- 
-    <!-- Footer / CTA -->
+
+    <!-- The deadline -->
+    <div class="notice-section">
+      <h3>What happens now</h3>
+      <div class="notice-callout critical">
+        Hunter's Toolbox requires <strong>$150 per month in recurring support</strong> to continue
+        operating. If that threshold is not reached by <strong>July 22nd, 2026</strong>, I will
+        begin the process of shutting it down permanently.
+      </div>
+      <p>
+        This is not a threat. This is not negative. It is not a negotiating position. It is a statement of fact about
+        what is sustainable and what is not. I have carried this alone for a year. I cannot carry
+        it indefinitely, and I will not.
+      </p>
+      <p>
+        The tools will not disappear overnight. The shutdown will be deliberate and communicated.
+        But it will happen, unless something changes before July 22nd.
+      </p>
+    </div>
+
+    <!-- For the record -->
+    <div class="notice-section">
+      <h3>For the record</h3>
+      <p>
+        I am writing this not only for the people reading it now, but for anyone who comes after
+        me — any builder, any helper, anyone considering pouring themselves into this or any
+        community the way I have.
+      </p>
+      <p>
+        What happened here is not unique to me. It is one of the most documented patterns in
+        Web3 and open source software. A person builds something real, gives it freely, and
+        discovers too late that the community consuming it never felt responsible for sustaining it.
+        I knew this pattern existed. I hoped this community would be different.
+      </p>
+      <p>
+        If you are reading this as someone who uses the Toolbox — you had every opportunity. The
+        case was made clearly, repeatedly, and in good faith. Whatever happens from here is a
+        reflection of the choice this community made, collectively and in silence.
+      </p>
+      <p>
+        If you are reading this as someone considering building for a community like this one —
+        let this page be the warning I did not have.
+      </p>
+    </div>
+
+    <!-- Footer -->
     <div class="notice-footer">
       <a id="notice-cta"
          href="https://hrweb3buttons.github.io/pfbuttons/donations.html"
          target="_blank"
-         rel="noopener noreferrer">
+         rel="noopener noreferrer"
+         aria-disabled="true">
         View Contribution Options →
       </a>
- 
+
       <div class="notice-secondary-links">
         <a class="notice-secondary-link"
-           href="where-things-stand.html">
+           href="where-things-stand.html"
+           aria-disabled="true">
           Full context and background
         </a>
         <a class="notice-secondary-link"
-           href="sustainability.html">
+           href="sustainability.html"
+           aria-disabled="true">
           Formal sustainability statement
         </a>
         <a class="notice-secondary-link"
-           href="https://myjoy.market/product/hunter-rodriguez/sponsor-hunter-s-toolbox"
+           href="https://myjoy.market/product/hunter-rodriguez/sponsor-hunters-toolbox"
            target="_blank"
-           rel="noopener noreferrer">
+           rel="noopener noreferrer"
+           aria-disabled="true">
           Sponsor on the Marketplace
         </a>
       </div>
- 
-      <button id="notice-dismiss" type="button">
+
+      <button id="notice-dismiss" type="button" disabled>
         I understand — continue to the tools
       </button>
- 
-      <p class="notice-signature">— Hunter Rodriguez &nbsp;|&nbsp; Hunter's Toolbox</p>
+
+      <p class="notice-signature">— Hunter Rodriguez &nbsp;|&nbsp; Hunter's Toolbox &nbsp;|&nbsp; One year.</p>
     </div>
- 
+
   </div>
 </div>
 <!-- END SUSTAINABILITY OVERLAY -->
@@ -2112,7 +2034,7 @@ button.rpc-active {
   View on GitHub
 </a>
  | 
-<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v2.4.1
+<a href="terms.html">Terms of Use</a> | <a href="privacy.html">Privacy Policy</a> | v0°
   </footer>
 
   <script>
@@ -4261,57 +4183,112 @@ if (calcNeededAmtInput) {
    It reappears on the next visit or new tab.
    ============================================= */
 (function () {
-  const SESSION_KEY = "ht_notice_dismissed_v3";
- 
+ const SESSION_KEY   = "ht_notice_dismissed_v4";
+  const TIMER_SECONDS = 60;
+
   const overlay  = document.getElementById("sustainability-overlay");
-  const closeBtn = document.getElementById("notice-close");
   const dismiss  = document.getElementById("notice-dismiss");
- 
+  const cta      = document.getElementById("notice-cta");
+  const fill     = document.getElementById("notice-timer-fill");
+  const count    = document.getElementById("notice-timer-count");
+  const timerWrap = document.getElementById("notice-timer-wrap");
+
+  const secondaryLinks = document.querySelectorAll(
+    "#sustainability-overlay .notice-secondary-link"
+  );
+
   if (!overlay) return;
- 
-  // Show if not already dismissed this session
-  if (!sessionStorage.getItem(SESSION_KEY)) {
-    overlay.removeAttribute("hidden");
-    document.body.style.overflow = "hidden";
-    trapFocus(overlay);
+
+  if (sessionStorage.getItem(SESSION_KEY)) return;
+
+  // Show overlay
+  overlay.removeAttribute("hidden");
+  overlay.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  // Start timer
+  let remaining = TIMER_SECONDS;
+
+  // Set initial bar width
+  if (fill) fill.style.width = "100%";
+  if (count) count.textContent = remaining;
+
+  const tick = setInterval(() => {
+    remaining--;
+
+    // Update bar
+    if (fill) {
+      fill.style.width = ((remaining / TIMER_SECONDS) * 100) + "%";
+    }
+
+    // Update countdown
+    if (count) count.textContent = remaining;
+
+    if (remaining <= 0) {
+      clearInterval(tick);
+      enableDismissal();
+    }
+  }, 1000);
+
+  function enableDismissal() {
+    // Hide the timer bar
+    if (timerWrap) timerWrap.style.display = "none";
+
+    // Enable dismiss button
+    if (dismiss) dismiss.disabled = false;
+
+    // Enable CTA link
+    if (cta) cta.removeAttribute("aria-disabled");
+
+    // Enable secondary links
+    secondaryLinks.forEach(link => link.removeAttribute("aria-disabled"));
   }
- 
-function closeOverlay() {
-  sessionStorage.setItem(SESSION_KEY, "1");
-  overlay.setAttribute("hidden", "");
-  overlay.style.display = "none";
-  document.body.style.overflow = "";
-}
- 
-  closeBtn.addEventListener("click", closeOverlay);
-  dismiss.addEventListener("click", closeOverlay);
- 
-  // Escape key dismisses
+
+  function closeOverlay() {
+    sessionStorage.setItem(SESSION_KEY, "1");
+    overlay.setAttribute("hidden", "");
+    overlay.style.display = "none";
+    document.body.style.overflow = "";
+  }
+
+  if (dismiss) {
+    dismiss.addEventListener("click", () => {
+      if (!dismiss.disabled) closeOverlay();
+    });
+  }
+
+  // Escape key — only works after timer expires
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !overlay.hasAttribute("hidden")) {
+    if (e.key === "Escape" &&
+        !overlay.hasAttribute("hidden") &&
+        dismiss &&
+        !dismiss.disabled) {
       closeOverlay();
     }
   });
- 
-  // Clicking backdrop dismisses
+
+  // Backdrop click — only after timer expires
   overlay.addEventListener("click", function (e) {
-    if (e.target === overlay) closeOverlay();
+    if (e.target === overlay && dismiss && !dismiss.disabled) {
+      closeOverlay();
+    }
   });
- 
-  // Focus trap — keeps keyboard navigation inside the dialog
+
+  // Focus trap
   function trapFocus(dialog) {
     const focusable = dialog.querySelectorAll(
-      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'a[href]:not([aria-disabled="true"]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
     );
     if (!focusable.length) return;
- 
-    const first = focusable[0];
-    const last  = focusable[focusable.length - 1];
- 
-    first.focus();
- 
+    focusable[0].focus();
+
     dialog.addEventListener("keydown", function (e) {
-      if (e.key !== "Tab") return;
+      const currentFocusable = Array.from(dialog.querySelectorAll(
+        'a[href]:not([aria-disabled="true"]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ));
+      if (!currentFocusable.length || e.key !== "Tab") return;
+      const first = currentFocusable[0];
+      const last  = currentFocusable[currentFocusable.length - 1];
       if (e.shiftKey) {
         if (document.activeElement === first) {
           e.preventDefault();
@@ -4325,6 +4302,9 @@ function closeOverlay() {
       }
     });
   }
+
+  trapFocus(overlay);
+
 })();
 /* END SUSTAINABILITY NOTICE OVERLAY */
   </script>
