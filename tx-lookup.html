@@ -156,7 +156,7 @@
     <div class="header-icon"><i class="ti ti-topology-ring-3"></i></div>
     <div>
       <h1>Transaction &amp; Address Lookup</h1>
-      <p>Paste a transaction hash <em>or</em> a wallet address — 55 chains, automatic detection.</p>
+      <p>Paste a transaction hash <em>or</em> a wallet address — 64 chains, automatic detection.</p>
     </div>
   </div>
   <div class="search-row">
@@ -291,6 +291,31 @@ const CHAINS=[
     addrExplorer:"https://hashscan.io/mainnet/account/"},
   {id:"multiversx", name:"MultiversX",  symbol:"EGLD", color:"#1B46C2",type:"multiversx",
     addrExplorer:"https://explorer.multiversx.com/accounts/"},
+  // ── Cosmos SDK ecosystem ──
+  {id:"cosmos",    name:"Cosmos Hub",  symbol:"ATOM", color:"#7075A0",type:"cosmos_sdk",
+    lcd:"https://cosmos-rest.publicnode.com",denom:"uatom",denomExp:6,
+    explorer:"https://mintscan.io/cosmos/tx/",addrExplorer:"https://mintscan.io/cosmos/address/"},
+  {id:"osmosis",   name:"Osmosis",     symbol:"OSMO", color:"#750BBB",type:"cosmos_sdk",
+    lcd:"https://osmosis-rest.publicnode.com",denom:"uosmo",denomExp:6,
+    explorer:"https://mintscan.io/osmosis/tx/",addrExplorer:"https://mintscan.io/osmosis/address/"},
+  {id:"injective", name:"Injective",   symbol:"INJ",  color:"#00B3CC",type:"cosmos_sdk",
+    lcd:"https://injective-lcd.publicnode.com",denom:"inj",denomExp:18,
+    explorer:"https://explorer.injective.network/transaction/",addrExplorer:"https://explorer.injective.network/account/"},
+  {id:"celestia",  name:"Celestia",    symbol:"TIA",  color:"#9B59B6",type:"cosmos_sdk",
+    lcd:"https://celestia-rest.publicnode.com",denom:"utia",denomExp:6,
+    explorer:"https://mintscan.io/celestia/tx/",addrExplorer:"https://mintscan.io/celestia/address/"},
+  {id:"dydx",      name:"dYdX",        symbol:"DYDX", color:"#6966FF",type:"cosmos_sdk",
+    lcd:"https://dydx-rest.publicnode.com",denom:"adydx",denomExp:18,
+    explorer:"https://mintscan.io/dydx/tx/",addrExplorer:"https://mintscan.io/dydx/address/"},
+  // ── Others ──
+  {id:"kaspa",     name:"Kaspa",       symbol:"KAS",  color:"#70C7BA",type:"kaspa",
+    addrExplorer:"https://explorer.kaspa.org/addresses/"},
+  {id:"flow",      name:"Flow",        symbol:"FLOW", color:"#00EF8B",type:"flow",
+    addrExplorer:"https://flowscan.io/account/"},
+  {id:"vechain",   name:"VeChain",     symbol:"VET",  color:"#15BDFF",type:"vechain",
+    addrExplorer:"https://insight.vecha.in/#/accounts/"},
+  {id:"harmony",   name:"Harmony",     symbol:"ONE",  color:"#00AEE9",type:"evm",
+    rpc:"https://api.harmony.one",explorer:"https://explorer.harmony.one/tx/",addrExplorer:"https://explorer.harmony.one/address/"},
 ];
 
 /* ══════════════════════════════════════════════
@@ -302,7 +327,7 @@ const CHAINS=[
    PolygonScan, Arbiscan, etc.
 ══════════════════════════════════════════════ */
 const CFG={
-  ETHERSCAN_KEY:'',  // ← paste key here
+  ETHERSCAN_KEY:'OubdTojeMFBrnQVO',  // ← paste key here
 };
 
 /* Blockscout API base URLs — returns public_tags / name_tag for free */
@@ -684,7 +709,7 @@ async function applyOnDemandLabel(addr,chainId){
   const apiBase=EXPLORER_APIS[chainId];
   if(apiBase){
     try{
-      const key=CFG.ETHERSCAN_KEY?`&apikey=${CFG.ETHERSCAN_KEY}`:'OubdTojeMFBrnQVO';
+      const key=CFG.ETHERSCAN_KEY?`&apikey=${CFG.ETHERSCAN_KEY}`:'';
       const r=await fetch(`${apiBase}?module=contract&action=getsourcecode&address=${addr}${key}`,{signal:abortIn(8000)});
       if(r.ok){
         const d=await r.json();
@@ -746,6 +771,9 @@ function detectInput(raw){
       hint:'<strong>Unstoppable Domain</strong> — will resolve to address then search all EVM chains'};
 
   /* ── Addresses (most specific patterns first) ── */
+  // Flow: 0x + exactly 16 hex chars (must check BEFORE EVM 0x+40hex)
+  if(/^0x[0-9a-fA-F]{16}$/.test(h))
+    return{mode:'address',addrType:'flow',icon:'ti-wallet',hint:'<strong>Flow address</strong>'};
   // Hedera: shard.realm.account  e.g. 0.0.12345
   if(/^\d+\.\d+\.\d+$/.test(h)&&h.split('.').length===3)
     return{mode:'address',addrType:'hedera',icon:'ti-wallet',hint:'<strong>Hedera account ID</strong>'};
@@ -755,6 +783,20 @@ function detectInput(raw){
   // Algorand: 58-char uppercase base32
   if(/^[A-Z2-7]{58}$/.test(h))
     return{mode:'address',addrType:'algorand',icon:'ti-wallet',hint:'<strong>Algorand address</strong>'};
+  // Kaspa: kaspa: prefix
+  if(/^kaspa:[a-z0-9]{61,65}$/.test(h))
+    return{mode:'address',addrType:'kaspa',icon:'ti-wallet',hint:'<strong>Kaspa address</strong>'};
+  // Cosmos SDK chains (bech32, chain-specific prefixes)
+  if(/^cosmos1[a-z0-9]{38}$/.test(h))
+    return{mode:'address',addrType:'cosmos',icon:'ti-wallet',hint:'<strong>Cosmos Hub address</strong>'};
+  if(/^osmo1[a-z0-9]{38}$/.test(h))
+    return{mode:'address',addrType:'osmosis',icon:'ti-wallet',hint:'<strong>Osmosis address</strong>'};
+  if(/^inj1[a-z0-9]{38}$/.test(h))
+    return{mode:'address',addrType:'injective',icon:'ti-wallet',hint:'<strong>Injective address</strong>'};
+  if(/^celestia1[a-z0-9]{38}$/.test(h))
+    return{mode:'address',addrType:'celestia',icon:'ti-wallet',hint:'<strong>Celestia address</strong>'};
+  if(/^dydx1[a-z0-9]{38}$/.test(h))
+    return{mode:'address',addrType:'dydx',icon:'ti-wallet',hint:'<strong>dYdX address</strong>'};
   if(/^0x[0-9a-fA-F]{40}$/.test(h))
     return{mode:'address',addrType:'evm',icon:'ti-wallet',
       hint:'<strong>EVM wallet address</strong> — checking all 14 EVM chains for activity'};
@@ -824,12 +866,19 @@ function detectInput(raw){
 /* chains for each address type */
 function chainsForAddrType(t){
   const byId=id=>CHAINS.find(c=>c.id===id);
-  if(t==='evm'||t==='ens'||t==='ud') return CHAINS.filter(c=>c.type==='evm');
+  if(t==='evm'||t==='ens'||t==='ud') return CHAINS.filter(c=>c.type==='evm'||c.id==='vechain');
   if(t==='algorand')   return [byId('algorand')].filter(Boolean);
   if(t==='hedera')     return [byId('hedera')].filter(Boolean);
   if(t==='multiversx') return [byId('multiversx')].filter(Boolean);
   if(t==='sui')        return [byId('sui')].filter(Boolean);
   if(t==='aptos')      return [byId('aptos')].filter(Boolean);
+  if(t==='kaspa')      return [byId('kaspa')].filter(Boolean);
+  if(t==='flow')       return [byId('flow')].filter(Boolean);
+  if(t==='cosmos')     return [byId('cosmos')].filter(Boolean);
+  if(t==='osmosis')    return [byId('osmosis')].filter(Boolean);
+  if(t==='injective')  return [byId('injective')].filter(Boolean);
+  if(t==='celestia')   return [byId('celestia')].filter(Boolean);
+  if(t==='dydx')       return [byId('dydx')].filter(Boolean);
   if(t==='bitcoin')    return [byId('bitcoin')].filter(Boolean);
   if(t==='bitcoin_legacy')return [byId('bitcoin'),byId('bsv'),byId('bcd')].filter(Boolean);
   if(t==='litecoin')   return [byId('litecoin')].filter(Boolean);
@@ -1094,8 +1143,95 @@ async function txEVM(hash,chain){
 }
 
 /* ══════════════════════════════════════════════
-   SUI / APTOS / ALGORAND / HEDERA / MULTIVERSX
+   COSMOS SDK / KASPA / FLOW / VECHAIN
 ══════════════════════════════════════════════ */
+async function txCosmosSDK(hash,chain){
+  const r=await fetch(`${chain.lcd}/cosmos/tx/v1beta1/txs/${hash}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();
+  const res=d.tx_response;if(!res)return null;
+  const msgs=d.tx?.body?.messages??[];
+  const send=msgs.find(m=>m['@type']?.includes('MsgSend'));
+  let from='N/A',to='N/A',nativeValue=`0 ${chain.symbol}`;
+  if(send){
+    from=send.from_address;to=send.to_address;
+    const amt=send.amount?.find(a=>a.denom===chain.denom);
+    if(amt)nativeValue=`${(parseInt(amt.amount)/Math.pow(10,chain.denomExp)).toFixed(chain.denomExp)} ${chain.symbol}`;
+  }else if(msgs[0]?.sender){from=msgs[0].sender;}
+  const feeAmt=d.tx?.auth_info?.fee?.amount?.find(a=>a.denom===chain.denom);
+  const fee=feeAmt?`${(parseInt(feeAmt.amount)/Math.pow(10,chain.denomExp)).toFixed(chain.denomExp)} ${chain.symbol}`:'N/A';
+  return{blockTime:toPanama(isoToSecs(res.timestamp)),blockNumber:res.height,
+    status:res.code===0?'Success':'Failed',from,to,nativeValue,fee,
+    gasUsed:parseInt(res.gas_used||0).toLocaleString(),
+    explorerUrl:chain.explorer+hash,confirmed:res.code===0,tokenTransfers:[]};
+}
+async function txKaspa(hash){
+  const r=await fetch(`https://api.kaspa.org/transactions/${hash}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();if(!d.transaction_id)return null;
+  const totalOut=(d.outputs??[]).reduce((s,o)=>s+parseInt(o.amount||0),0);
+  return{blockTime:toPanama(d.block_time?Math.floor(d.block_time/1000):null),
+    nativeValue:`${(totalOut/1e8).toFixed(8)} KAS`,
+    inputs:d.inputs?.length??0,outputs:d.outputs?.length??0,
+    explorerUrl:`https://explorer.kaspa.org/txs/${hash}`,
+    confirmed:!!d.accepting_block_hash,tokenTransfers:[]};
+}
+async function txFlow(hash){
+  const[tr,rr]=await Promise.allSettled([
+    fetch(`https://rest-mainnet.onflow.org/v1/transactions/${hash}`,{signal:abortIn(10000)}),
+    fetch(`https://rest-mainnet.onflow.org/v1/transaction_results/${hash}`,{signal:abortIn(10000)}),
+  ]);
+  if(tr.status==='rejected'||!tr.value.ok)return null;
+  const tx=await tr.value.json();if(!tx.id)return null;
+  let status='Unknown',confirmed=false;
+  if(rr.status==='fulfilled'&&rr.value.ok){
+    const res=await rr.value.json();status=res.status??'Unknown';
+    confirmed=status==='Sealed'||status==='Executed';
+  }
+  return{blockTime:null,status,from:tx.authorizers?.[0]??'N/A',
+    gasLimit:tx.gas_limit,
+    explorerUrl:`https://flowscan.io/transaction/${hash}`,confirmed,tokenTransfers:[]};
+}
+async function txVeChain(hash){
+  const r=await fetch(`https://mainnet.vechain.org/transactions/${hash}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();if(!d.id)return null;
+  let blockTime=null;
+  if(d.meta?.blockID){try{const br=await fetch(`https://mainnet.vechain.org/blocks/${d.meta.blockID}`,{signal:abortIn(6000)});
+    if(br.ok){const bd=await br.json();blockTime=toPanama(bd.timestamp);}
+  }catch{}}
+  const clauses=d.clauses??[];
+  const vetClause=clauses.find(c=>(!c.data||c.data==='0x')&&c.value&&c.value!=='0x0');
+  const vetAmt=vetClause?parseInt(vetClause.value,16)/1e18:0;
+  return{blockTime,blockNumber:d.meta?.blockNumber,
+    from:d.origin??'N/A',to:vetClause?.to??(clauses[0]?.to??'N/A'),
+    nativeValue:vetAmt>0?`${vetAmt.toFixed(6)} VET`:'0 VET',
+    clauses:clauses.length,gas:d.gas?.toLocaleString()??'N/A',
+    explorerUrl:`https://insight.vecha.in/#/transactions/${hash}`,confirmed:true,tokenTransfers:[]};
+}
+/* ── Address fetch ── */
+async function addrCosmosSDK(address,chain){
+  const r=await fetch(`${chain.lcd}/cosmos/bank/v1beta1/balances/${address}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();
+  const native=d.balances?.find(b=>b.denom===chain.denom);
+  const bal=native?(parseInt(native.amount)/Math.pow(10,chain.denomExp)).toFixed(chain.denomExp):'0';
+  return{balance:`${bal} ${chain.symbol}`,txCount:'—',explorerUrl:chain.addrExplorer+address};
+}
+async function addrKaspa(address){
+  const r=await fetch(`https://api.kaspa.org/addresses/${address}/balance`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();
+  return{balance:`${((d.balance??0)/1e8).toFixed(8)} KAS`,txCount:'—',
+    explorerUrl:`https://explorer.kaspa.org/addresses/${address}`};
+}
+async function addrFlow(address){
+  const r=await fetch(`https://rest-mainnet.onflow.org/v1/accounts/${address}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();if(!d.address)return null;
+  return{balance:`${(parseInt(d.balance??0)/1e8).toFixed(8)} FLOW`,txCount:'—',
+    explorerUrl:`https://flowscan.io/account/${address}`};
+}
+async function addrVeChain(address){
+  const r=await fetch(`https://mainnet.vechain.org/accounts/${address}`,{signal:abortIn(10000)});
+  if(!r.ok)return null;const d=await r.json();if(!d.balance)return null;
+  return{balance:`${(parseInt(d.balance,16)/1e18).toFixed(6)} VET`,txCount:'—',
+    explorerUrl:`https://insight.vecha.in/#/accounts/${address}`};
+}
 async function txSui(hash){
   const r=await fetch('https://fullnode.mainnet.sui.io',{method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1233,6 +1369,10 @@ async function dispatchTxSearch(chain,hash){
     case'algorand':   return txAlgorand(hash);
     case'hedera':     return txHedera(hash);
     case'multiversx': return txMultiversX(hash);
+    case'cosmos_sdk': return txCosmosSDK(hash,chain);
+    case'kaspa':      return txKaspa(hash);
+    case'flow':       return txFlow(hash);
+    case'vechain':    return txVeChain(hash);
     default:          return null;
   }
 }
@@ -1388,6 +1528,10 @@ async function dispatchAddrSearch(chain,address,addrType){
   if(chain.id==='algorand')  return addrAlgorand(address);
   if(chain.id==='hedera')    return addrHedera(address);
   if(chain.id==='multiversx')return addrMultiversX(address);
+  if(chain.type==='cosmos_sdk')return addrCosmosSDK(address,chain);
+  if(chain.id==='kaspa')      return addrKaspa(address);
+  if(chain.id==='flow')       return addrFlow(address);
+  if(chain.id==='vechain')    return addrVeChain(address);
   return null;
 }
 
@@ -1629,7 +1773,7 @@ function renderEmpty(){
 function renderWelcome(){
   return`<div class="welcome">
     <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
-    <p>Paste a <strong style="color:var(--text2)">transaction hash</strong>, a <strong style="color:var(--addr)">wallet address</strong>, or a <strong style="color:var(--token)">domain name</strong> (ENS / Unstoppable) — automatic detection, 50 chains.</p>
+    <p>Paste a <strong style="color:var(--text2)">transaction hash</strong>, a <strong style="color:var(--addr)">wallet address</strong>, or a <strong style="color:var(--token)">domain name</strong> (ENS / Unstoppable) — automatic detection, 64 chains.</p>
   </div>
   <div class="chain-strip">${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}</div>`;
 }
