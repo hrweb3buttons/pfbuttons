@@ -141,6 +141,24 @@
   .copy-btn:active { transform:scale(.85); }
   .copy-btn i { font-size:11px; }
 
+  /* history */
+  .history-section { margin-top:1.75rem; }
+  .history-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .history-header-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); display:flex; align-items:center; gap:5px; }
+  .history-clear { background:none; border:none; cursor:pointer; font-size:11px; color:var(--text3); font-family:var(--sans); padding:2px 6px; border-radius:4px; transition:color .15s; }
+  .history-clear:hover { color:var(--danger); }
+  .history-item { display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:border-color .15s,background .15s; margin-bottom:5px; }
+  .history-item:hover { border-color:var(--border2); background:var(--bg3); }
+  .history-item:last-child { margin-bottom:0; }
+  .history-icon { color:var(--text3); flex-shrink:0; font-size:13px; }
+  .history-input { font-family:var(--mono); font-size:12px; color:var(--text2); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .history-time { font-size:11px; color:var(--text3); flex-shrink:0; white-space:nowrap; }
+  .history-chains { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+  .history-item.no-match .history-input { color:var(--text3); }
+  .share-btn { background:none; border:1px solid var(--border2); cursor:pointer; color:var(--text3); font-size:11px; font-family:var(--sans); padding:0 10px; height:46px; border-radius:var(--radius); display:flex; align-items:center; gap:5px; transition:color .15s,border-color .15s; flex-shrink:0; }
+  .share-btn:hover { color:var(--accent); border-color:var(--accent); }
+  .share-btn.copied { color:var(--success); border-color:var(--success); }
+
   @media(max-width:600px) {
     .header h1 { font-size:17px; }
     .chain-grid { grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); }
@@ -165,6 +183,9 @@
       autocomplete="off" autocorrect="off" spellcheck="false" />
     <button class="search-btn" id="searchBtn" disabled>
       <i class="ti ti-search"></i><span>Search</span>
+    </button>
+    <button class="share-btn" id="shareBtn" title="Copy shareable link" style="display:none">
+      <i class="ti ti-link"></i><span>Share</span>
     </button>
   </div>
   <div class="hint" id="hintBox" style="display:none">
@@ -392,6 +413,27 @@ let resolvedDomain='';    // original domain name if ENS/UD resolution was used
 let resolutionError='';   // message shown when domain resolution fails
 const onDemandLabels={};  // lowercase_address → {label,type} fetched at search time
 const ofacFlags=new Set(); // lowercase addresses confirmed on OFAC SDN list
+
+/* ── Session history (localStorage, capped at 20) ── */
+const HISTORY_KEY='txlookup_history';
+const HISTORY_MAX=20;
+
+function loadHistory(){
+  try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');}catch{return[];}
+}
+function saveHistory(entry){
+  try{
+    let h=loadHistory().filter(e=>e.input!==entry.input); // deduplicate
+    h.unshift(entry);
+    localStorage.setItem(HISTORY_KEY,JSON.stringify(h.slice(0,HISTORY_MAX)));
+  }catch{}
+}
+function clearHistory(){try{localStorage.removeItem(HISTORY_KEY);}catch{}render();}
+function rerunSearch(raw){
+  hashInput.value=raw;
+  hashInput.dispatchEvent(new Event('input'));
+  searchBtn.click();
+}
 
 /* ══════════════════════════════════════════════
    UTILITIES
@@ -1770,12 +1812,43 @@ function renderEmpty(){
   </div>`;
 }
 
+function renderHistory(){
+  const hist=loadHistory();
+  if(!hist.length)return'';
+  return`<div class="history-section">
+    <div class="history-header">
+      <span class="history-header-label"><i class="ti ti-history"></i> Recent lookups</span>
+      <button class="history-clear" onclick="clearHistory()">Clear all</button>
+    </div>
+    ${hist.map(e=>{
+      const rel=relativeTime(Math.floor(e.timestamp/1000));
+      const icon=e.mode==='address'?'ti-wallet':e.mode==='domain'?'ti-world':'ti-arrows-exchange';
+      const display=e.resolvedDomain||e.input;
+      const matched=e.matched||[];
+      const shown=matched.slice(0,5);
+      const extra=matched.length-5;
+      const hasMatch=matched.length>0;
+      return`<div class="history-item${hasMatch?'':' no-match'}" onclick="rerunSearch('${escHtml(e.input).replace(/'/g,'\\x27')}')">
+        <i class="ti ${icon} history-icon"></i>
+        <span class="history-input" title="${escHtml(display)}">${escHtml(display)}</span>
+        <div class="history-chains">
+          ${shown.map(id=>{const c=CHAINS.find(ch=>ch.id===id);return c?`<span style="font-size:9px;font-weight:700;color:${c.color}">${c.symbol}</span>`:''}).join('')}
+          ${extra>0?`<span style="font-size:9px;color:var(--text3)">+${extra}</span>`:''}
+          ${!hasMatch?`<span style="font-size:10px;color:var(--text3)">no match</span>`:''}
+        </div>
+        <span class="history-time">${rel}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
 function renderWelcome(){
   return`<div class="welcome">
     <i class="ti ti-topology-star-ring-3" style="color:var(--text3)"></i>
     <p>Paste a <strong style="color:var(--text2)">transaction hash</strong>, a <strong style="color:var(--addr)">wallet address</strong>, or a <strong style="color:var(--token)">domain name</strong> (ENS / Unstoppable) — automatic detection, 64 chains.</p>
   </div>
-  <div class="chain-strip">${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}</div>`;
+  <div class="chain-strip">${CHAINS.map(c=>`<span class="chain-pill" style="border-color:${hexCol(c.color,.35)};color:${c.color}">${c.name}</span>`).join('')}</div>
+  ${renderHistory()}`;
 }
 
 function render(){
@@ -1799,6 +1872,7 @@ function render(){
 ══════════════════════════════════════════════ */
 const hashInput=document.getElementById('hashInput');
 const searchBtn=document.getElementById('searchBtn');
+const shareBtn=document.getElementById('shareBtn');
 const hintBox=document.getElementById('hintBox');
 const hintIcon=document.getElementById('hintIcon');
 const hintText=document.getElementById('hintText');
@@ -1806,6 +1880,7 @@ const hintText=document.getElementById('hintText');
 hashInput.addEventListener('input',()=>{
   const h=hashInput.value.trim();
   searchBtn.disabled=!h||searching;
+  shareBtn.style.display='none';
   const det=h?detectInput(h):null;
   if(det?.hint){
     hintBox.className=`hint ${det.mode==='address'?'addr-hint':'tx-hint'}`;
@@ -1816,42 +1891,36 @@ hashInput.addEventListener('input',()=>{
 });
 hashInput.addEventListener('keydown',e=>{if(e.key==='Enter')searchBtn.click();});
 
-searchBtn.addEventListener('click',async()=>{
-  const input=hashInput.value.trim();
-  if(!input||searching)return;
-  searching=true;searchBtn.disabled=true;
-  statuses={};results={};resolutionError='';resolvedDomain='';currentInput=input;
+/* Share button: copies current URL to clipboard */
+shareBtn.addEventListener('click',async()=>{
+  try{
+    await navigator.clipboard.writeText(window.location.href);
+    const icon=shareBtn.querySelector('i'),lbl=shareBtn.querySelector('span');
+    const oi=icon.className,ol=lbl.textContent;
+    shareBtn.classList.add('copied');icon.className='ti ti-check';lbl.textContent='Copied!';
+    setTimeout(()=>{shareBtn.classList.remove('copied');icon.className=oi;lbl.textContent=ol;},2000);
+  }catch{}
+});
 
-  const det=detectInput(input);
+/* Auto-run search from shareable URL on page load */
+(()=>{
+  const q=new URLSearchParams(window.location.search).get('q');
+  if(q){hashInput.value=q;hashInput.dispatchEvent(new Event('input'));setTimeout(()=>searchBtn.click(),80);}
+})();
 
-  if(det?.mode==='address'&&(det.addrType==='ens'||det.addrType==='ud')){
-    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Resolving…</span>`;
-    resolvedDomain=input;
-    const resolved=det.addrType==='ens'?await resolveENS(input):await resolveUD(input);
-    if(!resolved){
-      resolutionError=`Could not resolve "${input}" — domain may not exist or the resolver is temporarily unavailable.`;
-      appMode='address';activeChains=[];
-      searching=false;searchBtn.disabled=false;
-      searchBtn.innerHTML=`<i class="ti ti-search"></i> <span>Search</span>`;
-      render();return;
-    }
-    currentInput=resolved;
-    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
-    await runAddrSearch(resolved,'evm');
-  }else if(det?.mode==='address'){
-    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
-    await runAddrSearch(input,det.addrType);
-  }else{
-    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
-    await runTxSearch(input);
+/* Browser back/forward: restore previous search or return to welcome */
+window.addEventListener('popstate',e=>{
+  const q=e.state?.q??new URLSearchParams(window.location.search).get('q');
+  if(q){hashInput.value=q;hashInput.dispatchEvent(new Event('input'));searchBtn.click();}
+  else{
+    appMode='idle';statuses={};results={};resolvedDomain='';resolutionError='';
+    hashInput.value='';hintBox.style.display='none';shareBtn.style.display='none';
+    searchBtn.disabled=true;render();
   }
-
-  searching=false;searchBtn.disabled=false;
-  searchBtn.innerHTML=`<i class="ti ti-search"></i> <span>Search</span>`;
-  render();
 });
 
 render();
+
 </script>
 </body>
 </html>
