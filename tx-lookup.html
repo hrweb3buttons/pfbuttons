@@ -1891,6 +1891,59 @@ hashInput.addEventListener('input',()=>{
 });
 hashInput.addEventListener('keydown',e=>{if(e.key==='Enter')searchBtn.click();});
 
+searchBtn.addEventListener('click',async()=>{
+  const input=hashInput.value.trim();
+  if(!input||searching)return;
+  searching=true;searchBtn.disabled=true;shareBtn.style.display='none';
+  statuses={};results={};resolutionError='';resolvedDomain='';currentInput=input;
+
+  const det=detectInput(input);
+
+  if(det?.mode==='address'&&(det.addrType==='ens'||det.addrType==='ud')){
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Resolving…</span>`;
+    resolvedDomain=input;
+    const resolved=det.addrType==='ens'?await resolveENS(input):await resolveUD(input);
+    if(!resolved){
+      resolutionError=`Could not resolve "${input}" — domain may not exist or the resolver is temporarily unavailable.`;
+      appMode='address';activeChains=[];
+      searching=false;searchBtn.disabled=false;
+      searchBtn.innerHTML=`<i class="ti ti-search"></i> <span>Search</span>`;
+      render();return;
+    }
+    currentInput=resolved;
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
+    await runAddrSearch(resolved,'evm');
+  }else if(det?.mode==='address'){
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
+    await runAddrSearch(input,det.addrType);
+  }else{
+    searchBtn.innerHTML=`<i class="ti ti-loader-2 spin"></i> <span>Searching…</span>`;
+    await runTxSearch(input);
+  }
+
+  // Save to history
+  const matched=activeChains.filter(c=>statuses[c.id]==='found').map(c=>c.id);
+  saveHistory({
+    input,
+    mode:resolvedDomain?'domain':appMode,
+    timestamp:Date.now(),
+    matched,
+    resolvedDomain:resolvedDomain||'',
+  });
+
+  // Update URL so this search is shareable
+  const url=new URL(window.location.href);
+  url.searchParams.set('q',input);
+  window.history.pushState({q:input},'',url);
+
+  // Show share button
+  shareBtn.style.display='flex';
+
+  searching=false;searchBtn.disabled=false;
+  searchBtn.innerHTML=`<i class="ti ti-search"></i> <span>Search</span>`;
+  render();
+});
+
 /* Share button: copies current URL to clipboard */
 shareBtn.addEventListener('click',async()=>{
   try{
