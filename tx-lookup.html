@@ -394,7 +394,7 @@ const FIELD_LABELS={
 };
 const MONO_FIELDS=new Set(["from","to"]);
 const HIDE_FIELDS=new Set(["explorerUrl","confirmed","tokenTransfers","value","blockTime","_usd","isContract"]);
-const ADDR_HIDE=new Set(["explorerUrl","balance","txCount","totalReceived","totalSent","isContract","accountType"]);
+const ADDR_HIDE=new Set(["explorerUrl","balance","txCount","totalReceived","totalSent","isContract","accountType","_tokenBalances"]);
 
 const STATUS_CFG={
   idle:      {icon:"ti-circle",       cls:"idle",      label:"Ready"},
@@ -491,6 +491,83 @@ const COINGECKO_IDS={
   'xDAI':'gnosis',    'IOTX':'iotex',       'KAIA':'kaia',
   'OKB':'okb',        'frxETH':'frax-ether','PLS':'pulsechain',
   'RBTC':'rootstock', 'S':'sonic-3',        'BASE':'ethereum',
+};
+
+/* ── Curated token watchlist for address balance checks ──
+   Only stablecoins and high-utility tokens per chain.
+   balanceOf calls use public RPCs — no API key required.
+─────────────────────────────────────────────────────── */
+const TOKEN_WATCHLIST={
+  ethereum:[
+    {a:'0xdac17f958d2ee523a2206206994597c13d831ec7',s:'USDT',  d:6},
+    {a:'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',s:'USDC',  d:6},
+    {a:'0x6b175474e89094c44da98b954eedeac495271d0f',s:'DAI',   d:18},
+    {a:'0x4fabb145d64652a948d72533023f6e7a623c7c53',s:'BUSD',  d:18},
+    {a:'0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',s:'WBTC',  d:8},
+  ],
+  bsc:[
+    {a:'0x55d398326f99059ff775485246999027b3197955',s:'USDT',  d:18},
+    {a:'0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',s:'USDC',  d:18},
+    {a:'0xe9e7cea3dedca5984780bafc599bd69add087d56',s:'BUSD',  d:18},
+    {a:'0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3',s:'DAI',   d:18},
+  ],
+  polygon:[
+    {a:'0xc2132d05d31c914a87c6611c10748aeb04b58e8f',s:'USDT',  d:6},
+    {a:'0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',s:'USDC',  d:6},
+    {a:'0x2791bca1f2de4661ed88a30c99a7a9449aa84174',s:'USDC.e',d:6},
+    {a:'0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',s:'DAI',   d:18},
+  ],
+  arbitrum:[
+    {a:'0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',s:'USDT',  d:6},
+    {a:'0xaf88d065e77c8cc2239327c5edb3a432268e5831',s:'USDC',  d:6},
+    {a:'0xff970a61a04b1ca14834a43f5de4533ebddb5cc8',s:'USDC.e',d:6},
+    {a:'0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',s:'DAI',   d:18},
+  ],
+  optimism:[
+    {a:'0x94b008aa00579c1307b0ef2c499ad98a8ce58e58',s:'USDT',  d:6},
+    {a:'0x0b2c639c533813f4aa9d7837caf62653d097ff85',s:'USDC',  d:6},
+    {a:'0x7f5c764cbc14f9669b88837ca1490cca17c31607',s:'USDC.e',d:6},
+    {a:'0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',s:'DAI',   d:18},
+  ],
+  base:[
+    {a:'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',s:'USDC',  d:6},
+    {a:'0xfde4c96c8593536e31f229ea8f37b2ada2699bb2',s:'USDT',  d:6},
+    {a:'0x50c5725949a6f0c72e6c4a641f24049a917db0cb',s:'DAI',   d:18},
+  ],
+  avalanche:[
+    {a:'0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7',s:'USDT',  d:6},
+    {a:'0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',s:'USDC',  d:6},
+    {a:'0xd586e7f844cea2f87f50152665bcbc2c279d8d70',s:'DAI',   d:18},
+  ],
+  fantom:[
+    {a:'0x049d68029688eabf473097a2fc38ef61633a3c7a',s:'USDT',  d:6},
+    {a:'0x04068da6c83afcfa0e13ba15a6696662335d5b75',s:'USDC',  d:6},
+    {a:'0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e',s:'DAI',   d:18},
+  ],
+  gnosis:[
+    {a:'0x4ecaba5870353805a9f068101a40e0f32ed605c6',s:'USDT',  d:6},
+    {a:'0xddafbb505ad214d7b80b1f830fccc89b60fb7a83',s:'USDC',  d:6},
+  ],
+  linea:[
+    {a:'0xa219439258ca9da29e9cc4ce5596924745e12b93',s:'USDT',  d:6},
+    {a:'0x176211869ca2b568f2a7d4ee941e073a821ee1ff',s:'USDC',  d:6},
+  ],
+  zksync:[
+    {a:'0x493257fd37edb34451f62edf8d2a0c418852ba4',s:'USDT',  d:6},
+    {a:'0x3355df6d4c9c3035724fd0e3914de96a5a83aaf',s:'USDC',  d:6},
+  ],
+  scroll:[
+    {a:'0xf55bec9cafdbe8730f096aa55dad6d22d44099df',s:'USDT',  d:6},
+    {a:'0x06efdbff2a14a7c8e15944d1f4a48f9f95f663a4',s:'USDC',  d:6},
+  ],
+  mantle:[
+    {a:'0x201eba5cc46d216ce6dc03f6a759e8e766e956ae',s:'USDT',  d:6},
+    {a:'0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df5',s:'USDC',  d:6},
+  ],
+  cronos:[
+    {a:'0x66e428c3f67a68878562e79a0234c1f83c208770',s:'USDT',  d:6},
+    {a:'0xc21223249ca28397b4b6541dff0fd31fb6e66333',s:'USDC',  d:6},
+  ],
 };
 
 async function fetchHistoricalUSD(symbol,secs){
@@ -777,6 +854,29 @@ async function applyOnDemandLabel(addr,chainId){
   }
 }
 
+/* ── Token balance fetching (ERC-20 balanceOf via RPC) ── */
+async function fetchAndApplyTokenBalances(chainId,address,rpc){
+  const tokens=TOKEN_WATCHLIST[chainId];
+  if(!tokens?.length||!rpc)return;
+  const data='0x70a08231'+address.slice(2).padStart(64,'0'); // balanceOf(address)
+  const balances=await Promise.allSettled(tokens.map(async t=>{
+    try{
+      const r=await fetch(rpc,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to:t.a,data},'latest']}),
+        signal:abortIn(5000)});
+      const d=await r.json();
+      const raw=d.result;
+      if(!raw||raw==='0x')return null;
+      if(BigInt(raw)===0n)return null;
+      return{symbol:t.s,amount:formatTokenAmt(raw,t.d)};
+    }catch{return null;}
+  }));
+  const nonZero=balances.filter(r=>r.status==='fulfilled'&&r.value).map(r=>r.value);
+  if(nonZero.length&&results[chainId]){
+    results[chainId]._tokenBalances=nonZero;
+    render();
+  }
+}
 function decodeABIString(hex){
   if(!hex||hex==='0x'||hex.length<4)return null;
   const d=hex.startsWith('0x')?hex.slice(2):hex;
@@ -1614,8 +1714,11 @@ async function runAddrSearch(address,addrType){
       statuses[chain.id]=r?'found':'not_found';
       if(r){
         results[chain.id]=r;
-        // Non-blocking: on-demand label for the searched address
-        if(chain.type==='evm') applyOnDemandLabel(address,chain.id);
+        // Non-blocking: on-demand label + token balances for EVM chains
+        if(chain.type==='evm'){
+          applyOnDemandLabel(address,chain.id);
+          fetchAndApplyTokenBalances(chain.id,address,chain.rpc);
+        }
       }
     }
     catch{statuses[chain.id]='error';}
@@ -1777,6 +1880,12 @@ function renderAddrCards(){
         ${extras.map(([k,v])=>`<div><div class="field-label">${FIELD_LABELS[k]??k}</div><div class="field-value">${escHtml(String(v))}</div></div>`).join('')}
       </div>
       <div class="addresses-section"><hr class="divider"/>
+        ${r._tokenBalances?.length?`<div style="margin-bottom:12px">
+          <div class="field-label" style="margin-bottom:6px">Token balances</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${r._tokenBalances.map(t=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 9px;border-radius:6px;background:var(--token-bg);border:1px solid var(--token-border)"><span style="font-weight:700;color:var(--token)">${escHtml(t.symbol)}</span><span style="color:var(--text);font-family:var(--mono)">${escHtml(t.amount)}</span></span>`).join('')}
+          </div>
+        </div>`:''}
         <div class="field-label" style="margin-bottom:6px">Full address</div>
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
           <div class="address-val" style="font-size:12px">${escHtml(currentInput)}</div>
