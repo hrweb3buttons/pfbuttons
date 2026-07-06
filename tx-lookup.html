@@ -159,6 +159,29 @@
   .share-btn:hover { color:var(--accent); border-color:var(--accent); }
   .share-btn.copied { color:var(--success); border-color:var(--success); }
 
+  /* ── Navigation tabs ── */
+  .nav-tabs{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:3px;margin-bottom:1.25rem;}
+  .nav-tab{flex:1;padding:7px 16px;border:none;background:none;cursor:pointer;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text3);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .nav-tab.active{background:var(--bg3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .nav-tab:hover:not(.active){color:var(--text2);}
+  /* ── Gas Tracker ── */
+  .gas-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;}
+  .gas-refresh-btn{background:none;border:1px solid var(--border2);border-radius:8px;cursor:pointer;color:var(--text3);font-size:12px;padding:5px 12px;font-family:var(--sans);transition:color .15s,border-color .15s;display:flex;align-items:center;gap:5px;}
+  .gas-refresh-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .gas-refresh-btn.spinning i{animation:spin .9s linear infinite;}
+  .gas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+  .gas-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 16px;}
+  .gas-card-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .gas-badge-sm{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;}
+  .gas-chain-nm{font-size:14px;font-weight:600;}
+  .gas-base-fee{font-size:11px;color:var(--text3);margin-top:1px;}
+  .gas-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
+  .gas-tier{text-align:center;padding:8px 4px;border-radius:8px;background:var(--bg3);}
+  .gas-tier-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:2px;margin-bottom:5px;}
+  .gas-tier-gwei{font-size:17px;font-weight:700;font-family:var(--mono);line-height:1;}
+  .gas-tier-usd{font-size:11px;color:var(--text2);margin-top:4px;}
+  .gas-note{text-align:center;font-size:10px;color:var(--text3);margin-top:7px;}
+
   @media(max-width:600px) {
     .header h1 { font-size:17px; }
     .chain-grid { grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); }
@@ -177,7 +200,11 @@
       <p>Paste a transaction hash <em>or</em> a wallet address — 64 chains, automatic detection.</p>
     </div>
   </div>
-  <div class="search-row">
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tabLookup" onclick="switchTab('lookup')"><i class="ti ti-topology-ring-3"></i> Lookup</button>
+    <button class="nav-tab" id="tabGas" onclick="switchTab('gas')"><i class="ti ti-gas-station"></i> Gas Tracker</button>
+  </div>
+  <div class="search-row" id="searchRow">
     <input class="search-input" id="hashInput" type="text"
       placeholder="Paste a tx hash or wallet address…"
       autocomplete="off" autocorrect="off" spellcheck="false" />
@@ -348,7 +375,7 @@ const CHAINS=[
    PolygonScan, Arbiscan, etc.
 ══════════════════════════════════════════════ */
 const CFG={
-  ETHERSCAN_KEY:'OubdTojeMFBrnQVO',  // ← paste key here
+  ETHERSCAN_KEY:'U6J74NTKYVNDFDW9CUFZMHX6UYX1T2H1QW',  // ← paste key here
 };
 
 /* Blockscout API base URLs — returns public_tags / name_tag for free */
@@ -404,15 +431,35 @@ const STATUS_CFG={
   error:     {icon:"ti-alert-circle", cls:"error",     label:"Unavailable"},
 };
 
+/* Gas Tracker chains */
+const GAS_CHAINS=[
+  {id:'ethereum', name:'Ethereum',   symbol:'ETH', color:'#627EEA',rpc:'https://ethereum.publicnode.com',          coinId:'ethereum'},
+  {id:'bsc',      name:'BNB Chain',  symbol:'BNB', color:'#F0B90B',rpc:'https://bsc.publicnode.com',               coinId:'binancecoin'},
+  {id:'polygon',  name:'Polygon',    symbol:'POL', color:'#7B3FE4',rpc:'https://polygon-bor.publicnode.com',       coinId:'matic-network'},
+  {id:'arbitrum', name:'Arbitrum',   symbol:'ETH', color:'#28A0F0',rpc:'https://arbitrum-one.publicnode.com',      coinId:'ethereum'},
+  {id:'optimism', name:'Optimism',   symbol:'ETH', color:'#FF0420',rpc:'https://optimism.publicnode.com',          coinId:'ethereum'},
+  {id:'base',     name:'Base',       symbol:'ETH', color:'#0052FF',rpc:'https://base.publicnode.com',              coinId:'ethereum'},
+  {id:'avalanche',name:'Avalanche',  symbol:'AVAX',color:'#E84142',rpc:'https://avalanche-c-chain.publicnode.com', coinId:'avalanche-2'},
+  {id:'fantom',   name:'Fantom',     symbol:'FTM', color:'#1969FF',rpc:'https://rpc.ankr.com/fantom',             coinId:'fantom'},
+  {id:'cronos',   name:'Cronos',     symbol:'CRO', color:'#002D74',rpc:'https://evm.cronos.org',                  coinId:'crypto-com-chain'},
+];
+
 /* State */
 let appMode='idle'; // 'idle'|'tx'|'address'
 let statuses={}, results={}, searching=false;
-let activeChains=[];      // chains participating in current search
-let currentInput='';      // raw input being searched (resolved address after domain lookup)
-let resolvedDomain='';    // original domain name if ENS/UD resolution was used
-let resolutionError='';   // message shown when domain resolution fails
-const onDemandLabels={};  // lowercase_address → {label,type} fetched at search time
-const ofacFlags=new Set(); // lowercase addresses confirmed on OFAC SDN list
+let activeChains=[];
+let currentInput='';
+let resolvedDomain='';
+let resolutionError='';
+const onDemandLabels={};
+const ofacFlags=new Set();
+/* Gas tracker state */
+let activeTab='lookup';  // 'lookup'|'gas'
+let gasData={};          // chain id → gas result
+let gasPrices={};        // coinId → {usd}
+let gasLastUpdate=null;
+let gasLoading=false;
+let gasRefreshTimer=null;
 
 /* ── Session history (localStorage, capped at 20) ── */
 const HISTORY_KEY='txlookup_history';
@@ -1921,6 +1968,112 @@ function renderEmpty(){
   </div>`;
 }
 
+/* ══════════════════════════════════════════════
+   GAS TRACKER
+══════════════════════════════════════════════ */
+function fmtGwei(g){
+  if(g===null||g===undefined)return'—';
+  if(g<0.001)return'<0.001';
+  if(g<1)return g.toFixed(3).replace(/\.?0+$/,'');
+  if(g<10)return g.toFixed(2).replace(/\.?0+$/,'');
+  if(g<100)return g.toFixed(1).replace(/\.?0+$/,'');
+  return Math.round(g).toLocaleString();
+}
+async function fetchChainGas(chain){
+  try{
+    const r=await fetch(chain.rpc,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_feeHistory',params:[10,'pending',[10,50,90]]}),
+      signal:abortIn(7000)});
+    const d=await r.json();const fh=d.result;
+    if(fh?.baseFeePerGas?.length){
+      const base=parseInt(fh.baseFeePerGas[fh.baseFeePerGas.length-1],16);
+      const rewards=fh.reward??[];
+      const tip=(pi)=>{if(!rewards.length)return 0;
+        const t=rewards.map(b=>parseInt(b[pi]??'0x0',16)).sort((a,b)=>a-b);
+        return t[Math.floor(t.length/2)];};
+      return{baseFee:base/1e9,slow:(base+tip(0))/1e9,standard:(base+tip(1))/1e9,fast:(base+tip(2))/1e9,eip1559:true};
+    }
+  }catch{}
+  try{
+    const r=await fetch(chain.rpc,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_gasPrice',params:[]}),signal:abortIn(7000)});
+    const d=await r.json();
+    if(d.result){const p=parseInt(d.result,16)/1e9;
+      return{baseFee:null,slow:p*0.85,standard:p,fast:p*1.2,eip1559:false};}
+  }catch{}
+  return null;
+}
+async function fetchGasPrices(){
+  try{
+    const ids=[...new Set(GAS_CHAINS.map(c=>c.coinId))].join(',');
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`,{signal:abortIn(9000)});
+    if(!r.ok)return{};return await r.json();
+  }catch{return{};}
+}
+async function refreshGasTracker(){
+  if(gasLoading)return;
+  gasLoading=true;if(activeTab==='gas')renderGasTracker();
+  const[pr,...gr]=await Promise.allSettled([fetchGasPrices(),...GAS_CHAINS.map(c=>fetchChainGas(c))]);
+  if(pr.status==='fulfilled')gasPrices=pr.value;
+  GAS_CHAINS.forEach((c,i)=>{gasData[c.id]=gr[i].status==='fulfilled'?gr[i].value:null;});
+  gasLastUpdate=Date.now();gasLoading=false;
+  if(activeTab==='gas')renderGasTracker();
+}
+function startGasRefresh(){refreshGasTracker();gasRefreshTimer=setInterval(refreshGasTracker,30000);}
+function stopGasRefresh(){if(gasRefreshTimer){clearInterval(gasRefreshTimer);gasRefreshTimer=null;}}
+
+function renderGasCard(chain){
+  const d=gasData[chain.id];
+  const usdPerNative=gasPrices[chain.coinId]?.usd??null;
+  const badge=`<div class="gas-badge-sm" style="background:${hexCol(chain.color,.12)};border:2px solid ${chain.color};color:${chain.color}">${chain.symbol.slice(0,4)}</div>`;
+  const tierHtml=(gweiVal,color)=>{
+    const usd=usdPerNative&&gweiVal!=null?(()=>{const c=(gweiVal*1e-9)*21000*usdPerNative;return c<0.01?'<$0.01':`$${c<1?c.toFixed(3):c.toFixed(2)}`;})():null;
+    return`<div class="gas-tier-gwei" style="color:${color}">${escHtml(fmtGwei(gweiVal))}</div>${usd?`<div class="gas-tier-usd">${usd}</div>`:''}`;
+  };
+  if(!d)return`<div class="gas-card"><div class="gas-card-hdr">${badge}<div class="gas-chain-nm">${escHtml(chain.name)}</div></div>
+    <div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">${gasLoading?'Loading…':'Unavailable'}</div></div>`;
+  return`<div class="gas-card">
+    <div class="gas-card-hdr">${badge}
+      <div><div class="gas-chain-nm">${escHtml(chain.name)}</div>
+        ${d.baseFee!=null?`<div class="gas-base-fee">Base: ${escHtml(fmtGwei(d.baseFee))} Gwei</div>`:''}
+      </div>
+    </div>
+    <div class="gas-tiers">
+      <div class="gas-tier"><div class="gas-tier-lbl"><i class="ti ti-clock"></i> Slow</div>${tierHtml(d.slow,'var(--text2)')}</div>
+      <div class="gas-tier"><div class="gas-tier-lbl"><i class="ti ti-gauge"></i> Avg</div>${tierHtml(d.standard,'var(--warning)')}</div>
+      <div class="gas-tier"><div class="gas-tier-lbl"><i class="ti ti-bolt"></i> Fast</div>${tierHtml(d.fast,'var(--success)')}</div>
+    </div>
+    <div class="gas-note">Gwei · ~21k gas (ETH transfer)</div>
+  </div>`;
+}
+function renderGasTracker(){
+  const app=document.getElementById('app');
+  const age=gasLastUpdate?PANAMA_T.format(new Date(gasLastUpdate))+' Panama':'—';
+  app.innerHTML=`
+    <div class="gas-header-row">
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Current gas prices</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Last updated: ${escHtml(age)} · auto-refreshes every 30s</div>
+      </div>
+      <button class="gas-refresh-btn${gasLoading?' spinning':''}" onclick="refreshGasTracker()">
+        <i class="ti ti-refresh"></i> Refresh
+      </button>
+    </div>
+    <div class="gas-grid">${GAS_CHAINS.map(renderGasCard).join('')}</div>`;
+}
+function switchTab(tab){
+  activeTab=tab;
+  const sr=document.getElementById('searchRow');
+  document.getElementById('tabLookup').classList.toggle('active',tab==='lookup');
+  document.getElementById('tabGas').classList.toggle('active',tab==='gas');
+  if(tab==='gas'){
+    sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
+    if(!gasRefreshTimer)startGasRefresh();else renderGasTracker();
+  }else{
+    sr.style.display='';stopGasRefresh();render();
+  }
+}
+
 function renderHistory(){
   const hist=loadHistory();
   if(!hist.length)return'';
@@ -1961,6 +2114,7 @@ function renderWelcome(){
 }
 
 function render(){
+  if(activeTab==='gas'){renderGasTracker();return;}
   const app=document.getElementById('app');
   if(appMode==='idle'){app.innerHTML=renderWelcome();return;}
   // Resolution error: show error without a chain grid
@@ -1987,6 +2141,7 @@ const hintIcon=document.getElementById('hintIcon');
 const hintText=document.getElementById('hintText');
 
 hashInput.addEventListener('input',()=>{
+  if(activeTab==='gas')switchTab('lookup');
   const h=hashInput.value.trim();
   searchBtn.disabled=!h||searching;
   shareBtn.style.display='none';
