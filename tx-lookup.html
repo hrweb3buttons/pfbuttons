@@ -181,6 +181,12 @@
   .gas-tier-gwei{font-size:17px;font-weight:700;font-family:var(--mono);line-height:1;}
   .gas-tier-usd{font-size:11px;color:var(--text2);margin-top:4px;}
   .gas-note{text-align:center;font-size:10px;color:var(--text3);margin-top:7px;}
+  /* watch banner */
+  .watch-banner{display:flex;align-items:center;gap:10px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;padding:9px 14px;margin-bottom:12px;}
+  .watch-banner.active{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.25);}
+  .watch-btn{background:none;border:1px solid var(--border2);border-radius:6px;cursor:pointer;font-family:var(--sans);font-size:11px;padding:3px 10px;color:var(--text2);transition:color .15s,border-color .15s;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;}
+  .watch-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .watch-btn.stop:hover{color:var(--danger);border-color:var(--danger);}
 
   @media(max-width:600px) {
     .header h1 { font-size:17px; }
@@ -375,7 +381,7 @@ const CHAINS=[
    PolygonScan, Arbiscan, etc.
 ══════════════════════════════════════════════ */
 const CFG={
-  ETHERSCAN_KEY:'U6J74NTKYVNDFDW9CUFZMHX6UYX1T2H1QW',  // ← paste key here
+  ETHERSCAN_KEY:'',  // ← paste key here
 };
 
 /* Blockscout API base URLs — returns public_tags / name_tag for free */
@@ -460,6 +466,8 @@ let gasPrices={};        // coinId → {usd}
 let gasLastUpdate=null;
 let gasLoading=false;
 let gasRefreshTimer=null;
+/* Watch-for-confirmation state */
+let watchedTx=null, watchedChains=[], watchTimer=null, watchCountdownTimer=null, watchCountdown=0;
 
 /* ── Session history (localStorage, capped at 20) ── */
 const HISTORY_KEY='txlookup_history';
@@ -1831,7 +1839,7 @@ function renderTokenTransfers(transfers){
 function renderTxCards(){
   const found=activeChains.filter(c=>statuses[c.id]==='found');
   if(!found.length)return'';
-  return`<div class="results-label"><i class="ti ti-circle-check"></i>
+  return`${renderWatchBanner()}<div class="results-label"><i class="ti ti-circle-check"></i>
     Match${found.length>1?'es':''} found on ${found.map(c=>c.name).join(' · ')}
   </div>
   ${found.map(c=>{
@@ -2067,11 +2075,62 @@ function switchTab(tab){
   document.getElementById('tabLookup').classList.toggle('active',tab==='lookup');
   document.getElementById('tabGas').classList.toggle('active',tab==='gas');
   if(tab==='gas'){
+    stopWatching();
     sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
     if(!gasRefreshTimer)startGasRefresh();else renderGasTracker();
   }else{
     sr.style.display='';stopGasRefresh();render();
   }
+}
+
+/* ══════════════════════════════════════════════
+   WATCH FOR CONFIRMATION
+══════════════════════════════════════════════ */
+function startWatching(){
+  if(watchTimer)stopWatching();
+  watchedTx=currentInput;
+  watchedChains=activeChains.filter(c=>statuses[c.id]==='found'&&results[c.id]&&!results[c.id].confirmed);
+  if(!watchedChains.length)return;
+  watchCountdown=30;
+  watchCountdownTimer=setInterval(()=>{
+    watchCountdown=Math.max(0,watchCountdown-1);
+    const el=document.getElementById('watchCountdown');
+    if(el)el.textContent=watchCountdown;
+  },1000);
+  watchTimer=setInterval(pollWatchedTx,30000);
+  render();
+}
+function stopWatching(){
+  clearInterval(watchTimer);clearInterval(watchCountdownTimer);
+  watchTimer=watchCountdownTimer=null;
+  watchedTx=null;watchedChains=[];watchCountdown=0;
+}
+async function pollWatchedTx(){
+  if(!watchedTx||!watchedChains.length){stopWatching();render();return;}
+  await Promise.allSettled(watchedChains.map(async chain=>{
+    try{
+      const r=await dispatchTxSearch(chain,watchedTx);
+      if(r){results[chain.id]=r;if(r.blockTime?.secs)fetchAndApplyUSD(chain.id,r);}
+    }catch{}
+  }));
+  watchedChains=watchedChains.filter(c=>results[c.id]&&!results[c.id].confirmed);
+  watchCountdown=30;
+  if(!watchedChains.length)stopWatching();
+  render();
+}
+function renderWatchBanner(){
+  const pending=activeChains.filter(c=>statuses[c.id]==='found'&&results[c.id]&&!results[c.id].confirmed);
+  if(!pending.length)return'';
+  if(watchTimer)return`<div class="watch-banner active">
+    <i class="ti ti-loader-2 spin" style="color:var(--warning)"></i>
+    <span style="flex:1;font-size:12px;color:var(--text2)">Watching ${watchedChains.length} chain${watchedChains.length!==1?'s':''} for confirmation · next check in <span id="watchCountdown">${watchCountdown}</span>s</span>
+    <button class="watch-btn stop" onclick="stopWatching();render()"><i class="ti ti-player-stop"></i> Stop</button>
+  </div>`;
+  return`<div class="watch-banner">
+    <i class="ti ti-clock" style="color:var(--ts)"></i>
+    <span style="flex:1;font-size:12px;color:var(--text2)">${pending.length} chain${pending.length!==1?'s show':' shows'} this transaction as pending</span>
+    <button class="watch-btn" onclick="startWatching()"><i class="ti ti-refresh"></i> Auto-refresh</button>
+  </div>`;
 }
 
 function renderHistory(){
@@ -2158,6 +2217,7 @@ hashInput.addEventListener('keydown',e=>{if(e.key==='Enter')searchBtn.click();})
 searchBtn.addEventListener('click',async()=>{
   const input=hashInput.value.trim();
   if(!input||searching)return;
+  stopWatching();
   searching=true;searchBtn.disabled=true;shareBtn.style.display='none';
   statuses={};results={};resolutionError='';resolvedDomain='';currentInput=input;
 
@@ -2227,6 +2287,7 @@ shareBtn.addEventListener('click',async()=>{
 
 /* Browser back/forward: restore previous search or return to welcome */
 window.addEventListener('popstate',e=>{
+  stopWatching();
   const q=e.state?.q??new URLSearchParams(window.location.search).get('q');
   if(q){hashInput.value=q;hashInput.dispatchEvent(new Event('input'));searchBtn.click();}
   else{
