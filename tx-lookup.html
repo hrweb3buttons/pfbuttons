@@ -187,6 +187,23 @@
   .watch-btn{background:none;border:1px solid var(--border2);border-radius:6px;cursor:pointer;font-family:var(--sans);font-size:11px;padding:3px 10px;color:var(--text2);transition:color .15s,border-color .15s;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;}
   .watch-btn:hover{color:var(--accent);border-color:var(--accent);}
   .watch-btn.stop:hover{color:var(--danger);border-color:var(--danger);}
+  /* ── Price panel ── */
+  .price-controls{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+  .price-mode-btn{padding:6px 14px;border:1px solid var(--border2);border-radius:6px;background:none;cursor:pointer;font-family:var(--sans);font-size:12px;color:var(--text3);transition:all .15s;display:flex;align-items:center;gap:5px;}
+  .price-mode-btn.active{background:var(--bg3);color:var(--text);border-color:var(--accent);}
+  .price-mode-btn:hover:not(.active){color:var(--text2);}
+  .price-date-input{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:5px 9px;color:var(--text);font-family:var(--sans);font-size:12px;color-scheme:dark;cursor:pointer;}
+  .price-table{width:100%;border-collapse:collapse;}
+  .price-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  .price-table td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+  .price-table tbody tr:last-child td{border-bottom:none;}
+  .price-table tbody tr:hover td{background:rgba(255,255,255,.02);}
+  .price-symbol{font-weight:700;font-family:var(--mono);color:var(--text);width:64px;}
+  .price-name{color:var(--text2);font-size:12px;}
+  .price-value{font-weight:600;font-family:var(--mono);text-align:right;}
+  .price-change{text-align:right;font-size:11px;font-family:var(--mono);width:80px;}
+  .price-up{color:var(--success);}
+  .price-down{color:var(--danger);}
 
   @media(max-width:600px) {
     .header h1 { font-size:17px; }
@@ -209,6 +226,7 @@
   <div class="nav-tabs">
     <button class="nav-tab active" id="tabLookup" onclick="switchTab('lookup')"><i class="ti ti-topology-ring-3"></i> Lookup</button>
     <button class="nav-tab" id="tabGas" onclick="switchTab('gas')"><i class="ti ti-gas-station"></i> Gas Tracker</button>
+    <button class="nav-tab" id="tabPrices" onclick="switchTab('prices')"><i class="ti ti-currency-dollar"></i> Prices</button>
   </div>
   <div class="search-row" id="searchRow">
     <input class="search-input" id="hashInput" type="text"
@@ -466,6 +484,9 @@ let gasPrices={};        // coinId → {usd}
 let gasLastUpdate=null;
 let gasLoading=false;
 let gasRefreshTimer=null;
+/* Price panel state */
+let priceMode='current', priceDate='', priceData={}, priceHistData={};
+let priceLoading=false, priceLastUpdate=null, priceRefreshTimer=null;
 /* Watch-for-confirmation state */
 let watchedTx=null, watchedChains=[], watchTimer=null, watchCountdownTimer=null, watchCountdown=0;
 
@@ -546,7 +567,34 @@ const COINGECKO_IDS={
   'xDAI':'gnosis',    'IOTX':'iotex',       'KAIA':'kaia',
   'OKB':'okb',        'frxETH':'frax-ether','PLS':'pulsechain',
   'RBTC':'rootstock', 'S':'sonic-3',        'BASE':'ethereum',
+  /* Cosmos / newer chains */
+  'ATOM':'cosmos',         'OSMO':'osmosis',          'INJ':'injective-protocol',
+  'TIA':'celestia',        'DYDX':'dydx-chain',       'KAS':'kaspa',
+  'FLOW':'flow',           'VET':'vechain',            'ONE':'harmony',
+  'SUI':'sui',             'APT':'aptos',              'ALGO':'algorand',
+  'HBAR':'hedera-hashgraph','EGLD':'multiversx-egld',
+  /* Token symbols — used for token-transfer USD lookup */
+  'USDT':'tether',         'USDC':'usd-coin',          'DAI':'dai',
+  'BUSD':'binance-usd',    'WBTC':'wrapped-bitcoin',
+  'LINK':'chainlink',      'UNI':'uniswap',            'AAVE':'aave',
+  'SHIB':'shiba-inu',      'COMP':'compound-governance-token',
 };
+
+/* Coins shown in the Price Reference panel */
+const PRICE_COINS=[
+  {s:'BTC', n:'Bitcoin'},        {s:'ETH', n:'Ethereum'},       {s:'BNB', n:'BNB Chain'},
+  {s:'SOL', n:'Solana'},         {s:'XRP', n:'XRP'},            {s:'ADA', n:'Cardano'},
+  {s:'DOGE',n:'Dogecoin'},       {s:'TRX', n:'Tron'},           {s:'DOT', n:'Polkadot'},
+  {s:'AVAX',n:'Avalanche'},      {s:'POL', n:'Polygon'},        {s:'LTC', n:'Litecoin'},
+  {s:'NEAR',n:'NEAR'},           {s:'ATOM',n:'Cosmos'},         {s:'LINK',n:'Chainlink'},
+  {s:'UNI', n:'Uniswap'},        {s:'XMR', n:'Monero'},         {s:'TON', n:'TON'},
+  {s:'EGLD',n:'MultiversX'},     {s:'KAS', n:'Kaspa'},          {s:'XNO', n:'Nano'},
+  {s:'APT', n:'Aptos'},          {s:'SUI', n:'Sui'},            {s:'ALGO',n:'Algorand'},
+  {s:'HBAR',n:'Hedera'},         {s:'VET', n:'VeChain'},        {s:'FLOW',n:'Flow'},
+  {s:'ONE', n:'Harmony'},        {s:'XLM', n:'Stellar'},        {s:'BCH', n:'Bitcoin Cash'},
+  /* Stablecoins */
+  {s:'USDT',n:'Tether'},         {s:'USDC',n:'USD Coin'},       {s:'DAI', n:'Dai'},
+];
 
 /* ── Curated token watchlist for address balance checks ──
    Only stablecoins and high-utility tokens per chain.
@@ -659,6 +707,24 @@ async function fetchAndApplyUSD(chainId,result){
     results[chainId]._usd=formatUSD(amount*price);
     render();
   }
+}
+
+async function fetchAndApplyTokenTransferUSD(chainId,result){
+  if(!result.tokenTransfers?.length||!result.blockTime?.secs)return;
+  let changed=false;
+  for(let i=0;i<result.tokenTransfers.length;i++){
+    const t=result.tokenTransfers[i];
+    if(t._usd!==undefined)continue;
+    if(results[chainId]?.tokenTransfers?.[i])results[chainId].tokenTransfers[i]._usd=null;
+    const price=await fetchHistoricalUSD(t.symbol,result.blockTime.secs);
+    if(price!==null&&results[chainId]?.tokenTransfers?.[i]){
+      const amt=parseFloat(String(t.amount).replace(/,/g,''));
+      if(!isNaN(amt)&&amt>0){
+        results[chainId].tokenTransfers[i]._usd=formatUSD(amt*price);changed=true;
+      }
+    }
+  }
+  if(changed)render();
 }
 
 /* ── Domain name resolution ── */
@@ -1747,7 +1813,10 @@ async function runTxSearch(hash){
         results[chain.id]=r;
         render();
         // Non-blocking: fetch USD price and patch result when ready
-        if(r.blockTime?.secs) fetchAndApplyUSD(chain.id,r);
+        if(r.blockTime?.secs){
+          fetchAndApplyUSD(chain.id,r);
+          if(r.tokenTransfers?.length)fetchAndApplyTokenTransferUSD(chain.id,r);
+        }
         // Non-blocking: on-demand labels for from/to addresses
         if(chain.type==='evm'||chain.type==='tron'){
           if(r.from) applyOnDemandLabel(r.from,chain.id);
@@ -1831,7 +1900,9 @@ function renderTokenTransfers(transfers){
         </div>`:''}
       </div>
       <div class="token-amount-col"><div class="token-amount">${escHtml(String(t.amount))}</div>
-        <div class="token-amount-label">${escHtml(t.symbol)}</div></div>
+        <div class="token-amount-label">${escHtml(t.symbol)}</div>
+        ${t._usd?`<div style="font-size:10px;color:var(--text3);margin-top:2px">≈ ${escHtml(t._usd)} at tx time</div>`:''}
+      </div>
     </div>`).join('')}
   </div>`;
 }
@@ -2074,13 +2145,100 @@ function switchTab(tab){
   const sr=document.getElementById('searchRow');
   document.getElementById('tabLookup').classList.toggle('active',tab==='lookup');
   document.getElementById('tabGas').classList.toggle('active',tab==='gas');
+  document.getElementById('tabPrices').classList.toggle('active',tab==='prices');
   if(tab==='gas'){
-    stopWatching();
+    stopWatching();stopPricesRefresh();
     sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
     if(!gasRefreshTimer)startGasRefresh();else renderGasTracker();
+  }else if(tab==='prices'){
+    stopWatching();stopGasRefresh();
+    sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
+    startPricesRefresh();
   }else{
-    sr.style.display='';stopGasRefresh();render();
+    stopGasRefresh();stopPricesRefresh();render();
   }
+}
+
+/* ══════════════════════════════════════════════
+   PRICE REFERENCE PANEL
+══════════════════════════════════════════════ */
+function fmtPrice(p){
+  if(p===null||p===undefined)return'—';
+  if(p>=10000)return`$${Math.round(p).toLocaleString()}`;
+  if(p>=1000)return`$${p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  if(p>=1)return`$${p.toFixed(2)}`;
+  if(p>=0.01)return`$${p.toFixed(4)}`;
+  if(p>=0.0001)return`$${p.toFixed(6)}`;
+  return`$${p.toFixed(8)}`;
+}
+function setPriceMode(mode){priceMode=mode;priceHistData={};refreshPrices();}
+
+async function refreshPrices(){
+  if(priceLoading)return;
+  priceLoading=true;if(activeTab==='prices')renderPricesPanel();
+  if(priceMode==='current'){
+    const ids=PRICE_COINS.map(c=>COINGECKO_IDS[c.s]).filter(Boolean).join(',');
+    try{
+      const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,{signal:abortIn(12000)});
+      if(r.ok)priceData=await r.json();
+    }catch{}
+  }else{
+    await loadHistoricalPrices(priceDate||new Date().toISOString().split('T')[0]);
+    priceLoading=false;priceLastUpdate=Date.now();if(activeTab==='prices')renderPricesPanel();return;
+  }
+  priceLoading=false;priceLastUpdate=Date.now();if(activeTab==='prices')renderPricesPanel();
+}
+async function loadHistoricalPrices(dateStr){
+  priceDate=dateStr;priceLoading=true;if(activeTab==='prices')renderPricesPanel();
+  const secs=new Date(dateStr+'T12:00:00Z').getTime()/1000;
+  const res=await Promise.allSettled(PRICE_COINS.map(c=>fetchHistoricalUSD(c.s,secs)));
+  priceHistData={};
+  PRICE_COINS.forEach((c,i)=>{
+    const id=COINGECKO_IDS[c.s];
+    if(res[i].status==='fulfilled'&&res[i].value!==null&&id)priceHistData[id]=res[i].value;
+  });
+  priceLoading=false;priceLastUpdate=Date.now();if(activeTab==='prices')renderPricesPanel();
+}
+function startPricesRefresh(){
+  refreshPrices();
+  if(priceMode==='current')priceRefreshTimer=setInterval(refreshPrices,60000);
+}
+function stopPricesRefresh(){if(priceRefreshTimer){clearInterval(priceRefreshTimer);priceRefreshTimer=null;}}
+
+function renderPricesPanel(){
+  const app=document.getElementById('app');
+  const today=new Date().toISOString().split('T')[0];
+  const isHist=priceMode==='historical';
+  const age=priceLastUpdate?PANAMA_T.format(new Date(priceLastUpdate))+' Panama':'—';
+  app.innerHTML=`
+    <div class="price-controls">
+      <button class="price-mode-btn${!isHist?' active':''}" onclick="setPriceMode('current')"><i class="ti ti-currency-dollar"></i> Current</button>
+      <button class="price-mode-btn${isHist?' active':''}" onclick="setPriceMode('historical')"><i class="ti ti-calendar"></i> Historical</button>
+      ${isHist?`<input type="date" class="price-date-input" value="${priceDate||today}" max="${today}" onchange="loadHistoricalPrices(this.value)">`:''}
+      <span style="flex:1"></span>
+      ${!isHist?`<span style="font-size:11px;color:var(--text3)">Updated: ${escHtml(age)}</span>`:''}
+      <button class="gas-refresh-btn${priceLoading?' spinning':''}" onclick="refreshPrices()"><i class="ti ti-refresh"></i></button>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden">
+      <table class="price-table">
+        <thead><tr>
+          <th>Symbol</th><th>Asset</th>
+          <th style="text-align:right">${isHist?`Price on ${escHtml(priceDate)}`:'Price (USD)'}</th>
+          ${!isHist?'<th style="text-align:right">24h</th>':''}
+        </tr></thead>
+        <tbody>
+          ${PRICE_COINS.map(coin=>{
+            const id=COINGECKO_IDS[coin.s];
+            let price=null,change=null;
+            if(isHist){price=id?priceHistData[id]??null:null;}
+            else{const d=id?priceData[id]:null;price=d?.usd??null;change=d?.usd_24h_change??null;}
+            const ps=price!==null?fmtPrice(price):(priceLoading?'…':'—');
+            const chg=!isHist?`<td class="price-change ${change!=null?(change>=0?'price-up':'price-down'):''}">${change!=null?(change>=0?'▲':'▼')+' '+Math.abs(change).toFixed(2)+'%':'—'}</td>`:'';
+            return`<tr><td class="price-symbol">${escHtml(coin.s)}</td><td class="price-name">${escHtml(coin.n)}</td><td class="price-value">${escHtml(ps)}</td>${chg}</tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
 }
 
 /* ══════════════════════════════════════════════
@@ -2174,6 +2332,7 @@ function renderWelcome(){
 
 function render(){
   if(activeTab==='gas'){renderGasTracker();return;}
+  if(activeTab==='prices'){renderPricesPanel();return;}
   const app=document.getElementById('app');
   if(appMode==='idle'){app.innerHTML=renderWelcome();return;}
   // Resolution error: show error without a chain grid
