@@ -529,6 +529,13 @@ const GOPLUS_CHAINS=[
   {name:'Scroll',     gpId:'534352'},{name:'Blast',      gpId:'81457'},
   {name:'Mantle',     gpId:'5000'},  {name:'Moonbeam',   gpId:'1284'},
 ];
+/* Maps GoPlus chain ID → our internal chain ID (for Etherscan API + RPC) */
+const GP_TO_CHAIN={
+  '1':'ethereum','56':'bsc','137':'polygon','42161':'arbitrum',
+  '10':'optimism','8453':'base','43114':'avalanche','250':'fantom',
+  '25':'cronos','100':'gnosis','59144':'linea','324':'zksync',
+  '534352':'scroll','81457':'blast','5000':'mantle','1284':'moonbeam',
+};
 
 /* Gas Tracker chains */
 const GAS_CHAINS=[
@@ -669,7 +676,7 @@ const COINGECKO_IDS={
 
 /* Coins shown in the Price Reference panel */
 const PRICE_COINS=[
-  {s:'BTC', n:'Bitcoin'},        {s:'ETH', n:'Ethereum'},       {s:'BNB', n:'Binance Coin'},
+  {s:'BTC', n:'Bitcoin'},        {s:'ETH', n:'Ethereum'},       {s:'BNB', n:'BNB Chain'},
   {s:'SOL', n:'Solana'},         {s:'XRP', n:'XRP'},            {s:'ADA', n:'Cardano'},
   {s:'DOGE',n:'Dogecoin'},       {s:'TRX', n:'Tron'},           {s:'DOT', n:'Polkadot'},
   {s:'AVAX',n:'Avalanche'},      {s:'POL', n:'Polygon'},        {s:'LTC', n:'Litecoin'},
@@ -2471,13 +2478,71 @@ async function scanToken(address,gpId){
   }
   return{gp,hp};
 }
-async function scanApprovals(address,gpId){
+async function scanApprovals(walletAddress,gpId){
+  const chainId=GP_TO_CHAIN[gpId];
+  const apiBase=chainId?EXPLORER_APIS[chainId]:null;
+  const chain=chainId?CHAINS.find(c=>c.id===chainId):null;
+  if(!apiBase||!chain?.rpc)
+    return{_error:'This chain is not yet supported for approval scanning.'};
+  if(!CFG.ETHERSCAN_KEY)
+    return{_error:'Approval scanning requires a free Etherscan API key.\nGet one at etherscan.io/register and paste it into CFG.ETHERSCAN_KEY at the top of the script.'};
+  const APPROVAL_SIG='0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925';
+  const paddedOwner='0x'+walletAddress.slice(2).padStart(64,'0').toLowerCase();
   try{
-    const r=await fetch(`https://api.gopluslabs.io/api/v1/token_approval_security/${gpId}?addresses=${address}`,{signal:abortIn(12000)});
-    if(!r.ok)return null;const d=await r.json();if(d.code!==1)return null;
-    const byAddr=d.result[address.toLowerCase()]??d.result[address];
-    return byAddr?.approved_list??d.result?.approved_list??null;
-  }catch{return null;}
+    const r=await fetch(
+      `${apiBase}?module=logs&action=getLogs&fromBlock=0&toBlock=latest`+
+      `&topic0=${APPROVAL_SIG}&topic1=${paddedOwner}&apikey=${CFG.ETHERSCAN_KEY}`,
+      {signal:abortIn(15000)});
+    const d=await r.json();
+    if(d.status!=='1'){
+      const msg=String(d.result||d.message||'');
+      if(msg.includes('No records')||msg==='[]')return{_approvals:[]};
+      return{_error:`Etherscan: ${msg}`};
+    }
+    // Deduplicate (token, spender) — keep most recent block per pair
+    const map=new Map();
+    for(const log of d.result){
+      if(log.topics.length<3)continue;
+      const token=log.address.toLowerCase();
+      const spender='0x'+log.topics[2].slice(-40).toLowerCase();
+      const key=`${token}:${spender}`;
+      const blk=parseInt(log.blockNumber,16);
+      const cur=map.get(key);
+      if(!cur||blk>cur.blk)map.set(key,{token,spender,amount:log.data,blk});
+    }
+    // Remove revoked (amount=0x0)
+    const active=[...map.values()].filter(a=>{try{return BigInt(a.amount)>0n;}catch{return true;}})
+      .sort((a,b)=>b.blk-a.blk).slice(0,30);
+    if(!active.length)return{_approvals:[]};
+    // Enrich: token symbol/name + spender label (parallel)
+    const enriched=await Promise.allSettled(active.map(async a=>{
+      let symbol='?',name='?';
+      try{
+        const[sr,nr]=await Promise.all([
+          fetch(chain.rpc,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to:a.token,data:'0x95d89b41'},'latest']}),
+            signal:abortIn(4000)}),
+          fetch(chain.rpc,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to:a.token,data:'0x06fdde03'},'latest']}),
+            signal:abortIn(4000)}),
+        ]);
+        const sd=await sr.json(),nd=await nr.json();
+        symbol=decodeABIString(sd.result)||'?';
+        name=decodeABIString(nd.result)||'?';
+      }catch{}
+      const lbl=getLabel(a.spender);
+      const unlimited=isUnlimitedApproval(a.amount);
+      const risk=lbl?.type==='mixer'?'risky'
+        :unlimited&&!lbl?'risky'
+        :unlimited&&lbl?'caution'
+        :'safe';
+      return{...a,symbol,name,tag:lbl?.label||'',tagType:lbl?.type||'',unlimited,risk};
+    }));
+    return{
+      _approvals:enriched.filter(r=>r.status==='fulfilled').map(r=>r.value),
+      _total:active.length,
+    };
+  }catch(e){return{_error:String(e?.message||'Request failed')};}
 }
 function assessTokenRisk(gp,hp){
   const checks=[];
@@ -2601,38 +2666,44 @@ function renderTokenResult(){
   </div>`;
 }
 function renderApprovalResult(){
-  if(!secApprovalResult)return secLoading?'':`<div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px">Enter a wallet address and select a chain to scan for open token approvals.</div>`;
-  const list=secApprovalResult;
+  const res=secApprovalResult;
+  if(!res)return secLoading?'':`<div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px">Enter a wallet address and select a chain to scan for open ERC-20 approvals.</div>`;
+  if(res._error)return`<div style="background:rgba(240,83,83,.07);border:1px solid rgba(240,83,83,.3);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:flex-start;gap:10px">
+    <i class="ti ti-alert-circle" style="color:var(--danger);font-size:18px;flex-shrink:0;margin-top:1px"></i>
+    <div style="font-size:13px;color:var(--text2);white-space:pre-line">${escHtml(res._error)}</div>
+  </div>`;
+  const list=res._approvals??[];
   if(!list.length)return`<div style="background:rgba(52,199,123,.08);border:1px solid rgba(52,199,123,.3);border-radius:var(--radius-lg);padding:16px 18px;display:flex;align-items:center;gap:10px">
     <i class="ti ti-shield-check" style="color:var(--success);font-size:22px"></i>
-    <div><div style="font-weight:600;color:var(--success)">No token approvals found</div>
-    <div style="font-size:12px;color:var(--text2);margin-top:2px">This wallet has no open ERC-20 approvals on this chain.</div></div></div>`;
-  const risky=list.filter(a=>a.risky_approval==='1'||a.risky_approval===1);
-  const unlim=list.filter(a=>a.risky_approval!=='1'&&a.risky_approval!==1&&isUnlimitedApproval(a.approved_amount));
-  const safe=list.filter(a=>a.risky_approval!=='1'&&a.risky_approval!==1&&!isUnlimitedApproval(a.approved_amount));
-  const apprRow=(a,cls)=>{
-    const tag=a.tag||a.spender_name||'';
-    const amtRaw=a.approved_amount??'0';
-    const amtLabel=isUnlimitedApproval(amtRaw)?'Unlimited':a.approved_amount;
-    return`<div class="appr-row ${cls}">
+    <div><div style="font-weight:600;color:var(--success)">No active approvals found</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:2px">No ERC-20 approvals from this wallet on this chain, or all have been revoked.</div></div>
+  </div>`;
+  const risky=list.filter(a=>a.risk==='risky');
+  const caution=list.filter(a=>a.risk==='caution');
+  const safe=list.filter(a=>a.risk==='safe');
+  const total=res._total??list.length;
+  const apprRow=(a)=>{
+    const amtLabel=a.unlimited?'Unlimited':'Limited amount';
+    const rowCls=a.risk==='risky'?'risky':a.risk==='caution'?'unlimited':'';
+    const amtColor=a.risk==='risky'?'var(--danger)':a.risk==='caution'?'var(--warning)':'var(--text3)';
+    return`<div class="appr-row ${rowCls}">
       <div style="flex:1;min-width:0">
-        <div class="appr-token">${escHtml(a.token_symbol||a.token_name||'Unknown')}</div>
-        <div class="appr-spender">${escHtml(truncAddr(a.spender_address||'',10,8))} ${copyBtn(a.spender_address||'')}</div>
-        ${tag?`<div class="appr-tag">${escHtml(tag)}</div>`:''}
-        ${a.is_open_source==='0'?`<div style="font-size:10px;color:var(--danger);margin-top:2px">⚠ Spender contract unverified</div>`:''}
+        <div class="appr-token">${escHtml(a.symbol!=='?'?a.symbol:truncAddr(a.token,6,4))}</div>
+        <div class="appr-spender">→ ${escHtml(truncAddr(a.spender,10,8))} ${copyBtn(a.spender)}</div>
+        ${a.tag?`<div class="appr-tag">${escHtml(a.tag)}</div>`:'<div class="appr-tag" style="color:var(--warning)">Unknown spender</div>'}
       </div>
-      <div class="appr-amount" style="color:${cls==='risky'?'var(--danger)':cls==='unlimited'?'var(--warning)':'var(--text2)'}">${escHtml(String(amtLabel))}</div>
+      <div class="appr-amount" style="color:${amtColor}">${escHtml(amtLabel)}</div>
     </div>`;
   };
-  const group=(title,items,color,cls)=>items.length?`<div class="appr-group">
+  const group=(title,items,color)=>items.length?`<div class="appr-group">
     <div class="appr-group-hdr" style="color:${color}">${escHtml(title)} (${items.length})</div>
-    ${items.map(a=>apprRow(a,cls)).join('')}
+    ${items.map(apprRow).join('')}
   </div>`:'';
   return`<div style="margin-top:.5rem">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">${list.length} approval${list.length!==1?'s':''} found</div>
-    ${group('🚨 Risky Approvals',risky,'var(--danger)','risky')}
-    ${group('⚠ Unlimited Approvals',unlim,'var(--warning)','unlimited')}
-    ${group('✓ Limited Approvals',safe,'var(--success)','safe')}
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">${total>list.length?`Showing ${list.length} most recent of ${total} approvals`:`${total} active approval${total!==1?'s':''} found`} · scanned via on-chain Approval events</div>
+    ${group('🚨 Risky — Unlimited to Unknown Spender',risky,'var(--danger)')}
+    ${group('⚠ Unlimited — Known Spender',caution,'var(--warning)')}
+    ${group('✓ Limited or Known Safe',safe,'var(--success)')}
   </div>`;
 }
 function isUnlimitedApproval(amount){
