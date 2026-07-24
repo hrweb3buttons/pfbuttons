@@ -459,27 +459,8 @@ const BLOCKSCOUT_APIS={
   rootstock: 'https://rootstock.blockscout.com',
   mode:      'https://explorer.mode.network',
 };
-const EXPLORER_APIS={
-  ethereum: 'https://api.etherscan.io/api',
-  bsc:      'https://api.bscscan.com/api',
-  polygon:  'https://api.polygonscan.com/api',
-  arbitrum: 'https://api.arbiscan.io/api',
-  optimism: 'https://api-optimistic.etherscan.io/api',
-  base:     'https://api.basescan.org/api',
-  avalanche:'https://api.snowtrace.io/api',
-  fantom:   'https://api.ftmscan.com/api',
-  cronos:   'https://api.cronoscan.com/api',
-  celo:     'https://api.celoscan.io/api',
-  gnosis:   'https://api.gnosisscan.io/api',
-  moonbeam: 'https://api-moonbeam.moonscan.io/api',
-  moonriver:'https://api-moonriver.moonscan.io/api',
-  linea:    'https://api.lineascan.build/api',
-  scroll:   'https://api.scrollscan.com/api',
-  blast:    'https://api.blastscan.io/api',
-  mantle:   'https://api.mantlescan.xyz/api',
-  taiko:    'https://api.taikoscan.io/api',
-  opbnb:    'https://api-opbnb.bscscan.com/api',
-};
+/* EXPLORER_APIS removed — both consuming functions now use
+   Etherscan V2 (api.etherscan.io/v2/api?chainid=...) via CHAIN_NUMERIC_IDS */
 
 const FIELD_LABELS={
   blockHeight:"Block height",blockNumber:"Block number",
@@ -2779,7 +2760,7 @@ const hintIcon=document.getElementById('hintIcon');
 const hintText=document.getElementById('hintText');
 
 hashInput.addEventListener('input',()=>{
-  if(activeTab==='gas')switchTab('lookup');
+  if(activeTab!=='lookup')switchTab('lookup');
   const h=hashInput.value.trim();
   searchBtn.disabled=!h||searching;
   shareBtn.style.display='none';
@@ -2799,6 +2780,8 @@ searchBtn.addEventListener('click',async()=>{
   stopWatching();
   searching=true;searchBtn.disabled=true;shareBtn.style.display='none';
   statuses={};results={};resolutionError='';resolvedDomain='';currentInput=input;
+  // Clear any batch address filters from the previous search
+  Object.keys(batchFilters).forEach(k=>delete batchFilters[k]);
 
   const det=detectInput(input);
 
