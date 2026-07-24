@@ -1043,7 +1043,7 @@ async function applyOnDemandLabel(addr,chainId){
   const apiBase=EXPLORER_APIS[chainId];
   if(apiBase){
     try{
-      const key=CFG.ETHERSCAN_KEY?`&apikey=${CFG.ETHERSCAN_KEY}`:'';
+      const key=CFG.ETHERSCAN_KEY?`&apikey=${CFG.ETHERSCAN_KEY}`:'U6J74NTKYVNDFDW9CUFZMHX6UYX1T2H1QW';
       const r=await fetch(`${apiBase}?module=contract&action=getsourcecode&address=${addr}${key}`,{signal:abortIn(8000)});
       if(r.ok){
         const d=await r.json();
