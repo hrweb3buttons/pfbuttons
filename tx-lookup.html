@@ -204,6 +204,39 @@
   .price-change{text-align:right;font-size:11px;font-family:var(--mono);width:80px;}
   .price-up{color:var(--success);}
   .price-down{color:var(--danger);}
+  /* ── Server clock ── */
+  .server-clock{margin-left:auto;text-align:right;flex-shrink:0;}
+  .server-clock-label{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:2px;}
+  .server-clock-time{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text);line-height:1.2;}
+  .server-clock-date{font-size:11px;color:var(--text2);}
+  /* ── Security tab ── */
+  .sec-input-row{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;}
+  .sec-chain-select{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:0 12px;height:46px;color:var(--text);font-family:var(--sans);font-size:13px;cursor:pointer;flex-shrink:0;}
+  .sec-result{margin-top:1rem;}
+  .sec-risk-banner{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;}
+  .sec-risk-label{font-size:16px;font-weight:700;}
+  .sec-risk-sub{font-size:12px;opacity:.8;margin-top:2px;}
+  .sec-body{background:var(--bg2);border:1px solid var(--border2);border-radius:0 0 var(--radius-lg) var(--radius-lg);border-top:none;}
+  .sec-checks{padding:4px 18px 10px;}
+  .sec-check{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.4;}
+  .sec-check:last-child{border-bottom:none;}
+  .sec-check-icon{flex-shrink:0;font-size:13px;margin-top:1px;}
+  .sec-ok{color:var(--success);}
+  .sec-warn{color:var(--warning);}
+  .sec-bad{color:var(--danger);}
+  .sec-stats{padding:10px 18px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+  .sec-stat-label{font-size:10px;color:var(--text3);margin-bottom:2px;}
+  .sec-stat-val{font-size:12px;font-weight:600;font-family:var(--mono);word-break:break-all;}
+  /* Approval scanner */
+  .appr-group{margin-bottom:1rem;}
+  .appr-group-hdr{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .appr-row{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 14px;margin-bottom:5px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .appr-row.risky{border-color:rgba(240,83,83,.45);background:rgba(240,83,83,.04);}
+  .appr-row.unlimited{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.03);}
+  .appr-token{font-weight:700;font-size:13px;}
+  .appr-spender{font-size:11px;font-family:var(--mono);color:var(--text2);}
+  .appr-tag{font-size:10px;color:var(--text3);}
+  .appr-amount{font-size:11px;font-family:var(--mono);font-weight:600;margin-left:auto;white-space:nowrap;}
   /* ── Finality badge ── */
   .finality-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:4px;}
   .finality-badge.finalized{background:rgba(52,199,123,.10);color:var(--success);border:1px solid rgba(52,199,123,.25);}
@@ -234,11 +267,13 @@
       <h1>Transaction &amp; Address Lookup</h1>
       <p>Paste a transaction hash <em>or</em> a wallet address — 64 chains, automatic detection.</p>
     </div>
+    <div class="server-clock" id="serverClock"></div>
   </div>
   <div class="nav-tabs">
     <button class="nav-tab active" id="tabLookup" onclick="switchTab('lookup')"><i class="ti ti-topology-ring-3"></i> Lookup</button>
     <button class="nav-tab" id="tabGas" onclick="switchTab('gas')"><i class="ti ti-gas-station"></i> Gas Tracker</button>
     <button class="nav-tab" id="tabPrices" onclick="switchTab('prices')"><i class="ti ti-currency-dollar"></i> Prices</button>
+    <button class="nav-tab" id="tabSecurity" onclick="switchTab('security')"><i class="ti ti-shield-search"></i> Security</button>
   </div>
   <div class="search-row" id="searchRow">
     <input class="search-input" id="hashInput" type="text"
@@ -483,6 +518,18 @@ const STATUS_CFG={
   error:     {icon:"ti-alert-circle", cls:"error",     label:"Unavailable"},
 };
 
+/* GoPlus Security — supported chains */
+const GOPLUS_CHAINS=[
+  {name:'Ethereum',   gpId:'1'},     {name:'BNB Chain',  gpId:'56'},
+  {name:'Polygon',    gpId:'137'},   {name:'Arbitrum',   gpId:'42161'},
+  {name:'Optimism',   gpId:'10'},    {name:'Base',       gpId:'8453'},
+  {name:'Avalanche',  gpId:'43114'}, {name:'Fantom',     gpId:'250'},
+  {name:'Cronos',     gpId:'25'},    {name:'Gnosis',     gpId:'100'},
+  {name:'Linea',      gpId:'59144'}, {name:'zkSync Era', gpId:'324'},
+  {name:'Scroll',     gpId:'534352'},{name:'Blast',      gpId:'81457'},
+  {name:'Mantle',     gpId:'5000'},  {name:'Moonbeam',   gpId:'1284'},
+];
+
 /* Gas Tracker chains */
 const GAS_CHAINS=[
   {id:'ethereum', name:'Ethereum',   symbol:'ETH', color:'#627EEA',rpc:'https://ethereum.publicnode.com',          coinId:'ethereum'},
@@ -515,6 +562,9 @@ let gasRefreshTimer=null;
 /* Price panel state */
 let priceMode='current', priceDate='', priceData={}, priceHistData={};
 let priceLoading=false, priceLastUpdate=null, priceRefreshTimer=null;
+/* Security scanner state */
+let secMode='token', secAddress='', secChain='1';
+let secLoading=false, secTokenResult=null, secApprovalResult=null, secError='';
 /* Watch-for-confirmation state */
 let watchedTx=null, watchedChains=[], watchTimer=null, watchCountdownTimer=null, watchCountdown=0;
 /* Batch payout filter state */
@@ -2254,6 +2304,7 @@ function switchTab(tab){
   document.getElementById('tabLookup').classList.toggle('active',tab==='lookup');
   document.getElementById('tabGas').classList.toggle('active',tab==='gas');
   document.getElementById('tabPrices').classList.toggle('active',tab==='prices');
+  document.getElementById('tabSecurity').classList.toggle('active',tab==='security');
   if(tab==='gas'){
     stopWatching();stopPricesRefresh();
     sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
@@ -2262,6 +2313,10 @@ function switchTab(tab){
     stopWatching();stopGasRefresh();
     sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
     startPricesRefresh();
+  }else if(tab==='security'){
+    stopWatching();stopGasRefresh();stopPricesRefresh();
+    sr.style.display='none';hintBox.style.display='none';shareBtn.style.display='none';
+    renderSecurityTab();
   }else{
     sr.style.display='';stopGasRefresh();stopPricesRefresh();render();
   }
@@ -2399,6 +2454,191 @@ function renderWatchBanner(){
   </div>`;
 }
 
+/* ══════════════════════════════════════════════
+   SECURITY SCANNER (GoPlus + honeypot.is)
+══════════════════════════════════════════════ */
+async function scanToken(address,gpId){
+  const[gpRes,hpRes]=await Promise.allSettled([
+    fetch(`https://api.gopluslabs.io/api/v1/token_security/${gpId}?contract_addresses=${address}`,{signal:abortIn(12000)}),
+    fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${address}&chainID=${gpId}`,{signal:abortIn(10000)}),
+  ]);
+  let gp=null,hp=null;
+  if(gpRes.status==='fulfilled'&&gpRes.value.ok){
+    try{const d=await gpRes.value.json();if(d.code===1)gp=d.result[address.toLowerCase()]??d.result[address]??null;}catch{}
+  }
+  if(hpRes.status==='fulfilled'&&hpRes.value.ok){
+    try{hp=await hpRes.value.json();}catch{}
+  }
+  return{gp,hp};
+}
+async function scanApprovals(address,gpId){
+  try{
+    const r=await fetch(`https://api.gopluslabs.io/api/v1/token_approval_security/${gpId}?addresses=${address}`,{signal:abortIn(12000)});
+    if(!r.ok)return null;const d=await r.json();if(d.code!==1)return null;
+    const byAddr=d.result[address.toLowerCase()]??d.result[address];
+    return byAddr?.approved_list??d.result?.approved_list??null;
+  }catch{return null;}
+}
+function assessTokenRisk(gp,hp){
+  const checks=[];
+  // Honeypot check — combine GoPlus + honeypot.is
+  const isHoneypot=gp?.is_honeypot==='1'||(hp?.honeypotResult?.isHoneypot===true);
+  if(isHoneypot)checks.push({t:'bad',msg:'Cannot sell — honeypot confirmed'});
+  else checks.push({t:'ok',msg:'Can buy and sell (no honeypot detected)'});
+  // Sell tax
+  const sellTax=parseFloat(gp?.sell_tax||hp?.simulationResult?.sellTax||0);
+  const buyTax=parseFloat(gp?.buy_tax||hp?.simulationResult?.buyTax||0);
+  if(sellTax>50)checks.push({t:'bad',msg:`Extreme sell tax: ${sellTax.toFixed(1)}%`});
+  else if(sellTax>10)checks.push({t:'warn',msg:`High sell tax: ${sellTax.toFixed(1)}%`});
+  else if(sellTax>0)checks.push({t:'warn',msg:`Sell tax: ${sellTax.toFixed(1)}%`});
+  else if(gp)checks.push({t:'ok',msg:'No sell tax'});
+  if(buyTax>10)checks.push({t:'warn',msg:`High buy tax: ${buyTax.toFixed(1)}%`});
+  else if(buyTax>0)checks.push({t:'warn',msg:`Buy tax: ${buyTax.toFixed(1)}%`});
+  else if(gp)checks.push({t:'ok',msg:'No buy tax'});
+  // Contract safety
+  if(gp){
+    if(gp.is_open_source==='1')checks.push({t:'ok',msg:'Contract is verified / open source'});
+    else checks.push({t:'warn',msg:'Contract is NOT verified or open source'});
+    if(gp.hidden_owner==='1')checks.push({t:'bad',msg:'Hidden owner detected'});
+    if(gp.can_take_back_ownership==='1')checks.push({t:'bad',msg:'Ownership can be reclaimed'});
+    if(gp.owner_change_balance==='1')checks.push({t:'bad',msg:'Owner can modify holder balances'});
+    const ownerAddr=gp.owner_address??'';
+    if(!ownerAddr||ownerAddr==='0x0000000000000000000000000000000000000000')
+      checks.push({t:'ok',msg:'Ownership renounced'});
+    else checks.push({t:'warn',msg:`Ownership not renounced: ${truncAddr(ownerAddr,6,4)}`});
+    if(gp.is_mintable==='1')checks.push({t:'warn',msg:'Token supply can be increased (mintable)'});
+    else checks.push({t:'ok',msg:'Fixed supply — not mintable'});
+    if(gp.is_blacklisted==='1')checks.push({t:'warn',msg:'Contract has address blacklisting'});
+    if(gp.selfdestruct==='1')checks.push({t:'bad',msg:'Contract can self-destruct'});
+    if(gp.trading_cooldown==='1')checks.push({t:'warn',msg:'Trading cooldown enforced'});
+  }
+  const bad=checks.filter(c=>c.t==='bad').length;
+  const warn=checks.filter(c=>c.t==='warn').length;
+  return{
+    level:bad>0?'high':warn>0?'medium':'low',
+    label:isHoneypot?'🚨 Honeypot':bad>0?'🚨 High Risk':warn>0?'⚠ Caution':'✓ Appears Safe',
+    checks,
+  };
+}
+async function runSecurityScan(){
+  const addr=secAddress.trim();
+  if(!addr||secLoading)return;
+  if(!/^0x[0-9a-fA-F]{40}$/.test(addr)){secError='Enter a valid EVM contract or wallet address (0x…)';renderSecurityTab();return;}
+  secError='';secLoading=true;secTokenResult=null;secApprovalResult=null;
+  renderSecurityTab();
+  if(secMode==='token'){secTokenResult=await scanToken(addr,secChain);}
+  else{secApprovalResult=await scanApprovals(addr,secChain);}
+  secLoading=false;renderSecurityTab();
+}
+function setSecMode(mode){secMode=mode;secTokenResult=null;secApprovalResult=null;secError='';renderSecurityTab();}
+
+function renderSecurityTab(){
+  const app=document.getElementById('app');
+  const chainOpts=GOPLUS_CHAINS.map(c=>`<option value="${c.gpId}"${secChain===c.gpId?' selected':''}>${escHtml(c.name)}</option>`).join('');
+  const placeholder=secMode==='token'?'Token contract address (0x…)':'Wallet address (0x…)';
+
+  app.innerHTML=`
+    <div style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:3px;margin-bottom:1rem;width:fit-content">
+      <button class="price-mode-btn${secMode==='token'?' active':''}" onclick="setSecMode('token')"><i class="ti ti-coin"></i> Token Scanner</button>
+      <button class="price-mode-btn${secMode==='approval'?' active':''}" onclick="setSecMode('approval')"><i class="ti ti-shield"></i> Wallet Approvals</button>
+    </div>
+    <div class="sec-input-row">
+      <input class="search-input" style="flex:1;min-width:200px" type="text"
+        placeholder="${escHtml(placeholder)}"
+        value="${escHtml(secAddress)}"
+        autocomplete="off" spellcheck="false"
+        oninput="secAddress=this.value.trim()"
+        onkeydown="if(event.key==='Enter')runSecurityScan()">
+      <select class="sec-chain-select" onchange="secChain=this.value">${chainOpts}</select>
+      <button class="search-btn" onclick="runSecurityScan()" ${secLoading?'disabled':''}>
+        ${secLoading?'<i class="ti ti-loader-2 spin"></i> Scanning…':'<i class="ti ti-shield-search"></i> Scan'}
+      </button>
+    </div>
+    ${secError?`<div style="color:var(--danger);font-size:12px;margin-bottom:10px">${escHtml(secError)}</div>`:''}
+    ${secMode==='token'?renderTokenResult():renderApprovalResult()}`;
+}
+function renderTokenResult(){
+  const{gp,hp}=secTokenResult||{gp:null,hp:null};
+  if(!gp&&!hp)return secLoading?'':`<div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px">Enter a token contract address and select a chain, then click Scan.</div>`;
+  const{level,label,checks}=assessTokenRisk(gp,hp);
+  const[bg,border,icon]=level==='high'
+    ?['rgba(240,83,83,.12)','rgba(240,83,83,.4)','ti-alert-triangle']
+    :level==='medium'
+    ?['rgba(245,166,35,.1)','rgba(245,166,35,.35)','ti-alert-circle']
+    :['rgba(52,199,123,.10)','rgba(52,199,123,.35)','ti-shield-check'];
+  const color=level==='high'?'var(--danger)':level==='medium'?'var(--warning)':'var(--success)';
+  const tokenName=gp?.token_name??hp?.token?.name??'Unknown token';
+  const tokenSymbol=gp?.token_symbol??hp?.token?.symbol??'';
+  const holderCount=gp?.holder_count?parseInt(gp.holder_count).toLocaleString():null;
+  const totalSupply=gp?.total_supply?parseFloat(gp.total_supply).toLocaleString():null;
+  const liquidity=hp?.pair?.liquidity?`$${parseFloat(hp.pair.liquidity).toLocaleString(undefined,{maximumFractionDigits:0})}`:null;
+
+  const checkRows=checks.map(c=>`<div class="sec-check">
+    <i class="ti ${c.t==='ok'?'ti-circle-check sec-ok':c.t==='warn'?'ti-alert-circle sec-warn':'ti-x sec-bad'} sec-check-icon"></i>
+    <span>${escHtml(c.msg)}</span>
+  </div>`).join('');
+
+  const stats=[
+    holderCount?{l:'Holders',v:holderCount}:null,
+    totalSupply?{l:'Total Supply',v:totalSupply}:null,
+    liquidity?{l:'Liquidity',v:liquidity}:null,
+    gp?.dex?.[0]?.name?{l:'DEX',v:gp.dex[0].name}:null,
+    hp?.pair?.pair?.address?{l:'Pair Address',v:truncAddr(hp.pair.pair.address,8,6)}:null,
+  ].filter(Boolean);
+
+  return`<div class="sec-result">
+    <div class="sec-risk-banner" style="background:${bg};border:1.5px solid ${border}">
+      <i class="ti ${icon}" style="color:${color};font-size:28px;flex-shrink:0"></i>
+      <div>
+        <div class="sec-risk-label" style="color:${color}">${escHtml(label)}</div>
+        <div class="sec-risk-sub" style="color:${color}">${escHtml(tokenName)}${tokenSymbol?' ('+escHtml(tokenSymbol)+')':''}</div>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="sec-checks">${checkRows}</div>
+      ${stats.length?`<div class="sec-stats">${stats.map(s=>`<div><div class="sec-stat-label">${escHtml(s.l)}</div><div class="sec-stat-val">${escHtml(s.v)}</div></div>`).join('')}</div>`:''}
+    </div>
+  </div>`;
+}
+function renderApprovalResult(){
+  if(!secApprovalResult)return secLoading?'':`<div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px">Enter a wallet address and select a chain to scan for open token approvals.</div>`;
+  const list=secApprovalResult;
+  if(!list.length)return`<div style="background:rgba(52,199,123,.08);border:1px solid rgba(52,199,123,.3);border-radius:var(--radius-lg);padding:16px 18px;display:flex;align-items:center;gap:10px">
+    <i class="ti ti-shield-check" style="color:var(--success);font-size:22px"></i>
+    <div><div style="font-weight:600;color:var(--success)">No token approvals found</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:2px">This wallet has no open ERC-20 approvals on this chain.</div></div></div>`;
+  const risky=list.filter(a=>a.risky_approval==='1'||a.risky_approval===1);
+  const unlim=list.filter(a=>a.risky_approval!=='1'&&a.risky_approval!==1&&isUnlimitedApproval(a.approved_amount));
+  const safe=list.filter(a=>a.risky_approval!=='1'&&a.risky_approval!==1&&!isUnlimitedApproval(a.approved_amount));
+  const apprRow=(a,cls)=>{
+    const tag=a.tag||a.spender_name||'';
+    const amtRaw=a.approved_amount??'0';
+    const amtLabel=isUnlimitedApproval(amtRaw)?'Unlimited':a.approved_amount;
+    return`<div class="appr-row ${cls}">
+      <div style="flex:1;min-width:0">
+        <div class="appr-token">${escHtml(a.token_symbol||a.token_name||'Unknown')}</div>
+        <div class="appr-spender">${escHtml(truncAddr(a.spender_address||'',10,8))} ${copyBtn(a.spender_address||'')}</div>
+        ${tag?`<div class="appr-tag">${escHtml(tag)}</div>`:''}
+        ${a.is_open_source==='0'?`<div style="font-size:10px;color:var(--danger);margin-top:2px">⚠ Spender contract unverified</div>`:''}
+      </div>
+      <div class="appr-amount" style="color:${cls==='risky'?'var(--danger)':cls==='unlimited'?'var(--warning)':'var(--text2)'}">${escHtml(String(amtLabel))}</div>
+    </div>`;
+  };
+  const group=(title,items,color,cls)=>items.length?`<div class="appr-group">
+    <div class="appr-group-hdr" style="color:${color}">${escHtml(title)} (${items.length})</div>
+    ${items.map(a=>apprRow(a,cls)).join('')}
+  </div>`:'';
+  return`<div style="margin-top:.5rem">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">${list.length} approval${list.length!==1?'s':''} found</div>
+    ${group('🚨 Risky Approvals',risky,'var(--danger)','risky')}
+    ${group('⚠ Unlimited Approvals',unlim,'var(--warning)','unlimited')}
+    ${group('✓ Limited Approvals',safe,'var(--success)','safe')}
+  </div>`;
+}
+function isUnlimitedApproval(amount){
+  try{return BigInt(amount||0)>BigInt('100000000000000000000000000');}catch{return false;}
+}
+
 function renderHistory(){
   const hist=loadHistory();
   if(!hist.length)return'';
@@ -2441,6 +2681,7 @@ function renderWelcome(){
 function render(){
   if(activeTab==='gas'){renderGasTracker();return;}
   if(activeTab==='prices'){renderPricesPanel();return;}
+  if(activeTab==='security'){renderSecurityTab();return;}
   const app=document.getElementById('app');
   if(appMode==='idle'){app.innerHTML=renderWelcome();return;}
   // Resolution error: show error without a chain grid
@@ -2565,6 +2806,17 @@ window.addEventListener('popstate',e=>{
 });
 
 render();
+
+/* ── Panama server clock ── */
+function tickServerClock(){
+  const el=document.getElementById('serverClock');if(!el)return;
+  const now=new Date();
+  el.innerHTML=`<div class="server-clock-label">Panama Server Time (UTC−5)</div>
+    <div class="server-clock-time">${PANAMA_T.format(now)}</div>
+    <div class="server-clock-date">${PANAMA_D.format(now)}</div>`;
+}
+setInterval(tickServerClock,1000);
+tickServerClock();
 
 </script>
 </body>
