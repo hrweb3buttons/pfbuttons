@@ -536,6 +536,8 @@ const GP_TO_CHAIN={
   '25':'cronos','100':'gnosis','59144':'linea','324':'zksync',
   '534352':'scroll','81457':'blast','5000':'mantle','1284':'moonbeam',
 };
+/* Reverse of GP_TO_CHAIN — our chain ID → numeric EVM ID, used for Etherscan V2 */
+const CHAIN_NUMERIC_IDS=Object.fromEntries(Object.entries(GP_TO_CHAIN).map(([k,v])=>[v,k]));
 
 /* Gas Tracker chains */
 const GAS_CHAINS=[
@@ -1039,12 +1041,11 @@ async function applyOnDemandLabel(addr,chainId){
     }catch{}
   }
 
-  // 2. Etherscan-family contract name
-  const apiBase=EXPLORER_APIS[chainId];
-  if(apiBase){
+  // 2. Etherscan V2 contract name (single endpoint, all chains via chainid param)
+  const numChainId=CHAIN_NUMERIC_IDS[chainId];
+  if(numChainId&&CFG.ETHERSCAN_KEY){
     try{
-      const key=CFG.ETHERSCAN_KEY?`&apikey=${CFG.ETHERSCAN_KEY}`:'U6J74NTKYVNDFDW9CUFZMHX6UYX1T2H1QW';
-      const r=await fetch(`${apiBase}?module=contract&action=getsourcecode&address=${addr}${key}`,{signal:abortIn(8000)});
+      const r=await fetch(`https://api.etherscan.io/v2/api?chainid=${numChainId}&module=contract&action=getsourcecode&address=${addr}&apikey=${CFG.ETHERSCAN_KEY}`,{signal:abortIn(8000)});
       if(r.ok){
         const d=await r.json();
         if(d.status==='1'){
@@ -2480,9 +2481,8 @@ async function scanToken(address,gpId){
 }
 async function scanApprovals(walletAddress,gpId){
   const chainId=GP_TO_CHAIN[gpId];
-  const apiBase=chainId?EXPLORER_APIS[chainId]:null;
   const chain=chainId?CHAINS.find(c=>c.id===chainId):null;
-  if(!apiBase||!chain?.rpc)
+  if(!chain?.rpc)
     return{_error:'This chain is not yet supported for approval scanning.'};
   if(!CFG.ETHERSCAN_KEY)
     return{_error:'Approval scanning requires a free Etherscan API key.\nGet one at etherscan.io/register and paste it into CFG.ETHERSCAN_KEY at the top of the script.'};
@@ -2490,7 +2490,7 @@ async function scanApprovals(walletAddress,gpId){
   const paddedOwner='0x'+walletAddress.slice(2).padStart(64,'0').toLowerCase();
   try{
     const r=await fetch(
-      `${apiBase}?module=logs&action=getLogs&fromBlock=0&toBlock=latest`+
+      `https://api.etherscan.io/v2/api?chainid=${gpId}&module=logs&action=getLogs&fromBlock=0&toBlock=latest`+
       `&topic0=${APPROVAL_SIG}&topic1=${paddedOwner}&apikey=${CFG.ETHERSCAN_KEY}`,
       {signal:abortIn(15000)});
     const d=await r.json();
