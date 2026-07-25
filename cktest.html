@@ -525,6 +525,66 @@
   .out-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line)}
   .out-row:last-child{border-bottom:none}
 
+  /* ── Directory ── */
+  .dir-search{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+  .dir-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1.5rem}
+  .chip{
+    font:inherit;font-size:12px;padding:4px 11px;border-radius:20px;cursor:pointer;
+    border:1px solid var(--line);background:var(--surface);color:var(--text-2);
+    transition:color .15s,border-color .15s,background .15s;
+  }
+  .chip:hover{border-color:var(--line-strong);color:var(--text)}
+  .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .dir-cat{margin-bottom:1.8rem}
+  .dir-cat-h{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  .dir-cat-h h3{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .dir-cat-h > i{color:var(--accent);font-size:18px}
+  .dir-count{font-size:11.5px;color:var(--text-3);margin-left:auto;flex-shrink:0}
+  .dir-lead{font-size:13px;color:var(--text-2);margin-bottom:11px;max-width:72ch}
+  .dir-group{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--text-3);margin:14px 0 7px;
+  }
+  .dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:9px}
+  .dir-item{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    padding:12px 14px;display:flex;flex-direction:column;
+  }
+  .dir-item.flagged{border-color:var(--warn-line);background:var(--warn-soft)}
+  .dir-top{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}
+  .dir-name{
+    font-family:var(--display);font-size:14.5px;font-weight:600;color:var(--text);
+    text-decoration:none;display:inline-flex;align-items:baseline;gap:5px;
+  }
+  .dir-name:hover{color:var(--accent);text-decoration:underline}
+  .dir-name i{font-size:12px;opacity:.55}
+  .dir-domain{font-family:var(--mono);font-size:11.5px;color:var(--text-3);margin-top:3px;word-break:break-all}
+  .dir-blurb{font-size:12.5px;color:var(--text-2);margin-top:7px;line-height:1.5}
+  .dir-flag{
+    font-size:11.5px;color:var(--warn);margin-top:9px;line-height:1.45;
+    display:flex;align-items:flex-start;gap:6px;
+  }
+  .dir-flag i{flex-shrink:0;margin-top:2px}
+  .dir-extra{
+    margin-top:9px;font-size:12px;color:var(--accent);text-decoration:none;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .dir-extra:hover{text-decoration:underline}
+  .ref-badge{
+    font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 6px;border-radius:20px;flex-shrink:0;
+    background:var(--violet-soft);color:var(--violet);border:1px solid var(--violet-line);
+  }
+  .dir-empty{text-align:center;padding:2.5rem 1rem;color:var(--text-3);font-size:13.5px}
+  .starters{
+    border:1px solid var(--accent-line);background:var(--accent-soft);
+    border-radius:var(--r-lg);padding:15px 17px;margin-bottom:1.5rem;
+  }
+  .starters h3{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:3px}
+  .starters > p{font-size:12.5px;color:var(--text-2);margin-bottom:12px;max-width:70ch}
+  .starter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+  .starter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px}
+
   /* ── Footer ── */
   footer{
     margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--line);
@@ -600,6 +660,7 @@
     <button role="tab" id="tab-gas"      aria-controls="main" aria-selected="false" data-tab="gas" tabindex="-1"><i class="ti ti-gas-station" aria-hidden="true"></i> Gas fees</button>
     <button role="tab" id="tab-prices"   aria-controls="main" aria-selected="false" data-tab="prices" tabindex="-1"><i class="ti ti-currency-dollar" aria-hidden="true"></i> Prices</button>
     <button role="tab" id="tab-security" aria-controls="main" aria-selected="false" data-tab="security" tabindex="-1"><i class="ti ti-shield-search" aria-hidden="true"></i> Safety check</button>
+    <button role="tab" id="tab-directory" aria-controls="main" aria-selected="false" data-tab="directory" tabindex="-1"><i class="ti ti-compass" aria-hidden="true"></i> Directory</button>
   </nav>
 
   <div class="search" id="searchRow">
@@ -758,6 +819,9 @@ function localLabel(){
   const place=LOCAL_TZ.split('/').pop().replace(/_/g,' ');
   const off=-new Date().getTimezoneOffset()/60;
   const abs=Math.abs(off);
+  /* Someone already on UTC would otherwise see two identical-looking
+     options, so name theirs explicitly. */
+  if(place==='UTC'||place==='GMT')return'Your time (UTC)';
   return `${place} (UTC${off>=0?'+':'−'}${Number.isInteger(abs)?abs:abs.toFixed(1)})`;
 }
 const TZ_MODES=[
@@ -2607,11 +2671,473 @@ function approvalResult(){
   </div>`;
 }
 
+/* ═══════════════════════════════════════════════
+   DIRECTORY
+
+   Curated links. The domain is the payload here:
+   a name and a logo can be copied perfectly, a
+   domain cannot. `ref:true` marks a referral link
+   and is disclosed on the entry itself.
+═══════════════════════════════════════════════ */
+const DIR_STARTERS=[
+  {name:'MetaMask',url:'https://metamask.io/',domain:'metamask.io',
+   why:'A first wallet. Browser extension, works with Ethereum and most chains like it.'},
+  {name:'Kraken',url:'https://kraken.com',domain:'kraken.com',
+   why:'A long-established exchange for turning ordinary money into crypto.'},
+  {name:'Revoke.cash',url:'https://revoke.cash/',domain:'revoke.cash',
+   why:'Cancel permissions you have given to apps. The single most useful safety habit.'},
+  {name:'BscScan',url:'https://bscscan.com/',domain:'bscscan.com',
+   why:'Look up any BNB Chain transaction or wallet. Free, no account needed.'},
+  {name:'Binance Academy',url:'https://academy.binance.com/',domain:'academy.binance.com',
+   why:'Free plain-language guides covering how all of this actually works.'},
+];
+
+const DIRECTORY=[
+  {id:'wallets',name:'Wallets',icon:'ti-wallet',
+   lead:'Software and hardware for holding your own crypto. A wallet does not store coins — it stores the key that proves they are yours, which is why losing the key loses the money.',
+   note:{type:'warn',title:'Buy hardware wallets from the manufacturer only',
+     body:'Never buy a hardware wallet from Amazon, eBay, Newegg, or any other marketplace. Devices sold second-hand or through resellers have been tampered with to steal funds the moment they are used.'},
+   groups:[
+    {name:'Bitcoin only',items:[
+      {name:'Electrum',url:'https://electrum.org/',domain:'electrum.org',
+       blurb:'A lightweight, long-standing Bitcoin-only desktop wallet.'},
+    ]},
+    {name:'Multichain desktop',items:[
+      {name:'Exodus',url:'https://www.exodus.com/',domain:'exodus.com',
+       blurb:'A beginner-friendly wallet covering Bitcoin, Ethereum and many other assets.'},
+      {name:'Atomic Wallet',url:'https://atomicwallet.io/',domain:'atomicwallet.io',
+       blurb:'A multichain desktop wallet with built-in swapping.',
+       flag:'In June 2023 users lost an estimated $35–100 million in a breach later linked to state-backed hackers. The cause was never publicly confirmed. Consider a hardware wallet for any meaningful amount.'},
+    ]},
+    {name:'Browser and mobile',items:[
+      {name:'MetaMask',url:'https://metamask.io/',domain:'metamask.io',
+       blurb:'The most widely used browser wallet for Ethereum and chains built like it.'},
+      {name:'Trust Wallet',url:'https://trustwallet.com/',domain:'trustwallet.com',
+       blurb:'A popular wallet available as both a browser extension and a mobile app.'},
+      {name:'Rabby',url:'https://rabby.io/',domain:'rabby.io',
+       blurb:'A browser wallet that shows you what a transaction will do before you sign it.'},
+      {name:'TronLink',url:'https://www.tronlink.org/',domain:'tronlink.org',
+       blurb:'The main wallet for the Tron network, where a lot of USDT payouts land.'},
+    ]},
+    {name:'Hardware',items:[
+      {name:'Trezor',url:'https://trezorio.refr.cc/default/u/hunterr',domain:'trezor.io',via:'trezorio.refr.cc',ref:true,
+       blurb:'A well-known hardware wallet for storing crypto offline, long term.'},
+      {name:'Ledger',url:'https://www.ledger.com/',domain:'ledger.com',
+       blurb:'A widely used hardware wallet supporting a broad range of assets.'},
+      {name:'Tangem',url:'https://tangem.com/en/',domain:'tangem.com',
+       blurb:'A card-shaped hardware wallet built around simplicity — tap to sign.'},
+    ]},
+   ]},
+
+  {id:'identity',name:'Names & Identity',icon:'ti-address-book',
+   lead:'Services that let you swap a long wallet address for a readable name, so you can share yourname.eth instead of a 42-character string.',
+   note:{type:'info',title:'A name is an alias, not a replacement',
+     body:'Your original wallet address stays active and unchanged. Before sending funds to any name, confirm it resolves to the address you expect — names can be transferred or repointed.'},
+   groups:[{items:[
+     {name:'ENS',url:'https://ens.domains/',domain:'ens.domains',
+      blurb:'The Ethereum Name Service. Register a .eth name as a readable Ethereum address.'},
+     {name:'Unstoppable Domains',url:'https://unstoppabledomains.com/',domain:'unstoppabledomains.com',
+      blurb:'Multi-chain names sold once with no renewal fee, across a wide set of endings.'},
+     {name:'Space ID',url:'https://space.id/',domain:'space.id',
+      blurb:'Multi-chain naming with strong BNB Chain support, including .bnb names.'},
+   ]}]},
+
+  {id:'exchanges',name:'Exchanges',icon:'ti-building-bank',
+   lead:'Places to convert ordinary money into crypto and back. These hold your funds for you, which makes them convenient and means you are trusting the company.',
+   groups:[{items:[
+     {name:'Gemini',url:'https://www.gemini.com/',domain:'gemini.com',
+      blurb:'A regulated US-based exchange. No relation to Google\u2019s Gemini.'},
+     {name:'Kraken',url:'https://kraken.com',domain:'kraken.com',
+      blurb:'A long-standing exchange with a strong track record on security.'},
+     {name:'Crypto.com',url:'https://crypto.com/en',domain:'crypto.com',
+      blurb:'Trading, cards and related services in a single app.'},
+     {name:'Binance',url:'https://www.binance.com/en',domain:'binance.com',
+      blurb:'One of the largest exchanges globally. Availability varies by country.'},
+     {name:'Bisq',url:'https://bisq.network/',domain:'bisq.network',
+      blurb:'Peer-to-peer trading with no company holding your funds and no account.',
+      flag:'Considerably harder to use than the others here. Not a good first exchange.'},
+   ]}]},
+
+  {id:'swap',name:'Swap Services',icon:'ti-arrows-exchange',
+   lead:'Send one coin, receive another, usually without an account. Convenient for small conversions; rates are worse than an exchange.',
+   groups:[{items:[
+     {name:'FixedFloat',url:'https://ff.io/?ref=61ae6bqc',domain:'ff.io',ref:true,
+      blurb:'A fast swap service. Not available in the US.'},
+     {name:'SimpleSwap',url:'https://simpleswap.io/customer-account/signup?referral=IJqos24nRd',domain:'simpleswap.io',ref:true,
+      blurb:'A straightforward swap service. An account is optional but reduces fees.'},
+     {name:'SideShift',url:'https://sideshift.ai/a/aSyMb8Ml8',domain:'sideshift.ai',ref:true,
+      blurb:'A privacy-focused instant exchange with no signup.'},
+     {name:'CypherGoat',url:'https://cyphergoat.com/?ref=CGB8444980',domain:'cyphergoat.com',ref:true,
+      blurb:'An open-source swap service that compares rates across providers.'},
+   ]}]},
+
+  {id:'dex',name:'Decentralised Exchanges',icon:'ti-arrows-shuffle',
+   lead:'Trade directly from your own wallet, with no company holding your funds. You connect a wallet such as MetaMask rather than creating an account.',
+   groups:[{items:[
+     {name:'Uniswap',url:'https://app.uniswap.org/',domain:'app.uniswap.org',
+      blurb:'The primary decentralised exchange on Ethereum.'},
+     {name:'SushiSwap',url:'https://www.sushi.com/ethereum/swap',domain:'sushi.com',
+      blurb:'An established alternative to Uniswap across several chains.'},
+     {name:'Raydium',url:'https://raydium.io/swap/',domain:'raydium.io',
+      blurb:'The most used decentralised exchange on Solana.'},
+     {name:'PancakeSwap',url:'https://pancakeswap.finance/swap',domain:'pancakeswap.finance',
+      blurb:'The main decentralised exchange on BNB Chain.'},
+     {name:'Smol Refuel',url:'https://smolrefuel.com/?partner=0x00B28158d85a7a022aa978d5Ef08eC58dDb9e795',domain:'smolrefuel.com',ref:true,
+      blurb:'Get a small amount of a chain\u2019s gas token when you have none and cannot transact.'},
+   ]}]},
+
+  {id:'bridges',name:'Bridges',icon:'ti-transfer',
+   lead:'Move crypto from one network to another — for example funds sitting on Ethereum that you want to use on Arbitrum.',
+   note:{type:'warn',title:'Check the destination network twice',
+     body:'Sending to the wrong network is the most common way people permanently lose funds while bridging. Confirm the bridge supports both your asset and your destination before you start.'},
+   groups:[{items:[
+     {name:'Stargate',url:'https://stargate.finance/',domain:'stargate.finance',
+      blurb:'A widely used bridge moving assets natively across many networks.'},
+     {name:'Across Protocol',url:'https://across.to/',domain:'across.to',
+      blurb:'A fast, low-cost bridge focused on Ethereum and its layer 2 networks.'},
+     {name:'Hop Protocol',url:'https://app.hop.exchange/',domain:'app.hop.exchange',
+      blurb:'A simple bridge between Ethereum and the major layer 2 chains.'},
+     {name:'Orbiter Finance',url:'https://www.orbiter.finance/',domain:'orbiter.finance',
+      blurb:'A lightweight bridge covering a broad range of Ethereum-style networks.'},
+     {name:'deBridge',url:'https://debridge.finance/',domain:'debridge.finance',
+      blurb:'A cross-chain bridge and messaging protocol spanning many networks.'},
+   ]}]},
+
+  {id:'rpc',name:'Network Tools',icon:'ti-plug',
+   lead:'If a chain is missing from your wallet after bridging, these add it.',
+   note:{type:'warn',title:'Only add networks from sources you trust',
+     body:'A malicious network endpoint can watch your activity and show you false balances inside your own wallet. Chainlist checks the endpoints it lists and is generally safe.'},
+   groups:[{items:[
+     {name:'Chainlist',url:'https://chainlist.org/',domain:'chainlist.org',
+      blurb:'Add any Ethereum-style network to MetaMask in one click. Search and connect.'},
+     {name:'PublicNode',url:'https://www.publicnode.com/',domain:'publicnode.com',
+      blurb:'Free public network endpoints for a wide range of chains.'},
+   ]}]},
+
+  {id:'nft',name:'NFT Marketplaces',icon:'ti-photo',
+   lead:'Buying, selling and browsing NFTs across different networks.',
+   groups:[{items:[
+     {name:'OpenSea',url:'https://opensea.io/',domain:'opensea.io',
+      blurb:'One of the largest NFT marketplaces, covering multiple chains.'},
+     {name:'Magic Eden',url:'https://magiceden.io/',domain:'magiceden.io',
+      blurb:'A multi-chain marketplace known for being easy to browse.'},
+     {name:'Rarible',url:'https://rarible.com/',domain:'rarible.com',
+      blurb:'A multi-chain marketplace with strong support for creator royalties.'},
+     {name:'Element Market',url:'https://element.market/',domain:'element.market',
+      blurb:'A marketplace with particularly good BNB Chain coverage.'},
+     {name:'PancakeSwap NFT',url:'https://pancakeswap.finance/nfts',domain:'pancakeswap.finance',
+      blurb:'The native NFT marketplace on BNB Chain.'},
+   ]}]},
+
+  {id:'charts',name:'Prices & Market Data',icon:'ti-chart-line',
+   groups:[{items:[
+     {name:'CoinMarketCap',url:'https://coinmarketcap.com/',domain:'coinmarketcap.com',
+      blurb:'Prices, rankings and basic information on almost any token.'},
+     {name:'CoinGecko',url:'https://www.coingecko.com/',domain:'coingecko.com',
+      blurb:'Comprehensive market data and analytics. ChainKit uses it for prices.'},
+     {name:'DEX Screener',url:'https://dexscreener.com/',domain:'dexscreener.com',
+      blurb:'Live charts and trading history for tokens across many chains.'},
+   ]}]},
+
+  {id:'explorers',name:'Block Explorers',icon:'ti-list-search',
+   lead:'Public records of everything that has happened on a chain. Anyone can look up any transaction or wallet without an account.',
+   note:{type:'info',title:'Not sure which chain you need?',
+     body:'That is what the Lookup tab is for — paste a transaction hash there and ChainKit will work out which chain it belongs to and link you straight to the right explorer.'},
+   groups:[{items:[
+     {name:'Mempool.space',url:'https://mempool.space/',domain:'mempool.space',
+      blurb:'Bitcoin transactions, blocks and fee levels.'},
+     {name:'Etherscan',url:'https://etherscan.io/',domain:'etherscan.io',
+      blurb:'The main explorer for Ethereum.'},
+     {name:'BscScan',url:'https://bscscan.com/',domain:'bscscan.com',
+      blurb:'The main explorer for BNB Chain.'},
+     {name:'PolygonScan',url:'https://polygonscan.com/',domain:'polygonscan.com',
+      blurb:'The main explorer for Polygon.'},
+     {name:'BaseScan',url:'https://basescan.org/',domain:'basescan.org',
+      blurb:'The main explorer for Base.'},
+     {name:'Arbiscan',url:'https://arbiscan.io/',domain:'arbiscan.io',
+      blurb:'The main explorer for Arbitrum.'},
+     {name:'SolScan',url:'https://solscan.io/',domain:'solscan.io',
+      blurb:'The main explorer for Solana.'},
+     {name:'TronScan',url:'https://tronscan.org/',domain:'tronscan.org',
+      blurb:'The official explorer for Tron.'},
+     {name:'SnowScan',url:'https://snowscan.xyz/',domain:'snowscan.xyz',
+      blurb:'The main explorer for Avalanche.'},
+     {name:'SeiScan',url:'https://seiscan.io/',domain:'seiscan.io',
+      blurb:'The Etherscan-built explorer for Sei.'},
+     {name:'MonadScan',url:'https://monadscan.com/',domain:'monadscan.com',
+      blurb:'An explorer for the Monad network.'},
+   ]}]},
+
+  {id:'security',name:'Security & Safety',icon:'ti-shield-check',
+   lead:'Tools for reviewing what you have given apps permission to do, and for checking a transaction before you sign it. Using these regularly is the highest-value habit in crypto.',
+   note:{type:'ok',title:'The habits that matter',
+     body:'Revoke permissions after using an unfamiliar app. Simulate anything that feels off. And remember that no legitimate service — none, ever — will ask for your seed phrase.'},
+   groups:[
+    {name:'Permission management',items:[
+      {name:'Revoke.cash',url:'https://revoke.cash/',domain:'revoke.cash',
+       blurb:'Review and cancel token permissions you have granted to apps.'},
+      {name:'De.Fi Shield',url:'https://de.fi/scanner',domain:'de.fi',
+       blurb:'Scans a wallet for risky permissions and exposure across chains.'},
+    ]},
+    {name:'Transaction preview',items:[
+      {name:'Pocket Universe',url:'https://pocketuniverse.app/',domain:'pocketuniverse.app',
+       blurb:'A browser extension that simulates a transaction and warns you before you sign.'},
+      {name:'Fire',url:'https://www.joinfire.xyz/',domain:'joinfire.xyz',
+       blurb:'Shows exactly what a transaction will do to your wallet before you confirm.'},
+    ]},
+    {name:'BNB Chain specific',items:[
+      {name:'HashDit',url:'https://www.hashdit.io/',domain:'hashdit.io',
+       blurb:'Risk detection and scam alerts for BNB Chain, built by Binance\u2019s security team.'},
+    ]},
+   ]},
+
+  {id:'portfolio',name:'Portfolio Trackers',icon:'ti-chart-pie',
+   lead:'See holdings across several wallets and chains in one place.',
+   note:{type:'ok',title:'A tracker only needs your public address',
+     body:'Pasting a wallet address into a tracker is safe — it is public information. Never enter a seed phrase or private key into one. There is no legitimate reason a tracker would ask.'},
+   groups:[{items:[
+     {name:'DeBank',url:'https://debank.com/',domain:'debank.com',
+      blurb:'Multi-chain tracking with strong coverage of DeFi positions and BNB Chain.'},
+     {name:'Zapper',url:'https://zapper.xyz/',domain:'zapper.xyz',
+      blurb:'A dashboard for balances, DeFi positions and transaction history.'},
+     {name:'Zerion',url:'https://zerion.io/',domain:'zerion.io',
+      blurb:'A beginner-friendly tracker and wallet interface across many chains.'},
+     {name:'CoinStats',url:'https://coinstats.app/',domain:'coinstats.app',
+      blurb:'Combines self-custody wallets and exchange accounts in one view.'},
+   ]}]},
+
+  {id:'tax',name:'Tax & Reporting',icon:'ti-receipt',
+   lead:'Many countries treat crypto as a taxable asset, which can make trades, swaps and some DeFi activity reportable.',
+   note:{type:'warn',title:'This is not tax advice',
+     body:'Crypto tax rules differ by country and change often. Consult a qualified professional about your own situation rather than relying on any tool\u2019s output.'},
+   groups:[{items:[
+     {name:'Koinly',url:'https://koinly.io/',domain:'koinly.io',
+      blurb:'Widely used, supporting a large number of wallets, exchanges and chains.'},
+     {name:'CoinTracker',url:'https://www.cointracker.io/',domain:'cointracker.io',
+      blurb:'Tax and portfolio tracking with direct links into common filing software.'},
+     {name:'CoinLedger',url:'https://coinledger.io/',domain:'coinledger.io',
+      blurb:'Reporting with solid BNB Chain and DeFi history support.'},
+     {name:'Crypto.com Tax',url:'https://tax.crypto.com/',domain:'tax.crypto.com',
+      blurb:'A free reporting tool covering a broad range of wallets and exchanges.'},
+   ]}]},
+
+  {id:'news',name:'News & Research',icon:'ti-news',
+   lead:'Sources for keeping up. Cross-check anything important across more than one of them.',
+   groups:[
+    {name:'News',items:[
+      {name:'Decrypt',url:'https://decrypt.co/',domain:'decrypt.co',
+       blurb:'Accessible news and explainers suited to a range of experience levels.'},
+      {name:'The Block',url:'https://www.theblock.co/',domain:'theblock.co',
+       blurb:'In-depth industry and market coverage.'},
+      {name:'CoinDesk',url:'https://www.coindesk.com/',domain:'coindesk.com',
+       blurb:'One of the longest-running outlets, covering markets, policy and technology.'},
+    ]},
+    {name:'Research and on-chain data',items:[
+      {name:'DeFiLlama',url:'https://defillama.com/',domain:'defillama.com',
+       blurb:'Tracks how much money is held in each DeFi protocol — useful for judging whether a project is real.'},
+      {name:'BNB Chain Blog',url:'https://www.bnbchain.org/en/blog',domain:'bnbchain.org',
+       blurb:'Official updates and ecosystem announcements from the BNB Chain team.'},
+    ]},
+   ]},
+
+  {id:'education',name:'Learning',icon:'ti-school',
+   lead:'Reliable places to learn how crypto works, from first principles upward.',
+   note:{type:'ok',title:'Read a little, then do a little',
+     body:'The fastest way to build real confidence is to pair the guides above with tiny real transactions — amounts small enough that a mistake costs you nothing but the lesson.'},
+   groups:[{items:[
+     {name:'Binance Academy',url:'https://academy.binance.com/',domain:'academy.binance.com',
+      blurb:'A large free library covering crypto and blockchain fundamentals.'},
+     {name:'CoinMarketCap Academy',url:'https://coinmarketcap.com/academy/',domain:'coinmarketcap.com',
+      blurb:'Beginner-friendly articles on fundamentals and trading concepts.'},
+     {name:'CoinGecko Learn',url:'https://www.coingecko.com/learn',domain:'coingecko.com',
+      blurb:'Guides ranging from wallet basics through to DeFi concepts.'},
+     {name:'Investopedia Crypto',url:'https://www.investopedia.com/cryptocurrency-4427699',domain:'investopedia.com',
+      blurb:'Clear definitions from a long-trusted financial education source.'},
+   ]}]},
+
+  {id:'staking',name:'Staking & Yield',icon:'ti-percentage',
+   lead:'Earning a return on crypto you already hold. Every option here carries risk, and advertised rates are not guarantees.',
+   note:{type:'warn',title:'Yield is never free',
+     body:'These protocols carry risks including bugs in their code, liquidation, and losses from providing liquidity. Never deposit more than you can afford to lose, and check the URL carefully before connecting a wallet.'},
+   groups:[
+    {name:'Staking',items:[
+      {name:'Lido',url:'https://lido.fi/',domain:'lido.fi',
+       blurb:'Earn Ethereum staking rewards without locking your funds away.'},
+      {name:'Rocket Pool',url:'https://rocketpool.net/',domain:'rocketpool.net',
+       blurb:'A more decentralised Ethereum staking alternative.'},
+      {name:'PancakeSwap Pools',url:'https://pancakeswap.finance/pools',domain:'pancakeswap.finance',
+       blurb:'Staking pools on BNB Chain paying rewards in a range of tokens.'},
+    ]},
+    {name:'Lending',items:[
+      {name:'Venus Protocol',url:'https://app.venus.io/',domain:'venus.io',
+       blurb:'A BNB Chain lending and borrowing protocol.'},
+    ]},
+   ]},
+
+  {id:'earn',name:'Earn with Crypto',icon:'ti-coin',
+   lead:'Paid-to-click and similar platforms that pay out in cryptocurrency.',
+   groups:[{items:[
+     {name:'12 Dollars Per Click',url:'https://12dollarsperclick.net/Cerberus1',domain:'12dollarsperclick.net',ref:true,
+      blurb:'A paid-to-click platform paying members in cryptocurrency.'},
+     {name:'AdsFlowDaily',url:'https://adsflowdaily.com/?ref=Jenrock',domain:'adsflowdaily.com',ref:true,
+      blurb:'A daily ads platform with crypto earning opportunities.'},
+     {name:'ClickBaitPays',url:'https://clickbaitpays.me/?ref=cerberus1',domain:'clickbaitpays.me',ref:true,
+      blurb:'A newer paid-to-click platform. Disclosure: I helped build this one.'},
+   ]}]},
+
+  {id:'cards',name:'Crypto Cards',icon:'ti-credit-card',
+   lead:'Cards that let you spend crypto balances at ordinary merchants.',
+   note:{type:'warn',title:'Be careful with tiered memberships and referral schemes',
+     body:'Card programmes that sell access in membership tiers, or that pay large commissions for recruiting other members, deserve extra scrutiny before you deposit anything. Check who operates the company, how long it has existed, and whether the card is issued by a real bank.'},
+   groups:[{items:[
+     {name:'Vault27',url:'https://vault27.pro/frontend/signup.html?ref=F6113747',domain:'vault27.pro',ref:true,
+      blurb:'A crypto-backed debit card. Read the programme details before applying.',
+      extra:{label:'Read the programme details first',url:'https://info.vault27.pro/'}},
+     {name:'Bancus',url:'https://go.bancus.io/?ref=U9PSYT2B',domain:'bancus.io',ref:true,
+      blurb:'A crypto-friendly payment card.'},
+     {name:'UltimoPay',url:'https://ultimopay.io/',domain:'ultimopay.io',
+      blurb:'A crypto-backed card and payment platform.'},
+     {name:'TMX Global',url:'https://www.tmxglobal.io/',domain:'tmxglobal.io',
+      blurb:'A membership-based platform selling crypto-to-fiat cards, IBAN accounts and private trading access, sold in tiers with a multi-level referral programme. Launched 2025.'},
+   ]}]},
+
+  {id:'spend',name:'Spending Crypto',icon:'ti-shopping-bag',
+   lead:'Places that accept crypto directly, without converting to cash first.',
+   groups:[{items:[
+     {name:'Bitrefill',url:'https://www.bitrefill.com/invite/z6qjt9nu',domain:'bitrefill.com',ref:true,
+      blurb:'Gift cards and mobile top-ups paid for with crypto.'},
+     {name:'Stealths',url:'https://stealths.net/',domain:'stealths.net',
+      blurb:'Similar to Bitrefill, with more emphasis on privacy.'},
+     {name:'Mullvad',url:'https://mullvad.net/en',domain:'mullvad.net',
+      blurb:'A privacy-focused VPN that accepts crypto and requires no account details.'},
+     {name:'ShopinBit',url:'https://shopinbit.com/?partner=gmtn7258-72',domain:'shopinbit.com',ref:true,
+      blurb:'General goods bought with crypto. Code gmtn7258-72 takes \u20AC5 off at checkout.'},
+     {name:'The Giving Block',url:'https://thegivingblock.com/donate/',domain:'thegivingblock.com',
+      blurb:'A directory of charities accepting crypto donations.'},
+     {name:'NanoGPT',url:'https://nano-gpt.com/r/kFQdUXx9',domain:'nano-gpt.com',ref:true,
+      blurb:'Pay-per-use access to AI models, payable in crypto.'},
+   ]}]},
+];
+
+let dirQuery='', dirCat='all';
+const DIR_TOTAL=DIRECTORY.reduce((n,c)=>n+c.groups.reduce((m,g)=>m+g.items.length,0),0);
+const DIR_REFS=DIRECTORY.reduce((n,c)=>n+c.groups.reduce((m,g)=>m+g.items.filter(i=>i.ref).length,0),0);
+const NOTE_ICON={warn:'ti-alert-triangle',info:'ti-info-circle',ok:'ti-circle-check'};
+
+function dirItemHtml(it){
+  /* rel="sponsored" is the honest markup for a paid link. */
+  const rel=it.ref?'noopener noreferrer sponsored':'noopener noreferrer';
+  return`<div class="dir-item${it.flag?' flagged':''}">
+    <div class="dir-top">
+      <a class="dir-name" href="${esc(it.url)}" target="_blank" rel="${rel}">${esc(it.name)}<i class="ti ti-external-link" aria-hidden="true"></i><span class="sr">(opens in a new tab)</span></a>
+      ${it.ref?`<span class="ref-badge" title="Referral link — this site may earn a commission">Ref</span>`:''}
+    </div>
+    <div class="dir-domain">${esc(it.domain)}${it.via?` <span style="opacity:.75">· link goes via ${esc(it.via)}</span>`:''}</div>
+    <p class="dir-blurb">${esc(it.blurb)}</p>
+    ${it.flag?`<div class="dir-flag"><i class="ti ti-alert-triangle" aria-hidden="true"></i><span>${esc(it.flag)}</span></div>`:''}
+    ${it.extra?`<a class="dir-extra" href="${esc(it.extra.url)}" target="_blank" rel="${rel}">${esc(it.extra.label)} <i class="ti ti-arrow-right" aria-hidden="true"></i><span class="sr">(opens in a new tab)</span></a>`:''}
+  </div>`;
+}
+function dirMatch(it,q){
+  if(!q)return true;
+  /* Names and domains match on any substring, so partial typing works.
+     Descriptions match only at word starts — otherwise "tron" hits
+     every entry describing something as "strong". */
+  if(`${it.name} ${it.domain}`.toLowerCase().includes(q))return true;
+  const safe=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return new RegExp('\\b'+safe).test(it.blurb.toLowerCase());
+}
+function paintDirectory(){
+  const box=document.getElementById('dirResults');
+  if(!box)return;
+  const q=dirQuery.trim().toLowerCase();
+  const plain=!q&&dirCat==='all';
+  let total=0,html='';
+
+  if(plain)html+=`<div class="starters">
+    <h3>New to this? Start with these five</h3>
+    <p>Enough to receive a payment, check it arrived, and not get caught out. The full directory below covers everything else.</p>
+    <div class="starter-grid">${DIR_STARTERS.map(s=>`<div class="starter">
+      <a class="dir-name" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.name)}<i class="ti ti-external-link" aria-hidden="true"></i><span class="sr">(opens in a new tab)</span></a>
+      <div class="dir-domain">${esc(s.domain)}</div>
+      <p class="dir-blurb">${esc(s.why)}</p>
+    </div>`).join('')}</div>
+  </div>`;
+
+  for(const cat of DIRECTORY){
+    if(dirCat!=='all'&&dirCat!==cat.id)continue;
+    /* Searching "tax" should surface the whole Tax category, even for
+       entries whose own description never uses the word. */
+    const catHit=!!q&&cat.name.toLowerCase().includes(q);
+    let groups='',count=0;
+    for(const g of cat.groups){
+      const items=g.items.filter(it=>catHit||dirMatch(it,q));
+      if(!items.length)continue;
+      count+=items.length;
+      groups+=(g.name?`<div class="dir-group">${esc(g.name)}</div>`:'')
+        +`<div class="dir-grid">${items.map(dirItemHtml).join('')}</div>`;
+    }
+    if(!count)continue;
+    total+=count;
+    const note=cat.note&&!q
+      ?`<div class="notice ${cat.note.type}" style="margin-top:13px"><i class="ti ${NOTE_ICON[cat.note.type]}" aria-hidden="true"></i><div><b>${esc(cat.note.title)}</b>${esc(cat.note.body)}</div></div>`
+      :'';
+    html+=`<section class="dir-cat">
+      <div class="dir-cat-h"><i class="ti ${cat.icon}" aria-hidden="true"></i><h3>${esc(cat.name)}</h3>
+        <span class="dir-count">${count}</span></div>
+      ${cat.lead&&!q?`<p class="dir-lead">${esc(cat.lead)}</p>`:''}
+      ${groups}${note}
+    </section>`;
+  }
+
+  box.innerHTML=html||`<div class="dir-empty">Nothing here matches “${esc(dirQuery)}”. Try a shorter word, or a different category.</div>`;
+  const st=document.getElementById('dirStatus');
+  if(st)st.textContent=q?`${total} service${total===1?'':'s'} match.`:'';
+}
+function onDirSearch(v){ dirQuery=v; paintDirectory(); }
+function setDirCat(id){
+  dirCat=id;
+  document.querySelectorAll('.dir-chips .chip').forEach(b=>
+    b.setAttribute('aria-pressed',b.dataset.cat===id?'true':'false'));
+  paintDirectory();
+}
+function renderDirectory(){
+  /* Rebuild the shell only once, so a stray render() from a background
+     lookup never steals focus out of the search box. */
+  if(document.getElementById('dirShell')){ paintDirectory(); return; }
+  document.getElementById('main').innerHTML=`<div id="dirShell">
+    <div class="notice info">
+      <i class="ti ti-shield-check" aria-hidden="true"></i>
+      <div><b>Check the domain, not the name</b>
+      Fake sites copy names and logos perfectly — what they cannot copy is the domain. Every entry below shows its real one. Before typing anything into a crypto site, compare your address bar against what is written here, and close the tab if they differ.</div>
+    </div>
+    <div class="notice" style="background:var(--surface);border:1px solid var(--line)">
+      <i class="ti ti-info-circle" style="color:var(--text-3)" aria-hidden="true"></i>
+      <div><b>${DIR_TOTAL} services listed, ${DIR_REFS} of them referral links</b>
+      Referral links are marked <span class="ref-badge">Ref</span>. Signing up through one may earn this site a commission at no extra cost to you, which is what pays for running these tools. Nothing here is audited or endorsed, and being listed is not a recommendation — research anything before trusting it with money.</div>
+    </div>
+    <div class="dir-search">
+      <label class="sr" for="dirQ">Search the directory</label>
+      <input class="field" id="dirQ" type="text" autocomplete="off" spellcheck="false"
+        placeholder="Search by name, domain, or what it does…"
+        value="${esc(dirQuery)}" oninput="onDirSearch(this.value)">
+    </div>
+    <p class="sr" id="dirStatus" role="status" aria-live="polite"></p>
+    <div class="dir-chips" role="group" aria-label="Filter by category">
+      <button class="chip" type="button" data-cat="all" aria-pressed="${dirCat==='all'}" onclick="setDirCat('all')">Everything</button>
+      ${DIRECTORY.map(c=>`<button class="chip" type="button" data-cat="${c.id}" aria-pressed="${dirCat===c.id}" onclick="setDirCat('${c.id}')">${esc(c.name)}</button>`).join('')}
+    </div>
+    <div id="dirResults"></div>
+  </div>`;
+  paintDirectory();
+}
+
 /* ═══ MAIN RENDER ═══ */
 function render(){
   if(activeTab==='gas'){renderGas();return;}
   if(activeTab==='prices'){renderPrices();return;}
   if(activeTab==='security'){renderSecurity();return;}
+  if(activeTab==='directory'){renderDirectory();return;}
   const el=document.getElementById('main');
   if(appMode==='idle'){ el.innerHTML=welcome(); return; }
   if(resolutionError){ el.innerHTML=emptyState(); return; }
