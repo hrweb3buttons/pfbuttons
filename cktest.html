@@ -142,8 +142,19 @@
     text-align:right;font-variant-numeric:tabular-nums;
     padding-left:12px;border-left:1px solid var(--line);
   }
-  .clock-t{font-family:var(--mono);font-size:14px;font-weight:600;line-height:1.2}
-  .clock-z{font-size:11px;color:var(--text-3)}
+  .clock-t{font-family:var(--mono);font-size:15px;font-weight:600;line-height:1.15}
+  .clock-z{
+    display:inline-flex;align-items:center;gap:4px;
+    background:none;border:none;padding:1px 0;margin-top:1px;
+    font:inherit;font-size:11px;color:var(--text-3);cursor:pointer;
+    transition:color .15s;
+  }
+  .clock-z:hover{color:var(--accent)}
+  .clock-z i{font-size:12px;opacity:.65}
+  .clock-reset{
+    font-size:11px;font-weight:600;color:var(--accent);
+    margin-top:2px;display:flex;align-items:center;gap:4px;justify-content:flex-end;
+  }
 
   /* ── Trust strip ── */
   .trust{
@@ -533,7 +544,11 @@
 
   @media(max-width:620px){
     .top{padding:1.2rem 0 .9rem}
-    .clock{display:none}
+    .top-right{
+      margin-left:0;width:100%;justify-content:space-between;
+      border-top:1px solid var(--line);margin-top:4px;padding-top:10px;
+    }
+    .clock{padding-left:0;border-left:none}
     .brand h1{font-size:19px}
     .btn span{display:none}
     .btn{padding:0 16px}
@@ -564,7 +579,11 @@
       </div>
       <div class="clock">
         <div class="clock-t" id="clockTime">—</div>
-        <button class="clock-z" id="clockZone" type="button" style="background:none;border:none;cursor:pointer;font:inherit;color:var(--text-3)" title="Switch between your local time and UTC">—</button>
+        <button class="clock-z" id="clockZone" type="button">
+          <span id="clockZoneLabel">—</span>
+          <i class="ti ti-switch-horizontal" aria-hidden="true"></i>
+        </button>
+        <div class="clock-reset" id="clockReset" style="display:none"></div>
       </div>
     </div>
   </header>
@@ -727,17 +746,49 @@ const ROLLUPS=new Set(['arbitrum','optimism','base','zksync','scroll','linea','b
 let appMode='idle', statuses={}, results={}, searching=false;
 let activeChains=[], currentInput='', resolvedDomain='', resolutionError='', ambiguous=null;
 let activeTab='lookup';
-let useUTC=(store.get('chainkit_tz')==='utc');
 const onDemandLabels={}, sanctionFlags=new Set(), batchFilters={};
 
-/* ═══ TIME ═══ */
+/* ═══ TIME ═══
+   Three zones, one preference. Local is the default: someone reading a
+   transaction timestamp cares about their own clock. Panama is offered
+   because the site this tool supports runs on Panama time, and members
+   need to know when its day rolls over. */
 const LOCAL_TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';
-function tzName(){ return useUTC?'UTC':LOCAL_TZ; }
-function tzLabel(){
-  if(useUTC)return'UTC';
-  const short=LOCAL_TZ.split('/').pop().replace(/_/g,' ');
+function localLabel(){
+  const place=LOCAL_TZ.split('/').pop().replace(/_/g,' ');
   const off=-new Date().getTimezoneOffset()/60;
-  return `${short} (UTC${off>=0?'+':''}${off})`;
+  const abs=Math.abs(off);
+  return `${place} (UTC${off>=0?'+':'−'}${Number.isInteger(abs)?abs:abs.toFixed(1)})`;
+}
+const TZ_MODES=[
+  {id:'local', tz:LOCAL_TZ,         label:localLabel,           name:'your local time'},
+  {id:'utc',   tz:'UTC',            label:()=>'UTC',            name:'UTC'},
+  {id:'panama',tz:'America/Panama', label:()=>'Panama (UTC−5)', name:'Panama time'},
+];
+let tzMode=store.get('chainkit_tz')||'local';
+if(!TZ_MODES.some(m=>m.id===tzMode))tzMode='local';
+function curTz(){ return TZ_MODES.find(m=>m.id===tzMode)||TZ_MODES[0]; }
+function nextTz(){ return TZ_MODES[(TZ_MODES.findIndex(m=>m.id===tzMode)+1)%TZ_MODES.length]; }
+function tzName(){ return curTz().tz; }
+function tzLabel(){ return curTz().label(); }
+
+/* ── Daily reset countdown ──────────────────────────────────────
+   Set this to the hour (0–23, Panama time) at which the site's day
+   rolls over and members can start clicking again. Leave it as null
+   and no countdown is shown anywhere.
+   Example: const DAILY_RESET_HOUR = 0;  // midnight in Panama
+──────────────────────────────────────────────────────────────── */
+const DAILY_RESET_HOUR=null;
+function untilReset(){
+  if(DAILY_RESET_HOUR===null)return null;
+  const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Panama',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(new Date());
+  const get=t=>parseInt(parts.find(p=>p.type===t).value,10);
+  const now=(get('hour')%24)*3600+get('minute')*60+get('second');
+  let diff=DAILY_RESET_HOUR*3600-now;
+  if(diff<=0)diff+=86400;
+  const h=Math.floor(diff/3600),m=Math.floor(diff%3600/60),s=diff%60;
+  return h>0?`${h}h ${m}m`:m>0?`${m}m ${s}s`:`${s}s`;
 }
 function dtf(opts){ return new Intl.DateTimeFormat('en-GB',{timeZone:tzName(),...opts}); }
 function fmtTime(d){ return dtf({hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d); }
@@ -2614,15 +2665,29 @@ applyTheme();
 
 /* ═══ CLOCK ═══ */
 function tick(){
-  const t=document.getElementById('clockTime'), z=document.getElementById('clockZone');
-  if(!t||!z)return;
-  const now=new Date();
-  t.textContent=fmtTime(now);
+  const t=document.getElementById('clockTime'),
+        z=document.getElementById('clockZoneLabel'),
+        b=document.getElementById('clockZone'),
+        r=document.getElementById('clockReset');
+  if(!t||!z||!b)return;
+  t.textContent=fmtTime(new Date());
   z.textContent=tzLabel();
+  const next=`Switch to ${nextTz().name}`;
+  b.title=next;
+  b.setAttribute('aria-label',`Clock showing ${curTz().name}. ${next}.`);
+  if(r){
+    const left=untilReset();
+    if(left){
+      r.innerHTML=`<i class="ti ti-refresh" aria-hidden="true"></i> Resets in ${esc(left)}`;
+      r.style.display='';
+    }else r.style.display='none';
+  }
 }
 document.getElementById('clockZone').addEventListener('click',()=>{
-  useUTC=!useUTC; store.set('chainkit_tz',useUTC?'utc':'local');
-  tick(); render(); say(`Times now shown in ${tzLabel()}`);
+  tzMode=nextTz().id;
+  store.set('chainkit_tz',tzMode);
+  tick(); render();
+  say(`All times now shown in ${curTz().name}`);
 });
 setInterval(tick,1000); tick();
 
