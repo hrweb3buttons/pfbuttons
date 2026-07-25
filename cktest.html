@@ -778,7 +778,7 @@ function tzLabel(){ return curTz().label(); }
    and no countdown is shown anywhere.
    Example: const DAILY_RESET_HOUR = 0;  // midnight in Panama
 ──────────────────────────────────────────────────────────────── */
-const DAILY_RESET_HOUR=null;
+const DAILY_RESET_HOUR=0;
 function untilReset(){
   if(DAILY_RESET_HOUR===null)return null;
   const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Panama',
