@@ -585,6 +585,80 @@
   .starter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
   .starter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px}
 
+  /* ── Deposits / coin list ── */
+  .dep-head{margin-bottom:1rem}
+  .dep-head h3{font-family:var(--display);font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .dep-head p{font-size:13px;color:var(--text-2);margin-top:3px;max-width:72ch}
+  .dep-meta{font-size:11.5px;color:var(--text-3);margin-top:6px}
+  .coin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:9px}
+  .coin{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r);padding:12px 14px;
+  }
+  .coin.star{border-color:var(--accent-line);background:var(--accent-soft)}
+  .coin.risky{border-color:var(--warn-line);background:var(--warn-soft)}
+  .coin-tk{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:-.01em}
+  .coin-nm{font-size:12px;color:var(--text-2);margin-top:1px;line-height:1.35}
+  .coin-d{font-size:11.5px;color:var(--text-3);margin:8px 0;line-height:1.5}
+  .coin-warn{
+    font-size:11.5px;color:var(--warn);margin:8px 0;line-height:1.45;
+    display:flex;align-items:flex-start;gap:6px;
+  }
+  .coin-warn i{flex-shrink:0;margin-top:2px}
+  .coin-nets{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+  .nb{
+    font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:6px;
+    border:1px solid var(--line);background:var(--surface-2);color:var(--text-2);
+  }
+  .nb.n-eth{background:var(--info-soft);border-color:var(--info-line);color:var(--info)}
+  .nb.n-bsc{background:var(--warn-soft);border-color:var(--warn-line);color:var(--warn)}
+  .nb.n-trx{background:var(--bad-soft);border-color:var(--bad-line);color:var(--bad)}
+  .nb.n-sol{background:var(--violet-soft);border-color:var(--violet-line);color:var(--violet)}
+  .coin-sec{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--text-3);margin:1.5rem 0 .65rem;padding-bottom:5px;
+    border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:7px;
+  }
+  .coin-sec span{font-weight:400;text-transform:none;letter-spacing:0}
+  .star-wrap{
+    background:var(--accent-soft);border:1px solid var(--accent-line);
+    border-radius:var(--r-lg);padding:14px 15px;margin-bottom:.4rem;
+  }
+  .star-label{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--text-2);margin-bottom:10px;
+  }
+  details.explain{
+    border:1px solid var(--line);border-radius:var(--r);
+    background:var(--surface);margin-bottom:9px;
+  }
+  details.explain summary{
+    padding:11px 15px;cursor:pointer;font-size:13.5px;font-weight:600;
+    list-style:none;display:flex;align-items:center;gap:8px;
+  }
+  details.explain summary::-webkit-details-marker{display:none}
+  details.explain summary::before{
+    content:'\ea5f';font-family:'tabler-icons';font-size:15px;
+    color:var(--accent);transition:transform .15s;
+  }
+  details.explain[open] summary::before{transform:rotate(90deg)}
+  .explain-body{padding:0 15px 14px;font-size:12.5px;color:var(--text-2);line-height:1.6}
+  .explain-body p{margin-bottom:9px}
+  .explain-body p:last-child{margin-bottom:0}
+  .explain-body b{color:var(--text)}
+  table.nets{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+  table.nets th{
+    text-align:left;font-weight:600;color:var(--text);padding:5px 8px;
+    border-bottom:2px solid var(--line);font-size:11px;
+    text-transform:uppercase;letter-spacing:.05em;
+  }
+  table.nets td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--text-2)}
+  table.nets td:first-child{white-space:nowrap}
+  table.nets tr:last-child td{border-bottom:none}
+  .glossary{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:7px 16px;margin-top:10px}
+  .gloss-row{font-size:12px;line-height:1.5;padding:3px 0}
+  .gloss-row b{font-family:var(--mono);font-size:11.5px;color:var(--text);display:block}
+
   /* ── Footer ── */
   footer{
     margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--line);
@@ -661,6 +735,7 @@
     <button role="tab" id="tab-prices"   aria-controls="main" aria-selected="false" data-tab="prices" tabindex="-1"><i class="ti ti-currency-dollar" aria-hidden="true"></i> Prices</button>
     <button role="tab" id="tab-security" aria-controls="main" aria-selected="false" data-tab="security" tabindex="-1"><i class="ti ti-shield-search" aria-hidden="true"></i> Safety check</button>
     <button role="tab" id="tab-directory" aria-controls="main" aria-selected="false" data-tab="directory" tabindex="-1"><i class="ti ti-compass" aria-hidden="true"></i> Directory</button>
+    <button role="tab" id="tab-deposits" aria-controls="main" aria-selected="false" data-tab="deposits" tabindex="-1"><i class="ti ti-coins" aria-hidden="true"></i> Deposits</button>
   </nav>
 
   <div class="search" id="searchRow">
@@ -678,7 +753,7 @@
   <p class="sr" id="live" role="status" aria-live="polite"></p>
 
   <footer>
-    <p><b>ChainKit is an independent, unofficial tool.</b> It reads public blockchain data through third-party APIs and shows it back to you. It is not affiliated with any exchange, wallet, or blockchain project.</p>
+    <p><b>ChainKit is an independent, unofficial tool.</b> It reads public blockchain data through third-party APIs and shows it back to you. Every tab except Deposits is general reference and is not affiliated with any exchange, wallet, or blockchain project. The Deposits tab lists the coins accepted by one specific site through its payment processor.</p>
     <p>Information here is provided as-is for general reference. It is not financial, legal, tax, or compliance advice. Balances, prices, and safety checks can be incomplete, delayed, or wrong — always confirm anything important on the chain's own block explorer.</p>
     <p>Price data from CoinGecko. Token safety data from GoPlus Labs and Honeypot.is. Sanctions screening is a best-effort check against an unofficial dataset and is never authoritative.</p>
   </footer>
@@ -3132,12 +3207,647 @@ function renderDirectory(){
   paintDirectory();
 }
 
+/* ═══════════════════════════════════════════════
+   DEPOSITS
+
+   The coins accepted for deposits at one specific
+   site, through its payment processor. Unlike the
+   rest of ChainKit this section is site-specific.
+
+   ── SET THESE ─────────────────────────────────
+   Fill in the site name and address below. The
+   "checked" date is shown to visitors, so update
+   it whenever you reconcile this list against the
+   processor's current supported-currency page.
+═══════════════════════════════════════════════ */
+const DEPOSIT_SITE={
+  name:'[set site name]',
+  url:'',
+  processor:'NowPayments',
+  processorUrl:'https://nowpayments.io/',
+  checked:'25 July 2026',
+};
+
+const COIN_GROUPS=[
+  {id:'all',     label:'All',            desc:''},
+  {id:'major',   label:'Major coins',    desc:'The most established and widely traded cryptocurrencies. If you are new, deposit with one of these.'},
+  {id:'stables', label:'Stablecoins',    desc:'Pegged to a real-world currency, usually the US dollar, so the value stays roughly constant. Useful for deposits when you do not want the amount moving while it settles. The same stablecoin often exists on several networks — always confirm which one before sending.'},
+  {id:'layer1',  label:'Layer 1',        desc:'Independent blockchains with their own networks, validators and native coins.'},
+  {id:'layer2',  label:'Layer 2',        desc:'Networks built on top of an existing blockchain, usually Ethereum, to make transactions faster and much cheaper.'},
+  {id:'privacy', label:'Privacy',        desc:'Built to keep the sender, recipient and amount private. Note that this also makes deposits harder to trace if something goes wrong.'},
+  {id:'defi',    label:'DeFi',           desc:'Tokens powering lending, trading and financial services that run without banks in the middle.'},
+  {id:'exchange',label:'Exchange tokens',desc:'Issued by crypto exchanges. Holding them often earns fee discounts or other perks on their own platforms.'},
+  {id:'gaming',  label:'Gaming & NFT',   desc:'Tokens used in blockchain games, NFT platforms, virtual worlds and fan engagement apps.'},
+  {id:'meme',    label:'Meme coins',     desc:'Community-driven tokens built on internet culture. Highly speculative and volatile — prices can move dramatically in either direction.'},
+  {id:'ai',      label:'AI & tech',      desc:'Tokens behind AI tools, decentralised computing and data marketplaces.'},
+  {id:'ton',     label:'TON ecosystem',  desc:'Coins native to TON, the blockchain built into Telegram, home to its mini-apps and tap-to-earn games.'},
+  {id:'infra',   label:'Infrastructure', desc:'Protocols, oracles, bridges, identity tools and the utilities that hold the rest of the ecosystem together.'},
+];
+
+/* Which networks get a colour. Everything else renders neutral. */
+const NET_CLASS={ETH:'n-eth',Ethereum:'n-eth',BSC:'n-bsc',TRX:'n-trx',Tron:'n-trx',Solana:'n-sol'};
+
+/* Plain-language description of every network that appears below.
+   This used to live only in hover tooltips, which meant it did not
+   exist at all on a phone. */
+const NET_INFO={
+  'ETH':'Ethereum (ERC-20). The most widely supported network, and usually the most expensive to send on.',
+  'Ethereum':'Ethereum (ERC-20). The most widely supported network, and usually the most expensive to send on.',
+  'BSC':'BNB Smart Chain (BEP-20). Binance\u2019s network. Much cheaper than Ethereum.',
+  'TRX':'Tron (TRC-20). Very low fees, and by far the most common network for sending USDT.',
+  'Tron':'Tron (TRC-20). Very low fees, and by far the most common network for sending USDT.',
+  'Solana':'Solana (SPL). Fast and cheap, with a large and growing ecosystem.',
+  'Polygon':'Polygon (PoS). A faster, cheaper sidechain of Ethereum.',
+  'TON':'TON. Telegram\u2019s own blockchain.',
+  'Arbitrum':'Arbitrum One. An Ethereum layer 2 — lower fees, backed by Ethereum\u2019s security.',
+  'Optimism':'Optimism. An Ethereum layer 2 rollup with much lower fees than the mainnet.',
+  'Base':'Base. Coinbase\u2019s Ethereum layer 2.',
+  'Linea':'Linea. An Ethereum layer 2 built by ConsenSys, the company behind MetaMask.',
+  'ZkSync Era':'zkSync Era. An Ethereum layer 2 using zero-knowledge proofs.',
+  'zkSync Era':'zkSync Era. An Ethereum layer 2 using zero-knowledge proofs.',
+  'Starknet':'Starknet. An Ethereum layer 2 using ZK-STARK proofs.',
+  'opBNB':'opBNB. A layer 2 on BNB Smart Chain for even cheaper transactions.',
+  'AVAX C':'Avalanche C-Chain. Ethereum-compatible, fast and cheap.',
+  'AVAX X':'Avalanche X-Chain. Avalanche\u2019s native asset chain, separate from the C-Chain.',
+  'Bitcoin':'The Bitcoin network. The original blockchain — secure, but slower and pricier than newer chains.',
+  'Litecoin':'The Litecoin network. Faster and cheaper than Bitcoin.',
+  'Dogecoin':'The Dogecoin network. Low fees, quick confirmations.',
+  'Bitcoin Cash':'Bitcoin Cash. A Bitcoin fork aimed at everyday payments.',
+  'Bitcoin SV':'Bitcoin SV. A Bitcoin fork focused on large-scale data storage.',
+  'Bitcoin Gold':'Bitcoin Gold. A Bitcoin fork mineable with ordinary graphics cards.',
+  'Bitcoin Diamond':'The Bitcoin Diamond network.',
+  'Monero':'Monero. Private and untraceable by default.',
+  'Zcash':'Zcash. Optional private transactions using zero-knowledge proofs.',
+  'Dash':'Dash. Optional privacy with near-instant settlement.',
+  'Cardano':'The Cardano network.',
+  'Stellar':'Stellar. Built for fast, cheap cross-border payments.',
+  'Ripple':'The XRP Ledger. Settles international transfers in seconds.',
+  'Algorand':'Algorand. Fast, low-energy, pure proof-of-stake.',
+  'Near':'NEAR Protocol. Very low fees and readable account names.',
+  'NEAR':'NEAR Protocol. Very low fees and readable account names.',
+  'Tezos':'Tezos. A self-upgrading blockchain that avoids contentious forks.',
+  'EOS':'The EOS network.',
+  'KAVA':'Kava. A Cosmos-based DeFi chain.',
+  'CELO':'Celo. A mobile-first blockchain aimed at financial inclusion.',
+  'Cosmos':'Cosmos Hub. The centre of the "internet of blockchains".',
+  'Polkadot':'The Polkadot relay chain, connecting many blockchains together.',
+  'THORChain':'THORChain. Cross-chain liquidity for swapping native assets.',
+  'Fantom':'Fantom Opera. Fast and Ethereum-compatible; being succeeded by Sonic.',
+  'Sonic':'Sonic. The rebuilt successor to Fantom.',
+  'Hedera':'Hedera. An enterprise ledger governed by a council of large companies.',
+  'MultiversX':'MultiversX, formerly Elrond. A high-speed sharded blockchain.',
+  'Harmony':'The Harmony network.',
+  'Aptos':'Aptos. Built by former Meta engineers using the Move language.',
+  'Sui':'Sui. A high-throughput Move-language blockchain.',
+  'Injective':'Injective. A Cosmos chain built for DeFi and trading.',
+  'Terra':'Terra 2.0, launched after the original Terra chain collapsed in 2022.',
+  'LUNA':'Terra 2.0, launched after the original Terra chain collapsed in 2022.',
+  'Terra Classic':'Terra Classic. The original chain that collapsed in May 2022. Very high risk.',
+  'HyperEVM':'HyperEVM. Hyperliquid\u2019s own Ethereum-compatible chain.',
+  'Pulse':'PulseChain. An Ethereum fork created by Richard Heart.',
+  'ETH Classic':'Ethereum Classic. The original Ethereum chain, still proof-of-work.',
+  'EthereumPoW':'EthereumPoW. A proof-of-work fork made when Ethereum moved to proof-of-stake.',
+  'KuCoin':'KuCoin Community Chain. KuCoin\u2019s own Ethereum-compatible network.',
+  'Bahamut':'Bahamut. Fastex\u2019s blockchain for gaming and entertainment.',
+  'WEMIX':'WEMIX. WeMade\u2019s dedicated gaming blockchain.',
+  'Syscoin':'Syscoin. Merge-mined with Bitcoin, with Ethereum-style smart contracts.',
+  'Bitgert':'Bitgert. Near-zero gas fees.',
+  'Solar':'Solar Network. A delegated proof-of-stake blockchain.',
+  'QIE':'The QIE blockchain.',
+  'XYM':'Symbol. NEM\u2019s enterprise-focused successor.',
+  'ICON':'The ICON network.',
+  'NEM':'The NEM network.',
+  'Ontology':'Ontology. Focused on digital identity and data.',
+  'Waves':'The Waves blockchain.',
+  'VeChain':'VeChain Thor. Enterprise supply-chain tracking.',
+  'Zilliqa':'Zilliqa. One of the first sharded blockchains.',
+  'Sei':'Sei. Built specifically for high-speed on-chain trading.',
+  'Berachain':'Berachain. Rewards liquidity providers with block rewards.',
+  'Kaia':'Kaia. The merged Klaytn and Finschia chain, backed by Kakao and Line.',
+  'Klaytn':'Klaytn. Kakao\u2019s original chain, now merging into Kaia.',
+  'Conflux':'Conflux. Uses tree-graph consensus; widely used in China.',
+  'Casper':'Casper. Enterprise-focused proof-of-stake.',
+  'XDC':'XDC Network. Built for trade finance and cross-border payments.',
+  'IoTeX':'IoTeX. A blockchain for connecting smart devices.',
+  'Theta':'Theta. Decentralised video streaming and delivery.',
+  'IOTA':'IOTA. A feeless ledger designed for machine-to-machine payments.',
+  'Aeternity':'The Aeternity blockchain.',
+  'Velas':'Velas. A delegated proof-of-stake chain.',
+  'Horizen':'Horizen. A privacy-focused sidechain platform.',
+  'Pivx':'PIVX. Private, instant, verified transactions.',
+  'EpicCash':'Epic Cash. Uses the MimbleWimble privacy protocol.',
+  'Zcoin':'Zcoin, now Firo. Privacy via zero-knowledge proofs.',
+  'Verge':'Verge. Routes traffic through Tor and I2P to hide IP addresses.',
+  'Ark':'The Ark blockchain.',
+  'Decred':'Decred. Hybrid proof-of-work and proof-of-stake with on-chain voting.',
+  'Komodo':'The Komodo platform.',
+  'Groestlcoin':'Groestlcoin. A low-fee Bitcoin alternative.',
+  'DigiByte':'DigiByte. Fast, multi-algorithm proof-of-work.',
+  'Lisk':'The Lisk network.',
+  'Ravencoin':'Ravencoin. Built for issuing and transferring digital assets.',
+  'Stratis':'Stratis. A .NET blockchain aimed at enterprises.',
+  'Divi':'Divi. Masternode-based staking and governance.',
+  'Kaspa':'Kaspa. Proof-of-work with much faster blocks than Bitcoin.',
+  'eCash':'eCash. A Bitcoin Cash offshoot focused on instant payments.',
+  'Stacks':'Stacks. Brings smart contracts to Bitcoin, settling on the Bitcoin chain.',
+  'Qtum':'Qtum. Bitcoin\u2019s accounting model with Ethereum smart contracts.',
+  'NEO':'The NEO network.',
+  'Nano':'Nano. Feeless and instant, with no mining.',
+  'KLV':'The Klever blockchain.',
+};
+
+const FEATURED_COINS=new Set(['BTC','ETH','USDT','USDC','BNB','SOL','DOGE','XRP','ADA','TRX','TON','LTC']);
+
+/* n=name, t=ticker, nets=networks, g=group, d=description,
+   aka=extra search terms, w=warning shown on the card */
+const COINS=[
+  /* ── MAJOR ── */
+  {n:'Bitcoin',t:'BTC',nets:['Bitcoin'],g:'major',d:'The original cryptocurrency, launched in 2009. Fixed supply of 21 million coins and the most widely recognised crypto in the world.',aka:['satoshi','digital gold']},
+  {n:'Ethereum',t:'ETH',nets:['Ethereum','Linea','ZkSync Era','Arbitrum','Base','BSC'],g:'major',d:'The leading smart contract platform, powering most DeFi apps, NFTs and tokens. Second largest crypto by market value.',aka:['ether','vitalik','vitalik buterin']},
+  {n:'Litecoin',t:'LTC',nets:['Litecoin'],g:'major',d:'One of the first Bitcoin alternatives. Faster and cheaper than Bitcoin, which makes it a practical choice for smaller deposits.',aka:['digital silver','charlie lee']},
+  {n:'Bitcoin Cash',t:'BCH',nets:['Bitcoin Cash'],g:'major',d:'A 2017 fork of Bitcoin built for faster, cheaper everyday payments using larger blocks.',aka:['bcash','roger ver']},
+  {n:'Ripple',t:'XRP',nets:['Ripple'],g:'major',d:'Designed for fast, low-cost international transfers. Settles in seconds.',aka:['xrp ledger','xrpl','brad garlinghouse']},
+  {n:'Dogecoin',t:'DOGE',nets:['Dogecoin'],g:'major',d:'Started as an internet joke in 2013 and became one of the best-known coins in the world. Low fees and quick confirmations.',aka:['doge','elon musk','elon','shibetoshi nakamoto']},
+  {n:'Cardano',t:'ADA',nets:['Cardano'],g:'major',d:'A research-driven blockchain built on peer-reviewed academic work, with a focus on long-term sustainability.',aka:['charles hoskinson','ouroboros']},
+  {n:'Solana',t:'SOL',nets:['Solana'],g:'major',d:'A very fast, very cheap blockchain popular for NFTs, meme coins and DeFi. Handles thousands of transactions per second.',aka:['anatoly yakovenko']},
+  {n:'Toncoin',t:'TON',nets:['TON'],g:'major',d:'The blockchain built into Telegram, reachable by hundreds of millions of users through its mini-apps and games.',aka:['telegram','the open network','pavel durov']},
+  {n:'Polkadot',t:'DOT',nets:['Polkadot'],g:'major',d:'Connects separate blockchains so they can share data and tokens with each other.',aka:['gavin wood','parachain','web3 foundation']},
+  {n:'Tron',t:'TRX',nets:['Tron'],g:'major',d:'A high-throughput chain, especially popular for sending stablecoins like USDT at very low cost.',aka:['justin sun','tronix']},
+  {n:'Ethereum Classic',t:'ETC',nets:['ETH Classic'],g:'major',d:'The original Ethereum chain, preserved after a contested split in 2016. Still runs on proof-of-work.',aka:['etc'],w:'Not interchangeable with Ethereum (ETH). Sending one to the other\u2019s address will lose the funds.'},
+  {n:'EthereumPoW',t:'ETHW',nets:['EthereumPoW'],g:'major',d:'A proof-of-work fork of Ethereum created in 2022 when Ethereum itself moved to proof-of-stake.',aka:['eth pow','proof of work eth'],w:'A separate coin from Ethereum (ETH) despite the similar name.'},
+  {n:'Bitcoin SV',t:'BSV',nets:['Bitcoin SV'],g:'major',d:'A 2018 Bitcoin fork aiming to restore the original protocol at very large scale.',aka:['satoshi vision','craig wright']},
+  {n:'Bitcoin Gold',t:'BTG',nets:['Bitcoin Gold'],g:'major',d:'A 2017 Bitcoin fork designed to be mineable with ordinary graphics cards.',aka:['equihash bitcoin']},
+  {n:'Bitcoin Diamond',t:'BCD',nets:['Bitcoin Diamond'],g:'major',d:'A Bitcoin fork with faster blocks and a larger supply.',aka:['bcd']},
+  {n:'Nano',t:'XNO',nets:['Nano'],g:'major',d:'Feeless and instant, with no mining at all. Built purely for fast peer-to-peer payments.',aka:['raiblocks','feeless']},
+  {n:'Decred',t:'DCR',nets:['Decred'],g:'major',d:'Combines proof-of-work and proof-of-stake, letting holders vote directly on changes to the protocol.',aka:['decentralized credit']},
+  {n:'Komodo',t:'KMD',nets:['Komodo'],g:'major',d:'A platform for atomic swaps and independent connected blockchains.',aka:['komodo platform']},
+  {n:'Groestlcoin',t:'GRS',nets:['Groestlcoin'],g:'major',d:'A long-running, low-fee Bitcoin alternative.',aka:['groestl']},
+  {n:'DigiByte',t:'DGB',nets:['DigiByte'],g:'major',d:'A fast proof-of-work chain secured by five separate mining algorithms.',aka:['dgb']},
+  {n:'Lisk',t:'LSK',nets:['Lisk'],g:'major',d:'A JavaScript-based platform for building blockchain applications.',aka:['lsk']},
+  {n:'Ark',t:'ARK',nets:['Ark'],g:'major',d:'A delegated proof-of-stake chain focused on linking blockchains together.',aka:['ark ecosystem']},
+  {n:'Ravencoin',t:'RVN',nets:['Ravencoin'],g:'major',d:'A Bitcoin fork built specifically for creating and transferring custom digital assets.',aka:['raven','asset creation']},
+  {n:'Stratis',t:'STRAX',nets:['Stratis'],g:'major',d:'A C# and .NET blockchain platform aimed at enterprise developers.',aka:['strax']},
+  {n:'Divi',t:'DIVI',nets:['Divi'],g:'major',d:'A masternode-based chain focused on making staking simple to set up.',aka:['divi project','masternode']},
+  {n:'Kaspa',t:'KAS',nets:['Kaspa'],g:'major',d:'A newer proof-of-work coin using a blockDAG structure, giving much faster blocks than Bitcoin.',aka:['blockdag']},
+  {n:'eCash',t:'XEC',nets:['eCash'],g:'major',d:'A Bitcoin Cash offshoot, rebranded from BCHA, focused on instant low-value payments.',aka:['bitcoin cash abc','bcha']},
+  {n:'Stacks',t:'STX',nets:['Stacks'],g:'major',d:'Brings smart contracts to Bitcoin without changing Bitcoin itself. Transactions settle on the Bitcoin chain.',aka:['blockstack','bitcoin l2']},
+  {n:'Qtum',t:'QTUM',nets:['Qtum'],g:'major',d:'Combines Bitcoin\u2019s accounting model with Ethereum-style smart contracts.',aka:['quantum']},
+  {n:'NEO',t:'NEO',nets:['NEO'],g:'major',d:'An early smart contract platform supporting several mainstream programming languages.',aka:['antshares','chinese ethereum']},
+  {n:'NeoGas',t:'GAS',nets:['NEO'],g:'major',d:'The fee token of the NEO blockchain, used to pay for transactions and contracts on NEO.',aka:['neo gas','neo fuel']},
+
+  /* ── PRIVACY ── */
+  {n:'Monero',t:'XMR',nets:['Monero'],g:'privacy',d:'The best-known privacy coin. Sender, recipient and amount are all hidden by default.',aka:['ring signature','privacy coin'],w:'Because Monero hides transaction details, a deposit sent to the wrong address cannot be traced or recovered.'},
+  {n:'Zcash',t:'ZEC',nets:['Zcash'],g:'privacy',d:'Offers optional shielded transactions using zero-knowledge cryptography. You choose public or private per transfer.',aka:['electric coin company','zero knowledge']},
+  {n:'Dash',t:'DASH',nets:['Dash'],g:'privacy',d:'Fast payments with optional coin mixing. One of the earliest Bitcoin alternatives.',aka:['darkcoin','digital cash','coinjoin']},
+  {n:'Verge',t:'XVG',nets:['Verge'],g:'privacy',d:'Routes transactions through Tor and I2P to hide the sender\u2019s IP address.',aka:['vergecurrency']},
+  {n:'Zcoin',t:'XZC',nets:['Zcoin'],g:'privacy',d:'Now known as Firo. Uses zero-knowledge proofs to break the link between coins and their history.',aka:['firo','firo coin']},
+  {n:'Horizen',t:'ZEN',nets:['Horizen'],g:'privacy',d:'A privacy-focused platform supporting independent sidechains.',aka:['zencash','sidechains']},
+  {n:'Pivx',t:'PIVX',nets:['Pivx'],g:'privacy',d:'A community-governed privacy coin using proof-of-stake with optional shielded transfers.',aka:['private instant verified transaction']},
+  {n:'EpicCash',t:'EPIC',nets:['EpicCash'],g:'privacy',d:'Uses MimbleWimble, so no addresses or amounts are stored on the chain at all.',aka:['epic cash','mimblewimble']},
+
+  /* ── STABLECOINS ── */
+  {n:'Tether USD',t:'USDT',nets:['ETH','TRX','BSC','Polygon','Solana','TON','AVAX C','NEAR','Algorand','KAVA','Polkadot','Optimism','Arbitrum','opBNB','CELO','Tezos','EOS'],g:'stables',d:'The most widely used stablecoin in the world, worth about one US dollar. Available on more networks than anything else on this page.',aka:['tether','usd tether'],w:'Seventeen networks, and they are not interchangeable. Check which one the deposit address expects before sending.'},
+  {n:'USD Coin',t:'USDC',nets:['ETH','KuCoin','Polygon','Solana','BSC','AVAX C','Arbitrum','Optimism','Algorand','Stellar','Base'],g:'stables',d:'A regulated and audited dollar stablecoin issued by Circle, worth about one US dollar.',aka:['circle','centre','coinbase dollar']},
+  {n:'Binance USD',t:'BUSD',nets:['ETH','BSC','Polygon'],g:'stables',d:'Binance\u2019s dollar stablecoin, worth about one US dollar.',aka:['binance dollar','paxos'],w:'Being wound down. USDT or USDC are safer choices for a new deposit.'},
+  {n:'DAI',t:'DAI',nets:['ETH','Arbitrum'],g:'stables',d:'A decentralised dollar stablecoin backed by crypto collateral rather than bank reserves. No single company controls it.',aka:['maker','makerdao','sky protocol']},
+  {n:'TrueUSD',t:'TUSD',nets:['ETH','TRX'],g:'stables',d:'An audited dollar stablecoin available on Ethereum and Tron.',aka:['trueusd','archblock']},
+  {n:'Paxos Standard',t:'PAX',nets:['ETH'],g:'stables',d:'Paxos\u2019s original dollar stablecoin, on Ethereum only.',aka:['paxos','pax standard'],w:'Largely replaced by USDP. Check the deposit page still accepts this specific ticker.'},
+  {n:'Pax Dollar',t:'USDP',nets:['ETH'],g:'stables',d:'Paxos\u2019s regulated dollar stablecoin, supervised by New York\u2019s financial regulator. Ethereum only.',aka:['paxos dollar','paxos usd']},
+  {n:'Gemini Dollar',t:'GUSD',nets:['ETH'],g:'stables',d:'Gemini\u2019s regulated dollar stablecoin with monthly third-party audits. Ethereum only.',aka:['gemini','winklevoss']},
+  {n:'USDD',t:'USDD',nets:['TRX','BSC'],g:'stables',d:'Tron\u2019s dollar stablecoin, available on Tron and BNB Smart Chain.',aka:['tron dollar','decentralized usd']},
+  {n:'USDJ',t:'USDJ',nets:['TRX'],g:'stables',d:'A decentralised dollar stablecoin created through the JUST lending protocol. Tron only.',aka:['just stablecoin','just lend']},
+  {n:'TerraUSD',t:'UST',nets:['LUNA'],g:'stables',d:'A stablecoin that was designed to hold a one-dollar peg through an algorithm rather than reserves.',aka:['terra usd','do kwon','ust depegged'],w:'Collapsed in May 2022 and permanently lost its peg. Listed for reference only — do not use this to deposit.'},
+  {n:'Tether Gold',t:'XAUT',nets:['ETH'],g:'stables',d:'Each token represents one troy ounce of physical gold held in a Swiss vault. Tracks the gold price, not the dollar.',aka:['gold tether','tokenized gold']},
+  {n:'EURO Tether',t:'EURT',nets:['ETH'],g:'stables',d:'Tether\u2019s euro stablecoin, worth about one euro. Ethereum only.',aka:['euro tether','tether euro'],w:'Worth roughly one euro, not one dollar. Easy to confuse with USDT.'},
+  {n:'StablR USD',t:'USDR',nets:['ETH'],g:'stables',d:'StablR\u2019s regulated dollar stablecoin. Ethereum only.',aka:['stablr']},
+  {n:'StablR Euro',t:'EURR',nets:['ETH'],g:'stables',d:'StablR\u2019s euro stablecoin, worth about one euro. Ethereum only.',aka:['stablr euro']},
+  {n:'Ethena USDe',t:'USDE',nets:['ETH'],g:'stables',d:'A synthetic dollar stablecoin that generates yield through hedged crypto positions.',aka:['ethena','synthetic dollar'],w:'Holds its peg differently from reserve-backed stablecoins, and carries a more complex risk profile.'},
+  {n:'First Digital USD',t:'FDUSD',nets:['ETH','BSC'],g:'stables',d:'A dollar stablecoin issued in Hong Kong, available on Ethereum and BNB Smart Chain.',aka:['first digital','hong kong stablecoin']},
+  {n:'PayPal USD',t:'PYUSD',nets:['ETH'],g:'stables',d:'PayPal\u2019s official dollar stablecoin, issued by Paxos. Ethereum only.',aka:['paypal dollar','paypal stablecoin']},
+  {n:'Celo Dollar',t:'CUSD',nets:['CELO'],g:'stables',d:'Celo\u2019s native dollar stablecoin.',aka:['celo usd'],w:'Only works on the Celo network. Not compatible with Ethereum addresses.'},
+  {n:'USDS',t:'USDS',nets:['ETH','Solana'],g:'stables',d:'The successor to DAI from Sky, formerly MakerDAO. Available on Ethereum and Solana.',aka:['sky dollar','dai upgrade','sky money']},
+  {n:'USD Coin Bridged',t:'OPUSDCE',nets:['Optimism'],g:'stables',d:'USDC that has been bridged from Ethereum onto Optimism for cheaper transfers.',aka:['optimism usdc','bridged usdc'],w:'Only compatible with Optimism addresses. This is not the same token as ordinary USDC.'},
+  {n:'USD Coin Bridged',t:'MATICUSDCE',nets:['Polygon'],g:'stables',d:'USDC that has been bridged from Ethereum onto Polygon for cheaper transfers.',aka:['polygon usdc','bridged usdc'],w:'Only compatible with Polygon addresses. This is not the same token as ordinary USDC.'},
+
+  /* ── LAYER 1 ── */
+  {n:'Algorand',t:'ALGO',nets:['Algorand'],g:'layer1',d:'A fast, low-energy blockchain used for stablecoins and several government digital currency trials.',aka:['silvio micali','pure proof of stake']},
+  {n:'Cosmos',t:'ATOM',nets:['Cosmos'],g:'layer1',d:'The hub connecting dozens of independent blockchains so they can pass assets between each other.',aka:['cosmos hub','tendermint','ibc']},
+  {n:'Avalanche',t:'AVAX',nets:['AVAX X','AVAX C'],g:'layer1',d:'A fast platform split into specialised chains. The C-Chain works with Ethereum tools.',aka:['ava labs','subnets'],w:'The X-Chain and C-Chain are different networks with different address formats. Confirm which one is expected.'},
+  {n:'Fantom',t:'FTM',nets:['Fantom','ETH'],g:'layer1',d:'A fast, low-cost smart contract chain, now succeeded by Sonic.',aka:['fantom opera','andre cronje']},
+  {n:'Hedera Hashgraph',t:'HBAR',nets:['Hedera'],g:'layer1',d:'A fast, energy-efficient ledger governed by a council of large global companies.',aka:['hedera','hashgraph']},
+  {n:'ICON',t:'ICX',nets:['ICON'],g:'layer1',d:'A South Korean interoperability network linking separate blockchains.',aka:['icon network','btp']},
+  {n:'MultiversX',t:'EGLD',nets:['MultiversX','BSC'],g:'layer1',d:'A high-performance chain, formerly Elrond, that splits work across parallel shards.',aka:['elrond','beniamin mincu']},
+  {n:'Near',t:'NEAR',nets:['Near'],g:'layer1',d:'A developer-friendly chain with very low fees and readable account names instead of long hex addresses.',aka:['near protocol','aurora','sharding']},
+  {n:'NEM',t:'XEM',nets:['NEM'],g:'layer1',d:'An early business-focused blockchain using proof-of-importance.',aka:['new economy movement']},
+  {n:'Symbol',t:'XYM',nets:['XYM'],g:'layer1',d:'NEM\u2019s enterprise successor, with built-in multi-signature accounts and atomic swaps.',aka:['symbol blockchain','nem symbol']},
+  {n:'Ontology',t:'ONT',nets:['Ontology'],g:'layer1',d:'A chain focused on digital identity and verified data.',aka:['ont network']},
+  {n:'Stellar',t:'XLM',nets:['Stellar'],g:'layer1',d:'Built for fast, low-cost cross-border payments, particularly in developing markets.',aka:['lumens','stellar lumens','jed mccaleb']},
+  {n:'Tezos',t:'XTZ',nets:['Tezos'],g:'layer1',d:'A self-upgrading blockchain where holders vote on changes, avoiding the splits that divided Bitcoin and Ethereum.',aka:['tez','baking']},
+  {n:'Waves',t:'WAVES',nets:['Waves'],g:'layer1',d:'A platform for simple token creation and built-in decentralised trading.',aka:['waves exchange','neutrino']},
+  {n:'EOS',t:'EOS',nets:['EOS'],g:'layer1',d:'An early high-speed smart contract platform, once among the most hyped projects in crypto.',aka:['eos.io','block.one']},
+  {n:'VeChain',t:'VET',nets:['VeChain'],g:'layer1',d:'Built for enterprise supply-chain tracking, used by several major brands and logistics firms.',aka:['vechain thor','supply chain','vtho']},
+  {n:'Harmony',t:'ONE',nets:['Harmony'],g:'layer1',d:'A sharded, Ethereum-compatible chain with fast finality.',aka:['harmony one']},
+  {n:'Zilliqa',t:'ZIL',nets:['Zilliqa'],g:'layer1',d:'One of the first blockchains to use sharding to increase throughput.',aka:['scilla']},
+  {n:'Aptos',t:'APT',nets:['Aptos'],g:'layer1',d:'Built by former Meta engineers using the Move language, with a focus on safety and throughput.',aka:['aptos labs','diem fork','move language']},
+  {n:'Sui',t:'SUI',nets:['Sui'],g:'layer1',d:'A high-speed Move-language chain designed for consumer apps and games, able to process transactions in parallel.',aka:['mysten labs','move language']},
+  {n:'Sei',t:'SEI',nets:['Sei'],g:'layer1',d:'Optimised specifically for trading, with a built-in order book and very fast finality.',aka:['sei network']},
+  {n:'Berachain',t:'BERA',nets:['Berachain'],g:'layer1',d:'A newer chain where providing liquidity to the ecosystem earns block rewards directly.',aka:['honey token','proof of liquidity']},
+  {n:'Kaia',t:'KAIA',nets:['Kaia'],g:'layer1',d:'The merged chain of Kakao\u2019s Klaytn and Line\u2019s Finschia, backed by two of Asia\u2019s largest tech companies.',aka:['klaytn','kakao','line blockchain']},
+  {n:'Sonic',t:'S',nets:['Sonic'],g:'layer1',d:'The rebuilt successor to Fantom, with higher throughput and revised tokenomics.',aka:['fantom rebrand','sonic labs']},
+  {n:'Conflux',t:'CFX',nets:['Conflux','BSC'],g:'layer1',d:'A tree-graph consensus chain with a strong presence in China.',aka:['conflux network']},
+  {n:'Casper',t:'CSPR',nets:['Casper'],g:'layer1',d:'An enterprise proof-of-stake chain with upgradeable smart contracts.',aka:['casper network','casper labs']},
+  {n:'Starknet',t:'STRK',nets:['Starknet'],g:'layer1',d:'An Ethereum layer 2 using ZK-STARK proofs to batch transactions far more cheaply than the mainnet.',aka:['starkware','zk-stark']},
+  {n:'Injective',t:'INJ',nets:['Injective','ETH','BSC'],g:'layer1',d:'A Cosmos chain built specifically for financial apps, derivatives and on-chain trading.',aka:['injective protocol','cosmos defi']},
+  {n:'XDC Network',t:'XDC',nets:['XDC'],g:'layer1',d:'An enterprise chain focused on digitising trade finance, invoices and cross-border payments.',aka:['xinfin','trade finance blockchain']},
+  {n:'IoTeX',t:'IOTX',nets:['IoTeX'],g:'layer1',d:'Connects smart devices to blockchain apps, letting machines transact on their own.',aka:['iotex network','iot']},
+  {n:'Theta Network',t:'THETA',nets:['Theta'],g:'layer1',d:'A decentralised video streaming and delivery network. THETA is the governance token.',aka:['theta tv','video blockchain']},
+  {n:'Theta Fuel',t:'TFUEL',nets:['Theta'],g:'layer1',d:'The fee token of Theta, used to pay for streaming transactions and contracts.',aka:['theta gas']},
+  {n:'IOTA',t:'IOTA',nets:['IOTA'],g:'layer1',d:'A feeless ledger using a graph structure rather than a chain, built for machine-to-machine payments.',aka:['iota tangle','dag','shimmer']},
+  {n:'Klaytn',t:'KLAY',nets:['Klaytn'],g:'layer1',d:'Kakao\u2019s original blockchain, now being merged into Kaia.',aka:['kakao blockchain','ground x'],w:'Being replaced by Kaia. Confirm this ticker is still accepted before sending.'},
+  {n:'Terra Classic',t:'LUNC',nets:['Terra Classic'],g:'layer1',d:'The original Terra chain, kept running by its community after the collapse.',aka:['luna classic','old luna','do kwon'],w:'The chain collapsed in May 2022. Extremely high risk, and a different asset from Terra (LUNA).'},
+  {n:'Terra',t:'LUNA',nets:['Terra'],g:'layer1',d:'Terra 2.0, a new chain launched after the original collapsed in May 2022.',aka:['terra 2.0','luna v2','phoenix'],w:'Not the same asset as Terra Classic (LUNC). Confirm which one the deposit expects.'},
+  {n:'Aeternity',t:'AE',nets:['Aeternity'],g:'layer1',d:'Uses state channels to move computation off-chain for speed.',aka:['state channels']},
+  {n:'TomoChain',t:'TOMO',nets:['ETH'],g:'layer1',d:'An Ethereum-compatible chain with near-zero fees, since rebranded as Viction.',aka:['viction','tomo']},
+  {n:'Velas',t:'VLX',nets:['Velas','BSC'],g:'layer1',d:'A delegated proof-of-stake chain compatible with both Ethereum and Solana tooling.',aka:['velas network']},
+  {n:'Fasttoken',t:'FTN',nets:['Bahamut'],g:'layer1',d:'The native token of Bahamut, a chain built by Fastex for gaming and entertainment.',aka:['bahamut','fastex']},
+  {n:'WEMIX',t:'WEMIX',nets:['WEMIX'],g:'layer1',d:'The token of WeMade\u2019s gaming blockchain. WeMade is one of South Korea\u2019s largest game studios.',aka:['wemade','wemix play']},
+  {n:'Syscoin EVM',t:'SYS',nets:['Syscoin'],g:'layer1',d:'Merge-mined with Bitcoin, with Ethereum-compatible smart contracts on top.',aka:['syscoin']},
+  {n:'Bitgert',t:'BRISE',nets:['Bitgert','BSC'],g:'layer1',d:'A chain advertising near-zero gas fees.',aka:['brise chain','zero gas']},
+  {n:'Solar Network',t:'SXP',nets:['Solar'],g:'layer1',d:'A delegated proof-of-stake chain, formerly known as Swipe.',aka:['swipe']},
+  {n:'QIE Blockchain',t:'QIE',nets:['QIE'],g:'layer1',d:'An independent smart contract blockchain.',aka:['qie network']},
+
+  /* ── LAYER 2 ── */
+  {n:'Polygon',t:'POL',nets:['ETH','Polygon'],g:'layer2',d:'The most widely used Ethereum sidechain, making transactions far faster and cheaper. POL is the gas token on Polygon.',aka:['matic','polygon matic','polygon network','sandeep nailwal'],w:'Formerly MATIC. Polygon completed the switch to POL in 2024 and every Polygon transaction now uses POL. On Ethereum the old MATIC token still exists separately, so confirm which ticker the deposit page wants.'},
+  {n:'Arbitrum',t:'ARB',nets:['Arbitrum'],g:'layer2',d:'A leading Ethereum layer 2, processing transactions cheaply while inheriting Ethereum\u2019s security.',aka:['arbitrum one','offchain labs','optimistic rollup']},
+  {n:'zkSync',t:'ZK',nets:['zkSync Era'],g:'layer2',d:'zkSync\u2019s own token. Uses zero-knowledge proofs to bundle and verify Ethereum transactions cheaply.',aka:['zksync era','matter labs','zk rollup']},
+  {n:'Boba Network',t:'BOBA',nets:['ETH'],g:'layer2',d:'An Ethereum layer 2 built on Optimism\u2019s technology to cut gas fees.',aka:['boba omgx','omg network l2']},
+  {n:'Pulsechain',t:'PLS',nets:['Pulse'],g:'layer2',d:'A fork of Ethereum with its own validator set, created by Richard Heart.',aka:['pulsechain','richard heart','hex creator']},
+
+  /* ── DEFI ── */
+  {n:'Uniswap',t:'UNI',nets:['ETH'],g:'defi',d:'The governance token of Uniswap, the largest decentralised exchange on Ethereum.',aka:['hayden adams','amm','dex']},
+  {n:'Chainlink',t:'LINK',nets:['ETH'],g:'defi',d:'Powers the most widely used oracle network, feeding real-world data like prices into smart contracts.',aka:['sergey nazarov','oracle','price feeds']},
+  {n:'Aave',t:'AAVE',nets:['ETH'],g:'defi',d:'The governance token of Aave, one of the largest crypto lending platforms.',aka:['ethlend','lending protocol','flash loans']},
+  {n:'yearn.finance',t:'YFI',nets:['ETH'],g:'defi',d:'Automatically moves deposited funds between DeFi protocols to chase the best available yield.',aka:['yearn','andre cronje']},
+  {n:'The Graph',t:'GRT',nets:['ETH'],g:'defi',d:'Makes blockchain data searchable and queryable. Often described as a search engine for blockchains.',aka:['graph protocol','indexing']},
+  {n:'1inch Network',t:'1INCH',nets:['ETH','BSC'],g:'defi',d:'Searches dozens of decentralised exchanges at once to find the best swap price.',aka:['1inch exchange','dex aggregator','oneinch']},
+  {n:'Kyber Network Crystal',t:'KNC',nets:['ETH'],g:'defi',d:'The governance token of KyberSwap, a decentralised exchange spanning several chains.',aka:['kyber network','kyberswap']},
+  {n:'Ocean Protocol',t:'OCEAN',nets:['ETH'],g:'defi',d:'A marketplace for buying and selling data, letting owners monetise datasets while keeping control of access.',aka:['ocean data','data marketplace']},
+  {n:'Augur',t:'REP',nets:['ETH'],g:'defi',d:'A decentralised prediction market where users bet on real-world outcomes.',aka:['prediction market']},
+  {n:'DAO Maker',t:'DAO',nets:['ETH'],g:'defi',d:'A launchpad helping early-stage crypto projects raise funds from retail investors.',aka:['dao pad','launchpad']},
+  {n:'THORChain',t:'RUNE',nets:['THORChain'],g:'defi',d:'Lets you swap native assets across chains — Bitcoin for Ethereum, say — without a central exchange.',aka:['thor','thorswap','cross-chain']},
+  {n:'GMX',t:'GMX',nets:['Arbitrum','AVAX C'],g:'defi',d:'A decentralised perpetuals and spot exchange. Holders earn a share of platform trading fees.',aka:['perpetuals','arbitrum dex']},
+  {n:'Bone ShibaSwap',t:'BONE',nets:['ETH'],g:'defi',d:'The governance token of ShibaSwap and the gas token of Shibarium, Shiba Inu\u2019s layer 2.',aka:['shibaswap','shibarium']},
+  {n:'Cult DAO',t:'CULT',nets:['ETH'],g:'defi',d:'A decentralised venture fund token backing anti-establishment projects.',aka:['cult token','rvlt']},
+  {n:'Basic Attention Token',t:'BAT',nets:['ETH'],g:'defi',d:'Used in the Brave browser to reward users for viewing privacy-respecting ads, and to tip creators.',aka:['brave','brave browser','brendan eich']},
+  {n:'LayerZero',t:'ZRO',nets:['ETH','Arbitrum'],g:'defi',d:'A protocol letting tokens and messages move between any supported blockchain.',aka:['omnichain','stargate','interoperability']},
+  {n:'Cartesi',t:'CTSI',nets:['ETH'],g:'defi',d:'Lets developers build blockchain apps with ordinary programming languages and Linux tools.',aka:['cartesi machine','rollups']},
+  {n:'Banana Gun',t:'BANANA',nets:['ETH'],g:'defi',d:'A Telegram-based trading bot for fast automated token trades on Ethereum.',aka:['banana bot','sniper bot']},
+  {n:'Frontier',t:'FRONT',nets:['ETH'],g:'defi',d:'A multi-chain DeFi wallet and aggregator.',aka:['frontier wallet']},
+  {n:'Hyperliquid',t:'HYPE',nets:['HyperEVM'],g:'defi',d:'The token of Hyperliquid, a high-performance decentralised perpetuals exchange on its own chain.',aka:['perp dex','hyperliquid dex']},
+  {n:'Beefy',t:'BIFI',nets:['ETH'],g:'defi',d:'A multi-chain yield optimiser that automatically reinvests DeFi earnings.',aka:['beefy finance','yield optimizer']},
+  {n:'OMG Network',t:'OMG',nets:['ETH'],g:'defi',d:'An early Ethereum scaling project, largely superseded by Boba Network but still traded.',aka:['omisego','omise go','plasma']},
+
+  /* ── EXCHANGE TOKENS ── */
+  {n:'Binance Coin',t:'BNB',nets:['BSC'],g:'exchange',d:'Binance\u2019s token, used for fee discounts on the exchange and as the gas token of BNB Smart Chain.',aka:['binance','binance smart chain','cz','changpeng zhao']},
+  {n:'OKB',t:'OKB',nets:['ETH'],g:'exchange',d:'OKX\u2019s utility token, giving fee discounts and early access to token sales.',aka:['okx','okex']},
+  {n:'Huobi Token',t:'HT',nets:['ETH'],g:'exchange',d:'The token of HTX, formerly Huobi. Provides fee discounts and staking rewards.',aka:['huobi','htx']},
+  {n:'Gatechain Token',t:'GT',nets:['ETH'],g:'exchange',d:'Gate.io\u2019s token, used for fee discounts and on the GateChain network.',aka:['gate.io','gate exchange']},
+  {n:'PancakeSwap',t:'CAKE',nets:['BSC'],g:'exchange',d:'The token of PancakeSwap, the leading decentralised exchange on BNB Smart Chain.',aka:['pancake','bsc dex']},
+  {n:'MXC Exchange',t:'MX',nets:['ETH'],g:'exchange',d:'MEXC\u2019s utility token, giving fee discounts on their trading platform.',aka:['mexc','mxc token']},
+  {n:'FTX Token',t:'FTT',nets:['ETH'],g:'exchange',d:'The token of the FTX exchange.',aka:['ftx','sbf','sam bankman-fried'],w:'FTX went bankrupt in November 2022. Listed for reference only — do not use this to deposit.'},
+  {n:'Klever',t:'KLV',nets:['KLV','TRX'],g:'exchange',d:'The token behind the Klever wallet, exchange and its own blockchain.',aka:['klever wallet']},
+  {n:'Cronos',t:'CRO',nets:['ETH','Cosmos'],g:'exchange',d:'Crypto.com\u2019s token, used across its exchange, card programme and DeFi products.',aka:['crypto.com','crypto dot com','mco']},
+
+  /* ── GAMING & NFT ── */
+  {n:'Axie Infinity',t:'AXS',nets:['ETH'],g:'gaming',d:'The governance token of the game that popularised play-to-earn, where players breed and battle digital creatures.',aka:['axie','sky mavis','play to earn','p2e']},
+  {n:'The Sandbox',t:'SAND',nets:['ETH'],g:'gaming',d:'The currency of a 3D virtual world where users own land as NFTs and build experiences on it.',aka:['sandbox','metaverse','voxel']},
+  {n:'Decentraland',t:'MANA',nets:['ETH'],g:'gaming',d:'The currency of a virtual world where users own plots of land and host events and galleries.',aka:['dland','metaverse','virtual world']},
+  {n:'Enjin Coin',t:'ENJ',nets:['ETH'],g:'gaming',d:'Powers a platform for creating and trading NFT in-game items usable across multiple games.',aka:['enjin','nft gaming']},
+  {n:'GALA',t:'GALA',nets:['ETH'],g:'gaming',d:'Gala Games\u2019 ecosystem token, used across their games, music and film platforms.',aka:['gala games','web3 gaming']},
+  {n:'Illuvium',t:'ILV',nets:['ETH'],g:'gaming',d:'The token of an open-world RPG and auto-battler built on Ethereum.',aka:['illuvium game','auto battler']},
+  {n:'Star Atlas',t:'ATLAS',nets:['Solana'],g:'gaming',d:'The in-game currency of a space exploration and strategy game on Solana.',aka:['solana gaming','space game']},
+  {n:'Sidus',t:'SIDUS',nets:['ETH'],g:'gaming',d:'The token of a sci-fi NFT gaming universe.',aka:['sidus heroes']},
+  {n:'DGI Game',t:'DGI',nets:['ETH'],g:'gaming',d:'A blockchain gaming token.',aka:['dgi token']},
+  {n:'Bazed Games',t:'BAZED',nets:['ETH'],g:'gaming',d:'The token of an on-chain gaming platform.',aka:['bazed token']},
+  {n:'RXCGames',t:'RXCG',nets:['BSC'],g:'gaming',d:'A gaming and rewards token on BNB Smart Chain.',aka:['rxc games']},
+  {n:'NFTb',t:'NFTB',nets:['BSC'],g:'gaming',d:'An NFT marketplace and launchpad on BNB Smart Chain.',aka:['nftb marketplace','nftb launchpad']},
+  {n:'GG Token',t:'GGTKN',nets:['BSC'],g:'gaming',d:'A gaming and esports token.',aka:['gg token','good game']},
+  {n:'Radio Caca',t:'RACA',nets:['BSC'],g:'gaming',d:'The token behind the USM metaverse and Metamon game.',aka:['raca','metamon','usm metaverse']},
+  {n:'DTravel',t:'TRVL',nets:['ETH'],g:'gaming',d:'A decentralised holiday rental platform aiming to undercut traditional booking sites.',aka:['travel token','airbnb crypto']},
+  {n:'FUNToken',t:'FUN',nets:['ETH'],g:'gaming',d:'A utility token for online casino and gambling applications.',aka:['funfair','casino token']},
+  {n:'Netvrk',t:'NETVR',nets:['ETH'],g:'gaming',d:'A virtual reality metaverse token.',aka:['metaverse vr']},
+  {n:'JetTon Games',t:'JETTON',nets:['TON'],g:'gaming',d:'A gaming token on the TON blockchain.',aka:['jetton','ton games']},
+  {n:'OM',t:'OM',nets:['ETH'],g:'gaming',d:'The token of MANTRA, focused on putting real-world assets like property onto the blockchain.',aka:['mantra','mantra dao','rwa']},
+  {n:'SUPER',t:'SUPER',nets:['ETH'],g:'gaming',d:'SuperFarm\u2019s token, a cross-chain NFT farming and launchpad protocol.',aka:['superfarm','nft launchpad']},
+  {n:'Chiliz',t:'CHZ',nets:['ETH'],g:'gaming',d:'Powers Socios, where sports clubs issue fan tokens giving supporters perks and votes.',aka:['socios','fan tokens','football token']},
+  {n:'Tokocrypto',t:'TKO',nets:['BSC'],g:'gaming',d:'The token of Indonesia\u2019s largest crypto exchange.',aka:['toko token','indonesia exchange']},
+  {n:'ApeCoin',t:'APE',nets:['ETH'],g:'gaming',d:'The governance token of the Bored Ape Yacht Club ecosystem and ApeChain.',aka:['bored ape','bayc','yuga labs']},
+  {n:'Step App',t:'FITFI',nets:['AVAX C'],g:'gaming',d:'A move-to-earn app rewarding users with tokens for walking and running.',aka:['move to earn','m2e','fitness token']},
+
+  /* ── MEME ── */
+  {n:'Shiba Inu',t:'SHIB',nets:['ETH','BSC'],g:'meme',d:'The most prominent Dogecoin rival, with a large community and its own DeFi ecosystem.',aka:['shib','shiba','dogekiller','ryoshi']},
+  {n:'Floki',t:'FLOKI',nets:['ETH','BSC'],g:'meme',d:'Named after Elon Musk\u2019s dog, since expanded into a metaverse, DeFi products and an education platform.',aka:['floki inu','elon dog','valhalla']},
+  {n:'Pepe',t:'PEPE',nets:['ETH'],g:'meme',d:'A Pepe the Frog themed coin on Ethereum, driven entirely by community sentiment.',aka:['pepe the frog','frog meme']},
+  {n:'Baby Doge Coin',t:'BABYDOGE',nets:['BSC'],g:'meme',d:'A Dogecoin-inspired coin on BNB Smart Chain with a charitable angle supporting animal shelters.',aka:['baby doge','babydoge']},
+  {n:'Doge Killer',t:'LEASH',nets:['ETH'],g:'meme',d:'A limited-supply token in the Shiba Inu ecosystem.',aka:['leash token','shiboshi']},
+  {n:'HOGE Finance',t:'HOGE',nets:['ETH'],g:'meme',d:'A deflationary meme token that burns a portion of each transaction.',aka:['hoge coin']},
+  {n:'Kishu Inu',t:'KISHU',nets:['ETH'],g:'meme',d:'A dog-themed Ethereum meme token.',aka:['kishu']},
+  {n:'Keanu Inu',t:'KEANU',nets:['ETH'],g:'meme',d:'A meme token named after Keanu Reeves.',aka:['keanu reeves meme']},
+  {n:'Kiba Inu',t:'KIBA',nets:['ETH','BSC'],g:'meme',d:'A dog-themed meme token on Ethereum and BNB Smart Chain.',aka:['kiba']},
+  {n:'RichQuack',t:'QUACK',nets:['BSC'],g:'meme',d:'A duck-themed meme token on BNB Smart Chain.',aka:['rich quack','duck meme']},
+  {n:'Volt Inu V3',t:'VOLT',nets:['BSC'],g:'meme',d:'A multi-chain meme token with a treasury of other assets.',aka:['volt inu']},
+  {n:'Poodl Token',t:'POODL',nets:['BSC'],g:'meme',d:'A poodle-themed meme token.',aka:['poodle']},
+  {n:'Pika',t:'PIKA',nets:['ETH'],g:'meme',d:'A meme token inspired by Pikachu.',aka:['pikachu meme']},
+  {n:'PITBULL',t:'PIT',nets:['BSC'],g:'meme',d:'A community-run dog-themed meme token.',aka:['pit bull']},
+  {n:'Mog Coin',t:'MOG',nets:['ETH','Base'],g:'meme',d:'An Ethereum meme coin built around internet "mogging" culture.',aka:['mog','mogging']},
+  {n:'cat in a dogs world',t:'MEW',nets:['Solana'],g:'meme',d:'A Solana meme coin about a cat navigating a dog-dominated world.',aka:['cat coin','mew','solana cat']},
+  {n:'Ponke',t:'PONKE',nets:['Solana'],g:'meme',d:'A popular Solana meme coin featuring a monkey character.',aka:['ponke solana']},
+  {n:'Scrat',t:'SCRAT',nets:['Solana'],g:'meme',d:'A Solana meme coin themed on the acorn-obsessed squirrel from Ice Age.',aka:['ice age squirrel','acorn meme']},
+  {n:'Peng',t:'PENG',nets:['Solana'],g:'meme',d:'A penguin-themed meme coin on Solana.',aka:['penguin meme']},
+  {n:'Dogs',t:'DOGS',nets:['TON'],g:'meme',d:'A dog-themed meme coin on TON, tied closely to the Telegram community.',aka:['dogs ton','durov dog']},
+  {n:'Cats',t:'CATS',nets:['TON'],g:'meme',d:'A cat-themed meme coin on the TON blockchain.',aka:['cats ton']},
+  {n:'Snek',t:'SNEK',nets:['Cardano'],g:'meme',d:'The best-known meme token in the Cardano ecosystem.',aka:['snake token','cardano meme']},
+  {n:'Banana Task Force Ape',t:'BTFA',nets:['ETH'],g:'meme',d:'An ape-themed Ethereum meme token.',aka:['banana ape']},
+  {n:'Landwolf',t:'WOLF',nets:['ETH'],g:'meme',d:'Named after Landwolf, a character from the same comics as Pepe the Frog.',aka:['land wolf','wolf meme']},
+  {n:'DogeMoon',t:'DGMOON',nets:['BSC'],g:'meme',d:'A Dogecoin-inspired token on BNB Smart Chain.',aka:['doge moon']},
+  {n:'Neiro Ethereum',t:'NEIROETH',nets:['ETH'],g:'meme',d:'Named after Neiro, the dog adopted by the owner of the original Doge meme dog.',aka:['neiro eth','neiro']},
+  {n:'PeiPei',t:'PEIPEI',nets:['ETH'],g:'meme',d:'A Pepe-derived meme token.',aka:['pei pei','chinese pepe']},
+  {n:'pepe in a memes world',t:'PEW',nets:['ETH'],g:'meme',d:'A Pepe-themed Ethereum meme token.',aka:['pew token','pepe world']},
+  {n:'Robo Inu Finance',t:'RBIF',nets:['ETH'],g:'meme',d:'A robot dog themed meme token.',aka:['robo inu']},
+  {n:'FEG Token',t:'FEG',nets:['ETH'],g:'meme',d:'A deflationary community token with its own exchange and wallet.',aka:['feed every gorilla']},
+  {n:'OFFICIAL TRUMP',t:'TRUMP',nets:['Solana'],g:'meme',d:'An officially licensed Donald Trump meme coin launched on Solana in January 2025.',aka:['trump coin','donald trump','maga coin','political meme'],w:'Extremely volatile and driven entirely by publicity. Treat any deposit amount as at risk.'},
+  {n:'Daddy Tate',t:'DADDY',nets:['Solana'],g:'meme',d:'A Solana meme coin associated with Andrew Tate.',aka:['andrew tate','tate coin']},
+  {n:'Myro',t:'MYRO',nets:['Solana'],g:'meme',d:'Named after the dog of Solana\u2019s co-founder.',aka:['myro solana','anatoly dog']},
+  {n:'NEVER',t:'NEVER',nets:['Solana'],g:'meme',d:'A Solana community meme token.',aka:['never sell']},
+  {n:'DinoLFG',t:'DINO',nets:['ETH'],g:'meme',d:'A dinosaur-themed Ethereum meme token.',aka:['dino coin','dinosaur token']},
+  {n:'Buff Doge Coin',t:'DOGECOIN',nets:['BSC'],g:'meme',d:'A muscular-Doge meme token on BNB Smart Chain.',aka:['buff doge','jacked doge'],w:'The ticker is DOGECOIN but this is not Dogecoin (DOGE). They are entirely different coins on different networks. Check carefully before depositing.'},
+
+  /* ── AI & TECH ── */
+  {n:'Solidus Ai Tech',t:'AITECH',nets:['BSC'],g:'ai',d:'The token of an AI-focused high-performance computing platform selling processing power.',aka:['solidus ai','hpc','ai cloud']},
+  {n:'ChainGPT',t:'CGPT',nets:['ETH','BSC'],g:'ai',d:'An AI platform offering smart contract auditing, NFT generation and trading assistants.',aka:['chain gpt','blockchain ai']},
+  {n:'LinqAI',t:'LNQ',nets:['ETH'],g:'ai',d:'An AI marketing and automation platform token.',aka:['linq ai']},
+  {n:'Bad Idea AI',t:'BAD',nets:['ETH'],g:'ai',d:'A deflationary community token exploring the overlap of meme culture and AI.',aka:['bad ai','bad idea']},
+  {n:'VPS AI',t:'VPS',nets:['ETH'],g:'ai',d:'A decentralised AI hosting and computing token.',aka:['ai hosting','ai server']},
+  {n:'Not Financial Advice',t:'NFAI',nets:['ETH'],g:'ai',d:'An AI-driven crypto research and analytics token.',aka:['nfai','not financial']},
+  {n:'Sensay',t:'SNSY',nets:['ETH'],g:'ai',d:'A platform for building AI replicas of real people for education and content.',aka:['sensay ai','digital replica']},
+  {n:'Rejuve.AI',t:'RJV',nets:['ETH','BSC'],g:'ai',d:'A longevity research network using AI to coordinate health data and fund anti-ageing science.',aka:['rejuve','longevity ai','singularity net']},
+  {n:'Newton Network',t:'NEWT',nets:['ETH'],g:'ai',d:'An AI and automation infrastructure token.',aka:['newton ai']},
+
+  /* ── TON ECOSYSTEM ── */
+  {n:'X Empire',t:'X',nets:['TON'],g:'ton',d:'A Telegram tap-to-earn game where players build a social media empire.',aka:['x empire','telegram tap game']},
+  {n:'Memhash',t:'MEMHASH',nets:['TON'],g:'ton',d:'A Telegram mini-app token on TON.',aka:['mem hash']},
+  {n:'Major',t:'MAJOR',nets:['TON'],g:'ton',d:'A Telegram mini-app rewarding active players with tokens distributed on TON.',aka:['major ton','telegram major']},
+  {n:'Hamster Combat',t:'HMSTR',nets:['TON'],g:'ton',d:'From Hamster Kombat, one of the fastest-growing Telegram tap-to-earn games ever built.',aka:['hamster kombat','hamster game','tap game']},
+  {n:'Notcoin',t:'NOT',nets:['TON'],g:'ton',d:'An early Telegram tap-to-earn game that airdropped tokens to tens of millions of players.',aka:['not coin','tap to earn']},
+  {n:'TON Station',t:'SOON',nets:['TON'],g:'ton',d:'A gaming and rewards hub on the TON blockchain.',aka:['ton station']},
+  {n:'Catizen',t:'CATI',nets:['TON'],g:'ton',d:'A Telegram cat-breeding and battling game with a large player base.',aka:['catizen game','cat game ton']},
+  {n:'NikolAI',t:'NIKO',nets:['TON'],g:'ton',d:'An AI-themed token in the TON ecosystem.',aka:['nikolai ton']},
+
+  /* ── INFRASTRUCTURE ── */
+  {n:'XYO Network',t:'XYO',nets:['ETH'],g:'infra',d:'A location-data oracle network recording verified geographic data on chain.',aka:['xyo oracle','geospatial']},
+  {n:'Unmarshal',t:'MARSH',nets:['BSC'],g:'infra',d:'A multi-chain data indexing network for blockchain applications.',aka:['unmarshal protocol','data indexing']},
+  {n:'ARPA Chain',t:'ARPA',nets:['ETH','BSC'],g:'infra',d:'A secure computation network letting parties compute on data without revealing it.',aka:['arpa network','bolt']},
+  {n:'ChainSwap',t:'CSWAP',nets:['ETH'],g:'infra',d:'A cross-chain asset bridge.',aka:['chain swap']},
+  {n:'Bridge Oracle',t:'BRG',nets:['BSC'],g:'infra',d:'An oracle service bringing external data onto the Tron and BNB chains.',aka:['bridge oracle']},
+  {n:'Seedify.fund',t:'SFUND',nets:['BSC'],g:'infra',d:'A blockchain gaming launchpad helping early projects raise funds and find investors.',aka:['seedify','launchpad','ido']},
+  {n:'STP Network',t:'STPT',nets:['ETH'],g:'infra',d:'Tooling for creating and governing decentralised organisations.',aka:['stp token','dao tools']},
+  {n:'Space ID',t:'SPACE-ID',nets:['ETH','BSC'],g:'infra',d:'A naming service replacing long wallet addresses with readable names like yourname.bnb.',aka:['space id','bnb domains','web3 domains']},
+  {n:'Civic',t:'CVC',nets:['ETH'],g:'infra',d:'Identity verification on the blockchain, allowing checks without over-exposing personal data.',aka:['civic identity','kyc']},
+  {n:'XCAD Network',t:'XCAD',nets:['ETH'],g:'infra',d:'Rewards YouTube viewers with tokens for watching participating creators.',aka:['xcad','creator economy']},
+  {n:'AVNRich',t:'AVN',nets:['BSC'],g:'infra',d:'A tokenised asset trading and DeFi platform.',aka:['avnrich']},
+  {n:'Streakk',t:'STKK',nets:['BSC'],g:'infra',d:'A node-hosting and staking platform token.',aka:['streakk node']},
+  {n:'Zentry',t:'ZENT',nets:['ETH'],g:'infra',d:'A gaming metaverse token, formerly GAM3, for cross-game identity and rewards.',aka:['zentry','gam3']},
+  {n:'stZENT',t:'STZENT',nets:['ETH'],g:'infra',d:'The staked version of ZENT, earning yield while staying usable in the Zentry ecosystem.',aka:['staked zentry']},
+  {n:'AWE Network',t:'AWE',nets:['Base'],g:'infra',d:'An AI agent infrastructure network on Base.',aka:['awe token']},
+  {n:'BeFi Labs',t:'BEFI',nets:['ETH'],g:'infra',d:'A DeFi tooling and analytics token.',aka:['befi labs']},
+  {n:'Launchblock.com',t:'LBP',nets:['ETH'],g:'infra',d:'A platform for launching and funding early-stage blockchain projects.',aka:['launch block']},
+  {n:'Pullix',t:'PLX',nets:['ETH'],g:'infra',d:'A hybrid exchange token combining centralised usability with on-chain transparency.',aka:['pullix dex','hybrid exchange']},
+  {n:'Lingo',t:'LINGO',nets:['Base'],g:'infra',d:'A travel rewards token earning crypto perks from hotel and travel bookings.',aka:['travel rewards']},
+  {n:'Keeta',t:'KTA',nets:['Base'],g:'infra',d:'A cross-border payments and settlement network token.',aka:['keeta network']},
+  {n:'IPMB Token',t:'IPMB',nets:['Polygon'],g:'infra',d:'A gold-backed token where each unit represents audited physical precious metal.',aka:['gold backed token','precious metals']},
+  {n:'Velo',t:'VELO',nets:['BSC'],g:'infra',d:'A cross-border settlement protocol for banks and payment providers in Asia.',aka:['velo protocol','velo labs']},
+  {n:'AVA',t:'AVA2',nets:['ETH','BSC'],g:'infra',d:'The token of Travala, a crypto-native travel booking site accepting many cryptocurrencies.',aka:['travala','ava travel']},
+  {n:'Aster',t:'ASTER',nets:['BSC'],g:'infra',d:'A decentralised perpetuals trading platform token.',aka:['aster token']},
+  {n:'Galaxy Heroes Coin',t:'GHC',nets:['BSC'],g:'infra',d:'A community token with gaming and NFT components.',aka:['galaxy heroes']},
+  {n:'Gafa',t:'GAFA',nets:['BSC'],g:'infra',d:'A BNB Smart Chain utility token.',aka:['gafa token']},
+  {n:'XCUR',t:'XCUR',nets:['ETH'],g:'infra',d:'The token of Curate, a zero-fee NFT and shopping marketplace.',aka:['curate','excur']},
+  {n:'VIB',t:'VIB',nets:['ETH'],g:'infra',d:'Viberate\u2019s token, powering a music analytics and artist booking platform.',aka:['viberate','music blockchain']},
+  {n:'SRK',t:'SRK',nets:['ETH'],g:'infra',d:'SparkPoint\u2019s token, covering a wallet, exchange and DeFi suite.',aka:['sparkpoint']},
+  {n:'CHR',t:'CHR',nets:['ETH'],g:'infra',d:'Chromia\u2019s token, a relational blockchain letting developers query data like a database.',aka:['chromia','chromaway']},
+  {n:'TenUp',t:'TUP',nets:['ETH'],g:'infra',d:'A community and rewards token.',aka:['ten up']},
+  {n:'Telos',t:'TLOS',nets:['ETH','BSC'],g:'infra',d:'A fast Ethereum-compatible chain designed to prevent front-running of trades.',aka:['telos evm']},
+  {n:'Gari',t:'GARI',nets:['Solana'],g:'infra',d:'The social token of Chingari, an Indian short-video app where creators earn from engagement.',aka:['gari network','chingari','creator token']},
+  {n:'Onigiri Neko',t:'ONIGI',nets:['ETH'],g:'infra',d:'A Japanese-themed community token.',aka:['onigiri','neko token']},
+  {n:'LGCY Network',t:'LGCY',nets:['ETH'],g:'infra',d:'A decentralised network for building financial applications.',aka:['legacy network']},
+  {n:'Pundi-X',t:'NPXS',nets:['ETH'],g:'infra',d:'A crypto point-of-sale platform letting shops accept crypto through a card reader.',aka:['pundi x','pos terminal']},
+  {n:'WinLink',t:'WIN',nets:['TRX'],g:'infra',d:'A decentralised gaming and lottery platform on Tron.',aka:['winlink','wink']},
+  {n:'Sun',t:'SUN',nets:['TRX'],g:'infra',d:'A Tron DeFi protocol for yield farming and stablecoin swaps.',aka:['sun token','tron defi']},
+  {n:'SUNDOG',t:'SUNDOG',nets:['TRX'],g:'infra',d:'A meme token on the Tron network.',aka:['sun dog','tron meme']},
+  {n:'Just',t:'JST',nets:['TRX'],g:'infra',d:'The governance token of the JUST DeFi ecosystem on Tron.',aka:['just token','just lend']},
+  {n:'JasmyCoin',t:'JASMY',nets:['ETH'],g:'infra',d:'A Japanese project giving individuals ownership of their personal device data.',aka:['jasmy','japan iot','data democracy']},
+  {n:'CentricSwap',t:'CNS',nets:['BSC'],g:'infra',d:'Part of a dual-token system designed to reduce price volatility.',aka:['centric']},
+  {n:'Shopping.io',t:'SPI',nets:['ETH'],g:'infra',d:'A portal for spending crypto at major retailers like Amazon and eBay.',aka:['shopping io','crypto shopping']},
+  {n:'Shopping.io Gov.',t:'GSPI',nets:['BSC'],g:'infra',d:'The governance token of the Shopping.io platform.',aka:['gspi','shopping governance']},
+  {n:'Poolz Finance',t:'POOLZ',nets:['BSC'],g:'infra',d:'A launchpad for early-stage token sales.',aka:['poolz']},
+  {n:'Poolz Finance',t:'POOLX',nets:['BSC'],g:'infra',d:'The newer token of the Poolz launchpad.',aka:['poolx']},
+  {n:'Fluffy Coin',t:'FLUF',nets:['BSC'],g:'infra',d:'A community token supporting animal welfare causes.',aka:['fluffy']},
+  {n:'NWC',t:'NWC',nets:['ETH'],g:'infra',d:'NewsCrypto\u2019s token, funding an educational trading platform aimed at beginners.',aka:['newscrypto','news crypto']},
+  {n:'Bella Protocol',t:'BEL',nets:['ETH','BSC'],g:'infra',d:'A suite of tools simplifying DeFi for ordinary users.',aka:['bella','bella defi']},
+  {n:'Coin98',t:'C98',nets:['BSC'],g:'infra',d:'A multi-chain DeFi wallet and hub reaching dozens of blockchains from one app.',aka:['coin 98','defi wallet']},
+  {n:'MCO',t:'MCO',nets:['ETH'],g:'infra',d:'The original Crypto.com token, used for card tiers before CRO replaced it.',aka:['monaco','crypto.com visa'],w:'A legacy token, largely superseded by CRO.'},
+  {n:'DigixDAO',t:'DGD',nets:['ETH'],g:'infra',d:'An early gold-backed token project, representing governance over the Digix ecosystem.',aka:['digix','gold token dao']},
+  {n:'Tael',t:'WABI',nets:['ETH'],g:'infra',d:'A product authenticity token, letting shoppers verify goods are genuine.',aka:['tael','wabi']},
+  {n:'Project Galaxy',t:'GAL',nets:['BSC'],g:'infra',d:'Now Galxe. A credential and loyalty platform used by hundreds of protocols to run campaigns.',aka:['galaxy','galxe','credential']},
+  {n:'Rain Coin',t:'RAINCOIN',nets:['Polygon'],g:'infra',d:'A community rewards token on Polygon.',aka:['rain coin']},
+  {n:'Somnia',t:'SOMI',nets:['BSC'],g:'infra',d:'A token for a virtual society and metaverse protocol.',aka:['somnia']},
+  {n:'Gravity',t:'G',nets:['ETH','BSC'],g:'infra',d:'An omnichain infrastructure token connecting separate blockchains.',aka:['gravity protocol']},
+  {n:'TechTrees',t:'TTC',nets:['BSC'],g:'infra',d:'A carbon offset token funding and verifying tree-planting projects.',aka:['tech trees','carbon offset']},
+  {n:'Ariva',t:'ARV',nets:['BSC'],g:'infra',d:'A travel and tourism token for crypto payments at hotels and tour operators.',aka:['ariva','travel crypto']},
+  {n:'Hot Cross',t:'HOTCROSS',nets:['BSC'],g:'infra',d:'A multi-chain toolkit offering staking, bridging and token management.',aka:['hot cross','cross chain']},
+  {n:'Zebec Protocol',t:'ZBC',nets:['Solana'],g:'infra',d:'Streams payments continuously on Solana, enabling payroll paid by the second.',aka:['zebec','streaming payments','solana payroll']},
+  {n:'Verse',t:'VERSE',nets:['ETH'],g:'infra',d:'Bitcoin.com\u2019s ecosystem token, used for rewards and discounts across their products.',aka:['verse token','bitcoin.com']},
+  {n:'Wrapped Bitcoin',t:'WBTC',nets:['Polygon'],g:'infra',d:'Bitcoin represented as a token on Polygon, worth the same as BTC but usable in DeFi apps.',aka:['wrapped btc','tokenized bitcoin'],w:'This is a token on Polygon, not actual Bitcoin. Do not send it to a Bitcoin address.'},
+  {n:'GrapeCoin',t:'GRAPE',nets:['BSC'],g:'infra',d:'A social and rewards token for the wine community.',aka:['grape wine']},
+  {n:'USD.AI',t:'CHIP',nets:['Arbitrum'],g:'infra',d:'A dollar-linked token on Arbitrum using AI-driven yield strategies.',aka:['chip token','usd ai']},
+];
+
+/* Drop any accidental duplicates of the same ticker in the same group. */
+const COIN_LIST=(()=>{
+  const seen=new Set();
+  return COINS.filter(c=>{
+    const k=c.t+'|'+c.g;
+    if(seen.has(k))return false;
+    seen.add(k); return true;
+  });
+})();
+
+let coinQuery='', coinCat='all';
+
+function coinCard(c){
+  const star=FEATURED_COINS.has(c.t);
+  const nets=c.nets.map(n=>
+    `<span class="nb ${NET_CLASS[n]||''}"${NET_INFO[n]?` title="${esc(NET_INFO[n])}"`:''}>${esc(n)}</span>`).join('');
+  return`<div class="coin${c.w?' risky':star?' star':''}">
+    <div class="coin-tk">${esc(c.t)}</div>
+    <div class="coin-nm">${esc(c.n)}</div>
+    ${c.d?`<p class="coin-d">${esc(c.d)}</p>`:''}
+    ${c.w?`<div class="coin-warn"><i class="ti ti-alert-triangle" aria-hidden="true"></i><span>${esc(c.w)}</span></div>`:''}
+    <div class="coin-nets">${nets}</div>
+  </div>`;
+}
+function coinMatch(c,q){
+  if(!q)return true;
+  if(`${c.t} ${c.n}`.toLowerCase().includes(q))return true;
+  if(c.aka&&c.aka.some(a=>a.toLowerCase().includes(q)))return true;
+  if(c.nets.some(n=>n.toLowerCase()===q))return true;
+  const safe=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return c.d?new RegExp('\\b'+safe).test(c.d.toLowerCase()):false;
+}
+function paintCoins(){
+  const box=document.getElementById('coinResults');
+  if(!box)return;
+  const q=coinQuery.trim().toLowerCase();
+  const list=COIN_LIST.filter(c=>(coinCat==='all'||c.g===coinCat)&&coinMatch(c,q));
+  if(q){
+    /* Someone typing "usdt" wants USDT, not every coin whose blurb
+       happens to mention it. Sort is stable, so ties keep their order. */
+    const rank=c=>{
+      const t=c.t.toLowerCase(), n=c.n.toLowerCase();
+      if(t===q)return 0;
+      if(n===q)return 1;
+      if(t.startsWith(q))return 2;
+      if(n.startsWith(q))return 3;
+      if(t.includes(q)||n.includes(q))return 4;
+      return 5;
+    };
+    list.sort((a,b)=>rank(a)-rank(b));
+  }
+  const status=document.getElementById('coinStatus');
+  if(status)status.textContent=`${list.length} coin${list.length===1?'':'s'} shown.`;
+
+  if(!list.length){
+    const where=coinCat==='all'?'':` in ${COIN_GROUPS.find(g=>g.id===coinCat)?.label??coinCat}`;
+    box.innerHTML=`<div class="dir-empty">No coin matches “${esc(coinQuery)}”${esc(where)}.<br>
+      Try the ticker instead of the name, or switch back to All.</div>`;
+    return;
+  }
+  const grp=COIN_GROUPS.find(g=>g.id===coinCat);
+  let html=grp&&grp.desc?`<div class="notice info" style="margin-bottom:14px"><i class="ti ti-info-circle" aria-hidden="true"></i><div>${esc(grp.desc)}</div></div>`:'';
+
+  if(coinCat==='all'&&!q){
+    const star=list.filter(c=>FEATURED_COINS.has(c.t));
+    if(star.length)html+=`<div class="star-wrap">
+      <div class="star-label">Widely used — a sensible place to start</div>
+      <div class="coin-grid">${star.map(coinCard).join('')}</div></div>`;
+    for(const g of COIN_GROUPS.slice(1)){
+      const items=list.filter(c=>c.g===g.id);
+      if(!items.length)continue;
+      html+=`<div class="coin-sec">${esc(g.label)} <span>${items.length}</span></div>
+        <div class="coin-grid">${items.map(coinCard).join('')}</div>`;
+    }
+  }else{
+    html+=`<div class="coin-grid">${list.map(coinCard).join('')}</div>`;
+  }
+  box.innerHTML=html;
+}
+function onCoinSearch(v){ coinQuery=v; paintCoins(); }
+function setCoinCat(id){
+  coinCat=id;
+  document.querySelectorAll('#coinChips .chip').forEach(b=>
+    b.setAttribute('aria-pressed',b.dataset.cat===id?'true':'false'));
+  paintCoins();
+}
+function renderDeposits(){
+  if(document.getElementById('depShell')){ paintCoins(); return; }
+  const counts={};
+  COIN_LIST.forEach(c=>{counts[c.g]=(counts[c.g]||0)+1;});
+  const site=DEPOSIT_SITE.name;
+  const siteHtml=DEPOSIT_SITE.url
+    ? `<a href="${esc(DEPOSIT_SITE.url)}" target="_blank" rel="noopener">${esc(site)}</a>`
+    : esc(site);
+  /* Only networks actually used by a listed coin, so the glossary
+     never describes something that isn't on the page. */
+  const used=[...new Set(COIN_LIST.flatMap(c=>c.nets))].filter(n=>NET_INFO[n]).sort();
+
+  document.getElementById('main').innerHTML=`<div id="depShell">
+    <div class="dep-head">
+      <h3>Coins accepted for deposits at ${siteHtml}</h3>
+      <p>Payments are handled by <a href="${esc(DEPOSIT_SITE.processorUrl)}" target="_blank" rel="noopener">${esc(DEPOSIT_SITE.processor)}</a>, so this list follows what they support. It is not a list of coins ChainKit endorses, and nothing here is a recommendation to buy anything.</p>
+      <p class="dep-meta">${COIN_LIST.length} coins · last checked against the processor on ${esc(DEPOSIT_SITE.checked)} · the list changes over time, so confirm on the deposit page before sending</p>
+    </div>
+
+    <div class="notice bad">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      <div><b>Send on the network the deposit address expects</b>
+      Most of these coins exist on more than one network, and the networks are not interchangeable. USDT on Tron and USDT on Ethereum are different assets that happen to share a name. Sending to an address on the wrong network almost always means the money is gone for good, and no support team can reverse it. Check the network on the deposit page, then check it again in your wallet before you confirm.</div>
+    </div>
+
+    <details class="explain">
+      <summary>What a network is, and why it matters</summary>
+      <div class="explain-body">
+        <p>A <b>network</b> — also called a chain or blockchain — is the road a coin travels on. Many coins run on several networks at once. The coin is worth the same on each, but the fees, the speed, and crucially the <b>address format</b> differ.</p>
+        <p>When you deposit, you pick a network. Your wallet then produces an address that only exists on that network. Send funds along a different road and they arrive somewhere nobody holds the keys to.</p>
+        <p>These are the ones you will meet most often:</p>
+        <table class="nets">
+          <thead><tr><th scope="col">Network</th><th scope="col">Also called</th><th scope="col">What to expect</th></tr></thead>
+          <tbody>
+            <tr><td><span class="nb n-eth">ETH</span></td><td>Ethereum, ERC-20</td><td>Supported nearly everywhere, usually the most expensive to send on</td></tr>
+            <tr><td><span class="nb n-bsc">BSC</span></td><td>BNB Smart Chain, BEP-20</td><td>Much cheaper than Ethereum, very widely supported</td></tr>
+            <tr><td><span class="nb n-trx">TRX</span></td><td>Tron, TRC-20</td><td>The cheapest common option, and the usual choice for USDT</td></tr>
+            <tr><td><span class="nb n-sol">Solana</span></td><td>SPL</td><td>Fast and cheap, growing quickly</td></tr>
+            <tr><td><span class="nb">Polygon</span></td><td>PoS</td><td>A cheap sidechain of Ethereum</td></tr>
+            <tr><td><span class="nb">TON</span></td><td>The Open Network</td><td>Telegram's own chain</td></tr>
+            <tr><td><span class="nb">Arbitrum</span></td><td>ARB, layer 2</td><td>Ethereum security at a fraction of the fee</td></tr>
+            <tr><td><span class="nb">Base</span></td><td>Coinbase L2</td><td>Coinbase's Ethereum layer 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="explain">
+      <summary>Every network on this page, explained</summary>
+      <div class="explain-body">
+        <p>All ${used.length} networks used by the coins below.</p>
+        <div class="glossary">${used.map(n=>
+          `<div class="gloss-row"><b>${esc(n)}</b>${esc(NET_INFO[n])}</div>`).join('')}</div>
+      </div>
+    </details>
+
+    <details class="explain" style="margin-bottom:1.2rem">
+      <summary>New to crypto? Read this first</summary>
+      <div class="explain-body">
+        <p><b>What a cryptocurrency is.</b> Digital money recorded on a public ledger maintained by computers worldwide, with no bank or single company in charge.</p>
+        <p><b>What a ticker is.</b> The short code identifying a coin — BTC for Bitcoin, ETH for Ethereum. Like a stock symbol. Tickers are not unique across projects, which is why the warnings on some cards below matter.</p>
+        <p><b>What a stablecoin is.</b> A coin designed to stay worth a fixed amount, usually one US dollar. Useful for depositing when you don't want the value moving while the transfer settles. USDT and USDC are the most widely used.</p>
+        <p><b>Deposits are one-way.</b> Once a blockchain transaction confirms, nobody can reverse it — not the site, not the processor, not the network. Send a small test amount first if you are unsure.</p>
+      </div>
+    </details>
+
+    <div class="dir-search">
+      <label class="sr" for="coinQ">Search accepted coins</label>
+      <input class="field" id="coinQ" type="text" autocomplete="off" spellcheck="false"
+        placeholder="Search by name, ticker, network, or keyword…"
+        value="${esc(coinQuery)}" oninput="onCoinSearch(this.value)">
+    </div>
+    <p class="sr" id="coinStatus" role="status" aria-live="polite"></p>
+    <div class="dir-chips" id="coinChips" role="group" aria-label="Filter coins by category">
+      ${COIN_GROUPS.map(g=>{
+        const n=g.id==='all'?COIN_LIST.length:(counts[g.id]||0);
+        return`<button class="chip" type="button" data-cat="${g.id}" aria-pressed="${coinCat===g.id}" onclick="setCoinCat('${g.id}')">${esc(g.label)} <span style="opacity:.6">${n}</span></button>`;
+      }).join('')}
+    </div>
+    <div id="coinResults"></div>
+  </div>`;
+  paintCoins();
+}
+
 /* ═══ MAIN RENDER ═══ */
 function render(){
   if(activeTab==='gas'){renderGas();return;}
   if(activeTab==='prices'){renderPrices();return;}
   if(activeTab==='security'){renderSecurity();return;}
   if(activeTab==='directory'){renderDirectory();return;}
+  if(activeTab==='deposits'){renderDeposits();return;}
   const el=document.getElementById('main');
   if(appMode==='idle'){ el.innerHTML=welcome(); return; }
   if(resolutionError){ el.innerHTML=emptyState(); return; }
