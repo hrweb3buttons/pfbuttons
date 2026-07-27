@@ -659,6 +659,67 @@
   .gloss-row{font-size:12px;line-height:1.5;padding:3px 0}
   .gloss-row b{font-family:var(--mono);font-size:11.5px;color:var(--text);display:block}
 
+  /* ── Donate ── */
+  .don-card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-lg);padding:1.1rem 1.25rem;margin-bottom:11px;
+  }
+  .don-card h4{
+    font-family:var(--display);font-size:15.5px;font-weight:600;
+    display:flex;align-items:center;gap:8px;margin-bottom:4px;
+  }
+  .don-card h4 .swatch{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+  .don-card > p{font-size:12.5px;color:var(--text-2);margin-bottom:11px;max-width:70ch}
+  .don-addr{
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+    background:var(--surface-2);border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;
+  }
+  .don-addr code{
+    font-family:var(--mono);font-size:12.5px;color:var(--text);
+    word-break:break-all;flex:1;min-width:180px;
+  }
+  .copy-wide{
+    background:var(--surface);border:1px solid var(--line-strong);
+    border-radius:var(--r-sm);cursor:pointer;font:inherit;font-size:12px;
+    font-weight:500;color:var(--text-2);padding:6px 12px;flex-shrink:0;
+    display:inline-flex;align-items:center;gap:6px;transition:color .15s,border-color .15s;
+  }
+  .copy-wide:hover{color:var(--accent);border-color:var(--accent)}
+  .copy-wide.done{color:var(--ok);border-color:var(--ok-line)}
+  .don-chain{margin-top:12px}
+  .don-chain-nm{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--text-3);margin-bottom:7px;
+  }
+  .tokrow{display:flex;flex-wrap:wrap;gap:6px}
+  .tokbtn{
+    border:none;border-radius:var(--r-sm);cursor:pointer;font:inherit;
+    font-size:13px;font-weight:600;padding:7px 15px;
+    transition:filter .15s,transform .08s;
+  }
+  .tokbtn:hover{filter:brightness(1.09)}
+  .tokbtn:active{transform:translateY(1px)}
+  .amount-box{
+    background:var(--surface);border:1.5px solid var(--accent);
+    border-radius:var(--r-lg);padding:1rem 1.15rem;margin-bottom:13px;
+  }
+  .amount-box label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
+  .amount-box .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .wallet-bar{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    font-size:12.5px;color:var(--text-2);margin-bottom:13px;
+  }
+  .wallet-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex-shrink:0}
+  .toast{
+    position:fixed;left:50%;bottom:1.5rem;transform:translate(-50%,14px);
+    background:var(--surface);color:var(--text);border:1px solid var(--line-strong);
+    border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow);
+    font-size:13px;max-width:min(90vw,460px);z-index:9999;
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
   /* ── Footer ── */
   footer{
     margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--line);
@@ -724,7 +785,7 @@
 
   <div class="trust">
     <i class="ti ti-lock-check" aria-hidden="true"></i>
-    <span><b>Read-only.</b> ChainKit never connects to a wallet and will never ask for a seed phrase or private key.</span>
+    <span><b>Read-only by default.</b> ChainKit will never ask for a seed phrase or private key, and only connects to a wallet if you choose to send a donation.</span>
     <span style="color:var(--text-3)">·</span>
     <span>Lookups are sent to public blockchain APIs. Your history stays in this browser.</span>
   </div>
@@ -736,6 +797,7 @@
     <button role="tab" id="tab-security" aria-controls="main" aria-selected="false" data-tab="security" tabindex="-1"><i class="ti ti-shield-search" aria-hidden="true"></i> Safety check</button>
     <button role="tab" id="tab-directory" aria-controls="main" aria-selected="false" data-tab="directory" tabindex="-1"><i class="ti ti-compass" aria-hidden="true"></i> Directory</button>
     <button role="tab" id="tab-deposits" aria-controls="main" aria-selected="false" data-tab="deposits" tabindex="-1"><i class="ti ti-coins" aria-hidden="true"></i> Deposits</button>
+    <button role="tab" id="tab-donate" aria-controls="main" aria-selected="false" data-tab="donate" tabindex="-1"><i class="ti ti-heart" aria-hidden="true"></i> Donate</button>
   </nav>
 
   <div class="search" id="searchRow">
@@ -3841,6 +3903,318 @@ function renderDeposits(){
   paintCoins();
 }
 
+/* ═══════════════════════════════════════════════
+   DONATE
+
+   No web3 library. Everything below talks to the
+   wallet through the EIP-1193 provider the browser
+   already injects, which is all ethers or viem
+   would have been doing underneath.
+
+   ── SET THESE ─────────────────────────────────
+═══════════════════════════════════════════════ */
+const DONATE={
+  evm:'0xbd238559609313E98F52d4bA01363108357fB779',
+  tron:'TXPYc7Mtdu6ZUjeiowApGLi8bjzUXFwz5F',
+  solana:'5oRW7wUBoYiBnqLAFxQy3kn2KvzVv8m7WPasxxUyvFW6',
+  /* Shown publicly. A published address attracts spam and targeted
+     phishing — consider an alias you can burn. Blank to hide. */
+  contactEmail:'bigtxhunter@gmail.com',
+  trocadorName:'Hunter Rodriguez',
+  trocadorEmail:'bigtxhunter@proton.me',
+};
+const TRON_USDT='TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+
+const DONATE_CHAINS=[
+  {id:'eth',name:'Ethereum',chainId:'0x1',native:'ETH',color:'#627EEA',tokens:[
+    {s:'USDT',a:'0xdAC17F958D2ee523a2206206994597C13D831ec7',d:6,c:'#26A17B'},
+    {s:'USDC',a:'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',d:6,c:'#2775CA'},
+    {s:'DAI', a:'0x6B175474E89094C44Da98b954EedeAC495271d0F',d:18,c:'#F5AC37'},
+  ]},
+  {id:'bsc',name:'BNB Chain',chainId:'0x38',native:'BNB',color:'#F0B90B',tokens:[
+    {s:'USDT',a:'0x55d398326f99059fF775485246999027B3197955',d:18,c:'#26A17B'},
+    {s:'USDC',a:'0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',d:18,c:'#2775CA'},
+    {s:'DAI', a:'0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',d:18,c:'#F5AC37'},
+    {s:'JOY', a:'0x24338c1ACe31A3DfE43912879317eb76a6213a0f',d:18,c:'#3498D8'},
+  ]},
+  /* MATIC became POL in 2024 — Polygon's gas token is POL now. */
+  {id:'polygon',name:'Polygon',chainId:'0x89',native:'POL',color:'#7B3FE4',tokens:[
+    {s:'USDT',a:'0xc2132D05D31c914a87C6611C10748AEb04B58e8F',d:6,c:'#26A17B'},
+    {s:'USDC',a:'0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',d:6,c:'#2775CA'},
+    {s:'DAI', a:'0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',d:18,c:'#F5AC37'},
+  ]},
+  {id:'avax',name:'Avalanche',chainId:'0xa86a',native:'AVAX',color:'#E84142',tokens:[
+    {s:'USDT',a:'0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',d:6,c:'#26A17B'},
+    {s:'USDC',a:'0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',d:6,c:'#2775CA'},
+    {s:'DAI', a:'0xd586E7F844cEa2F87f50152665BCbc2C279D8d70',d:18,c:'#F5AC37'},
+  ]},
+];
+
+let donorAccount=null, lastDonation=null;
+let pendingDonate=null, donateTrigger=null;
+
+/* ── Toast ── */
+function toast(msg){
+  say(msg);
+  let t=document.getElementById('toast');
+  if(!t){ t=document.createElement('div'); t.id='toast'; t.className='toast'; document.body.appendChild(t); }
+  t.textContent=msg;
+  requestAnimationFrame(()=>t.classList.add('show'));
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),6000);
+}
+
+/* ── Amount maths, done with BigInt rather than a library.
+      Floats cannot represent 0.1 exactly, and rounding a
+      donation is the sort of bug nobody notices until it
+      matters, so the decimal string is parsed directly. ── */
+function toUnits(input,decimals){
+  const s=String(input).trim().replace(/,/g,'');
+  if(!/^\d*\.?\d*$/.test(s)||s===''||s==='.')throw new Error('Enter a number, digits only.');
+  const [whole='0',frac='']=s.split('.');
+  if(frac.length>decimals)throw new Error(`That token allows at most ${decimals} decimal places.`);
+  const v=BigInt((whole||'0')+frac.padEnd(decimals,'0'));
+  if(v<=0n)throw new Error('Enter an amount greater than zero.');
+  return v;
+}
+/* transfer(address,uint256) — selector plus two 32-byte words. */
+function encodeTransfer(to,units){
+  return '0xa9059cbb'
+    +to.toLowerCase().replace(/^0x/,'').padStart(64,'0')
+    +units.toString(16).padStart(64,'0');
+}
+
+/* ── Wallet ── */
+async function connectWallet(){
+  const eth=window.ethereum;
+  if(!eth){
+    toast('No browser wallet found. You can still copy the address above and send from any wallet or exchange.');
+    return null;
+  }
+  try{
+    const [acc]=await eth.request({method:'eth_requestAccounts'});
+    donorAccount=acc; paintDonate();
+    toast('Wallet connected.');
+    return acc;
+  }catch(e){
+    toast(e&&e.code===4001?'Connection cancelled.':'Could not connect to your wallet.');
+    return null;
+  }
+}
+async function sendEVM(chain,token,amount){
+  const eth=window.ethereum;
+  if(!eth)return toast('No browser wallet found. Copy the address above and send from any wallet or exchange instead.');
+  const from=donorAccount||await connectWallet();
+  if(!from)return;
+  try{
+    await eth.request({method:'wallet_switchEthereumChain',params:[{chainId:chain.chainId}]});
+  }catch(e){
+    if(e&&e.code===4902)return toast(`${chain.name} is not set up in your wallet yet. Add the network, then try again.`);
+    if(e&&e.code===4001)return toast('Network switch cancelled — nothing was sent.');
+    return toast(`Could not switch to ${chain.name}. Switch manually in your wallet and try again.`);
+  }
+  let units;
+  try{ units=toUnits(amount,token?token.d:18); }
+  catch(err){ return toast(err.message); }
+  const tx=token
+    ? {from,to:token.a,data:encodeTransfer(DONATE.evm,units)}
+    : {from,to:DONATE.evm,value:'0x'+units.toString(16)};
+  try{
+    const hash=await eth.request({method:'eth_sendTransaction',params:[tx]});
+    lastDonation={hash,label:`${amount} ${token?token.s:chain.native} on ${chain.name}`};
+    paintDonate();
+    toast('Sent — thank you. Your transaction is on its way.');
+  }catch(e){
+    toast(e&&e.code===4001?'Transaction cancelled — nothing was sent.':'The transaction failed. Nothing was sent.');
+  }
+}
+async function sendTron(symbol,amount){
+  const tw=window.tronWeb;
+  if(!tw||!tw.ready)
+    return toast('TronLink not detected or locked. Unlock it, or copy the address above and send manually.');
+  let units;
+  try{ units=toUnits(amount,6); }
+  catch(err){ return toast(err.message); }
+  try{
+    if(symbol==='TRX'){
+      await tw.trx.sendTransaction(DONATE.tron,Number(units));
+    }else{
+      const c=await tw.contract().at(TRON_USDT);
+      await c.transfer(DONATE.tron,units.toString()).send();
+    }
+    toast(`${symbol} donation submitted — thank you.`);
+  }catch(e){
+    toast(`The ${symbol} transaction failed or was cancelled. Nothing was sent.`);
+  }
+}
+
+/* ── Amount prompt ── */
+function askAmount(label,trigger,fn){
+  pendingDonate=fn; donateTrigger=trigger;
+  const box=document.getElementById('amountBox');
+  if(!box)return;
+  document.getElementById('amountLabel').textContent=`How much ${label} would you like to send?`;
+  const input=document.getElementById('amountInput');
+  input.value=''; box.style.display='';
+  try{ box.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch{}
+  input.focus();
+}
+function closeAmount(){
+  const box=document.getElementById('amountBox');
+  if(box)box.style.display='none';
+  pendingDonate=null;
+  if(donateTrigger){ donateTrigger.focus(); donateTrigger=null; }
+}
+function confirmAmount(){
+  const v=document.getElementById('amountInput').value;
+  const fn=pendingDonate;
+  closeAmount();
+  if(fn)fn(v);
+}
+function startEVM(chainId,symbol,btn){
+  const chain=DONATE_CHAINS.find(c=>c.id===chainId);
+  const token=symbol===chain.native?null:chain.tokens.find(t=>t.s===symbol);
+  askAmount(`${symbol} on ${chain.name}`,btn,v=>sendEVM(chain,token,v));
+}
+function startTron(symbol,btn){ askAmount(`${symbol} on Tron`,btn,v=>sendTron(symbol,v)); }
+
+/* Hand a finished donation straight to the Lookup tab. */
+function lookupDonation(){
+  if(!lastDonation)return;
+  switchTab('lookup');
+  const el=document.getElementById('q');
+  el.value=lastDonation.hash;
+  el.dispatchEvent(new Event('input'));
+  document.getElementById('go').click();
+}
+
+function loadTrocador(){
+  const box=document.getElementById('trocadorBox');
+  if(!box)return;
+  const url='https://trocador.app/anonpay/?ticker_to=usdt&network_to=BEP20'
+    +'&address='+encodeURIComponent(DONATE.evm)
+    +'&donation=True&name='+encodeURIComponent(DONATE.trocadorName)
+    +'&email='+encodeURIComponent(DONATE.trocadorEmail)
+    +'&bgcolor=00000000';
+  box.innerHTML=`<iframe title="Donate other cryptocurrencies via Trocador"
+    src="${esc(url)}" width="310" height="350" style="border:0;max-width:100%"
+    referrerpolicy="no-referrer" loading="lazy" scrolling="no"></iframe>`;
+  say('Trocador donation widget loaded.');
+}
+
+/* ── Render ── */
+function copyWide(text,label){
+  const safe=String(text).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return`<button class="copy-wide" type="button" onclick="copyAddr('${safe}',this)">
+    <i class="ti ti-copy" aria-hidden="true"></i> Copy ${esc(label)}</button>`;
+}
+async function copyAddr(text,btn){
+  try{
+    await navigator.clipboard.writeText(text);
+    const i=btn.querySelector('i'), was=i.className;
+    btn.classList.add('done'); i.className='ti ti-check';
+    say('Address copied to clipboard');
+    setTimeout(()=>{btn.classList.remove('done');i.className=was;},2000);
+  }catch{ toast('Your browser blocked the clipboard. Select the address and copy it manually.'); }
+}
+function addrBlock(addr,label){
+  return`<div class="don-addr"><code>${esc(addr)}</code>${copyWide(addr,label)}</div>`;
+}
+function paintDonate(){
+  const bar=document.getElementById('walletBar');
+  if(bar){
+    bar.innerHTML=donorAccount
+      ? `<span class="wallet-dot"></span><span>Wallet connected: <b style="font-family:var(--mono)">${esc(trunc(donorAccount,6,4))}</b></span>`
+      : `<span>Sending from a browser wallet? </span><button class="copy-wide" type="button" onclick="connectWallet()"><i class="ti ti-wallet" aria-hidden="true"></i> Connect wallet</button>
+         <span style="color:var(--text-3)">Optional — you can always just copy an address instead.</span>`;
+  }
+  const done=document.getElementById('donDone');
+  if(done){
+    done.innerHTML=lastDonation
+      ? `<div class="notice ok"><i class="ti ti-circle-check" aria-hidden="true"></i>
+         <div><b>Thank you</b>${esc(lastDonation.label)} is on its way.
+         <button class="hint fix" type="button" style="border:none;background:none;padding:0" onclick="lookupDonation()">Track it in the Lookup tab</button></div></div>`
+      : '';
+  }
+}
+function renderDonate(){
+  if(document.getElementById('donShell')){ paintDonate(); return; }
+  const evmChains=DONATE_CHAINS.map(c=>`
+    <div class="don-chain">
+      <div class="don-chain-nm">${esc(c.name)}</div>
+      <div class="tokrow">
+        <button class="tokbtn" style="background:${c.color};color:${ink(c.color)}"
+          onclick="startEVM('${c.id}','${c.native}',this)">${esc(c.native)}</button>
+        ${c.tokens.map(t=>`<button class="tokbtn" style="background:${t.c};color:${ink(t.c)}"
+          onclick="startEVM('${c.id}','${t.s}',this)">${esc(t.s)}</button>`).join('')}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('main').innerHTML=`<div id="donShell">
+    <div class="dep-head">
+      <h3>Support these tools</h3>
+      <p>ChainKit is free, has no ads, and does not track you. Donations cover hosting and the time that goes into keeping the directory and coin lists accurate. Entirely optional — nothing here is paywalled, and nothing ever will be.</p>
+    </div>
+
+    <div class="notice info">
+      <i class="ti ti-shield-check" aria-hidden="true"></i>
+      <div><b>You never have to connect a wallet</b>
+      Every address below is shown in full, so you can copy one and send from any wallet, exchange or phone app. The buttons are only a shortcut for people using a browser wallet — they open your wallet's own confirmation screen, and ChainKit never sees your keys.</div>
+    </div>
+
+    <div id="donDone"></div>
+
+    <div class="amount-box" id="amountBox" style="display:none">
+      <label for="amountInput" id="amountLabel">Amount</label>
+      <input class="field" id="amountInput" type="text" inputmode="decimal"
+        autocomplete="off" spellcheck="false" placeholder="0.00" style="width:100%"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();confirmAmount();}else if(event.key==='Escape'){closeAmount();}">
+      <div class="row">
+        <button class="btn" type="button" onclick="confirmAmount()"><i class="ti ti-send" aria-hidden="true"></i><span>Continue in wallet</span></button>
+        <button class="btn-ghost" type="button" onclick="closeAmount()">Cancel</button>
+      </div>
+      <p style="font-size:11.5px;color:var(--text-3);margin-top:9px">Your wallet will show you the exact amount and fee before anything is sent. You can still cancel there.</p>
+    </div>
+
+    <div class="wallet-bar" id="walletBar"></div>
+
+    <div class="don-card">
+      <h4><span class="swatch" style="background:#627EEA"></span>Ethereum, BNB Chain, Polygon and Avalanche</h4>
+      <p>The same address works on all four networks. Send whichever you like — just make sure your wallet is on the matching network.</p>
+      ${addrBlock(DONATE.evm,'address')}
+      ${evmChains}
+    </div>
+
+    <div class="don-card">
+      <h4><span class="swatch" style="background:#EF0027"></span>Tron</h4>
+      <p>TRX and USDT (TRC-20). The cheapest option for small amounts.</p>
+      ${addrBlock(DONATE.tron,'Tron address')}
+      <div class="tokrow">
+        <button class="tokbtn" style="background:#EF0027;color:#fff" onclick="startTron('TRX',this)">TRX</button>
+        <button class="tokbtn" style="background:#26A17B;color:#fff" onclick="startTron('USDT',this)">USDT</button>
+      </div>
+    </div>
+
+    <div class="don-card">
+      <h4><span class="swatch" style="background:#9945FF"></span>Solana</h4>
+      <p>Copy the address and send from your Solana wallet. SOL, USDC, USDT and BAT all welcome.</p>
+      ${addrBlock(DONATE.solana,'Solana address')}
+    </div>
+
+    <div class="don-card">
+      <h4><span class="swatch" style="background:#2DD4BF"></span>Anything else</h4>
+      <p>Hold something not listed above? Trocador will convert it and forward it as USDT on BNB Chain. This is a third-party service, so it only loads once you ask for it.</p>
+      <div id="trocadorBox"><button class="copy-wide" type="button" onclick="loadTrocador()"><i class="ti ti-external-link" aria-hidden="true"></i> Load the Trocador widget</button></div>
+    </div>
+
+    ${DONATE.contactEmail?`<div class="don-card">
+      <h4><span class="swatch" style="background:var(--text-3)"></span>Vault27</h4>
+      <p>Vault27 users can send directly to <b>${esc(DONATE.contactEmail)}</b>.</p>
+    </div>`:''}
+  </div>`;
+  paintDonate();
+}
+
 /* ═══ MAIN RENDER ═══ */
 function render(){
   if(activeTab==='gas'){renderGas();return;}
@@ -3848,6 +4222,7 @@ function render(){
   if(activeTab==='security'){renderSecurity();return;}
   if(activeTab==='directory'){renderDirectory();return;}
   if(activeTab==='deposits'){renderDeposits();return;}
+  if(activeTab==='donate'){renderDonate();return;}
   const el=document.getElementById('main');
   if(appMode==='idle'){ el.innerHTML=welcome(); return; }
   if(resolutionError){ el.innerHTML=emptyState(); return; }
