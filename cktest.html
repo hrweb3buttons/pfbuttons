@@ -9,6 +9,9 @@
 <meta property="og:description" content="Paste a transaction hash or wallet address and ChainKit works out which blockchain it belongs to." />
 <meta property="og:type" content="website" />
 <meta name="theme-color" content="#0b0f14" />
+<!-- Restricts what the page may load or talk to. If a chain ever reports
+     "provider unavailable" after adding a new RPC, add its host to connect-src. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; frame-src https://trocador.app; form-action 'none'; base-uri 'none'; object-src 'none'; connect-src 'self' https://*.publicnode.com https://*.blockscout.com https://*.algonode.cloud https://andromeda-explorer.metis.io https://andromeda.metis.io https://api.blockchair.com https://api.blockcypher.com https://api.coingecko.com https://api.ensideas.com https://api.etherscan.io https://api.gopluslabs.io https://api.harmony.one https://api.honeypot.is https://api.kaspa.org https://api.koios.rest https://api.mainnet-beta.solana.com https://api.multiversx.com https://api.nearblocks.io https://api.ofac.dev https://api.trongrid.io https://api.tzkt.io https://api.ud.me https://api.whatsonchain.com https://babel-api.mainnet.iotex.io https://blockscout.scroll.io https://blockstream.info https://evm.cronos.org https://evm.kava.io https://explorer.mode.network https://explorer.zora.energy https://forno.celo.org https://fullnode.mainnet.aptoslabs.com https://fullnode.mainnet.sui.io https://horizon.stellar.org https://mainnet-public.mirrornode.hedera.com https://mainnet.boba.network https://mainnet.era.zksync.io https://mainnet.vechain.org https://polkadot.api.subscan.io https://public-en.node.kaia.io https://public-node.rsk.co https://rest-mainnet.onflow.org https://rpc.ankr.com https://rpc.frax.com https://rpc.mainnet.taiko.xyz https://rpc.nano.to https://rpc.pulsechain.com https://rpc.soniclabs.com https://rpc.xlayer.tech https://rpc.zora.energy https://tonapi.io https://xmrchain.net https://xrplcluster.com;" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d9488'/%3E%3Cpath d='M9 21V11m7 10V11m7 10V11' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M9 16h14' stroke='white' stroke-width='2.6' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1231,24 +1234,37 @@ function sanctionNotice(a){
     <div><b>Possible sanctions match</b>
     This address may appear on the U.S. Treasury OFAC list, according to an unofficial third-party dataset.
     ChainKit cannot confirm this. Check the
-    <a href="https://sanctionssearch.ofac.treas.gov/" target="_blank" rel="noopener">official OFAC SDN search</a>
+    <a href="https://sanctionssearch.ofac.treas.gov/" target="_blank" rel="noopener noreferrer">official OFAC SDN search</a>
     before acting on it, and take advice if this affects a real payment.</div>
   </div>`;
 }
 
 /* ═══ CLIPBOARD ═══ */
-async function copyText(text,btn){
+/* One delegated handler for every copy button on the page.
+   Nothing user-supplied is ever placed inside an inline handler:
+   the HTML parser decodes entities before the JS is parsed, so
+   escaping quotes is not enough to keep a value inert. */
+async function copyValue(text,btn){
+  const wide=btn.classList.contains('copy-wide');
   try{
     await navigator.clipboard.writeText(text);
-    const i=btn.querySelector('i'), was=i.className;
-    i.className='ti ti-check'; btn.style.color='var(--ok)';
+    const i=btn.querySelector('i'), was=i?i.className:'';
+    if(i)i.className='ti ti-check';
+    if(wide)btn.classList.add('done'); else btn.style.color='var(--ok)';
     say('Copied to clipboard');
-    setTimeout(()=>{i.className=was;btn.style.color='';},1500);
-  }catch{ say('Could not copy — your browser blocked clipboard access'); }
+    setTimeout(()=>{ if(i)i.className=was; btn.classList.remove('done'); btn.style.color=''; },wide?2000:1500);
+  }catch{ say('Your browser blocked the clipboard. Select the text and copy it manually.'); }
 }
+document.addEventListener('click',e=>{
+  const el=(e.target&&e.target.closest)?e.target:null;
+  if(!el)return;
+  const c=el.closest('[data-copy]');
+  if(c){ copyValue(c.getAttribute('data-copy'),c); return; }
+  const r=el.closest('[data-rerun]');
+  if(r){ rerun(r.getAttribute('data-rerun')); }
+});
 function copyBtn(text,what){
-  const safe=String(text).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-  return`<button class="copy" type="button" onclick="copyText('${safe}',this)" aria-label="Copy ${esc(what||'value')}"><i class="ti ti-copy" aria-hidden="true"></i></button>`;
+  return`<button class="copy" type="button" data-copy="${esc(text)}" aria-label="Copy ${esc(what||'value')}"><i class="ti ti-copy" aria-hidden="true"></i></button>`;
 }
 function say(msg){ const l=document.getElementById('live'); if(l)l.textContent=msg; }
 
@@ -2294,7 +2310,7 @@ function txCards(){
             ${finality(c.id,r)}
           </div>
         </div>
-        ${r.explorerUrl?`<a class="ext" href="${esc(r.explorerUrl)}" target="_blank" rel="noopener">Block explorer <i class="ti ti-external-link" aria-hidden="true"></i></a>`:''}
+        ${r.explorerUrl?`<a class="ext" href="${esc(r.explorerUrl)}" target="_blank" rel="noopener noreferrer">Block explorer <i class="ti ti-external-link" aria-hidden="true"></i></a>`:''}
       </div>
       ${stamp(r.blockTime)}
       ${isBatch?batchBox(c.id,count,filter):''}
@@ -2343,7 +2359,7 @@ function addrCards(){
             ${r.isContract!==undefined?`<span class="pill ${r.isContract?'nofin':'fin'}"><i class="ti ${r.isContract?'ti-file-code':'ti-user'}" aria-hidden="true"></i>${r.isContract?'Smart contract':'Personal wallet'}</span>`:''}
           </div>
         </div>
-        ${r.explorerUrl?`<a class="ext" href="${esc(r.explorerUrl)}" target="_blank" rel="noopener">Block explorer <i class="ti ti-external-link" aria-hidden="true"></i></a>`:''}
+        ${r.explorerUrl?`<a class="ext" href="${esc(r.explorerUrl)}" target="_blank" rel="noopener noreferrer">Block explorer <i class="ti ti-external-link" aria-hidden="true"></i></a>`:''}
       </div>
       <div class="banner value"><i class="ti ti-wallet" aria-hidden="true"></i>
         <div><div class="banner-l">Balance</div><div class="banner-v">${esc(String(r.balance))}</div></div></div>
@@ -2446,7 +2462,7 @@ function welcome(){
     ${hist.map(e=>{
       const icon=e.mode==='address'?'ti-wallet':e.mode==='domain'?'ti-world':'ti-arrows-exchange';
       const label=e.resolvedDomain||e.input;
-      return`<button class="hist-item" type="button" onclick="rerun('${esc(e.input).replace(/'/g,"\\'")}')">
+      return`<button class="hist-item" type="button" data-rerun="${esc(e.input)}">
         <i class="ti ${icon}" style="color:var(--text-3)" aria-hidden="true"></i>
         <span class="q">${esc(label)}</span>
         <span class="when">${(e.matched?.length?`${e.matched.length} match${e.matched.length>1?'es':''}`:'no match')} · ${relTime(Math.floor(e.timestamp/1000))}</span>
@@ -3171,7 +3187,10 @@ const NOTE_ICON={warn:'ti-alert-triangle',info:'ti-info-circle',ok:'ti-circle-ch
 
 function dirItemHtml(it){
   /* rel="sponsored" is the honest markup for a paid link. */
-  const rel=it.ref?'noopener noreferrer sponsored':'noopener noreferrer';
+  /* noopener alone fully prevents tabnabbing. noreferrer additionally
+     strips the Referer header — good for privacy, but some affiliate
+     programmes validate the referrer, so paid links keep theirs. */
+  const rel=it.ref?'noopener sponsored':'noopener noreferrer';
   return`<div class="dir-item${it.flag?' flagged':''}">
     <div class="dir-top">
       <a class="dir-name" href="${esc(it.url)}" target="_blank" rel="${rel}">${esc(it.name)}<i class="ti ti-external-link" aria-hidden="true"></i><span class="sr">(opens in a new tab)</span></a>
@@ -3834,7 +3853,7 @@ function renderDeposits(){
   COIN_LIST.forEach(c=>{counts[c.g]=(counts[c.g]||0)+1;});
   const site=DEPOSIT_SITE.name;
   const siteHtml=DEPOSIT_SITE.url
-    ? `<a href="${esc(DEPOSIT_SITE.url)}" target="_blank" rel="noopener">${esc(site)}</a>`
+    ? `<a href="${esc(DEPOSIT_SITE.url)}" target="_blank" rel="noopener noreferrer">${esc(site)}</a>`
     : esc(site);
   /* Only networks actually used by a listed coin, so the glossary
      never describes something that isn't on the page. */
@@ -3843,7 +3862,7 @@ function renderDeposits(){
   document.getElementById('main').innerHTML=`<div id="depShell">
     <div class="dep-head">
       <h2>Coins accepted for deposits at ${siteHtml}</h2>
-      <p>Payments are handled by <a href="${esc(DEPOSIT_SITE.processorUrl)}" target="_blank" rel="noopener">${esc(DEPOSIT_SITE.processor)}</a>, so this list follows what they support. It is not a list of coins ChainKit endorses, and nothing here is a recommendation to buy anything.</p>
+      <p>Payments are handled by <a href="${esc(DEPOSIT_SITE.processorUrl)}" target="_blank" rel="noopener noreferrer">${esc(DEPOSIT_SITE.processor)}</a>, so this list follows what they support. It is not a list of coins ChainKit endorses, and nothing here is a recommendation to buy anything.</p>
       <p class="dep-meta">${COIN_LIST.length} coins · last checked against the processor on ${esc(DEPOSIT_SITE.checked)} · the list changes over time, so confirm on the deposit page before sending</p>
     </div>
 
@@ -4107,24 +4126,15 @@ function loadTrocador(){
     +'&bgcolor=00000000';
   box.innerHTML=`<iframe title="Donate other cryptocurrencies via Trocador"
     src="${esc(url)}" width="310" height="350" style="border:0;max-width:100%"
+    sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
     referrerpolicy="no-referrer" loading="lazy" scrolling="no"></iframe>`;
   say('Trocador donation widget loaded.');
 }
 
 /* ── Render ── */
 function copyWide(text,label){
-  const safe=String(text).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-  return`<button class="copy-wide" type="button" onclick="copyAddr('${safe}',this)">
+  return`<button class="copy-wide" type="button" data-copy="${esc(text)}">
     <i class="ti ti-copy" aria-hidden="true"></i> Copy ${esc(label)}</button>`;
-}
-async function copyAddr(text,btn){
-  try{
-    await navigator.clipboard.writeText(text);
-    const i=btn.querySelector('i'), was=i.className;
-    btn.classList.add('done'); i.className='ti ti-check';
-    say('Address copied to clipboard');
-    setTimeout(()=>{btn.classList.remove('done');i.className=was;},2000);
-  }catch{ toast('Your browser blocked the clipboard. Select the address and copy it manually.'); }
 }
 function addrBlock(addr,label){
   return`<div class="don-addr"><code>${esc(addr)}</code>${copyWide(addr,label)}</div>`;
