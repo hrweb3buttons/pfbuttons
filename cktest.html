@@ -760,6 +760,17 @@
 <body>
 <a class="skip" href="#mainLandmark">Skip to content</a>
 
+<noscript>
+  <div class="wrap" style="padding:1.5rem 0 0">
+    <div class="notice warn">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      <div><b>ChainKit needs JavaScript to run</b>
+      Every lookup happens inside your own browser — there is no server doing the work — so nothing on this page functions with scripts turned off.
+      If you use a script blocker, allowing this page does not expose you to anything new: the tool only ever talks to the public blockchain services listed at the bottom of this page.</div>
+    </div>
+  </div>
+</noscript>
+
 <div class="wrap">
 
   <header class="top">
@@ -824,6 +835,7 @@
     <p><b>ChainKit is an independent, unofficial tool.</b> It reads public blockchain data through third-party APIs and shows it back to you. Every tab except Deposits is general reference and is not affiliated with any exchange, wallet, or blockchain project. The Deposits tab lists the coins accepted by one specific site through its payment processor.</p>
     <p>Information here is provided as-is for general reference. It is not financial, legal, tax, or compliance advice. Balances, prices, and safety checks can be incomplete, delayed, or wrong — always confirm anything important on the chain's own block explorer.</p>
     <p>Price data from CoinGecko. Token safety data from GoPlus Labs and Honeypot.is. Sanctions screening is a best-effort check against an unofficial dataset and is never authoritative.</p>
+    <p id="buildLine"></p>
   </footer>
 
 </div>
@@ -836,6 +848,11 @@
 
 /* ── Safe storage: falls back to memory if localStorage is
       blocked (private mode, sandboxed iframe, cookie rules). ── */
+/* Bump the version whenever you publish. Beta reports are close to
+   useless without it — you cannot tell a fixed bug from a live one.
+   Set feedbackUrl to wherever you want reports to land. */
+const BUILD={version:'0.9.0-beta', date:'29 July 2026', feedbackUrl:''};
+
 const _mem={};
 const store={
   get(k){ try{ const v=localStorage.getItem(k); return v===null?(_mem[k]??null):v; }catch{ return _mem[k]??null; } },
@@ -4250,8 +4267,15 @@ function render(){
 
 /* ═══ TABS ═══ */
 const tabBtns=[...document.querySelectorAll('[role="tab"]')];
+const TAB_IDS=['lookup','gas','prices','security','directory','deposits','donate'];
 function switchTab(name){
   activeTab=name;
+  /* replaceState, not pushState — a tab change should not fill up the
+     back button, but the URL should still be shareable. */
+  try{
+    const base=location.pathname+location.search;
+    history.replaceState(history.state,'',name==='lookup'?base:base+'#'+name);
+  }catch{}
   tabBtns.forEach(b=>{
     const on=b.dataset.tab===name;
     b.setAttribute('aria-selected',on?'true':'false');
@@ -4308,11 +4332,28 @@ function tick(){
   if(r){
     const left=untilReset();
     if(left){
-      r.innerHTML=`<i class="ti ti-refresh" aria-hidden="true"></i> Resets in ${esc(left)}`;
+      r.innerHTML=`<i class="ti ti-refresh" aria-hidden="true"></i> Daily reset in ${esc(left)}`;
+      r.title='The site\u2019s day rolls over at midnight Panama time';
       r.style.display='';
     }else r.style.display='none';
   }
 }
+/* Free API tiers are shared across every visitor. A tab left open all
+   day would otherwise make ~2,900 price calls on its own and rate-limit
+   the tool for everyone, so refreshing pauses while the tab is hidden. */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    clearInterval(gasTimer); gasTimer=null;
+    clearInterval(priceTimer); priceTimer=null;
+  }else{
+    if(activeTab==='gas'&&!gasTimer){ refreshGas(); gasTimer=setInterval(refreshGas,30000); }
+    if(activeTab==='prices'&&!priceTimer){
+      if(priceMode==='current')refreshPrices();
+      priceTimer=setInterval(()=>{if(priceMode==='current')refreshPrices();},60000);
+    }
+  }
+});
+
 document.getElementById('clockZone').addEventListener('click',()=>{
   tzMode=nextTz().id;
   store.set('chainkit_tz',tzMode);
@@ -4415,6 +4456,19 @@ window.addEventListener('popstate',e=>{
 });
 
 render();
+
+/* Restore a tab from the URL fragment, and fill in the build line. */
+(()=>{
+  const el=document.getElementById('buildLine');
+  if(el){
+    el.innerHTML=`<b>Beta ${esc(BUILD.version)}</b> \u00b7 built ${esc(BUILD.date)} \u00b7 `
+      +(BUILD.feedbackUrl
+        ? `Something wrong or missing? <a href="${esc(BUILD.feedbackUrl)}" target="_blank" rel="noopener noreferrer">Report it</a> and quote the version above.`
+        : `Something wrong or missing? Please report it and quote the version above.`);
+  }
+  const want=location.hash.replace(/^#/,'');
+  if(TAB_IDS.includes(want)&&want!=='lookup')switchTab(want);
+})();
 </script>
 </body>
 </html>
