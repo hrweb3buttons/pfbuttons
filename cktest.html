@@ -851,7 +851,7 @@
 /* Bump the version whenever you publish. Beta reports are close to
    useless without it — you cannot tell a fixed bug from a live one.
    Set feedbackUrl to wherever you want reports to land. */
-const BUILD={version:'0.9.0-beta', date:'29 July 2026', feedbackUrl:''};
+const BUILD={version:'0.9.0-beta', date:'30 July 2026', feedbackUrl:''};
 
 const _mem={};
 const store={
@@ -3328,11 +3328,11 @@ function renderDirectory(){
    processor's current supported-currency page.
 ═══════════════════════════════════════════════ */
 const DEPOSIT_SITE={
-  name:'[set site name]',
+  name:'ClickBaitPays',
   url:'',
-  processor:'NowPayments',
+  processor:'NOWPayments',
   processorUrl:'https://nowpayments.io/',
-  checked:'25 July 2026',
+  checked:'30 July 2026',
 };
 
 const COIN_GROUPS=[
@@ -4464,7 +4464,7 @@ render();
     el.innerHTML=`<b>Beta ${esc(BUILD.version)}</b> \u00b7 built ${esc(BUILD.date)} \u00b7 `
       +(BUILD.feedbackUrl
         ? `Something wrong or missing? <a href="${esc(BUILD.feedbackUrl)}" target="_blank" rel="noopener noreferrer">Report it</a> and quote the version above.`
-        : `Something wrong or missing? Please report it and quote the version above.`);
+        : `Something wrong or missing? Please report it and quote the version.`);
   }
   const want=location.hash.replace(/^#/,'');
   if(TAB_IDS.includes(want)&&want!=='lookup')switchTab(want);
