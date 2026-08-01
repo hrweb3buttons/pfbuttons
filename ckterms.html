@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Terms of Use — ChainKit</title>
+<meta name="description" content="The terms that govern use of ChainKit, a free read-only blockchain lookup tool." />
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#0b0f14" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; form-action 'none'; base-uri 'none'; object-src 'none'; connect-src 'none';" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d9488'/%3E%3Cpath d='M9 21V11m7 10V11m7 10V11' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M9 16h14' stroke='white' stroke-width='2.6' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css" />
+<script>
+(function(){
+  var pref='system';
+  try{ pref=localStorage.getItem('chainkit_theme')||'system'; }catch(e){}
+  var dark = pref==='dark' || (pref==='system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+})();
+</script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root[data-theme="dark"]{
+    --bg:#0b0f14; --surface:#131920; --surface-2:#1b232c;
+    --line:#26313d; --line-strong:#36444f;
+    --text:#eef2f6; --text-2:#b6c1d0; --text-3:#8e9aab;
+    --accent:#2dd4bf; --accent-ink:#0b0f14;
+    --accent-soft:rgba(45,212,191,.12); --accent-line:rgba(45,212,191,.30);
+    --warn:#fbbf24; --warn-soft:rgba(251,191,36,.11); --warn-line:rgba(251,191,36,.28);
+    --bad:#fb7185; --bad-soft:rgba(251,113,133,.11); --bad-line:rgba(251,113,133,.30);
+    --info:#7dd3fc; --info-soft:rgba(125,211,252,.09); --info-line:rgba(125,211,252,.24);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f7f9; --surface:#ffffff; --surface-2:#f0f2f5;
+    --line:#dfe3e9; --line-strong:#c3cad4;
+    --text:#111820; --text-2:#414b5a; --text-3:#616a7b;
+    --accent:#0f766e; --accent-ink:#ffffff;
+    --accent-soft:rgba(15,118,110,.08); --accent-line:rgba(15,118,110,.28);
+    --warn:#8a5300; --warn-soft:rgba(138,83,0,.08); --warn-line:rgba(138,83,0,.24);
+    --bad:#b3261e; --bad-soft:rgba(179,38,30,.07); --bad-line:rgba(179,38,30,.26);
+    --info:#0e6f9e; --info-soft:rgba(14,111,158,.07); --info-line:rgba(14,111,158,.24);
+    --shadow:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -14px rgba(16,24,40,.22);
+  }
+  :root{
+    --r:10px; --r-lg:14px; --r-sm:7px;
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --sans:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);background:var(--bg);color:var(--text);
+    line-height:1.65;padding:0 1rem 4rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+
+  :focus{outline:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  .skip{
+    position:absolute;left:-9999px;top:0;z-index:100;
+    background:var(--accent);color:var(--accent-ink);
+    padding:10px 16px;border-radius:0 0 var(--r) 0;font-weight:600;
+  }
+  .skip:focus{left:0}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{transition-duration:.001ms !important;animation-duration:.001ms !important}
+  }
+
+  /* Header */
+  .top{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:1.6rem 0 1.2rem}
+  .mark{
+    width:38px;height:38px;border-radius:11px;flex-shrink:0;
+    background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;
+  }
+  .mark svg{width:21px;height:21px;display:block}
+  .brand a{
+    font-family:var(--display);font-size:20px;font-weight:700;
+    letter-spacing:-.02em;color:var(--text);text-decoration:none;line-height:1.1;
+  }
+  .brand a:hover{color:var(--accent)}
+  .brand p{font-size:12.5px;color:var(--text-3);margin-top:1px}
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .seg{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:2px}
+  .seg button{
+    background:none;border:none;cursor:pointer;font:inherit;font-size:12px;
+    color:var(--text-3);padding:5px 10px;border-radius:5px;min-height:24px;
+    display:flex;align-items:center;gap:5px;transition:color .15s,background .15s;
+  }
+  .seg button:hover{color:var(--text-2)}
+  .seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);font-weight:600}
+
+  /* Title block */
+  .title{padding:.5rem 0 1.4rem;border-bottom:1px solid var(--line);margin-bottom:1.6rem}
+  .title h1{
+    font-family:var(--display);font-size:clamp(28px,5vw,38px);font-weight:700;
+    letter-spacing:-.025em;line-height:1.1;
+  }
+  .title .meta{
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+    font-size:12.5px;color:var(--text-3);margin-top:11px;
+  }
+  .stamp{
+    font-family:var(--mono);font-size:11.5px;padding:3px 9px;border-radius:20px;
+    background:var(--surface);border:1px solid var(--line);color:var(--text-2);
+  }
+
+  /* Callouts */
+  .box{
+    display:flex;align-items:flex-start;gap:12px;border-radius:var(--r);
+    padding:14px 16px;margin:1.3rem 0;font-size:13.5px;color:var(--text-2);
+  }
+  .box i{font-size:19px;flex-shrink:0;margin-top:1px}
+  .box b{display:block;color:var(--text);font-weight:600;margin-bottom:3px;font-size:14px}
+  .box.warn{background:var(--warn-soft);border:1px solid var(--warn-line)}
+  .box.warn i{color:var(--warn)}
+  .box.bad{background:var(--bad-soft);border:1.5px solid var(--bad-line)}
+  .box.bad i{color:var(--bad)}
+  .box.info{background:var(--info-soft);border:1px solid var(--info-line)}
+  .box.info i{color:var(--info)}
+  .box.key{background:var(--accent-soft);border:1px solid var(--accent-line)}
+  .box.key i{color:var(--accent)}
+  .box p{margin-top:7px}
+  .box p:first-of-type{margin-top:0}
+
+  /* Contents */
+  nav.toc{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-lg);padding:16px 18px;margin-bottom:2rem;box-shadow:var(--shadow);
+  }
+  nav.toc h2{
+    font-family:var(--display);font-size:13px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:11px;
+  }
+  nav.toc ol{list-style:none;counter-reset:toc;columns:2;column-gap:26px}
+  @media(max-width:620px){nav.toc ol{columns:1}}
+  nav.toc li{counter-increment:toc;margin-bottom:6px;break-inside:avoid}
+  nav.toc a{
+    color:var(--text-2);text-decoration:none;font-size:13.5px;
+    display:flex;gap:9px;align-items:baseline;
+  }
+  nav.toc a::before{
+    content:counter(toc,decimal-leading-zero);
+    font-family:var(--mono);font-size:11px;color:var(--accent);flex-shrink:0;
+  }
+  nav.toc a:hover{color:var(--accent)}
+
+  /* Sections */
+  section{margin-bottom:2.2rem;scroll-margin-top:1rem}
+  section h2{
+    font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.015em;
+    margin-bottom:.7rem;display:flex;gap:11px;align-items:baseline;
+  }
+  section h2 .n{
+    font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent);flex-shrink:0;
+  }
+  section h3{
+    font-family:var(--display);font-size:15px;font-weight:600;
+    margin:1.3rem 0 .5rem;color:var(--text);
+  }
+  section p{margin-bottom:.85rem;font-size:14.5px;color:var(--text-2)}
+  section p strong,section li strong{color:var(--text);font-weight:600}
+  section ul{margin:0 0 .95rem 0;padding-left:1.15rem}
+  section li{margin-bottom:.5rem;font-size:14.5px;color:var(--text-2)}
+  section li::marker{color:var(--text-3)}
+  a{color:var(--accent)}
+  code{
+    font-family:var(--mono);font-size:.9em;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+  }
+  hr{border:none;border-top:1px solid var(--line);margin:2.4rem 0}
+
+  .defn{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r);padding:13px 16px;margin-bottom:9px;
+  }
+  .defn b{font-family:var(--display);font-size:14px;display:block;margin-bottom:2px;color:var(--text)}
+  .defn span{font-size:13.5px;color:var(--text-2)}
+
+  footer{
+    margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--text-3);
+  }
+  footer p{margin-bottom:8px;max-width:75ch}
+  footer a{color:var(--accent)}
+  footer nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" fill="none"><path d="M9 22V10m7 12V10m7 12V10" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><path d="M9 16h14" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" opacity=".5"/></svg>
+    </div>
+    <div class="brand">
+      <a href="./index.html">ChainKit</a>
+      <p>Terms of Use</p>
+    </div>
+    <div class="top-right">
+      <div class="seg" role="group" aria-label="Colour theme">
+        <button type="button" data-theme-set="light" aria-pressed="false"><i class="ti ti-sun" aria-hidden="true"></i> Light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false"><i class="ti ti-moon" aria-hidden="true"></i> Dark</button>
+        <button type="button" data-theme-set="system" aria-pressed="false">Auto</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <div class="title">
+      <h1>Terms of Use</h1>
+      <div class="meta">
+        <span class="stamp">Version 1.0</span>
+        <span class="stamp">Effective 1 August 2026</span>
+        <span>Governed by the laws of the Republic of Panama</span>
+      </div>
+    </div>
+
+    <div class="box key">
+      <i class="ti ti-info-circle" aria-hidden="true"></i>
+      <div><b>The short version</b>
+      ChainKit is a free hobby project run by one person. It reads public blockchain data and shows it to you. It can be wrong, incomplete, or unavailable. Nothing here is financial, legal, or tax advice. Some links earn a commission. You are responsible for every transaction you send. If ChainKit costs you money, your remedy is to stop using it.
+      <p>That summary is here to be read. It is not part of the agreement, and where it differs from the sections below, the sections below govern.</p></div>
+    </div>
+
+    <nav class="toc" aria-label="Contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#s1">Who runs this and what it is</a></li>
+        <li><a href="#s2">Accepting these terms</a></li>
+        <li><a href="#s3">Age requirement</a></li>
+        <li><a href="#s4">What ChainKit is not</a></li>
+        <li><a href="#s5">No warranty</a></li>
+        <li><a href="#s6">Blockchain transactions are final</a></li>
+        <li><a href="#s7">The Directory and paid links</a></li>
+        <li><a href="#s8">Safety checks and sanctions screening</a></li>
+        <li><a href="#s9">The Deposits tab</a></li>
+        <li><a href="#s10">Donations</a></li>
+        <li><a href="#s11">Third-party services</a></li>
+        <li><a href="#s12">Acceptable use</a></li>
+        <li><a href="#s13">Limitation of liability</a></li>
+        <li><a href="#s14">Indemnity</a></li>
+        <li><a href="#s15">Intellectual property</a></li>
+        <li><a href="#s16">Availability and changes</a></li>
+        <li><a href="#s17">Governing law and disputes</a></li>
+        <li><a href="#s18">General provisions</a></li>
+        <li><a href="#s19">Contact</a></li>
+      </ol>
+    </nav>
+
+    <section id="s1">
+      <h2><span class="n">01</span> Who runs this and what it is</h2>
+      <p>ChainKit is operated by <strong>Hunter Rodriguez</strong>, an individual, as a personal project. In these terms, "I", "me" and "my" refer to Hunter Rodriguez, and "you" refers to you, the person using the site. "ChainKit" or "the site" means this website and every page and feature on it.</p>
+      <p>ChainKit is a <strong>read-only reference tool</strong>. It looks up publicly available blockchain data through third-party services and displays it. It does not hold, custody, transmit, exchange, or manage anyone's funds at any point. It is not a wallet, an exchange, a broker, a money transmitter, a payment processor, or a financial institution, and it does not act as agent for any of those.</p>
+      <p>ChainKit is free. There is no account, no subscription, and no paid tier.</p>
+      <div class="box info">
+        <i class="ti ti-user-circle" aria-hidden="true"></i>
+        <div><b>A disclosure about my other role</b>
+        I work as a support agent for a paid-to-click website that accepts cryptocurrency. ChainKit began as a tool I built for that work. <strong>ChainKit is my own personal project. It is not owned, operated, endorsed, supervised, or approved by that company, and I do not speak for that company here.</strong> Nothing on ChainKit is an official statement from any employer or client of mine. If you need support with that site, use its own support channels — not this one.</div>
+      </div>
+    </section>
+
+    <section id="s2">
+      <h2><span class="n">02</span> Accepting these terms</h2>
+      <p>By opening or using ChainKit, you agree to these terms. If you do not agree with any part of them, do not use the site. That is the entire mechanism: there is nothing to sign and no account to close.</p>
+      <p>These terms apply to every visitor. They also apply to any automated access — scrapers, bots, and other programs — operated by or for you.</p>
+    </section>
+
+    <section id="s3">
+      <h2><span class="n">03</span> Age requirement</h2>
+      <p>You must be <strong>at least 18 years old</strong> to use ChainKit. By using the site you confirm that you are. If you are under 18, you may not use it, and you should close this page.</p>
+      <p>ChainKit is not directed at children, does not knowingly collect information from anyone under 18, and has no account system through which a minor could register.</p>
+    </section>
+
+    <section id="s4">
+      <h2><span class="n">04</span> What ChainKit is not</h2>
+      <p>This section exists because the difference between a reference tool and an advisor matters, and because people sometimes read the first as the second.</p>
+      <div class="defn"><b>Not financial or investment advice</b><span>Nothing on ChainKit is a recommendation to buy, sell, hold, or avoid any asset. Prices, market data, and coin descriptions are reference information only. I am not a financial advisor, broker, or dealer, and no fiduciary duty of any kind arises between us.</span></div>
+      <div class="defn"><b>Not legal advice</b><span>Including anything shown by the sanctions screening feature. I am not a lawyer.</span></div>
+      <div class="defn"><b>Not tax advice</b><span>Crypto tax treatment varies by country and changes frequently. I am not an accountant. Consult a qualified professional about your own situation.</span></div>
+      <div class="defn"><b>Not compliance or KYC/AML advice</b><span>ChainKit's screening features are informational, use unofficial third-party data, and are not a substitute for a compliance programme or for the official registers maintained by governments.</span></div>
+      <div class="defn"><b>Not a security audit</b><span>The safety check features run automated pattern tests through third-party APIs. They are not a professional audit, and a clean result is not a safety guarantee.</span></div>
+      <div class="defn"><b>Not a custodian or intermediary</b><span>ChainKit never holds your funds, never has access to your private keys or seed phrase, and cannot move, freeze, reverse, or recover anything.</span></div>
+      <p>Any decision you make after reading something on ChainKit is <strong>your decision alone</strong>, made at your own risk, and you are solely responsible for its consequences.</p>
+    </section>
+
+    <section id="s5">
+      <h2><span class="n">05</span> No warranty</h2>
+      <p>ChainKit is provided <strong>"as is" and "as available", with all faults and without warranty of any kind</strong>, whether express, implied, or statutory. To the fullest extent permitted by applicable law, I disclaim all warranties, including any implied warranties of merchantability, fitness for a particular purpose, title, non-infringement, accuracy, and quiet enjoyment.</p>
+      <p>Specifically, and without limiting the above, I do not warrant that:</p>
+      <ul>
+        <li>The information shown is accurate, complete, current, or free of error. Blockchain data is retrieved from third-party services that can return stale, partial, or incorrect results.</li>
+        <li>A "not found" result means a transaction does not exist. It may mean a data provider was unreachable, rate-limited, or returned nothing. <strong>Never treat an absence of results as proof that a payment was not made.</strong></li>
+        <li>A balance, price, fee estimate, timestamp, or confirmation count shown is correct or current at the moment you read it.</li>
+        <li>The site will be available, uninterrupted, timely, secure, or error-free, or that defects will be corrected.</li>
+        <li>The site or the servers that deliver it are free of viruses or other harmful components.</li>
+        <li>Any list on the site — of chains, coins, services, or networks — is complete, current, or accurate. Lists go out of date. Contract addresses change. Companies fail.</li>
+      </ul>
+      <p><strong>Always verify anything that matters against the relevant blockchain's own official block explorer before you rely on it.</strong> ChainKit is a convenience, not a source of truth.</p>
+    </section>
+
+    <section id="s6">
+      <h2><span class="n">06</span> Blockchain transactions are final</h2>
+      <div class="box bad">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        <div><b>Read this one properly</b>
+        Once a blockchain transaction is confirmed, <strong>it cannot be reversed by anyone</strong>. Not by me, not by your wallet, not by the recipient, not by the network. There is no chargeback, no dispute process, and no support desk that can undo it.</div>
+      </div>
+      <p>You alone are responsible for every transaction you initiate, including:</p>
+      <ul>
+        <li><strong>Sending on the wrong network.</strong> The same token often exists on several networks, and they are not interchangeable. Funds sent to an address on the wrong network are usually lost permanently.</li>
+        <li><strong>Sending to the wrong address.</strong> Including addresses copied from this site, from anywhere else, or altered by malware on your own device.</li>
+        <li><strong>Sending the wrong amount</strong>, or misreading a decimal place.</li>
+        <li><strong>Confirming a transaction in your own wallet.</strong> ChainKit may help you prepare a donation, but your wallet software shows you the destination, the amount, and the fee before anything is sent, and you are the one who approves it. Check that screen. It is authoritative; this site is not.</li>
+      </ul>
+      <p>I accept no responsibility for lost, misdirected, stuck, or unrecoverable funds under any circumstances.</p>
+    </section>
+
+    <section id="s7">
+      <h2><span class="n">07</span> The Directory and paid links</h2>
+      <p>ChainKit's Directory lists third-party crypto services. You need to understand exactly what that listing does and does not mean.</p>
+      <h3>Some links pay me</h3>
+      <p>A number of Directory entries are <strong>referral or affiliate links</strong>, marked with a "Ref" badge on the entry itself and disclosed at the top of the Directory. If you sign up or transact through one, I may receive a commission at no additional cost to you. That income helps cover the cost of running these tools. I also disclose where I have a personal connection to a listed service.</p>
+      <h3>A listing is not an endorsement, a recommendation, or a vetting</h3>
+      <p>This is the part with teeth, so it is set out plainly:</p>
+      <ul>
+        <li>I have <strong>not audited, investigated, or verified</strong> any listed company's security, solvency, licensing, ownership, business practices, or honesty.</li>
+        <li>I have <strong>no ability to know</strong> whether a listed service will remain solvent, remain honest, remain in business, honour withdrawals, protect your data, or avoid being hacked.</li>
+        <li>Inclusion in the Directory means only that the service was known to me and appeared relevant. <strong>It is not a statement that the service is safe, trustworthy, legitimate, or suitable for you.</strong></li>
+        <li>Services can be compromised, can change ownership, can turn out to be fraudulent, and can fail without warning — including services that were entirely reputable when listed, and including services I am paid to link to.</li>
+        <li>The commission I may earn <strong>does not</strong> create any duty of care, any guarantee, any warranty, or any relationship between me and the service, and it does not make me responsible for how that service treats you.</li>
+      </ul>
+      <p>You deal with every third-party service <strong>entirely at your own risk and on your own judgement</strong>. Any contract you enter is between you and them, and I am not a party to it. I am not liable for any loss arising from your use of any listed service, including losses caused by that service's fraud, insolvency, negligence, security failure, or misconduct. <strong>Research anything before you trust it with money.</strong></p>
+      <p>If you find a listing that is out of date, wrong, or points to something harmful, please tell me and I will investigate and correct or remove it. That is a courtesy, not a contractual obligation, and it does not make me the guarantor of anything listed.</p>
+    </section>
+
+    <section id="s8">
+      <h2><span class="n">08</span> Safety checks and sanctions screening</h2>
+      <p>ChainKit includes automated token safety checks and an address screening indicator. These use third-party data sources including GoPlus Labs, Honeypot.is, and an unofficial sanctions dataset.</p>
+      <ul>
+        <li><strong>A clean result is not a safety guarantee.</strong> A token contract can pass every automated check and still be part of a scam. New tokens are often absent from these databases entirely.</li>
+        <li><strong>A flagged result is not proof of wrongdoing.</strong> Automated screening produces false positives. A sanctions indicator on ChainKit is a prompt to check the official register — it is not a legal determination, and I am not qualified to make one.</li>
+        <li>These features may be unavailable, out of date, or wrong at any time.</li>
+      </ul>
+      <p>Do not use ChainKit as your compliance process. If a sanctions or legal question affects a real payment, consult a qualified professional and check the relevant government's official list directly.</p>
+    </section>
+
+    <section id="s9">
+      <h2><span class="n">09</span> The Deposits tab</h2>
+      <p>The Deposits tab lists cryptocurrencies accepted by a specific third-party website through its payment processor. It is published as a convenience reference.</p>
+      <ul>
+        <li>That list is <strong>maintained by that site and its processor, not by me</strong>. It changes without notice to me.</li>
+        <li>The information here may be out of date at any moment. <strong>Always confirm on the destination site's own deposit page before sending anything.</strong></li>
+        <li>Nothing in that tab is an offer, a promise, or a representation on behalf of that site or its payment processor, and I have no authority to make one.</li>
+        <li>I am not responsible for deposits you make to any third party, or for anything that happens to them afterwards.</li>
+      </ul>
+    </section>
+
+    <section id="s10">
+      <h2><span class="n">10</span> Donations</h2>
+      <p>ChainKit accepts voluntary cryptocurrency donations to help cover hosting and maintenance.</p>
+      <ul>
+        <li>Donations are <strong>entirely voluntary and completely optional</strong>. Nothing on the site is paywalled, restricted, or degraded if you do not donate.</li>
+        <li>Donations are <strong>gifts, not purchases</strong>. You receive no goods, no services, no membership, no rights, and no promise of future features or support in return.</li>
+        <li>Donations are <strong>non-refundable</strong>, because blockchain transactions cannot be reversed.</li>
+        <li>A donation is <strong>not a charitable contribution</strong> for tax purposes. I am not a registered charity and cannot issue tax receipts.</li>
+        <li>You are responsible for any tax consequences of donating, and for making sure that donating is lawful where you live.</li>
+        <li>Before sending, <strong>verify the destination address in your own wallet's confirmation screen.</strong> It is authoritative. If your device is compromised, what you see in a web page may not be what you send.</li>
+      </ul>
+      <p>When you use a donation button, ChainKit prepares a transaction and hands it to your own wallet software. I never receive, hold, or have access to your private keys or seed phrase, and I cannot send anything on your behalf.</p>
+    </section>
+
+    <section id="s11">
+      <h2><span class="n">11</span> Third-party services</h2>
+      <p>ChainKit works by querying public third-party services — blockchain nodes, block explorers, price APIs, and name resolvers. To do so, the values you enter (such as a transaction hash or wallet address) are transmitted to those services. This is unavoidable: the data lives with them, not with me. See the <a href="./privacy.html">Privacy Policy</a> for detail.</p>
+      <p>Those services are operated by other people under their own terms and privacy policies. I do not control them, cannot vouch for them, and am not responsible for their conduct, availability, accuracy, or data practices. Some may log requests, including IP addresses.</p>
+      <p>ChainKit also loads fonts and icons from public content delivery networks, and can optionally load an embedded donation widget from a third party when you ask it to.</p>
+    </section>
+
+    <section id="s12">
+      <h2><span class="n">12</span> Acceptable use</h2>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Use ChainKit for anything unlawful, or in breach of any sanctions, export control, anti-money-laundering, or other law that applies to you.</li>
+        <li>Use it to stalk, harass, dox, surveil, or investigate a private individual.</li>
+        <li>Scrape, crawl, or automate access in a way that places unreasonable load on the site or on the third-party services it depends on. These are shared free services; abusing them degrades the tool for everyone.</li>
+        <li>Attempt to gain unauthorised access to any part of the site or its infrastructure, or interfere with its operation.</li>
+        <li>Copy, mirror, or redistribute the site in a way that misrepresents it as official, affiliated, or endorsed, or that removes these terms.</li>
+        <li>Present ChainKit's output as authoritative, audited, or professionally verified to someone else.</li>
+      </ul>
+      <p>I may block access, in whole or in part, at any time and for any reason, without notice.</p>
+    </section>
+
+    <section id="s13">
+      <h2><span class="n">13</span> Limitation of liability</h2>
+      <p><strong>To the fullest extent permitted by applicable law:</strong></p>
+      <p>I will not be liable to you for any indirect, incidental, special, consequential, exemplary, or punitive damages, or for any loss of profits, revenue, data, goodwill, cryptocurrency, or other intangible losses, arising out of or connected with your use of ChainKit — whether the claim is based in contract, tort (including negligence), strict liability, or any other theory, and whether or not I was advised that such damages were possible.</p>
+      <p>This includes, without limitation, any loss arising from:</p>
+      <ul>
+        <li>Inaccurate, incomplete, delayed, or missing information on the site.</li>
+        <li>A transaction you sent, including to the wrong address or on the wrong network.</li>
+        <li>Any third-party service, whether or not it is listed in the Directory, and whether or not I earn a commission from it.</li>
+        <li>Any failure, outage, rate limit, or error of a third-party data provider.</li>
+        <li>Any safety check, screening result, or absence of a warning.</li>
+        <li>Unauthorised access to your own device, wallet, or accounts.</li>
+      </ul>
+      <p><strong>My total aggregate liability</strong> to you for all claims relating to ChainKit, from any cause, is limited to the greater of: (a) the total amount you have paid me in the twelve months before the claim arose — which for almost everyone is <strong>nothing, since ChainKit is free</strong>; or (b) <strong>fifty United States dollars (USD 50.00)</strong>.</p>
+      <p>Because ChainKit is supplied free of charge, this allocation of risk is a fundamental basis of the arrangement between us. Without it, I would not be able to publish the site at all.</p>
+      <div class="box warn">
+        <i class="ti ti-scale" aria-hidden="true"></i>
+        <div><b>What this section cannot do</b>
+        Nothing in these terms excludes or limits liability that cannot lawfully be excluded or limited. Depending on where you live, that may include liability for fraud, fraudulent misrepresentation, wilful misconduct, gross negligence, death or personal injury caused by negligence, or certain rights granted to consumers by law. Where a limitation above is not permitted, it applies only to the maximum extent that it is.</div>
+      </div>
+    </section>
+
+    <section id="s14">
+      <h2><span class="n">14</span> Indemnity</h2>
+      <p>You agree to indemnify and hold me harmless from any claim, demand, loss, liability, or expense (including reasonable legal fees) brought by a third party and arising from: your use or misuse of ChainKit; your breach of these terms; your violation of any law or of anyone else's rights; or your dealings with any third-party service you found through this site.</p>
+      <p>This does not require you to indemnify me for my own fraud, wilful misconduct, or anything else that cannot lawfully be indemnified.</p>
+    </section>
+
+    <section id="s15">
+      <h2><span class="n">15</span> Intellectual property</h2>
+      <p>The ChainKit name, the design of the site, its written content, and its source code are mine, except where stated otherwise. The source code is published on GitHub and may carry an open-source licence; where it does, <strong>that licence governs the code</strong> and these terms govern your use of this hosted site.</p>
+      <p>Third-party names, logos, tickers, and brand colours shown on ChainKit belong to their respective owners. They are used to identify those projects and services. Their appearance here does not imply any affiliation, sponsorship, partnership, or endorsement in either direction.</p>
+      <p>You may link to ChainKit freely, and you may quote small portions with attribution.</p>
+    </section>
+
+    <section id="s16">
+      <h2><span class="n">16</span> Availability and changes</h2>
+      <p>ChainKit is a hobby project maintained in my spare time. I may change, suspend, break, or permanently discontinue any part of it — or all of it — <strong>at any time, without notice, and without any obligation to anyone</strong>. There is no service level, no uptime commitment, and no support entitlement.</p>
+      <p>I may revise these terms. When I do, I will change the version number and effective date at the top of this page. For material changes I will make a reasonable effort to flag them on the site itself. Continuing to use ChainKit after a revision means you accept the revised terms; if you do not, stop using the site.</p>
+      <p>Sections that by their nature should survive — including disclaimers, limitation of liability, indemnity, governing law, and these general provisions — continue to apply after you stop using the site.</p>
+    </section>
+
+    <section id="s17">
+      <h2><span class="n">17</span> Governing law and disputes</h2>
+      <p>These terms, and any dispute arising out of or relating to them or to ChainKit, are governed by <strong>the laws of the Republic of Panama</strong>, without regard to its conflict-of-law rules.</p>
+      <p>You agree that the <strong>courts of Panama City, Republic of Panama</strong> have exclusive jurisdiction over any such dispute, and you submit to that jurisdiction.</p>
+      <p>Before starting formal proceedings, please contact me and give me a reasonable opportunity to resolve the matter informally. Most issues are misunderstandings and can be sorted out in an email.</p>
+      <div class="box warn">
+        <i class="ti ti-world" aria-hidden="true"></i>
+        <div><b>If you are a consumer outside Panama</b>
+        Some countries give consumers a non-waivable right to bring claims in their own local courts, or under their own local law, regardless of what a website's terms say. Where that applies to you, this section does not take that right away — it applies only as far as the law allows.</div>
+      </div>
+    </section>
+
+    <section id="s18">
+      <h2><span class="n">18</span> General provisions</h2>
+      <p><strong>Entire agreement.</strong> These terms, together with the Privacy Policy, are the entire agreement between us about ChainKit, and replace any earlier understanding.</p>
+      <p><strong>Severability.</strong> If any provision is held unenforceable, it is to be modified only as far as necessary to make it enforceable, or removed if it cannot be, and the rest stays in force.</p>
+      <p><strong>No waiver.</strong> If I do not enforce a provision, that is not a waiver of it, and I may enforce it later.</p>
+      <p><strong>No partnership.</strong> Nothing here creates a partnership, joint venture, employment, agency, or fiduciary relationship between us.</p>
+      <p><strong>Assignment.</strong> You may not assign your rights under these terms. I may assign mine if ChainKit changes hands.</p>
+      <p><strong>Force majeure.</strong> I am not liable for any failure caused by something outside my reasonable control, including network failures, third-party outages, blockchain congestion or reorganisation, and acts of government.</p>
+      <p><strong>Language.</strong> These terms are written in English. If they are translated and the versions conflict, the English version governs, except where local law requires otherwise.</p>
+      <p><strong>Headings.</strong> Headings and the summary at the top are for convenience and do not affect interpretation.</p>
+    </section>
+
+    <section id="s19">
+      <h2><span class="n">19</span> Contact</h2>
+      <p>Questions about these terms, corrections to a Directory listing, or anything else about the site:</p>
+      <p><strong>Hunter Rodriguez</strong><br>
+      Email: <a href="mailto:bigtxhunter@proton.me">bigtxhunter@proton.me</a></p>
+      <p>I read everything, but ChainKit is a spare-time project and I cannot promise a response time. Please do not send private keys, seed phrases, or passwords — I will never ask for them, and anyone who does is trying to rob you.</p>
+    </section>
+
+    <hr>
+
+    <p style="font-size:13px;color:var(--text-3)">These terms were last reviewed on 1 August 2026. If you are reading a printed or archived copy, check <a href="./terms.html">the live version</a> for the current text.</p>
+
+  </main>
+
+  <footer>
+    <nav aria-label="Site">
+      <a href="./index.html">ChainKit</a>
+      <a href="./terms.html">Terms of Use</a>
+      <a href="./privacy.html">Privacy Policy</a>
+    </nav>
+    <p>ChainKit is an independent personal project by Hunter Rodriguez. It is not affiliated with, endorsed by, or operated on behalf of any exchange, wallet, blockchain project, or employer.</p>
+    <p>&copy; 2026 Hunter Rodriguez.</p>
+  </footer>
+
+</div>
+
+<script>
+function applyTheme(){
+  var pref='system';
+  try{ pref=localStorage.getItem('chainkit_theme')||'system'; }catch(e){}
+  var dark = pref==='dark' || (pref==='system' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  document.querySelectorAll('[data-theme-set]').forEach(function(b){
+    b.setAttribute('aria-pressed', b.dataset.themeSet===pref ? 'true':'false');
+  });
+}
+document.querySelectorAll('[data-theme-set]').forEach(function(b){
+  b.addEventListener('click', function(){
+    try{ localStorage.setItem('chainkit_theme', b.dataset.themeSet); }catch(e){}
+    applyTheme();
+  });
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+applyTheme();
+</script>
+</body>
+</html>
